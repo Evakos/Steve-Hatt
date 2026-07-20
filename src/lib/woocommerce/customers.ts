@@ -34,11 +34,29 @@ export async function updateCustomer(id: number, input: WooCustomerInput): Promi
   return wooFetch<WooCustomer>(`customers/${id}`, { method: "PUT", body: input });
 }
 
-/** Finds the existing customer for this email, or creates one — the single entry point used by
+/**
+ * Finds the existing customer for this email, or creates one — the single entry point used by
  * both /api/account/login (send the link) and /api/account/verify (land the session), so "sign
- * up" and "sign in" are the same action from the customer's perspective. */
-export async function findOrCreateCustomerByEmail(email: string): Promise<WooCustomer> {
+ * up" and "sign in" are the same action from the customer's perspective.
+ *
+ * Returns undefined if this email can never become a WooCommerce customer: WordPress enforces
+ * globally-unique emails across every user role, but the /customers endpoint's search only
+ * returns role=customer accounts — so an email already used by a non-customer WordPress user
+ * (e.g. an administrator or shop manager) looks "not found" by findCustomerByEmail above, then
+ * fails here with a 400 registration-error-email-exists from WordPress itself. There's no real
+ * WooCommerce customer to return in that case. Callers should treat this the same as any other
+ * "no customer_id" checkout (guest order), or, for the login flow, as a sign-in failure — see
+ * create-order-from-payment.ts and api/account/verify/route.ts.
+ */
+export async function findOrCreateCustomerByEmail(email: string): Promise<WooCustomer | undefined> {
   const existing = await findCustomerByEmail(email);
   if (existing) return existing;
-  return createCustomer(email);
+  try {
+    return await createCustomer(email);
+  } catch (err) {
+    if (err instanceof Error && err.message.includes("registration-error-email-exists")) {
+      return undefined;
+    }
+    throw err;
+  }
 }

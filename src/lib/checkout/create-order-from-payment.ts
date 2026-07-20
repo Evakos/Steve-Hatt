@@ -45,16 +45,23 @@ export async function createOrderFromPayment(
   // just by typing their email at checkout. sessionCustomerId (derived server-side from the
   // session cookie by the caller, never trust a client-supplied id) short-circuits the lookup
   // when they're already signed in.
-  const customerId = sessionCustomerId ?? (await findOrCreateCustomerByEmail(customer.email)).id;
+  //
+  // findOrCreateCustomerByEmail returns undefined for an email that already belongs to a
+  // non-customer WordPress user (e.g. a shop_manager/administrator) — there's no real customer
+  // to link to in that case, so the order just proceeds without one, same as any other guest
+  // checkout (see WooOrderInput.customer_id).
+  const customerId = sessionCustomerId ?? (await findOrCreateCustomerByEmail(customer.email))?.id;
   // Keeps the saved profile current with whatever they just typed — this app only tracks one
   // address per account (no multiple-address book), so "most recent checkout" is the definition
   // of "current" here.
-  await updateCustomer(customerId, {
-    email: customer.email,
-    first_name: customer.firstName,
-    last_name: customer.lastName,
-    billing,
-  });
+  if (customerId) {
+    await updateCustomer(customerId, {
+      email: customer.email,
+      first_name: customer.firstName,
+      last_name: customer.lastName,
+      billing,
+    });
+  }
 
   const orderInput: WooOrderInput = {
     status: "on-hold",

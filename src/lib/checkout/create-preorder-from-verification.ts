@@ -44,14 +44,18 @@ export async function createPreOrderFromVerification(
   };
 
   // Same customer-association logic as create-order-from-payment.ts — see its comments for why
-  // this doesn't sign the browser in and why updateCustomer keeps the saved profile current.
-  const customerId = sessionCustomerId ?? (await findOrCreateCustomerByEmail(customer.email)).id;
-  await updateCustomer(customerId, {
-    email: customer.email,
-    first_name: customer.firstName,
-    last_name: customer.lastName,
-    billing,
-  });
+  // this doesn't sign the browser in, why updateCustomer keeps the saved profile current, and why
+  // findOrCreateCustomerByEmail can return undefined (email already belongs to a non-customer
+  // WordPress user) in which case this just proceeds as a guest order.
+  const customerId = sessionCustomerId ?? (await findOrCreateCustomerByEmail(customer.email))?.id;
+  if (customerId) {
+    await updateCustomer(customerId, {
+      email: customer.email,
+      first_name: customer.firstName,
+      last_name: customer.lastName,
+      billing,
+    });
+  }
 
   const orderInput: WooOrderInput = {
     status: "pending",

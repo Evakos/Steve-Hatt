@@ -6,7 +6,9 @@ import Link from "next/link";
 
 export default function LoginForm() {
   const searchParams = useSearchParams();
-  const expired = searchParams.get("error") === "expired";
+  const errorParam = searchParams.get("error");
+  const expired = errorParam === "expired";
+  const unavailable = errorParam === "unavailable";
 
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -56,6 +58,11 @@ export default function LoginForm() {
       </p>
       {expired && (
         <p className="mt-3 text-sm text-red-600">That link has expired or is invalid — request a new one below.</p>
+      )}
+      {unavailable && (
+        <p className="mt-3 text-sm text-red-600">
+          That email can&apos;t be used for an account here — try a different email, or continue as a guest below.
+        </p>
       )}
       <input
         type="email"
