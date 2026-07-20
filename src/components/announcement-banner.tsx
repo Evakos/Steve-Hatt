@@ -24,7 +24,7 @@ const banners: Record<string, BannerConfig> = {
     accent: "text-white",
     message: "Christmas pre-orders are now open! Reserve your festive feast.",
     cta: "Pre-order now",
-    ctaHref: "/shop/whole-salmon",
+    ctaHref: "/shop",
   },
 };
 

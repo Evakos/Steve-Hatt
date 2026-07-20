@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { products } from "@/lib/products";
+import { getAllProducts } from "@/lib/products";
 import { Truck, Fish, Scaling, Leaf, Anchor, Recycle, ShoppingBag, Search } from "lucide-react";
 import Header from "@/components/header";
 import PostcodeCheck from "@/components/postcode-check";
@@ -13,7 +13,21 @@ const howItWorks = [
   { icon: <Truck className="h-5 w-5" />, step: "04", title: "Delivered Fresh", desc: "Next-day delivery to your door, or collect from Essex Road. Always fresh, never frozen." },
 ];
 
-export default function Home() {
+/** Fisher-Yates shuffle, then take the first n — used to rotate "Today's Catch" rather than
+ * always showing the same fixed products. */
+function pickRandom<T>(items: T[], n: number): T[] {
+  const shuffled = [...items];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled.slice(0, n);
+}
+
+export default async function Home() {
+  const products = await getAllProducts();
+  const todaysCatch = pickRandom(products, 6);
+
   return (
     <main className="flex flex-1 flex-col">
       <AnnouncementBanner />
@@ -68,7 +82,7 @@ export default function Home() {
           <div className="flex flex-col items-center gap-4 text-center md:flex-row md:text-left">
             <div className="flex-1">
               <h2 className="font-serif text-xl font-semibold text-navy">Check if we deliver to you</h2>
-              <p className="mt-1 text-sm text-text-light">Enter your postcode to see delivery options. Not in our zone? Click & collect is always available. <Link href="/account/create" className="font-medium text-navy underline">Create an account</Link> for faster checkout.</p>
+              <p className="mt-1 text-sm text-text-light">Enter your postcode to see delivery options. Not in our zone? Click & collect is always available. <Link href="/account" className="font-medium text-navy underline">Sign in</Link> for faster checkout.</p>
             </div>
             <div className="w-full max-w-xs md:w-auto">
               <PostcodeCheck />
@@ -85,10 +99,10 @@ export default function Home() {
               <p className="text-xs tracking-widest text-text-light uppercase">Fresh today</p>
               <h2 className="mt-2 font-serif text-3xl font-bold text-navy">Today&apos;s Catch</h2>
             </div>
-            <a href="#shop" className="text-sm text-navy hover:underline">View all →</a>
+            <Link href="/shop" className="text-sm text-navy hover:underline">View all →</Link>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {products.slice(0, 8).map((p) => (
+            {todaysCatch.map((p) => (
               <Link key={p.slug} href={`/shop/${p.slug}`} className="group border border-border bg-white p-4 transition-all hover:border-navy/30 hover:shadow-md" style={{ borderRadius: '5px' }}>
                 <div className="relative mb-3 h-40 overflow-hidden bg-sand" style={{ borderRadius: '3px' }}>
                   <Image src={p.image} alt={p.name} fill className="object-cover transition-transform group-hover:scale-105" />
@@ -97,7 +111,7 @@ export default function Home() {
                 <h3 className="font-serif text-lg font-semibold text-navy">{p.name}</h3>
                 <p className="mt-1 min-h-[45px] text-sm text-text-light">{p.weight}</p>
                 <div className="mt-3 flex items-center justify-between">
-                  <span className="text-base font-semibold text-navy">{p.price}</span>
+                  <span className="text-base font-semibold text-navy">{p.priceLabel}</span>
                   <span className="bg-navy px-3 py-1.5 text-xs font-medium text-white transition-colors group-hover:bg-navy/90" style={{ borderRadius: '3px' }}>
                     View
                   </span>
@@ -124,7 +138,7 @@ export default function Home() {
           </div>
           <div className="mt-8 border border-ocean/20 bg-ocean-light p-6" style={{ borderRadius: '5px' }}>
             <p className="text-sm leading-relaxed text-navy">
-              <strong>Fair pricing, always.</strong> We authorise an estimated amount at checkout based on your selected weight. After preparation and final weighing, you only pay for exactly what you receive. No overcharging, no surprises.
+              <strong>Fair pricing, always.</strong> We estimate the price at checkout based on your selected weight — you&apos;re not charged until your order is prepared and weighed, so you only ever pay for exactly what you receive. No overcharging, no surprises.
             </p>
           </div>
         </div>
@@ -206,7 +220,7 @@ export default function Home() {
                 <h3 className="font-serif text-lg font-semibold text-navy">{p.name}</h3>
                 <p className="mt-1 text-xs text-text-light">{p.weight}</p>
                 <div className="mt-3 flex items-center justify-between">
-                  <span className="text-base font-semibold text-navy">{p.price}</span>
+                  <span className="text-base font-semibold text-navy">{p.priceLabel}</span>
                   <span className="bg-navy px-3 py-1.5 text-[10px] font-medium text-white transition-colors group-hover:bg-navy/90" style={{ borderRadius: '3px' }}>
                     Pre-order
                   </span>

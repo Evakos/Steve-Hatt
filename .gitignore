@@ -32,12 +32,10 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # legacy image archives
-/public/2020
-/public/2021
-/public/2022
-/public/2023
+/public/archive
 
 # vercel
 .vercel

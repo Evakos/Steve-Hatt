@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Check, Info } from "lucide-react";
 import type { Product } from "@/lib/products";
 import { useCart } from "@/lib/cart-context";
+import { computeUnitPrice } from "@/lib/pricing";
 
 const prepTooltips: Record<string, string> = {
   "Scaled & Cleaned": "Scales removed, gutted and washed. Ready to cook whole, roast, or stuff.",
@@ -30,19 +31,22 @@ export default function AddToCart({ product }: Props) {
   const [quantity, setQuantity] = useState(product.priceType === "per-piece" ? 6 : 1);
   const [added, setAdded] = useState(false);
 
-  const selectedSizePrice = product.sizeOptions?.find((s) => s.label === selectedSize)?.price;
+  const selectedSizeOption = product.sizeOptions?.find((s) => s.label === selectedSize);
 
-  const computeLinePrice = () => {
-    if (product.pricePerKg > 0) return product.pricePerKg * weight * quantity;
-    if (selectedSizePrice) return selectedSizePrice * quantity;
-    if (product.priceType === "per-piece") {
-      return parseFloat(product.price.replace(/[^0-9.]/g, "")) * quantity;
-    }
-    return parseFloat(product.price.replace(/[^0-9.]/g, "")) * quantity;
-  };
+  const unitPrice = computeUnitPrice(
+    { pricePerKg: product.pricePerKg, price: product.price, sizeOptionPrice: selectedSizeOption?.price },
+    weight
+  );
 
   const handleAdd = () => {
-    addItem({ product, quantity, weight, preparation: selectedPrep, unitPrice: computeLinePrice() });
+    addItem({
+      product,
+      quantity,
+      weight,
+      preparation: selectedPrep,
+      unitPrice,
+      wooVariationId: selectedSizeOption?.wooVariationId,
+    });
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   };
@@ -165,7 +169,7 @@ export default function AddToCart({ product }: Props) {
           </>
         ) : (
           <>
-            Add to Order · £{computeLinePrice().toFixed(2)}
+            Add to Order · £{(unitPrice * quantity).toFixed(2)}
           </>
         )}
       </button>

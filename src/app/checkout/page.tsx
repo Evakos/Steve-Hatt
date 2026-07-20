@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -10,20 +10,24 @@ import {
   Gift,
   CreditCard,
   ChevronLeft,
-  Lock,
   MapPin,
   CheckCircle,
   XCircle,
+  AlertCircle,
 } from "lucide-react";
-import { useCart } from "@/lib/cart-context";
+import { useCart, lineTotal } from "@/lib/cart-context";
 import {
-  DELIVERY_ZONES,
   normalisePostcode,
   extractOutcode,
   isInDeliveryZone,
 } from "@/lib/delivery-zones";
 import Header from "@/components/header";
 import AnnouncementBanner from "@/components/announcement-banner";
+import ContactAddressForm, { EMPTY_CONTACT_ADDRESS, type ContactAddressValue } from "@/components/checkout/contact-address-form";
+import PaymentPanel from "@/components/checkout/payment-panel";
+import ThreeDSChallenge from "@/components/checkout/three-ds-challenge";
+import { useCheckoutSubmit } from "@/components/checkout/use-checkout-submit";
+import type { CheckoutRequest } from "@/lib/checkout/schema";
 
 type SlotType = "delivery" | "collection";
 type Step = "delivery" | "payment";
@@ -85,19 +89,40 @@ function isChristmasDate(date: Date): boolean {
   return date.getMonth() === 11 && date.getDate() >= 20 && date.getDate() <= 24;
 }
 
-const inputClass =
-  "w-full border border-border bg-white px-4 py-2.5 text-sm text-navy outline-none transition-colors placeholder:text-text-light/50 focus:border-navy";
-
 export default function CheckoutPage() {
   const { items, estimatedTotal, clearCart } = useCart();
+  const { state: submitState, submit, confirmThreeDS, reset: resetSubmit } = useCheckoutSubmit();
 
-  // Store confirmed order details so they persist after cart is cleared
-  const [confirmedOrder, setConfirmedOrder] = useState<{
-    itemCount: number;
-    slot: Slot;
-    isChristmas: boolean;
-    total: number;
-  } | null>(null);
+  // Snapshot the slot/christmas-ness at the moment of payment, so the confirmation screen can
+  // still show them after clearCart() empties `items`.
+  const [confirmedOrder, setConfirmedOrder] = useState<{ itemCount: number; slot: Slot; isChristmas: boolean } | null>(null);
+  // The token that triggered the 3DS challenge — the confirm request resends the full checkout
+  // payload (schema requires a non-empty payment.token), so this needs to be threaded through.
+  const pendingTokenRef = useRef<string | null>(null);
+
+  // Cart is cleared exactly once, right when payment succeeds — not during render (that would
+  // update CartProvider's state while this component renders, which React disallows).
+  useEffect(() => {
+    if (submitState.phase === "authorised") clearCart();
+  }, [submitState.phase, clearCart]);
+
+  const [contact, setContact] = useState<ContactAddressValue>(EMPTY_CONTACT_ADDRESS);
+  // Drives the "we'll save your details" notice below — only shown to guests, since a
+  // signed-in customer already knows they have an account.
+  const [isSignedIn, setIsSignedIn] = useState(false);
+
+  // Prefill from a signed-in customer's saved details — silently does nothing for guests (401 is
+  // the expected response, not an error worth surfacing) or if they've already started typing.
+  useEffect(() => {
+    fetch("/api/account/me")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((me: ContactAddressValue | null) => {
+        if (!me) return;
+        setIsSignedIn(true);
+        setContact((prev) => (prev.email || prev.firstName ? prev : me));
+      })
+      .catch(() => {});
+  }, []);
 
   const [step, setStep] = useState<Step>("delivery");
 
@@ -115,9 +140,6 @@ export default function CheckoutPage() {
 
   // Slot
   const [selectedSlot, setSelectedSlot] = useState<Slot | null>(null);
-
-  // Confirmation
-  const [confirmed, setConfirmed] = useState(false);
 
   function handlePostcodeCheck() {
     const normalised = normalisePostcode(postcode);
@@ -163,8 +185,58 @@ export default function CheckoutPage() {
   const canProceedToPayment = !!selectedSlot;
   const deliveryCost = slotType === "delivery" ? 5 : 0;
 
+  function buildCheckoutRequest(): CheckoutRequest | null {
+    if (!selectedSlot || !slotType) return null;
+    return {
+      items: items.map((item) => ({
+        wooProductId: item.product.wooId,
+        wooVariationId: item.wooVariationId,
+        quantity: item.quantity,
+        weight: item.weight,
+        preparation: item.preparation,
+        productName: item.product.name,
+      })),
+      fulfilment: {
+        type: slotType,
+        slot: { date: selectedSlot.date.toISOString(), label: selectedSlot.label, isChristmas: selectedSlot.isChristmas },
+        postcode: slotType === "delivery" ? postcode : undefined,
+      },
+      customer: {
+        email: contact.email,
+        firstName: contact.firstName,
+        lastName: contact.lastName,
+        phone: contact.phone,
+        address:
+          slotType === "delivery"
+            ? {
+                line1: contact.address.line1,
+                line2: contact.address.line2 || undefined,
+                city: contact.address.city,
+                postcode: contact.address.postcode,
+              }
+            : undefined,
+      },
+      payment: { token: "" }, // filled in by the caller once PaymentPanel returns a token
+    };
+  }
+
+  function handleToken(token: string) {
+    if (!selectedSlot) return;
+    const request = buildCheckoutRequest();
+    if (!request) return;
+    pendingTokenRef.current = token;
+    setConfirmedOrder({ itemCount: items.length, slot: selectedSlot, isChristmas: isChristmasOrder });
+    submit({ ...request, payment: { token } });
+  }
+
+  function handleThreeDSComplete(threeDSResponse: unknown) {
+    const request = buildCheckoutRequest();
+    if (!request || !pendingTokenRef.current) return;
+    confirmThreeDS({ ...request, payment: { token: pendingTokenRef.current } }, threeDSResponse);
+  }
+
   // Empty cart (not after a confirmed order)
-  if (items.length === 0 && !confirmed && !confirmedOrder) {
+  if (items.length === 0 && submitState.phase !== "authorised" && !confirmedOrder) {
     return (
       <main className="flex flex-1 flex-col">
         <AnnouncementBanner />
@@ -195,7 +267,7 @@ export default function CheckoutPage() {
   }
 
   // Confirmation
-  if (confirmed && confirmedOrder) {
+  if (submitState.phase === "authorised" && confirmedOrder) {
     return (
       <main className="flex flex-1 flex-col">
         <AnnouncementBanner />
@@ -211,23 +283,24 @@ export default function CheckoutPage() {
             <h1 className="font-serif text-3xl font-bold text-navy">
               {confirmedOrder.isChristmas ? "Pre-Order Confirmed!" : "Order Confirmed!"}
             </h1>
+            <p className="mt-2 text-xs text-text-light">Order #{submitState.orderNumber}</p>
             <p className="mt-3 text-sm text-text-light">
               {confirmedOrder.itemCount} item{confirmedOrder.itemCount > 1 ? "s" : ""} ·{" "}
-              {confirmedOrder.slot.type === "delivery" ? "Delivery" : "Collection"} · £{confirmedOrder.total.toFixed(2)}
+              {confirmedOrder.slot.type === "delivery" ? "Delivery" : "Collection"} · £{submitState.estimatedTotal.toFixed(2)} (estimated)
             </p>
             <div className="mt-6 border border-border bg-white p-5 text-left" style={{ borderRadius: "5px" }}>
               <div className="flex items-center gap-2 text-sm font-medium text-navy">
                 {confirmedOrder.slot.type === "delivery" ? <Truck className="h-4 w-4 text-teal" /> : <Store className="h-4 w-4 text-teal" />}
                 {confirmedOrder.slot.label}
               </div>
-              {confirmedOrder.isChristmas && (
-                <div className="mt-3 flex items-start gap-2 border-t border-border pt-3">
-                  <Gift className="mt-0.5 h-4 w-4 shrink-0 text-[#1a3a2a]" />
-                  <p className="text-xs text-[#1a3a2a]/70">
-                    Christmas Pre-Order — your card is authorised now. You&apos;ll only be charged once your order is prepared.
-                  </p>
-                </div>
-              )}
+              <div className="mt-3 flex items-start gap-2 border-t border-border pt-3">
+                <Gift className={`mt-0.5 h-4 w-4 shrink-0 ${confirmedOrder.isChristmas ? "text-[#1a3a2a]" : "text-teal"}`} />
+                <p className={`text-xs ${confirmedOrder.isChristmas ? "text-[#1a3a2a]/70" : "text-text-light"}`}>
+                  {confirmedOrder.isChristmas
+                    ? "You haven't been charged yet. We've verified your card and will take payment automatically a few days before delivery, once your order is weighed — no action needed from you."
+                    : "You haven't been charged yet. Since fish is priced by weight, we'll confirm the exact final amount once your order is prepared, then take payment for that amount only."}
+                </p>
+              </div>
             </div>
 
             <div className="mt-8 flex flex-col items-center gap-3">
@@ -469,7 +542,9 @@ export default function CheckoutPage() {
                             <div>
                               <p className="text-sm font-medium text-[#1a3a2a]">Christmas Pre-Order</p>
                               <p className="mt-1 text-xs leading-relaxed text-[#1a3a2a]/70">
-                                Your card will be authorised now. You&apos;ll only be charged once your order is prepared and weighed.
+                                We&apos;ll verify your card now — you won&apos;t be charged today. Payment is taken
+                                automatically a few days before delivery, once your order is weighed, with no
+                                action needed from you.
                               </p>
                             </div>
                           </div>
@@ -516,76 +591,45 @@ export default function CheckoutPage() {
                   </p>
 
                   <div className="mt-6 border border-border bg-white p-6" style={{ borderRadius: "5px" }}>
-                    {/* Contact */}
-                    <p className="mb-4 text-xs font-medium tracking-wide text-navy uppercase">Contact</p>
-                    <div>
-                      <label className="mb-1.5 block text-xs font-medium tracking-wide text-navy uppercase">Email</label>
-                      <input type="email" placeholder="you@example.com" className={inputClass} style={{ borderRadius: "3px" }} />
-                    </div>
-                    <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                      <div>
-                        <label className="mb-1.5 block text-xs font-medium tracking-wide text-navy uppercase">First name</label>
-                        <input type="text" placeholder="John" className={inputClass} style={{ borderRadius: "3px" }} />
-                      </div>
-                      <div>
-                        <label className="mb-1.5 block text-xs font-medium tracking-wide text-navy uppercase">Last name</label>
-                        <input type="text" placeholder="Smith" className={inputClass} style={{ borderRadius: "3px" }} />
-                      </div>
-                    </div>
-                    <div className="mt-4">
-                      <label className="mb-1.5 block text-xs font-medium tracking-wide text-navy uppercase">Phone</label>
-                      <input type="tel" placeholder="07700 900000" className={inputClass} style={{ borderRadius: "3px" }} />
-                    </div>
-
-                    {/* Delivery address */}
-                    {slotType === "delivery" && (
-                      <div className="mt-6 border-t border-border pt-5">
-                        <p className="mb-4 text-xs font-medium tracking-wide text-navy uppercase">Delivery address</p>
-                        <div className="space-y-4">
-                          <input type="text" placeholder="Address line 1" className={inputClass} style={{ borderRadius: "3px" }} />
-                          <input type="text" placeholder="Address line 2 (optional)" className={inputClass} style={{ borderRadius: "3px" }} />
-                          <div className="grid gap-4 sm:grid-cols-2">
-                            <input type="text" placeholder="City" defaultValue="London" className={inputClass} style={{ borderRadius: "3px" }} />
-                            <input type="text" placeholder="Postcode" defaultValue={postcode.toUpperCase()} className={inputClass} style={{ borderRadius: "3px" }} />
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Card details */}
-                    <div className="mt-6 border-t border-border pt-5">
-                      <p className="mb-4 text-xs font-medium tracking-wide text-navy uppercase">Card details</p>
-                      <div className="space-y-4">
-                        <input type="text" placeholder="Card number" className={inputClass} style={{ borderRadius: "3px" }} />
-                        <div className="grid grid-cols-2 gap-4">
-                          <input type="text" placeholder="MM / YY" className={inputClass} style={{ borderRadius: "3px" }} />
-                          <input type="text" placeholder="CVC" className={inputClass} style={{ borderRadius: "3px" }} />
-                        </div>
-                      </div>
-                    </div>
+                    <ContactAddressForm value={contact} onChange={setContact} showAddress={slotType === "delivery"} />
                   </div>
 
-                  <button
-                    onClick={() => {
-                      if (selectedSlot) {
-                        setConfirmedOrder({
-                          itemCount: items.length,
-                          slot: selectedSlot,
-                          isChristmas: isChristmasOrder,
-                          total: estimatedTotal + deliveryCost,
-                        });
-                        clearCart();
-                        setConfirmed(true);
-                      }
-                    }}
-                    className="mt-6 flex w-full items-center justify-center gap-2 bg-lobster px-6 py-4 text-sm font-medium tracking-wide text-white transition-colors hover:bg-lobster/90"
-                    style={{ borderRadius: "3px" }}
-                  >
-                    <Lock className="h-4 w-4" />
-                    {isChristmasOrder
-                      ? `Authorise Pre-Order · £${(estimatedTotal + deliveryCost).toFixed(2)}`
-                      : `Pay £${(estimatedTotal + deliveryCost).toFixed(2)}`}
-                  </button>
+                  {submitState.phase === "requires_action" ? (
+                    <div className="mt-6">
+                      <ThreeDSChallenge onComplete={handleThreeDSComplete} />
+                    </div>
+                  ) : (
+                    <div className="mt-6">
+                      <p className="mb-2 text-xs font-medium tracking-wide text-navy uppercase">
+                        {isChristmasOrder ? "Place Pre-Order" : "Place Order"} · £{(estimatedTotal + deliveryCost).toFixed(2)} (estimated)
+                      </p>
+                      <PaymentPanel
+                        amount={estimatedTotal + deliveryCost}
+                        onToken={handleToken}
+                        disabled={submitState.phase === "submitting" || submitState.phase === "confirming"}
+                      />
+                      {!isSignedIn && (
+                        <p className="mt-2 text-xs text-text-light">
+                          We&apos;ll save your details so you can track this order and sign in next time — no
+                          password needed.
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  {(submitState.phase === "declined" || submitState.phase === "error") && (
+                    <div className="mt-4 flex items-start gap-2 border border-lobster/30 bg-lobster/5 p-4" style={{ borderRadius: "5px" }}>
+                      <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-lobster" />
+                      <div>
+                        <p className="text-sm text-navy">
+                          {submitState.phase === "declined" ? submitState.reason : submitState.message}
+                        </p>
+                        <button onClick={resetSubmit} className="mt-1 text-xs text-navy underline">
+                          Try again
+                        </button>
+                      </div>
+                    </div>
+                  )}
 
                   <div className="mt-3 flex items-center justify-center gap-1.5 text-[11px] text-text-light">
                     <CreditCard className="h-3.5 w-3.5" />
@@ -601,8 +645,8 @@ export default function CheckoutPage() {
                 <h2 className="font-serif text-lg font-semibold text-navy">Order Summary</h2>
 
                 <div className="mt-4 space-y-3">
-                  {items.map((item, i) => (
-                      <div key={i} className="flex items-center gap-3">
+                  {items.map((item) => (
+                      <div key={item.id} className="flex items-center gap-3">
                         <div className="relative h-10 w-10 shrink-0 overflow-hidden bg-sand" style={{ borderRadius: "3px" }}>
                           <Image src={item.product.image} alt={item.product.name} fill className="object-cover" />
                         </div>
@@ -610,7 +654,7 @@ export default function CheckoutPage() {
                           <p className="font-medium text-navy">{item.product.name}</p>
                           <p className="text-text-light">{item.preparation}</p>
                         </div>
-                        <span className="text-xs font-medium text-navy">£{item.unitPrice.toFixed(2)}</span>
+                        <span className="text-xs font-medium text-navy">£{lineTotal(item).toFixed(2)}</span>
                       </div>
                   ))}
                 </div>

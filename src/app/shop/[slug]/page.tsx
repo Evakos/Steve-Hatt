@@ -2,13 +2,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { products, getProductBySlug } from "@/lib/products";
+import { getAllProducts, getProductBySlug } from "@/lib/products";
 import { Gift, Scale, MapPin, Thermometer, Leaf } from "lucide-react";
 import Header from "@/components/header";
 import AnnouncementBanner from "@/components/announcement-banner";
 import AddToCart from "@/components/add-to-cart";
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const products = await getAllProducts();
   return products.map((p) => ({ slug: p.slug }));
 }
 
@@ -18,7 +19,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const product = await getProductBySlug(slug);
   if (!product) return { title: "Not Found" };
   return {
     title: `${product.name} | Steve Hatt Fishmongers`,
@@ -32,12 +33,13 @@ export default async function ProductPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const product = await getProductBySlug(slug);
   if (!product) notFound();
 
-  const related = products.filter((p) => p.slug !== product.slug && p.category === product.category).slice(0, 4);
+  const allProducts = await getAllProducts();
+  const related = allProducts.filter((p) => p.slug !== product.slug && p.category === product.category).slice(0, 4);
   if (related.length < 4) {
-    const extras = products.filter((p) => p.slug !== product.slug && p.category !== product.category).slice(0, 4 - related.length);
+    const extras = allProducts.filter((p) => p.slug !== product.slug && p.category !== product.category).slice(0, 4 - related.length);
     related.push(...extras);
   }
 
@@ -78,7 +80,7 @@ export default async function ProductPage({
               <p className="mt-1 text-sm text-text-light">{product.origin}</p>
 
               <div className="mt-4 flex items-baseline gap-3">
-                <span className="font-serif text-3xl font-bold text-navy">{product.price}</span>
+                <span className="font-serif text-3xl font-bold text-navy">{product.priceLabel}</span>
                 <span className="text-sm text-text-light">{product.weight}</span>
               </div>
 
@@ -100,7 +102,7 @@ export default async function ProductPage({
               <div className="mt-4 flex items-start gap-3 border border-ocean/20 bg-ocean-light p-4" style={{ borderRadius: '5px' }}>
                 <Scale className="mt-0.5 h-4 w-4 shrink-0 text-navy/60" />
                 <p className="text-xs leading-relaxed text-navy">
-                  <strong>Fair pricing.</strong> We authorise an estimated amount at checkout. After preparation and final weighing, you only pay for exactly what you receive.
+                  <strong>Fair pricing.</strong> We estimate the price at checkout. You&apos;re not charged until your order is prepared and weighed, so you only pay for exactly what you receive.
                 </p>
               </div>
 
@@ -147,7 +149,7 @@ export default async function ProductPage({
                     <Image src={p.image} alt={p.name} fill className="object-cover transition-transform group-hover:scale-105" />
                   </div>
                   <h3 className="font-serif text-base font-semibold text-navy">{p.name}</h3>
-                  <p className="mt-1 text-sm text-text-light">{p.price}</p>
+                  <p className="mt-1 text-sm text-text-light">{p.priceLabel}</p>
                 </Link>
               ))}
             </div>

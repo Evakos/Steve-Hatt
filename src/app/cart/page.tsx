@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Trash2, ShoppingBag } from "lucide-react";
-import { useCart } from "@/lib/cart-context";
+import { useCart, lineTotal } from "@/lib/cart-context";
 import Header from "@/components/header";
 import AnnouncementBanner from "@/components/announcement-banner";
 
@@ -42,10 +42,10 @@ export default function CartPage() {
             <div className="mt-8 grid gap-8 lg:grid-cols-3">
               {/* Items list */}
               <div className="space-y-4 lg:col-span-2">
-                {items.map((item, i) => {
+                {items.map((item) => {
                   return (
                     <div
-                      key={`${item.product.slug}-${i}`}
+                      key={item.id}
                       className="flex gap-4 border border-border bg-white p-4"
                       style={{ borderRadius: "5px" }}
                     >
@@ -67,7 +67,7 @@ export default function CartPage() {
                               {item.product.name}
                             </h3>
                             <button
-                              onClick={() => removeItem(i)}
+                              onClick={() => removeItem(item.id)}
                               className="text-text-light transition-colors hover:text-lobster"
                               aria-label="Remove item"
                             >
@@ -82,7 +82,7 @@ export default function CartPage() {
                         <div className="mt-2 flex items-end justify-between">
                           <div className="flex items-center border border-border bg-cream" style={{ borderRadius: "3px" }}>
                             <button
-                              onClick={() => updateQuantity(i, item.quantity - 1)}
+                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
                               className="px-2 py-1 text-xs text-navy transition-colors hover:bg-sand"
                             >
                               -
@@ -91,14 +91,14 @@ export default function CartPage() {
                               {item.quantity}
                             </span>
                             <button
-                              onClick={() => updateQuantity(i, item.quantity + 1)}
+                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
                               className="px-2 py-1 text-xs text-navy transition-colors hover:bg-sand"
                             >
                               +
                             </button>
                           </div>
                           <span className="text-sm font-semibold text-navy">
-                            £{item.unitPrice.toFixed(2)}
+                            £{lineTotal(item).toFixed(2)}
                           </span>
                         </div>
                       </div>

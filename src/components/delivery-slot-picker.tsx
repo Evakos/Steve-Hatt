@@ -143,7 +143,7 @@ export default function DeliverySlotPicker({ product, onClose, onConfirm }: Prop
                   <div>
                     <p className="font-medium text-[#1a3a2a]">Christmas Pre-Order</p>
                     <p className="mt-0.5 text-xs text-[#1a3a2a]/70">
-                      Your card is authorised now. You'll only be charged once your order is prepared on 23rd December.
+                      We&apos;ll verify your card now — you won&apos;t be charged today. Payment is taken automatically a few days before delivery, once your order is weighed, with no action needed from you.
                     </p>
                   </div>
                 </div>
@@ -277,7 +277,7 @@ export default function DeliverySlotPicker({ product, onClose, onConfirm }: Prop
               <div>
                 <p className="text-xs font-medium text-[#1a3a2a]">Christmas Pre-Order</p>
                 <p className="mt-0.5 text-[11px] text-[#1a3a2a]/70">
-                  Your card will be authorised now. You'll only be charged once your order is prepared on 23rd December.
+                  We&apos;ll verify your card now — you won&apos;t be charged today. Payment is taken automatically a few days before delivery, once your order is weighed, with no action needed from you.
                 </p>
               </div>
             </div>
