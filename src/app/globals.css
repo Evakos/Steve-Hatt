@@ -39,6 +39,12 @@
   scroll-behavior: smooth;
 }
 
+html {
+  /* Slightly larger base size than the 16px default — all rem-based Tailwind text utilities
+   * (text-sm, text-base, etc.) scale proportionally from this. */
+  font-size: 106.25%;
+}
+
 body {
   background: var(--cream);
   color: var(--text);

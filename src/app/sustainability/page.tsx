@@ -15,23 +15,21 @@ export default function SustainabilityPage() {
       <AnnouncementBanner />
       <Header />
 
-      <section className="relative flex items-center bg-navy" style={{ minHeight: "320px" }}>
-        <Image src="/sustainability-hero.jpg" alt="" fill className="object-cover" priority />
-        <div
-          className="absolute inset-0"
-          style={{ background: "linear-gradient(to right, rgba(15, 23, 42, 0.75) 15%, rgba(15, 23, 42, 0.2) 60%)" }}
-        />
-        <div className="relative mx-auto w-full max-w-6xl px-6">
-          <p className="mb-4 text-sm tracking-widest text-white/50 uppercase">Sustainability</p>
-          <h1 className="font-serif text-4xl font-bold leading-[1.1] text-white md:text-5xl">
-            Fresh Fish for Every Season
-          </h1>
-          <p className="mt-4 max-w-lg text-sm leading-relaxed text-white/70">
+      {/* Plain white intro — the real site has no photo hero on this page */}
+      <section className="bg-white">
+        <div className="mx-auto max-w-3xl px-6 pt-16 pb-8">
+          <p className="text-xs tracking-widest text-text-light uppercase">Sustainability</p>
+          <h1 className="mt-2 font-serif text-3xl font-bold text-navy md:text-4xl">Fresh Fish for Every Season</h1>
+          <p className="mt-4 text-sm leading-relaxed text-text-light">
             Good for you, good for the planet. We believe in supporting a sustainable ecology, bringing the
             freshest fish from the British coastline to the Islington community with the smallest possible
             ecological footprint.
           </p>
         </div>
+      </section>
+
+      <section className="relative h-64" style={{ minHeight: "260px" }}>
+        <Image src="/sustainability-hero.jpg" alt="Brixham harbour, Devon" fill className="object-cover" />
       </section>
 
       {/* Three pillars */}

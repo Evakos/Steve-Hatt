@@ -14,7 +14,7 @@ export default function Header() {
     <header className="border-b border-border/50 bg-white sticky top-0 z-50">
       <nav className="mx-auto flex h-20 max-w-6xl items-center justify-between px-6">
         <Link href="/">
-          <Image src="/logo.svg" alt="Steve Hatt Fishmongers" width={180} height={80} className="h-12 w-auto" />
+          <Image src="/logo.svg" alt="Steve Hatt Fishmongers" width={180} height={80} className="h-16 w-auto" />
         </Link>
 
         {/* Desktop nav */}

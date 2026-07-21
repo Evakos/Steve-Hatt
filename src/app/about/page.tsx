@@ -2,6 +2,7 @@ import Image from "next/image";
 import Header from "@/components/header";
 import AnnouncementBanner from "@/components/announcement-banner";
 import Footer from "@/components/footer";
+import InnerPageHero from "@/components/inner-page-hero";
 
 export const metadata = {
   title: "About | Steve Hatt Fishmongers",
@@ -14,22 +15,12 @@ export default function AboutPage() {
       <AnnouncementBanner />
       <Header />
 
-      {/* Hero — matches the homepage hero's gradient/typography treatment */}
-      <section className="relative flex items-center bg-navy" style={{ minHeight: "420px" }}>
-        <Image src="/heritage-shop-front.jpg" alt="" fill className="object-cover" priority />
-        <div
-          className="absolute inset-0"
-          style={{ background: "linear-gradient(to right, rgba(15, 23, 42, 0.75) 15%, rgba(15, 23, 42, 0.2) 60%)" }}
-        />
-        <div className="relative mx-auto w-full max-w-6xl px-6">
-          <div className="max-w-2xl">
-            <p className="mb-4 text-sm tracking-widest text-white/50 uppercase">Est. 1895 · Essex Road, London</p>
-            <h1 className="font-serif text-4xl font-bold leading-[1.1] text-white md:text-5xl">
-              Setting Standards Since 1895
-            </h1>
-          </div>
-        </div>
-      </section>
+      <InnerPageHero
+        image="/heritage-shop-front.jpg"
+        eyebrow="About"
+        title="Setting Standards Since 1895"
+        subtitle="Serving the Local Community"
+      />
 
       {/* Intro */}
       <section className="bg-white">

@@ -14,20 +14,20 @@ export default function SuppliersPage() {
       <AnnouncementBanner />
       <Header />
 
-      <section className="relative flex items-center bg-navy" style={{ minHeight: "320px" }}>
-        <Image src="/suppliers-hero.jpg" alt="" fill className="object-cover" priority />
-        <div
-          className="absolute inset-0"
-          style={{ background: "linear-gradient(to right, rgba(15, 23, 42, 0.75) 15%, rgba(15, 23, 42, 0.2) 60%)" }}
-        />
-        <div className="relative mx-auto w-full max-w-6xl px-6">
-          <p className="mb-4 text-sm tracking-widest text-white/50 uppercase">Suppliers</p>
-          <h1 className="font-serif text-4xl font-bold leading-[1.1] text-white md:text-5xl">Thoughtfully Sourced</h1>
-          <p className="mt-4 max-w-lg text-sm leading-relaxed text-white/70">
+      {/* Plain white intro — the real site has no photo hero on this page */}
+      <section className="bg-white">
+        <div className="mx-auto max-w-3xl px-6 pt-16 pb-8">
+          <p className="text-xs tracking-widest text-text-light uppercase">Suppliers</p>
+          <h1 className="mt-2 font-serif text-3xl font-bold text-navy md:text-4xl">Thoughtfully Sourced</h1>
+          <p className="mt-4 text-sm leading-relaxed text-text-light">
             We are committed to bringing you the freshest possible fish in the most environmentally friendly way —
             constantly assessing our ecological impact and leading the way on sustainability.
           </p>
         </div>
+      </section>
+
+      <section className="relative h-64" style={{ minHeight: "260px" }}>
+        <Image src="/suppliers-hero.jpg" alt="Fish market stall at Billingsgate" fill className="object-cover" />
       </section>
 
       <section className="bg-white">

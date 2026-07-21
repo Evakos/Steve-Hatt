@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Header from "@/components/header";
 import AnnouncementBanner from "@/components/announcement-banner";
 import Footer from "@/components/footer";
@@ -15,15 +14,10 @@ export default function ContactPage() {
       <AnnouncementBanner />
       <Header />
 
-      <section className="relative flex items-center bg-navy" style={{ minHeight: "320px" }}>
-        <Image src="/heritage-shop-front.jpg" alt="" fill className="object-cover" priority />
-        <div
-          className="absolute inset-0"
-          style={{ background: "linear-gradient(to right, rgba(15, 23, 42, 0.75) 15%, rgba(15, 23, 42, 0.2) 60%)" }}
-        />
-        <div className="relative mx-auto w-full max-w-6xl px-6">
-          <p className="mb-4 text-sm tracking-widest text-white/50 uppercase">Contact</p>
-          <h1 className="font-serif text-4xl font-bold leading-[1.1] text-white md:text-5xl">Get in Touch</h1>
+      <section className="bg-white">
+        <div className="mx-auto max-w-3xl px-6 pt-16 pb-4">
+          <p className="text-xs tracking-widest text-text-light uppercase">Contact</p>
+          <h1 className="mt-2 font-serif text-3xl font-bold text-navy md:text-4xl">Get in Touch</h1>
         </div>
       </section>
 
