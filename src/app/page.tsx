@@ -249,13 +249,17 @@ export default async function Home() {
             <div>
               <h3 className="mb-4 font-serif text-lg font-semibold text-navy">Visit Us</h3>
               <p className="text-sm text-text-light">88 Essex Road<br />Islington, London<br />N1 8LU</p>
+              <p className="mt-2 text-sm text-text-light">
+                <a href="tel:+442072263963" className="transition-colors hover:text-navy">020 7226 3963</a>
+              </p>
             </div>
             <div>
               <h3 className="mb-4 font-serif text-lg font-semibold text-navy">Delivery Zones</h3>
               <p className="text-sm text-text-light">
-                Next-day delivery: EC1, EC2, E2, E5, E8, N1, N4, N5, N6, N7, N10, N16, N19, NW5.
-                Minimum order £20. Standard delivery £5.00.
+                <strong className="text-navy">Next-day delivery to:</strong><br />
+                EC1, EC2, E2, E5, E8, N1, N4, N5, N6, N7, N10, N16, N19, NW5
               </p>
+              <p className="mt-2 text-sm text-text-light">Minimum order £20 · Standard delivery £5.00</p>
             </div>
           </div>
         </div>
