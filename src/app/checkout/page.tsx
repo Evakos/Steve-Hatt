@@ -52,12 +52,9 @@ function isTueToSat(date: Date): boolean {
   return day >= 2 && day <= 6;
 }
 
-// Demo: simulate date as 1st November so Christmas slots are visible
-const DEMO_TODAY = new Date(2026, 10, 1);
-
 function getAvailableDates(): Date[] {
   const dates: Date[] = [];
-  const today = new Date(DEMO_TODAY);
+  const today = new Date();
   today.setHours(0, 0, 0, 0);
 
   // Standard slots: next 21 days (Tue-Sat only)
@@ -69,10 +66,12 @@ function getAvailableDates(): Date[] {
     }
   }
 
-  // Always include Christmas dates (Dec 20-24) if we're from Nov 1 onwards
-  const year = today.getFullYear();
-  const christmasYear = today.getMonth() >= 10 ? year : year; // Nov=10
-  if (today.getMonth() >= 10 || (today.getMonth() === 11)) {
+  // Christmas pre-order dates (Dec 20-24) are only shown from 1st November onwards, and only for
+  // the December that's actually coming up — this page is never open long enough to need a
+  // "roll over to next year" case (pre-orders close 20th December, delivery/collection is the
+  // 23rd/24th, so the window never spans a New Year).
+  if (today.getMonth() >= 10) {
+    const christmasYear = today.getFullYear();
     for (let day = 20; day <= 24; day++) {
       const d = new Date(christmasYear, 11, day);
       if (isTueToSat(d) && d > today && !dates.some((existing) => existing.getTime() === d.getTime())) {
@@ -297,7 +296,7 @@ export default function CheckoutPage() {
                 <Gift className={`mt-0.5 h-4 w-4 shrink-0 ${confirmedOrder.isChristmas ? "text-[#1a3a2a]" : "text-teal"}`} />
                 <p className={`text-xs ${confirmedOrder.isChristmas ? "text-[#1a3a2a]/70" : "text-text-light"}`}>
                   {confirmedOrder.isChristmas
-                    ? "You haven't been charged yet. We've verified your card and will take payment automatically a few days before delivery, once your order is weighed — no action needed from you."
+                    ? "You haven't been charged yet. We've verified your card and will take payment automatically a few days before your delivery or collection date, once your order is weighed — no action needed from you."
                     : "You haven't been charged yet. Since fish is priced by weight, we'll confirm the exact final amount once your order is prepared, then take payment for that amount only."}
                 </p>
               </div>
@@ -398,7 +397,7 @@ export default function CheckoutPage() {
                       <Gift className={`h-5 w-5 ${orderType === "christmas" ? "text-[#1a3a2a]" : "text-[#1a3a2a]/50"}`} />
                       <div>
                         <p className={`text-sm font-medium ${orderType === "christmas" ? "text-[#1a3a2a]" : "text-navy"}`}>Christmas Pre-Order</p>
-                        <p className={`text-xs ${orderType === "christmas" ? "text-[#1a3a2a]/70" : "text-text-light"}`}>Delivery 20th-24th December</p>
+                        <p className={`text-xs ${orderType === "christmas" ? "text-[#1a3a2a]/70" : "text-text-light"}`}>Delivery or collection, 20th-24th December</p>
                       </div>
                       {orderType === "christmas" && <Check className="ml-auto h-4 w-4 text-[#1a3a2a]" />}
                     </button>
@@ -543,8 +542,8 @@ export default function CheckoutPage() {
                               <p className="text-sm font-medium text-[#1a3a2a]">Christmas Pre-Order</p>
                               <p className="mt-1 text-xs leading-relaxed text-[#1a3a2a]/70">
                                 We&apos;ll verify your card now — you won&apos;t be charged today. Payment is taken
-                                automatically a few days before delivery, once your order is weighed, with no
-                                action needed from you.
+                                automatically a few days before your delivery or collection date, once your order
+                                is weighed, with no action needed from you.
                               </p>
                             </div>
                           </div>

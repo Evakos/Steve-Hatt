@@ -207,7 +207,7 @@ export default async function Home() {
             <p className="text-xs tracking-widest text-text-light uppercase">Festive season</p>
             <h2 className="mt-2 font-serif text-3xl font-bold text-navy">Christmas Pre-Orders</h2>
             <p className="mx-auto mt-4 max-w-lg text-sm leading-relaxed text-text-light">
-              Reserve your Christmas feast now. Pre-order by 20th December for delivery on 23rd-24th December. Every order prepared fresh by your fishmonger.
+              Reserve your Christmas feast now. Pre-order by 20th December for delivery or collection on 23rd-24th December. Every order prepared fresh by your fishmonger.
             </p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
