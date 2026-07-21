@@ -37,7 +37,7 @@ export default async function Home() {
       <section className="relative flex items-center bg-navy" style={{ minHeight: '800px' }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/hero.svg" alt="" className="absolute inset-0 h-full w-full object-cover" />
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(to right, rgba(15, 23, 42, 0.9) 15%, rgba(15, 23, 42, 0) 60%)' }} />
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(to right, rgba(15, 23, 42, 0.6) 15%, rgba(15, 23, 42, 0) 60%)' }} />
         <div className="relative mx-auto w-full max-w-6xl px-6">
           <div className="max-w-2xl">
             <p className="mb-4 text-sm tracking-widest text-white/50 uppercase">Est. 1895 · Essex Road, London</p>

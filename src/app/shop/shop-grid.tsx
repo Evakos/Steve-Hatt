@@ -50,7 +50,7 @@ export default function ShopGrid({ products }: Props) {
             }
             style={{ borderRadius: "999px" }}
           >
-            <AllCategoryIcon className="h-3.5 w-3.5" />
+            <AllCategoryIcon className="h-[18px] w-[18px]" />
             All
           </button>
           {categories.map((cat) => {
@@ -67,7 +67,7 @@ export default function ShopGrid({ products }: Props) {
                 }
                 style={{ borderRadius: "999px" }}
               >
-                {Icon && <Icon className="h-3.5 w-3.5" />}
+                {Icon && <Icon className="h-[18px] w-[18px]" />}
                 {cat}
               </button>
             );
