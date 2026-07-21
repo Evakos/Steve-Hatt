@@ -5,6 +5,7 @@ import { Truck, Fish, Scaling, Leaf, Anchor, Recycle, ShoppingBag, Search } from
 import Header from "@/components/header";
 import PostcodeCheck from "@/components/postcode-check";
 import AnnouncementBanner from "@/components/announcement-banner";
+import Footer from "@/components/footer";
 
 const howItWorks = [
   { icon: <ShoppingBag className="h-5 w-5" />, step: "01", title: "Browse & Order", desc: "Our stock is updated daily based on what's come in fresh. Select your fish and approximate weight." },
@@ -163,17 +164,14 @@ export default async function Home() {
                 </p>
               </div>
             </div>
-            <div className="columns-2 gap-3">
-              <div className="relative mb-3 h-56 overflow-hidden bg-navy/5" style={{ borderRadius: '5px' }}>
-                <Image src="/steve-hartt-1800s.jpg" alt="Steve Hatt Fishmonger's shop front, circa 1895" fill className="object-cover" />
-              </div>
-              <div className="relative mb-3 h-40 overflow-hidden bg-navy/5" style={{ borderRadius: '5px' }}>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="relative h-48 overflow-hidden bg-navy/5" style={{ borderRadius: '5px' }}>
                 <Image src="/heritage-shop-front.jpg" alt="The Steve Hatt shop front today at 88 Essex Road" fill className="object-cover" />
               </div>
-              <div className="relative mb-3 h-48 overflow-hidden bg-navy/5" style={{ borderRadius: '5px' }}>
+              <div className="relative h-48 overflow-hidden bg-navy/5" style={{ borderRadius: '5px' }}>
                 <Image src="/heritage-team.jpg" alt="The Steve Hatt team preparing fish in store" fill className="object-cover" />
               </div>
-              <div className="relative mb-3 h-36 overflow-hidden bg-navy/5" style={{ borderRadius: '5px' }}>
+              <div className="relative h-48 overflow-hidden bg-navy/5" style={{ borderRadius: '5px' }}>
                 <Image src="/heritage-fresh-catch.jpg" alt="A whole fresh fish laid on ice" fill className="object-cover" />
               </div>
             </div>
@@ -265,17 +263,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-border bg-navy">
-        <div className="mx-auto max-w-6xl px-6 py-10">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Image src="/logo-alt.svg" alt="Steve Hatt" width={120} height={50} className="h-8 w-auto" />
-            </div>
-            <p className="text-xs text-white/40">&copy; {new Date().getFullYear()} Steve Hatt Fishmongers</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </main>
   );
 }
