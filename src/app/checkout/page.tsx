@@ -14,6 +14,7 @@ import {
   CheckCircle,
   XCircle,
   AlertCircle,
+  Loader2,
 } from "lucide-react";
 import { useCart, lineTotal } from "@/lib/cart-context";
 import {
@@ -503,7 +504,10 @@ export default function CheckoutPage() {
                             : "Select a collection date."}
                       </p>
 
-                      <div className="mt-4 space-y-1.5">
+                      <div
+                        className="mt-4 max-h-80 space-y-1.5 overflow-y-auto border border-border p-2"
+                        style={{ borderRadius: "5px" }}
+                      >
                         {slots.map((slot, i) => {
                           const isSelected = selectedSlot?.label === slot.label && selectedSlot?.type === slot.type;
                           const isXmas = orderType === "christmas";
@@ -597,6 +601,17 @@ export default function CheckoutPage() {
                     <div className="mt-6">
                       <ThreeDSChallenge onComplete={handleThreeDSComplete} />
                     </div>
+                  ) : submitState.phase === "submitting" || submitState.phase === "confirming" ? (
+                    <div
+                      className="mt-6 flex flex-col items-center gap-3 border border-border bg-white p-10 text-center"
+                      style={{ borderRadius: "5px" }}
+                    >
+                      <Loader2 className="h-6 w-6 animate-spin text-navy" />
+                      <p className="text-sm text-navy">
+                        {submitState.phase === "confirming" ? "Confirming your payment…" : "Placing your order…"}
+                      </p>
+                      <p className="text-xs text-text-light">Please don&apos;t close this window or click away.</p>
+                    </div>
                   ) : (
                     <div className="mt-6">
                       <p className="mb-2 text-xs font-medium tracking-wide text-navy uppercase">
@@ -605,7 +620,7 @@ export default function CheckoutPage() {
                       <PaymentPanel
                         amount={estimatedTotal + deliveryCost}
                         onToken={handleToken}
-                        disabled={submitState.phase === "submitting" || submitState.phase === "confirming"}
+                        disabled={false}
                       />
                       {!isSignedIn && (
                         <p className="mt-2 text-xs text-text-light">

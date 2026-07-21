@@ -27,6 +27,10 @@ export function useCheckoutSubmit() {
   const [state, setState] = useState<CheckoutSubmitState>({ phase: "idle" });
 
   const submit = useCallback(async (checkout: CheckoutRequest) => {
+    // Belt-and-suspenders against a duplicate submission racing in (the UI already removes the
+    // payment buttons once submitting, but don't rely on that alone — see the double-charge
+    // incident this guarded against on another site's checkout).
+    if (state.phase === "submitting" || state.phase === "confirming") return;
     setState({ phase: "submitting" });
     try {
       const { res, data } = await postJson("/api/checkout", checkout);
@@ -51,7 +55,7 @@ export function useCheckoutSubmit() {
     } catch {
       setState({ phase: "error", message: "Network error. Please try again." });
     }
-  }, []);
+  }, [state.phase]);
 
   const confirmThreeDS = useCallback(
     async (checkout: CheckoutRequest, threeDSResponse: unknown) => {

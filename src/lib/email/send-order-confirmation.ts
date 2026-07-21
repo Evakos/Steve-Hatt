@@ -2,6 +2,7 @@ import "server-only";
 import { Resend } from "resend";
 import { getServerEnv } from "@/lib/env";
 import type { RepricedOrder } from "@/lib/checkout/reprice";
+import { COLORS, SITE_URL, emailShell, emailHeading, emailNotice, emailAlert, emailButton, emailLineItemsTable } from "./layout";
 
 const FROM_ADDRESS = "orders@stevehattfishmongers.co.uk";
 
@@ -30,35 +31,25 @@ export interface OrderConfirmationInput {
 export async function sendOrderConfirmation(input: OrderConfirmationInput) {
   const { to, customerName, orderNumber, repriced, slotLabel, fulfilmentType } = input;
 
-  const lineRows = repriced.lineItems
-    .map(
-      (item) =>
-        `<tr>
-          <td style="padding:8px 0;border-bottom:1px solid #e5e5e5;">${item.quantity} &times; item</td>
-          <td style="padding:8px 0;border-bottom:1px solid #e5e5e5;text-align:right;">&pound;${item.lineTotal.toFixed(2)}</td>
-        </tr>`
-    )
-    .join("");
-
-  const html = `
-    <div style="font-family:sans-serif;max-width:480px;margin:0 auto;color:#1a2b3c;">
-      <h1 style="font-size:20px;">Order #${orderNumber} received</h1>
-      <p>Hi ${customerName}, thanks for your order from Steve Hatt Fishmongers.</p>
-      <p style="background:#fff8e6;border:1px solid #f0d878;padding:12px;border-radius:5px;font-size:14px;">
-        <strong>You haven't been charged yet.</strong> Since fish is priced by weight,
-        we'll confirm the exact final amount once your order is prepared, then take payment for that
-        confirmed amount only.
-      </p>
-      <table style="width:100%;border-collapse:collapse;margin:16px 0;">
-        ${lineRows}
-        <tr><td style="padding:8px 0;">Estimated subtotal</td><td style="padding:8px 0;text-align:right;">&pound;${repriced.subtotal.toFixed(2)}</td></tr>
-        ${fulfilmentType === "delivery" ? `<tr><td style="padding:8px 0;">Delivery</td><td style="padding:8px 0;text-align:right;">&pound;${repriced.deliveryFee.toFixed(2)}</td></tr>` : ""}
-        <tr><td style="padding:8px 0;font-weight:bold;">Estimated total (not yet charged)</td><td style="padding:8px 0;text-align:right;font-weight:bold;">&pound;${repriced.total.toFixed(2)}</td></tr>
-      </table>
-      <p><strong>${fulfilmentType === "delivery" ? "Delivery" : "Collection"}:</strong> ${slotLabel}</p>
-      <p style="color:#6b7280;font-size:12px;margin-top:24px;">Steve Hatt Fishmongers</p>
-    </div>
+  const totalsTable = `
+    <table style="width:100%;border-collapse:collapse;margin-top:8px;font-size:13px;">
+      <tr><td style="padding:4px 0;color:${COLORS.textLight};">Estimated subtotal</td><td style="padding:4px 0;text-align:right;color:${COLORS.text};">&pound;${repriced.subtotal.toFixed(2)}</td></tr>
+      ${fulfilmentType === "delivery" ? `<tr><td style="padding:4px 0;color:${COLORS.textLight};">Delivery</td><td style="padding:4px 0;text-align:right;color:${COLORS.text};">&pound;${repriced.deliveryFee.toFixed(2)}</td></tr>` : ""}
+      <tr><td style="padding:8px 0 0;font-weight:700;color:${COLORS.navy};border-top:1px solid ${COLORS.border};">Estimated total (not yet charged)</td><td style="padding:8px 0 0;text-align:right;font-weight:700;color:${COLORS.navy};border-top:1px solid ${COLORS.border};">&pound;${repriced.total.toFixed(2)}</td></tr>
+    </table>
   `;
+
+  const html = emailShell(`
+    ${emailHeading(`Order #${orderNumber} received`)}
+    <p>Hi ${customerName}, thanks for your order from Steve Hatt Fishmongers.</p>
+    ${emailNotice(
+      `<strong>You haven't been charged yet.</strong> Since fish is priced by weight, we'll confirm the exact
+      final amount once your order is prepared, then take payment for that confirmed amount only.`
+    )}
+    ${emailLineItemsTable(repriced.lineItems)}
+    ${totalsTable}
+    <p style="margin-top:20px;"><strong>${fulfilmentType === "delivery" ? "Delivery" : "Collection"}:</strong> ${slotLabel}</p>
+  `);
 
   try {
     await resend().emails.send({
@@ -90,22 +81,16 @@ export async function sendCaptureConfirmation(input: CaptureConfirmationInput) {
   const { to, customerName, orderNumber, capturedAmount, authorisedAmount } = input;
   const adjustedDown = capturedAmount < authorisedAmount - 0.001;
 
-  const html = `
-    <div style="font-family:sans-serif;max-width:480px;margin:0 auto;color:#1a2b3c;">
-      <h1 style="font-size:20px;">Order #${orderNumber} is now processing</h1>
-      <p>Hi ${customerName}, your order has been weighed and prepared, and your card has now been charged the confirmed final amount. We're getting it ready for you.</p>
-      <table style="width:100%;border-collapse:collapse;margin:16px 0;">
-        <tr><td style="padding:8px 0;">Estimated amount (at checkout)</td><td style="padding:8px 0;text-align:right;">&pound;${authorisedAmount.toFixed(2)}</td></tr>
-        <tr><td style="padding:8px 0;font-weight:bold;">Final amount charged</td><td style="padding:8px 0;text-align:right;font-weight:bold;">&pound;${capturedAmount.toFixed(2)}</td></tr>
-      </table>
-      ${
-        adjustedDown
-          ? `<p style="font-size:13px;color:#6b7280;">The final weighed price came to less than the original estimate, so that's all you've been charged.</p>`
-          : ""
-      }
-      <p style="color:#6b7280;font-size:12px;margin-top:24px;">Steve Hatt Fishmongers</p>
-    </div>
-  `;
+  const html = emailShell(`
+    ${emailHeading(`Order #${orderNumber} is now processing`)}
+    <p>Hi ${customerName}, your order has been weighed and prepared, and your card has now been charged the
+    confirmed final amount. We're getting it ready for you.</p>
+    <table style="width:100%;border-collapse:collapse;margin:16px 0;font-size:13px;">
+      <tr><td style="padding:4px 0;color:${COLORS.textLight};">Estimated amount (at checkout)</td><td style="padding:4px 0;text-align:right;color:${COLORS.text};">&pound;${authorisedAmount.toFixed(2)}</td></tr>
+      <tr><td style="padding:8px 0 0;font-weight:700;color:${COLORS.navy};border-top:1px solid ${COLORS.border};">Final amount charged</td><td style="padding:8px 0 0;text-align:right;font-weight:700;color:${COLORS.navy};border-top:1px solid ${COLORS.border};">&pound;${capturedAmount.toFixed(2)}</td></tr>
+    </table>
+    ${adjustedDown ? `<p style="font-size:13px;color:${COLORS.textLight};">The final weighed price came to less than the original estimate, so that's all you've been charged.</p>` : ""}
+  `);
 
   try {
     await resend().emails.send({
@@ -136,13 +121,11 @@ export async function sendOrderCompleteEmail(input: OrderCompleteInput) {
   const { to, customerName, orderNumber, fulfilmentType } = input;
   const verb = fulfilmentType === "delivery" ? "delivered" : "collected";
 
-  const html = `
-    <div style="font-family:sans-serif;max-width:480px;margin:0 auto;color:#1a2b3c;">
-      <h1 style="font-size:20px;">Order #${orderNumber} complete</h1>
-      <p>Hi ${customerName}, your order has been ${verb}. Thanks for shopping with Steve Hatt Fishmongers — we hope you enjoy it.</p>
-      <p style="color:#6b7280;font-size:12px;margin-top:24px;">Steve Hatt Fishmongers</p>
-    </div>
-  `;
+  const html = emailShell(`
+    ${emailHeading(`Order #${orderNumber} complete`)}
+    <p>Hi ${customerName}, your order has been ${verb}. Thanks for shopping with Steve Hatt Fishmongers — we hope
+    you enjoy it.</p>
+  `);
 
   try {
     await resend().emails.send({
@@ -176,29 +159,16 @@ export async function sendAdminNewOrderNotification(input: AdminNewOrderNotifica
   const { orderNumber, customerName, customerEmail, repriced, slotLabel, fulfilmentType } = input;
   const to = getServerEnv().ADMIN_NOTIFICATION_EMAIL;
 
-  const lineRows = repriced.lineItems
-    .map(
-      (item) =>
-        `<tr>
-          <td style="padding:6px 0;border-bottom:1px solid #e5e5e5;">${item.quantity} &times; product ${item.wooProductId}${item.preparation ? ` (${item.preparation})` : ""}${item.weight ? ` — ${item.weight}kg est.` : ""}</td>
-          <td style="padding:6px 0;border-bottom:1px solid #e5e5e5;text-align:right;">&pound;${item.lineTotal.toFixed(2)}</td>
-        </tr>`
-    )
-    .join("");
-
-  const html = `
-    <div style="font-family:sans-serif;max-width:480px;margin:0 auto;color:#1a2b3c;">
-      <h1 style="font-size:20px;">New order #${orderNumber} — needs preparing</h1>
-      <p>${customerName} (${customerEmail}) — ${fulfilmentType === "delivery" ? "Delivery" : "Collection"}: ${slotLabel}</p>
-      <table style="width:100%;border-collapse:collapse;margin:16px 0;font-size:14px;">
-        ${lineRows}
-        <tr><td style="padding:6px 0;font-weight:bold;">Estimated total (held, not yet charged)</td><td style="padding:6px 0;text-align:right;font-weight:bold;">&pound;${repriced.total.toFixed(2)}</td></tr>
-      </table>
-      <p style="font-size:13px;">Once weighed and prepared, capture the final price at
-        <a href="https://steve-hatt-demo.vercel.app/admin/orders">steve-hatt-demo.vercel.app/admin/orders</a>.
-      </p>
-    </div>
-  `;
+  const html = emailShell(`
+    ${emailHeading(`New order #${orderNumber} — needs preparing`)}
+    <p>${customerName} (${customerEmail}) — ${fulfilmentType === "delivery" ? "Delivery" : "Collection"}: ${slotLabel}</p>
+    ${emailLineItemsTable(repriced.lineItems)}
+    <table style="width:100%;border-collapse:collapse;">
+      <tr><td style="padding:8px 0 0;font-weight:700;color:${COLORS.navy};border-top:1px solid ${COLORS.border};">Estimated total (held, not yet charged)</td><td style="padding:8px 0 0;text-align:right;font-weight:700;color:${COLORS.navy};border-top:1px solid ${COLORS.border};">&pound;${repriced.total.toFixed(2)}</td></tr>
+    </table>
+    <p style="margin-top:16px;font-size:13px;color:${COLORS.textLight};">Once weighed and prepared, capture the final price on the orders page.</p>
+    ${emailButton(`${SITE_URL}/admin/orders`, "Go to admin orders")}
+  `);
 
   try {
     await resend().emails.send({
@@ -229,18 +199,15 @@ export interface PreOrderAuthFailedInput {
 export async function sendPreOrderAuthFailedEmail(input: PreOrderAuthFailedInput) {
   const { to, customerName, orderNumber } = input;
 
-  const html = `
-    <div style="font-family:sans-serif;max-width:480px;margin:0 auto;color:#1a2b3c;">
-      <h1 style="font-size:20px;">We couldn't confirm payment for order #${orderNumber}</h1>
-      <p>Hi ${customerName}, we tried to place a hold on your card ahead of preparing your Christmas order,
-      but it wasn't accepted. This can happen if a card has expired or changed since you ordered.</p>
-      <p style="background:#fff8e6;border:1px solid #f0d878;padding:12px;border-radius:5px;font-size:14px;">
-        Please <strong>contact us as soon as possible</strong> so we can take payment another way — your
-        order can't be prepared until this is sorted.
-      </p>
-      <p style="color:#6b7280;font-size:12px;margin-top:24px;">Steve Hatt Fishmongers</p>
-    </div>
-  `;
+  const html = emailShell(`
+    ${emailHeading(`We couldn't confirm payment for order #${orderNumber}`)}
+    <p>Hi ${customerName}, we tried to place a hold on your card ahead of preparing your Christmas order, but it
+    wasn't accepted. This can happen if a card has expired or changed since you ordered.</p>
+    ${emailAlert(
+      `Please <strong>contact us as soon as possible</strong> so we can take payment another way — your order
+      can't be prepared until this is sorted.`
+    )}
+  `);
 
   try {
     await resend().emails.send({
@@ -267,14 +234,12 @@ export async function sendAdminPreOrderAuthFailedAlert(input: AdminPreOrderAuthF
   const { orderNumber, customerName, customerEmail, reason } = input;
   const to = getServerEnv().ADMIN_NOTIFICATION_EMAIL;
 
-  const html = `
-    <div style="font-family:sans-serif;max-width:480px;margin:0 auto;color:#1a2b3c;">
-      <h1 style="font-size:20px;">Pre-order #${orderNumber} needs attention</h1>
-      <p>Scheduled re-authorisation failed for ${customerName} (${customerEmail}): ${reason}</p>
-      <p style="font-size:13px;">The customer has been asked to get in touch. This order won't appear in the
-        normal capture queue until payment is resolved.</p>
-    </div>
-  `;
+  const html = emailShell(`
+    ${emailHeading(`Pre-order #${orderNumber} needs attention`)}
+    <p>Scheduled re-authorisation failed for ${customerName} (${customerEmail}): ${reason}</p>
+    <p style="font-size:13px;color:${COLORS.textLight};">The customer has been asked to get in touch. This order
+    won't appear in the normal capture queue until payment is resolved.</p>
+  `);
 
   try {
     await resend().emails.send({

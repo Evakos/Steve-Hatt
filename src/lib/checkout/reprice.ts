@@ -11,6 +11,9 @@ const DELIVERY_FEE = 5;
 export interface RepricedLineItem {
   wooProductId: number;
   wooVariationId?: number;
+  /** Client-supplied, for display only (e.g. order confirmation emails) — never used for
+   * pricing, which is always recomputed from WooCommerce below. */
+  productName: string;
   quantity: number;
   weight: number;
   preparation: string;
@@ -41,6 +44,7 @@ export async function repriceCheckoutRequest(checkout: CheckoutRequest): Promise
       return {
         wooProductId: item.wooProductId,
         wooVariationId: item.wooVariationId,
+        productName: item.productName,
         quantity: item.quantity,
         weight: item.weight,
         preparation: item.preparation,
