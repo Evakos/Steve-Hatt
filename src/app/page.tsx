@@ -164,17 +164,17 @@ export default async function Home() {
               </div>
             </div>
             <div className="columns-2 gap-3">
-              <div className="mb-3 flex h-56 items-center justify-center bg-navy/5" style={{ borderRadius: '5px' }}>
-                <span className="text-xs tracking-widest text-text-light uppercase">Vintage shop</span>
+              <div className="relative mb-3 h-56 overflow-hidden bg-navy/5" style={{ borderRadius: '5px' }}>
+                <Image src="/steve-hartt-1800s.jpg" alt="Steve Hatt Fishmonger's shop front, circa 1895" fill className="object-cover" />
               </div>
-              <div className="mb-3 flex h-40 items-center justify-center bg-navy/5" style={{ borderRadius: '5px' }}>
-                <span className="text-xs tracking-widest text-text-light uppercase">Shop today</span>
+              <div className="relative mb-3 h-40 overflow-hidden bg-navy/5" style={{ borderRadius: '5px' }}>
+                <Image src="/heritage-shop-front.jpg" alt="The Steve Hatt shop front today at 88 Essex Road" fill className="object-cover" />
               </div>
-              <div className="mb-3 flex h-48 items-center justify-center bg-navy/5" style={{ borderRadius: '5px' }}>
-                <span className="text-xs tracking-widest text-text-light uppercase">The team</span>
+              <div className="relative mb-3 h-48 overflow-hidden bg-navy/5" style={{ borderRadius: '5px' }}>
+                <Image src="/heritage-team.jpg" alt="The Steve Hatt team preparing fish in store" fill className="object-cover" />
               </div>
-              <div className="mb-3 flex h-36 items-center justify-center bg-navy/5" style={{ borderRadius: '5px' }}>
-                <span className="text-xs tracking-widest text-text-light uppercase">Fresh catch</span>
+              <div className="relative mb-3 h-36 overflow-hidden bg-navy/5" style={{ borderRadius: '5px' }}>
+                <Image src="/heritage-fresh-catch.jpg" alt="A whole fresh fish laid on ice" fill className="object-cover" />
               </div>
             </div>
           </div>
