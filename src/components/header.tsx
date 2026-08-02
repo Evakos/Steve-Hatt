@@ -12,21 +12,24 @@ export default function Header() {
 
   return (
     <header className="border-b border-border/50 bg-white sticky top-0 z-50">
-      <nav className="mx-auto flex h-20 max-w-6xl items-center justify-between px-6">
-        <Link href="/">
-          <Image src="/logo.svg" alt="Steve Hatt Fishmongers" width={180} height={80} className="h-16 w-auto" />
+      <nav className="grid h-20 w-full grid-cols-2 items-center px-6 md:grid-cols-3">
+        <Link href="/" className="justify-self-start">
+          <Image src="/logo.svg" alt="Steve Hatt Fishmongers" width={180} height={80} className="h-11 w-auto" />
         </Link>
 
-        {/* Desktop nav */}
-        <div className="hidden items-center gap-8 md:flex">
-          <Link href="/shop" className="text-sm text-text-light transition-colors hover:text-navy">Shop</Link>
-          <Link href="/#how" className="text-sm text-text-light transition-colors hover:text-navy">How It Works</Link>
-          <Link href="/#story" className="text-sm text-text-light transition-colors hover:text-navy">Our Story</Link>
+        {/* Desktop nav — centered links */}
+        <div className="hidden items-center justify-self-center gap-8 md:flex">
+          <Link href="/shop" className="text-base text-text-light transition-colors hover:text-navy">Shop</Link>
+          <Link href="/#how" className="text-base text-text-light transition-colors hover:text-navy">How It Works</Link>
+          <Link href="/#story" className="text-base text-text-light transition-colors hover:text-navy">Our Story</Link>
+        </div>
 
+        {/* Desktop actions */}
+        <div className="hidden items-center justify-self-end gap-8 md:flex">
           {/* Account link — /account redirects to sign-in if not authenticated */}
           <Link
             href="/account"
-            className="flex items-center gap-1.5 text-sm text-text-light transition-colors hover:text-navy"
+            className="flex items-center gap-1.5 text-base text-text-light transition-colors hover:text-navy"
           >
             <User className="h-4 w-4" />
             Account
@@ -39,7 +42,7 @@ export default function Header() {
 
           <Link
             href="/shop"
-            className="bg-lobster px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-lobster/90"
+            className="bg-lobster px-5 py-2.5 text-base font-medium text-white transition-colors hover:bg-lobster/90"
             style={{ borderRadius: "3px" }}
           >
             Order Online
@@ -48,7 +51,7 @@ export default function Header() {
 
         {/* Mobile toggle */}
         <button
-          className="md:hidden"
+          className="justify-self-end md:hidden"
           onClick={() => setMobileOpen(!mobileOpen)}
           aria-label="Toggle menu"
         >
@@ -60,12 +63,12 @@ export default function Header() {
       {mobileOpen && (
         <div className="border-t border-border/50 bg-white px-6 pb-6 md:hidden">
           <div className="flex flex-col gap-4 pt-4">
-            <Link href="/shop" className="text-sm text-text-light hover:text-navy" onClick={() => setMobileOpen(false)}>Shop</Link>
-            <Link href="/#how" className="text-sm text-text-light hover:text-navy" onClick={() => setMobileOpen(false)}>How It Works</Link>
-            <Link href="/#story" className="text-sm text-text-light hover:text-navy" onClick={() => setMobileOpen(false)}>Our Story</Link>
+            <Link href="/shop" className="text-base text-text-light hover:text-navy" onClick={() => setMobileOpen(false)}>Shop</Link>
+            <Link href="/#how" className="text-base text-text-light hover:text-navy" onClick={() => setMobileOpen(false)}>How It Works</Link>
+            <Link href="/#story" className="text-base text-text-light hover:text-navy" onClick={() => setMobileOpen(false)}>Our Story</Link>
             <Link
               href="/account"
-              className="flex items-center gap-1.5 text-sm text-text-light hover:text-navy"
+              className="flex items-center gap-1.5 text-base text-text-light hover:text-navy"
               onClick={() => setMobileOpen(false)}
             >
               <User className="h-4 w-4" />
@@ -77,7 +80,7 @@ export default function Header() {
             </div>
             <Link
               href="/shop"
-              className="inline-block bg-lobster px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-lobster/90"
+              className="inline-block bg-lobster px-5 py-2.5 text-center text-base font-medium text-white hover:bg-lobster/90"
               style={{ borderRadius: "3px" }}
               onClick={() => setMobileOpen(false)}
             >

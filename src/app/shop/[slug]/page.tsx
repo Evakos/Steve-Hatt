@@ -51,7 +51,7 @@ export default async function ProductPage({
       {/* Breadcrumb */}
       <div className="bg-white">
         <div className="mx-auto max-w-6xl px-6 py-4">
-          <nav className="text-sm text-text-light">
+          <nav className="text-base text-text-light">
             <Link href="/" className="hover:text-navy">Home</Link>
             <span className="mx-2">/</span>
             <Link href="/#shop" className="hover:text-navy">Shop</Link>
@@ -77,11 +77,11 @@ export default async function ProductPage({
             <div>
               <span className="text-xs tracking-widest text-text-light uppercase">{product.category}</span>
               <h1 className="mt-1.5 font-serif text-4xl font-bold text-navy">{product.name}</h1>
-              <p className="mt-1 text-sm text-text-light">{product.origin}</p>
+              <p className="mt-1 text-base text-text-light">{product.origin}</p>
 
               <div className="mt-4 flex items-baseline gap-3">
                 <span className="font-serif text-3xl font-bold text-navy">{product.priceLabel}</span>
-                <span className="text-sm text-text-light">{product.weight}</span>
+                <span className="text-base text-text-light">{product.weight}</span>
               </div>
 
               <p className="mt-4 leading-relaxed text-foreground">{product.description}</p>
@@ -92,8 +92,8 @@ export default async function ProductPage({
               {product.featuredFor?.includes("christmas") && (
                 <div className="mt-3 flex items-center gap-2 border border-[#1a3a2a]/20 bg-[#e8f5ed] px-4 py-3" style={{ borderRadius: '5px' }}>
                   <Gift className="h-4 w-4 shrink-0 text-[#1a3a2a]" />
-                  <p className="text-xs text-[#1a3a2a]/80">
-                    Available for Christmas pre-order — choose a festive delivery date at checkout.
+                  <p className="text-sm text-[#1a3a2a]/80">
+                    Available for Christmas pre-order, choose a festive delivery date at checkout.
                   </p>
                 </div>
               )}
@@ -101,7 +101,7 @@ export default async function ProductPage({
               {/* Fair pricing notice */}
               <div className="mt-4 flex items-start gap-3 border border-ocean/20 bg-ocean-light p-4" style={{ borderRadius: '5px' }}>
                 <Scale className="mt-0.5 h-4 w-4 shrink-0 text-navy/60" />
-                <p className="text-xs leading-relaxed text-navy">
+                <p className="text-sm leading-relaxed text-navy">
                   <strong>Fair pricing.</strong> We estimate the price at checkout. You&apos;re not charged until your order is prepared and weighed, so you only pay for exactly what you receive.
                 </p>
               </div>
@@ -113,14 +113,14 @@ export default async function ProductPage({
                     <MapPin className="h-3.5 w-3.5 text-text-light" />
                     <p className="text-xs tracking-widest text-text-light uppercase">Origin</p>
                   </div>
-                  <p className="text-sm text-navy">{product.origin}</p>
+                  <p className="text-base text-navy">{product.origin}</p>
                 </div>
                 <div className="border border-border bg-white p-4" style={{ borderRadius: '5px' }}>
                   <div className="mb-1 flex items-center gap-1.5">
                     <Thermometer className="h-3.5 w-3.5 text-text-light" />
                     <p className="text-xs tracking-widest text-text-light uppercase">Storage</p>
                   </div>
-                  <p className="text-sm text-navy">{product.storage}</p>
+                  <p className="text-base text-navy">{product.storage}</p>
                 </div>
               </div>
 
@@ -130,7 +130,7 @@ export default async function ProductPage({
                   <Leaf className="h-3.5 w-3.5 text-text-light" />
                   <p className="text-xs tracking-widest text-text-light uppercase">Sustainability</p>
                 </div>
-                <p className="text-sm text-navy">{product.sustainability}</p>
+                <p className="text-base text-navy">{product.sustainability}</p>
               </div>
             </div>
           </div>
@@ -149,7 +149,7 @@ export default async function ProductPage({
                     <Image src={p.image} alt={p.name} fill className="object-cover transition-transform group-hover:scale-105" />
                   </div>
                   <h3 className="font-serif text-base font-semibold text-navy">{p.name}</h3>
-                  <p className="mt-1 text-sm text-text-light">{p.priceLabel}</p>
+                  <p className="mt-1 text-base text-text-light">{p.priceLabel}</p>
                 </Link>
               ))}
             </div>
@@ -162,16 +162,16 @@ export default async function ProductPage({
         <div className="mx-auto max-w-6xl px-6 py-10">
           <div className="grid gap-6 md:grid-cols-3">
             <div>
-              <p className="text-sm font-medium text-navy">Next-day local delivery</p>
-              <p className="mt-1 text-xs text-text-light">Order by 6pm for delivery tomorrow. Min £20, £5.00 delivery.</p>
+              <p className="text-base font-medium text-navy">Next-day local delivery</p>
+              <p className="mt-1 text-sm text-text-light">Order by 6pm for delivery tomorrow. Min £20, £5.00 delivery.</p>
             </div>
             <div>
-              <p className="text-sm font-medium text-navy">Click & collect</p>
-              <p className="mt-1 text-xs text-text-light">Order online, collect from 88 Essex Road.</p>
+              <p className="text-base font-medium text-navy">Click & collect</p>
+              <p className="mt-1 text-sm text-text-light">Order online, collect from 88 Essex Road.</p>
             </div>
             <div>
-              <p className="text-sm font-medium text-navy">Prepared to order</p>
-              <p className="mt-1 text-xs text-text-light">Filleted, trimmed and packed by your fishmonger.</p>
+              <p className="text-base font-medium text-navy">Prepared to order</p>
+              <p className="mt-1 text-sm text-text-light">Filleted, trimmed and packed by your fishmonger.</p>
             </div>
           </div>
         </div>

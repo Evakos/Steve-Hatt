@@ -13,7 +13,7 @@ interface Props {
  * gradient hero, which only the homepage uses. */
 export default function InnerPageHero({ image, eyebrow, title, subtitle }: Props) {
   return (
-    <section className="relative flex items-center justify-center bg-navy text-center" style={{ minHeight: "400px" }}>
+    <section className="relative flex items-center justify-center bg-navy text-center" style={{ minHeight: "560px" }}>
       <Image src={image} alt="" fill className="object-cover" priority />
       <div className="absolute inset-0 bg-navy/75" />
       <div className="relative mx-auto max-w-2xl px-6">

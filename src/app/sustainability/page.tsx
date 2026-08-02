@@ -6,7 +6,7 @@ import Footer from "@/components/footer";
 
 export const metadata = {
   title: "Sustainability | Steve Hatt Fishmongers",
-  description: "Good for you, good for the planet — how Steve Hatt Fishmongers approaches sourcing, plastic use and waste.",
+  description: "Good for you, good for the planet, how Steve Hatt Fishmongers approaches sourcing, plastic use and waste.",
 };
 
 export default function SustainabilityPage() {
@@ -20,7 +20,7 @@ export default function SustainabilityPage() {
         <div className="mx-auto max-w-3xl px-6 pt-16 pb-8">
           <p className="text-xs tracking-widest text-text-light uppercase">Sustainability</p>
           <h1 className="mt-2 font-serif text-3xl font-bold text-navy md:text-4xl">Fresh Fish for Every Season</h1>
-          <p className="mt-4 text-sm leading-relaxed text-text-light">
+          <p className="mt-4 text-lg leading-relaxed text-text-light">
             Good for you, good for the planet. We believe in supporting a sustainable ecology, bringing the
             freshest fish from the British coastline to the Islington community with the smallest possible
             ecological footprint.
@@ -57,13 +57,13 @@ export default function SustainabilityPage() {
             </div>
             <div>
               <h2 className="font-serif text-2xl font-bold text-navy">Sourcing Fish: Wild vs Farmed</h2>
-              <p className="mt-4 text-sm leading-relaxed text-text-light">
+              <p className="mt-4 text-lg leading-relaxed text-text-light">
                 Wherever possible, we aim to supply wild fish straight off the dayboats. But as experienced
                 fishmongers, we know that in some cases the more ecologically friendly option is to source fish
-                from farms instead — that doesn&apos;t mean lowering our standards. Any fish we purchase in the UK
+                from farms instead, that doesn&apos;t mean lowering our standards. Any fish we purchase in the UK
                 is from RSPCA-monitored farms, and outside UK waters, from suppliers under strict EU regulations.
               </p>
-              <p className="mt-4 text-sm leading-relaxed text-text-light">
+              <p className="mt-4 text-lg leading-relaxed text-text-light">
                 We only source farmed fish from trusted suppliers and sell only what we consider the best of the
                 best.{" "}
                 <Link href="/suppliers" className="text-navy underline hover:text-lobster">
@@ -83,15 +83,15 @@ export default function SustainabilityPage() {
             </div>
             <div>
               <h2 className="font-serif text-2xl font-bold text-navy">Single-Use Plastic</h2>
-              <p className="mt-4 text-sm leading-relaxed text-text-light">
+              <p className="mt-4 text-lg leading-relaxed text-text-light">
                 The issue of single-use plastic is a complex one. We&apos;re doing our best to tackle it whilst
-                still serving our customers well — after consultation with both our customers and the Royal
+                still serving our customers well, after consultation with both our customers and the Royal
                 College of Art, we now supply cotton, wax-lined re-usable bags free of charge, and use a heavier
                 grade of greaseproof paper to keep your fish fresh on the way home.
               </p>
-              <p className="mt-4 text-sm leading-relaxed text-text-light">
+              <p className="mt-4 text-lg leading-relaxed text-text-light">
                 No issue is black and white: we still supply heavy-duty plastic bags where needed, but we&apos;re
-                passionate advocates of re-use — and we love it when customers bring along their own Tupperware.
+                passionate advocates of re-use, and we love it when customers bring along their own Tupperware.
               </p>
             </div>
           </div>
@@ -106,9 +106,9 @@ export default function SustainabilityPage() {
             </div>
             <div>
               <h2 className="font-serif text-2xl font-bold text-navy">Minimising Waste</h2>
-              <p className="mt-4 text-sm leading-relaxed text-text-light">
+              <p className="mt-4 text-lg leading-relaxed text-text-light">
                 Selling fresh produce inevitably comes with a waste problem. Years of experience mean we can
-                fairly accurately balance supply and demand — but life is anything but predictable. To solve this,
+                fairly accurately balance supply and demand, but life is anything but predictable. To solve this,
                 we&apos;ve connected with local charities to ensure any fish left unsold, or that doesn&apos;t
                 quite meet our standards for sale, doesn&apos;t get thrown away. Instead, it goes to those in
                 need. Good for our customers, good for our community, good for our planet.
@@ -121,7 +121,7 @@ export default function SustainabilityPage() {
       <section className="bg-navy">
         <div className="mx-auto max-w-2xl px-6 py-16 text-center">
           <p className="text-xs tracking-widest text-white/50 uppercase">Let&apos;s talk</p>
-          <p className="mt-4 text-sm leading-relaxed text-white/70">
+          <p className="mt-4 text-lg leading-relaxed text-white/70">
             Understanding the best way to protect our planet is a complex and evolving issue. We welcome
             conversation around it and are constantly looking for ways to improve and adapt.{" "}
             <Link href="/contact" className="text-white underline hover:text-white/70">

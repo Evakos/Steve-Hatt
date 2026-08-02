@@ -32,24 +32,24 @@ export default function PreOrderStatusCard({ order }: Props) {
 
   return (
     <div
-      className={`border bg-white p-4 text-sm ${failed ? "border-red-300" : "border-border"}`}
+      className={`border bg-white p-4 text-base ${failed ? "border-red-300" : "border-border"}`}
       style={{ borderRadius: "5px" }}
     >
       <div className="flex items-baseline justify-between">
         <span className="font-medium text-navy">
-          Order #{order.number} — {order.billing.first_name} {order.billing.last_name}
+          Order #{order.number}, {order.billing.first_name} {order.billing.last_name}
         </span>
-        <span className="text-xs text-text-light">Estimated: £{Number(estimatedAmount ?? order.total).toFixed(2)}</span>
+        <span className="text-sm text-text-light">Estimated: £{Number(estimatedAmount ?? order.total).toFixed(2)}</span>
       </div>
-      {slotLabel && <p className="mt-0.5 text-xs text-text-light">{slotLabel}</p>}
+      {slotLabel && <p className="mt-0.5 text-sm text-text-light">{slotLabel}</p>}
       {failed ? (
-        <p className="mt-1 text-xs font-medium text-red-600">
-          Card declined on scheduled charge{failureReason ? ` — ${failureReason}` : ""}. Customer has been emailed
+        <p className="mt-1 text-sm font-medium text-red-600">
+          Card declined on scheduled charge{failureReason ? `, ${failureReason}` : ""}. Customer has been emailed
           to get in touch; needs follow-up.
         </p>
       ) : (
-        <p className="mt-1 text-xs text-text-light">
-          Card verified — will be charged automatically{" "}
+        <p className="mt-1 text-sm text-text-light">
+          Card verified, will be charged automatically{" "}
           {daysUntilAuth !== null
             ? daysUntilAuth > 0
               ? `in ${daysUntilAuth} day${daysUntilAuth === 1 ? "" : "s"} (${AUTH_LEAD_DAYS} days before delivery)`

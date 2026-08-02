@@ -17,7 +17,7 @@ export default function PrivacyPolicyPage() {
         <div className="mx-auto max-w-3xl px-6 py-16">
           <h1 className="font-serif text-3xl font-bold text-navy">Privacy Policy</h1>
 
-          <div className="mt-8 space-y-5 text-sm leading-relaxed text-text-light">
+          <div className="mt-8 space-y-5 text-lg leading-relaxed text-text-light">
             <p>
               This Privacy Policy governs the manner in which Marsland Fish Supplies Limited collects, uses,
               maintains and discloses information collected from users (each, a &ldquo;User&rdquo;) of the
@@ -50,25 +50,25 @@ export default function PrivacyPolicyPage() {
             <p>We may collect and use your personal information for the following purposes:</p>
             <ul className="list-disc space-y-2 pl-5">
               <li>
-                <strong className="text-navy">To improve customer service</strong> — information you provide helps
+                <strong className="text-navy">To improve customer service</strong>, information you provide helps
                 us respond to your customer service requests and support needs more efficiently.
               </li>
               <li>
-                <strong className="text-navy">To personalise user experience</strong> — we may use information in
+                <strong className="text-navy">To personalise user experience</strong>, we may use information in
                 the aggregate to understand how our Users as a group use the services and resources provided on
                 our Site.
               </li>
               <li>
-                <strong className="text-navy">To improve our Site</strong> — we may use feedback you provide to
+                <strong className="text-navy">To improve our Site</strong>, we may use feedback you provide to
                 improve our products and services.
               </li>
               <li>
-                <strong className="text-navy">To process payments</strong> — we may use the information you
+                <strong className="text-navy">To process payments</strong>, we may use the information you
                 provide about yourself when placing an order only to provide service to that order. We do not
                 share this information with outside parties except to the extent necessary to provide the service.
               </li>
               <li>
-                <strong className="text-navy">To send periodic emails</strong> — we may use the email address to
+                <strong className="text-navy">To send periodic emails</strong>, we may use the email address to
                 send User information and updates pertaining to their order. It may also be used to respond to
                 their enquiries, questions, and/or other requests.
               </li>

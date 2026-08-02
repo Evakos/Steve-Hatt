@@ -18,7 +18,7 @@ export default function CartPage() {
       <section className="bg-cream">
         <div className="mx-auto max-w-6xl px-6 py-12">
           <h1 className="font-serif text-3xl font-bold text-navy">Your Order</h1>
-          <p className="mt-2 text-sm text-text-light">
+          <p className="mt-2 text-base text-text-light">
             {items.length === 0
               ? "Your basket is empty."
               : `${items.length} item${items.length > 1 ? "s" : ""} in your basket`}
@@ -27,12 +27,12 @@ export default function CartPage() {
           {items.length === 0 ? (
             <div className="mt-12 flex flex-col items-center gap-4 text-center">
               <ShoppingBag className="h-12 w-12 text-text-light/40" />
-              <p className="text-sm text-text-light">
+              <p className="text-base text-text-light">
                 Browse our fresh selection and add items to your order.
               </p>
               <Link
                 href="/#shop"
-                className="bg-lobster px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-lobster/90"
+                className="bg-lobster px-6 py-3 text-base font-medium text-white transition-colors hover:bg-lobster/90"
                 style={{ borderRadius: "3px" }}
               >
                 Shop Today&apos;s Catch
@@ -74,7 +74,7 @@ export default function CartPage() {
                               <Trash2 className="h-4 w-4" />
                             </button>
                           </div>
-                          <p className="text-xs text-text-light">
+                          <p className="text-sm text-text-light">
                             {item.preparation}
                             {item.product.pricePerKg > 0 && ` · ${item.weight}kg`}
                           </p>
@@ -97,7 +97,7 @@ export default function CartPage() {
                               +
                             </button>
                           </div>
-                          <span className="text-sm font-semibold text-navy">
+                          <span className="text-base font-semibold text-navy">
                             £{lineTotal(item).toFixed(2)}
                           </span>
                         </div>
@@ -108,7 +108,7 @@ export default function CartPage() {
 
                 <button
                   onClick={clearCart}
-                  className="text-xs text-text-light underline hover:text-navy"
+                  className="text-sm text-text-light underline hover:text-navy"
                 >
                   Clear basket
                 </button>
@@ -124,7 +124,7 @@ export default function CartPage() {
                     Order Summary
                   </h2>
 
-                  <div className="mt-4 space-y-3 text-sm">
+                  <div className="mt-4 space-y-3 text-base">
                     <div className="flex justify-between text-text-light">
                       <span>Estimated subtotal</span>
                       <span>£{estimatedTotal.toFixed(2)}</span>
@@ -145,7 +145,7 @@ export default function CartPage() {
                     className="mt-4 border border-ocean/20 bg-ocean-light p-3"
                     style={{ borderRadius: "3px" }}
                   >
-                    <p className="text-[11px] leading-relaxed text-navy">
+                    <p className="text-sm leading-relaxed text-navy">
                       <strong>Fair pricing.</strong> Final amount may differ
                       slightly once your order is weighed and prepared.
                     </p>
@@ -153,7 +153,7 @@ export default function CartPage() {
 
                   <Link
                     href="/checkout"
-                    className="mt-6 block w-full bg-lobster px-6 py-3.5 text-center text-sm font-medium tracking-wide text-white transition-colors hover:bg-lobster/90"
+                    className="mt-6 block w-full bg-lobster px-6 py-3.5 text-center text-base font-medium tracking-wide text-white transition-colors hover:bg-lobster/90"
                     style={{ borderRadius: "3px" }}
                   >
                     Proceed to Checkout
@@ -161,7 +161,7 @@ export default function CartPage() {
 
                   <Link
                     href="/#shop"
-                    className="mt-3 block text-center text-xs text-text-light hover:text-navy"
+                    className="mt-3 block text-center text-sm text-text-light hover:text-navy"
                   >
                     ← Continue shopping
                   </Link>

@@ -53,15 +53,15 @@ export default function LoginForm() {
     <form onSubmit={handleSubmit} className="w-full max-w-sm border border-border bg-white p-6" style={{ borderRadius: "5px" }}>
       <h1 className="font-serif text-xl font-bold text-navy">Sign in</h1>
       <p className="mt-1 text-sm text-text-light">
-        Enter your email and we&apos;ll send you a sign-in link — no password needed. New here? This creates
+        Enter your email and we&apos;ll send you a sign-in link, no password needed. New here? This creates
         your account too.
       </p>
       {expired && (
-        <p className="mt-3 text-sm text-red-600">That link has expired or is invalid — request a new one below.</p>
+        <p className="mt-3 text-sm text-red-600">That link has expired or is invalid, request a new one below.</p>
       )}
       {unavailable && (
         <p className="mt-3 text-sm text-red-600">
-          That email can&apos;t be used for an account here — try a different email, or continue as a guest below.
+          That email can&apos;t be used for an account here, try a different email, or continue as a guest below.
         </p>
       )}
       <input

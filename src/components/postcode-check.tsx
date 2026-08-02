@@ -79,7 +79,7 @@ export default function PostcodeCheck() {
           <div className="flex items-start gap-2 text-xs text-teal">
             <CheckCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
             <span>
-              <strong>Great news!</strong> We deliver to <strong>{outcode}</strong> — minimum order £20, £5.00 delivery.
+              <strong>Great news!</strong> We deliver to <strong>{outcode}</strong>, minimum order £20, £5.00 delivery.
             </span>
           </div>
           <div className="flex items-start gap-2 text-xs text-text-light">

@@ -55,7 +55,7 @@ export async function sendOrderConfirmation(input: OrderConfirmationInput) {
     await resend().emails.send({
       from: `Steve Hatt Fishmongers <${FROM_ADDRESS}>`,
       to,
-      subject: `Order #${orderNumber} received — estimated total £${repriced.total.toFixed(2)}`,
+      subject: `Order #${orderNumber} received, estimated total £${repriced.total.toFixed(2)}`,
       html,
     });
   } catch (err) {
@@ -96,7 +96,7 @@ export async function sendCaptureConfirmation(input: CaptureConfirmationInput) {
     await resend().emails.send({
       from: `Steve Hatt Fishmongers <${FROM_ADDRESS}>`,
       to,
-      subject: `Order #${orderNumber} is processing — £${capturedAmount.toFixed(2)} charged`,
+      subject: `Order #${orderNumber} is processing, £${capturedAmount.toFixed(2)} charged`,
       html,
     });
   } catch (err) {
@@ -123,7 +123,7 @@ export async function sendOrderCompleteEmail(input: OrderCompleteInput) {
 
   const html = emailShell(`
     ${emailHeading(`Order #${orderNumber} complete`)}
-    <p>Hi ${customerName}, your order has been ${verb}. Thanks for shopping with Steve Hatt Fishmongers — we hope
+    <p>Hi ${customerName}, your order has been ${verb}. Thanks for shopping with Steve Hatt Fishmongers, we hope
     you enjoy it.</p>
   `);
 
@@ -204,7 +204,7 @@ export async function sendPreOrderAuthFailedEmail(input: PreOrderAuthFailedInput
     <p>Hi ${customerName}, we tried to place a hold on your card ahead of preparing your Christmas order, but it
     wasn't accepted. This can happen if a card has expired or changed since you ordered.</p>
     ${emailAlert(
-      `Please <strong>contact us as soon as possible</strong> so we can take payment another way — your order
+      `Please <strong>contact us as soon as possible</strong> so we can take payment another way, your order
       can't be prepared until this is sorted.`
     )}
   `);

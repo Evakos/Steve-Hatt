@@ -17,7 +17,7 @@ export default function TermsConditionsPage() {
         <div className="mx-auto max-w-3xl px-6 py-16">
           <h1 className="font-serif text-3xl font-bold text-navy">Terms and Conditions</h1>
 
-          <div className="mt-8 space-y-5 text-sm leading-relaxed text-text-light">
+          <div className="mt-8 space-y-5 text-lg leading-relaxed text-text-light">
             <p>
               These are the standard terms and conditions of sale of Marsland Fish Supplies Limited, 102 Dartmouth
               Park Hill, London N19 5HU. By placing an order and purchasing goods from Steve Hatt Fishmongers
@@ -142,7 +142,7 @@ export default function TermsConditionsPage() {
               there are no bones or foreign bodies left within any fillets as no liability will be accepted by the
               company for any injury or loss as a result of these items. Not all fish that are filleted will be
               pin-boned as this can be detrimental to the look of the product and will mean a greater loss of
-              edible meat — please contact us if you have any questions about what species this will affect.
+              edible meat, please contact us if you have any questions about what species this will affect.
             </p>
 
             <h2 className="pt-2 font-serif text-lg font-semibold text-navy">Refunds</h2>
@@ -218,7 +218,7 @@ export default function TermsConditionsPage() {
               <li>packaging may vary from that shown on the website;</li>
               <li>products shown are not the actual size;</li>
               <li>
-                all products are subject to availability, meaning we may not always be able to supply your order —
+                all products are subject to availability, meaning we may not always be able to supply your order,
                 we will inform you as soon as possible if the product(s) you have ordered are not available and,
                 if agreeable to you, may offer alternative products of equal or higher value;
               </li>
@@ -234,7 +234,7 @@ export default function TermsConditionsPage() {
               products made available on it.
             </p>
             <p>
-              <strong className="text-navy">Ordering</strong> — when you have confirmed all the products you wish
+              <strong className="text-navy">Ordering</strong>, when you have confirmed all the products you wish
               to order, you will be given an estimated total order price, which will also set out the deposit sum
               you are required to pay upon completion of placing your order. The deposit sum will be taken
               following authorisation of your payment details and is non-refundable. Our acceptance of your order
@@ -244,7 +244,7 @@ export default function TermsConditionsPage() {
             <p>
               Please note that any outstanding sums owed, as set out in your estimated order price, will need to
               be paid upon collection of your Christmas food order. You will also receive a confirmation email
-              containing details of your order — please keep this safe and bring it with you (printed, or on a
+              containing details of your order, please keep this safe and bring it with you (printed, or on a
               device) when collecting your order.
             </p>
           </div>

@@ -62,25 +62,25 @@ export default function CaptureOrderCard({ order }: Props) {
     <div className="border border-border bg-white p-5" style={{ borderRadius: "5px" }}>
       <div className="flex items-baseline justify-between">
         <h2 className="font-medium text-navy">
-          Order #{order.number} — {order.billing.first_name} {order.billing.last_name}
+          Order #{order.number}, {order.billing.first_name} {order.billing.last_name}
         </h2>
-        <span className="text-xs text-text-light">Authorised: £{authorisedAmount.toFixed(2)}</span>
+        <span className="text-sm text-text-light">Authorised: £{authorisedAmount.toFixed(2)}</span>
       </div>
-      {slotLabel && <p className="mt-0.5 text-xs text-text-light">{slotLabel}</p>}
-      <p className={`mt-0.5 text-xs ${authExpired ? "font-medium text-red-600" : authExpiringSoon ? "font-medium text-amber-600" : "text-text-light"}`}>
+      {slotLabel && <p className="mt-0.5 text-sm text-text-light">{slotLabel}</p>}
+      <p className={`mt-0.5 text-sm ${authExpired ? "font-medium text-red-600" : authExpiringSoon ? "font-medium text-amber-600" : "text-text-light"}`}>
         {daysSinceAuth <= 0
           ? "Authorised today"
           : `Authorised ${daysSinceAuth} day${daysSinceAuth === 1 ? "" : "s"} ago`}
         {authExpired
-          ? ` — hold has likely expired (Pay360 authorisations last ${AUTH_EXPIRY_DAYS} days), capture may fail`
+          ? `, hold has likely expired (Pay360 authorisations last ${AUTH_EXPIRY_DAYS} days), capture may fail`
           : authExpiringSoon
-            ? ` — expires in ${AUTH_EXPIRY_DAYS - daysSinceAuth} day${AUTH_EXPIRY_DAYS - daysSinceAuth === 1 ? "" : "s"}, capture soon`
+            ? `, expires in ${AUTH_EXPIRY_DAYS - daysSinceAuth} day${AUTH_EXPIRY_DAYS - daysSinceAuth === 1 ? "" : "s"}, capture soon`
             : ""}
       </p>
 
       <div className="mt-3 space-y-2">
         {order.line_items.map((li) => (
-          <div key={li.id} className="flex items-center justify-between gap-3 text-sm">
+          <div key={li.id} className="flex items-center justify-between gap-3 text-base">
             <span className="text-navy">{li.name}</span>
             <div className="flex items-center gap-1">
               <span className="text-text-light">£</span>
@@ -99,7 +99,7 @@ export default function CaptureOrderCard({ order }: Props) {
       </div>
 
       <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
-        <span className="text-sm font-medium text-navy">
+        <span className="text-base font-medium text-navy">
           Final total: £{finalTotal.toFixed(2)}
           {overAuthorised && <span className="ml-2 text-xs font-normal text-red-600">exceeds authorised amount</span>}
         </span>
@@ -107,13 +107,13 @@ export default function CaptureOrderCard({ order }: Props) {
           type="button"
           onClick={handleCapture}
           disabled={submitting || overAuthorised || finalTotal <= 0}
-          className="bg-lobster px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-lobster/90 disabled:cursor-not-allowed disabled:opacity-50"
+          className="bg-lobster px-4 py-2 text-base font-medium text-white transition-colors hover:bg-lobster/90 disabled:cursor-not-allowed disabled:opacity-50"
           style={{ borderRadius: "5px" }}
         >
           {submitting ? "Capturing…" : "Capture payment"}
         </button>
       </div>
-      {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+      {error && <p className="mt-2 text-base text-red-600">{error}</p>}
     </div>
   );
 }

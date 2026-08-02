@@ -40,19 +40,19 @@ export default function CompleteOrderCard({ order }: Props) {
   return (
     <div className="flex items-center justify-between border border-border bg-white p-4" style={{ borderRadius: "5px" }}>
       <div>
-        <p className="text-sm font-medium text-navy">
-          Order #{order.number} — {order.billing.first_name} {order.billing.last_name}
+        <p className="text-base font-medium text-navy">
+          Order #{order.number}, {order.billing.first_name} {order.billing.last_name}
         </p>
-        {slotLabel && <p className="mt-0.5 text-xs text-text-light">{slotLabel}</p>}
-        <p className="mt-0.5 text-xs text-text-light">£{order.total} charged</p>
+        {slotLabel && <p className="mt-0.5 text-sm text-text-light">{slotLabel}</p>}
+        <p className="mt-0.5 text-sm text-text-light">£{order.total} charged</p>
       </div>
       <div className="flex items-center gap-3">
-        {error && <p className="text-xs text-red-600">{error}</p>}
+        {error && <p className="text-sm text-red-600">{error}</p>}
         <button
           type="button"
           onClick={handleComplete}
           disabled={submitting}
-          className="bg-teal px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-teal/90 disabled:cursor-not-allowed disabled:opacity-50"
+          className="bg-teal px-4 py-2 text-base font-medium text-white transition-colors hover:bg-teal/90 disabled:cursor-not-allowed disabled:opacity-50"
           style={{ borderRadius: "5px" }}
         >
           {submitting ? "Completing…" : "Mark complete"}

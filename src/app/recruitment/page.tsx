@@ -6,7 +6,7 @@ import InnerPageHero from "@/components/inner-page-hero";
 
 export const metadata = {
   title: "Recruitment | Steve Hatt Fishmongers",
-  description: "Join the Steve Hatt Fishmongers team — always on the lookout for talented fishmongers and blockmen.",
+  description: "Join the Steve Hatt Fishmongers team, always on the lookout for talented fishmongers and blockmen.",
 };
 
 export default function RecruitmentPage() {
@@ -24,7 +24,7 @@ export default function RecruitmentPage() {
 
       <section className="bg-white">
         <div className="mx-auto max-w-3xl px-6 pt-16 text-center">
-          <p className="text-sm leading-relaxed text-text-light">
+          <p className="text-lg leading-relaxed text-text-light">
             We believe in treating others like we want to be treated, and we&apos;re always on the lookout for
             talented individuals to join our team.
           </p>
@@ -36,17 +36,17 @@ export default function RecruitmentPage() {
           <div className="grid items-center gap-12 md:grid-cols-2">
             <div>
               <h2 className="font-serif text-2xl font-bold text-navy">Available Positions</h2>
-              <p className="mt-4 text-sm leading-relaxed text-text-light">
+              <p className="mt-4 text-lg leading-relaxed text-text-light">
                 At Steve Hatt, we take care of our staff as we would our own family. Working as a fishmonger
-                isn&apos;t for the faint-hearted — in fact, there&apos;s no job quite like it. We recognise it can
+                isn&apos;t for the faint-hearted, in fact, there&apos;s no job quite like it. We recognise it can
                 be a tough job, especially through the winter months, which is why we&apos;ve kept staffing hours
                 to 40 a week.
               </p>
-              <p className="mt-4 text-sm leading-relaxed text-text-light">
-                It&apos;s important to us that our staff enjoy their work and feel supported — we also offer very
+              <p className="mt-4 text-lg leading-relaxed text-text-light">
+                It&apos;s important to us that our staff enjoy their work and feel supported, we also offer very
                 competitive rates of pay, because living in London isn&apos;t cheap.
               </p>
-              <p className="mt-4 text-sm leading-relaxed text-text-light">
+              <p className="mt-4 text-lg leading-relaxed text-text-light">
                 We&apos;re always on the lookout for fishmongers and blockmen, talented and trained. Retail
                 experience is an advantage, but not necessary. If you&apos;re interested in joining the Steve Hatt
                 family, send us an email with your CV to{" "}

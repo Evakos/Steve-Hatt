@@ -49,7 +49,7 @@ export async function POST(request: Request) {
   if (finalTotal > authorisedAmount) {
     return NextResponse.json(
       {
-        error: `Final total (£${finalTotal.toFixed(2)}) exceeds the authorised amount (£${authorisedAmount.toFixed(2)}) — a new authorisation is needed for the difference, this isn't supported yet.`,
+        error: `Final total (£${finalTotal.toFixed(2)}) exceeds the authorised amount (£${authorisedAmount.toFixed(2)}), a new authorisation is needed for the difference, this isn't supported yet.`,
       },
       { status: 422 }
     );
@@ -102,7 +102,7 @@ export async function POST(request: Request) {
       });
       return NextResponse.json(
         {
-          error: `Captured the full £${authorisedAmount.toFixed(2)} authorised amount, but refunding the £${refundAmount.toFixed(2)} difference failed: ${refundResult.reason}. The order has been marked as processing — refund the difference manually via the Pay360 Merchant Portal.`,
+          error: `Captured the full £${authorisedAmount.toFixed(2)} authorised amount, but refunding the £${refundAmount.toFixed(2)} difference failed: ${refundResult.reason}. The order has been marked as processing, refund the difference manually via the Pay360 Merchant Portal.`,
         },
         { status: 502 }
       );

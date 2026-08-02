@@ -5,7 +5,7 @@ import ContactForm from "@/components/contact-form";
 
 export const metadata = {
   title: "Contact | Steve Hatt Fishmongers",
-  description: "Get in touch with Steve Hatt Fishmongers — 88 Essex Road, Islington, London.",
+  description: "Get in touch with Steve Hatt Fishmongers, 88 Essex Road, Islington, London.",
 };
 
 export default function ContactPage() {
@@ -25,15 +25,15 @@ export default function ContactPage() {
         <div className="mx-auto max-w-6xl px-6 py-16">
           <div className="grid gap-12 md:grid-cols-2">
             <div>
-              <p className="text-sm leading-relaxed text-text-light">
+              <p className="text-lg leading-relaxed text-text-light">
                 The quickest way to get in touch with us is to give us a call.
               </p>
-              <p className="mt-4 text-sm leading-relaxed text-text-light">
+              <p className="mt-4 text-lg leading-relaxed text-text-light">
                 If you&apos;d rather send us a message, complete the form and we&apos;ll aim to respond within 48
-                hours — in busier periods this may take a little longer.
+                hours, in busier periods this may take a little longer.
               </p>
-              <p className="mt-4 text-sm leading-relaxed text-text-light">
-                <strong className="text-navy">Please note:</strong> we don&apos;t take orders by email or message —
+              <p className="mt-4 text-lg leading-relaxed text-text-light">
+                <strong className="text-navy">Please note:</strong> we don&apos;t take orders by email or message,
                 order online or call the shop instead.
               </p>
 

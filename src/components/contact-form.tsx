@@ -38,7 +38,7 @@ export default function ContactForm() {
       <div className="border border-border bg-white p-6 text-center" style={{ borderRadius: "5px" }}>
         <h3 className="font-serif text-lg font-bold text-navy">Message sent</h3>
         <p className="mt-2 text-sm text-text-light">
-          Thanks, {name} — we aim to respond within 48 hours. Please don&apos;t email us to place an order — order
+          Thanks, {name}, we aim to respond within 48 hours. Please don&apos;t email us to place an order, order
           online or call the shop instead.
         </p>
       </div>

@@ -46,7 +46,7 @@ export default async function AccountPage() {
             </p>
           ) : (
             <p className="mt-2 text-sm text-text-light">
-              No saved address yet — this fills in automatically the next time you check out while signed in.
+              No saved address yet, this fills in automatically the next time you check out while signed in.
             </p>
           )}
         </section>

@@ -34,65 +34,81 @@ export default async function Home() {
       <AnnouncementBanner />
       <Header />
 
-      {/* Hero */}
-      <section className="relative flex items-center bg-navy" style={{ minHeight: '800px' }}>
-        <Image src="/hero-shop-floor.jpg" alt="" fill className="object-cover" priority />
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(to right, rgba(15, 23, 42, 0.6) 15%, rgba(15, 23, 42, 0) 60%)' }} />
-        <div className="relative mx-auto w-full max-w-6xl px-6">
-          <div className="max-w-2xl">
-            <p className="mb-4 text-sm tracking-widest text-white/50 uppercase">Est. 1895 · Essex Road, London</p>
-            <h1 className="font-serif text-5xl font-bold leading-[1.1] text-white md:text-6xl lg:text-7xl">
-              From Sea, to Shop, to You.
-            </h1>
-            <p className="mt-6 max-w-lg text-lg leading-relaxed text-white/70">
-              The freshest fish from the British coastline, prepared by hand and delivered to your door. Order online for next-day local delivery or click & collect.
-            </p>
-            <div className="mt-10 flex items-center gap-4">
-              <a href="#shop" className="bg-lobster px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-lobster/90" style={{ borderRadius: '3px' }}>
-                Shop Today&apos;s Catch
-              </a>
-              <a href="#how" className="border border-white/30 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-white/10" style={{ borderRadius: '3px' }}>
-                How It Works
-              </a>
+      {/* Hero — text overlaid on the photo, matching a traditional hero banner */}
+      <section className="bg-white">
+        <div className="relative bg-navy" style={{ height: "50vh" }}>
+          <div
+            className="absolute inset-y-0 right-0 w-full sm:w-[80%]"
+            style={{
+              WebkitMaskImage: "linear-gradient(115deg, transparent 0%, transparent 12%, black 40%, black 100%)",
+              maskImage: "linear-gradient(115deg, transparent 0%, transparent 12%, black 40%, black 100%)",
+            }}
+          >
+            <Image src="/hero-shop-floor.jpg" alt="A Steve Hatt fishmonger setting out fresh fish on ice" fill className="object-cover object-[65%_center]" priority />
+            <div className="absolute inset-0 bg-gradient-to-t from-navy/70 via-transparent to-transparent" />
+          </div>
+          <div className="absolute inset-0 flex items-end sm:items-center">
+            <div className="mx-auto w-full max-w-6xl px-6 pb-10 sm:pb-0">
+              <div className="max-w-2xl">
+                <p className="mb-4 text-sm tracking-widest text-white/80 uppercase">Est. 1895 · Essex Road, London</p>
+                <h1 className="font-serif text-5xl font-bold leading-[1.1] text-white md:text-6xl lg:text-7xl">
+                  From Sea, to Shop, to You.
+                </h1>
+                <p className="mt-6 max-w-lg text-lg leading-relaxed text-white/90">
+                  The freshest fish from the British coastline, prepared by hand and delivered to your door. Order online for next-day local delivery or click & collect.
+                </p>
+                <div className="mt-10 flex items-center gap-4">
+                  <a href="#shop" className="bg-lobster px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-lobster/90" style={{ borderRadius: '3px' }}>
+                    Shop Today&apos;s Catch
+                  </a>
+                  <a href="#how" className="border border-white/40 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-white/10" style={{ borderRadius: '3px' }}>
+                    How It Works
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </section>
 
-      {/* Trust strip */}
-      <section className="border-b border-border/50 bg-navy">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-8 px-6 py-5 md:justify-between">
-          {[
-            { icon: <Truck className="h-4 w-4" />, text: "Local delivery across Islington" },
-            { icon: <Leaf className="h-4 w-4" />, text: "Sustainably sourced" },
-            { icon: <Fish className="h-4 w-4" />, text: "Prepared to order" },
-            { icon: <Scaling className="h-4 w-4" />, text: "You only pay for what you receive" },
-          ].map((item) => (
-            <div key={item.text} className="flex items-center gap-2 text-xs tracking-wide text-white/70">
-              <span className="text-teal">{item.icon}</span>
-              {item.text}
-            </div>
-          ))}
+        {/* Trust strip — full width, directly attached with no gap */}
+        <div className="border-b border-border/50 bg-navy">
+          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-8 px-6 py-5 md:justify-between">
+            {[
+              { icon: <Truck className="h-4 w-4" />, text: "Local delivery across Islington" },
+              { icon: <Leaf className="h-4 w-4" />, text: "Sustainably sourced" },
+              { icon: <Fish className="h-4 w-4" />, text: "Prepared to order" },
+              { icon: <Scaling className="h-4 w-4" />, text: "You only pay for what you receive" },
+            ].map((item) => (
+              <div key={item.text} className="flex items-center gap-2 text-sm tracking-wide text-white/70">
+                <span className="text-teal">{item.icon}</span>
+                {item.text}
+              </div>
+            ))}
+          </div>
         </div>
-      </section>
 
-      {/* Postcode check */}
-      <section className="bg-ocean-light">
-        <div className="mx-auto max-w-6xl px-6 py-12">
-          <div className="flex flex-col items-center gap-4 text-center md:flex-row md:text-left">
-            <div className="flex-1">
-              <h2 className="font-serif text-xl font-semibold text-navy">Check if we deliver to you</h2>
-              <p className="mt-1 text-sm text-text-light">Enter your postcode to see delivery options. Not in our zone? Click & collect is always available. <Link href="/account" className="font-medium text-navy underline">Sign in</Link> for faster checkout.</p>
-            </div>
-            <div className="w-full max-w-xs md:w-auto">
-              <PostcodeCheck />
+        {/* Postcode check — full width, directly attached with no gap */}
+        <div className="bg-ocean-light">
+          <div className="mx-auto max-w-6xl px-6 py-12">
+            <div className="flex flex-col items-center gap-4 text-center md:flex-row md:text-left">
+              <div className="flex-1">
+                <h2 className="font-serif text-xl font-semibold text-navy">Check if we deliver to you</h2>
+                <p className="mt-1 text-base text-text-light">
+                  Enter your postcode to see delivery options. Not in our zone? Click &amp; collect is always available.
+                  <br />
+                  <Link href="/account" className="font-medium text-navy underline">Sign In/Register</Link> for faster checkout.
+                </p>
+              </div>
+              <div className="w-full max-w-xs md:w-auto">
+                <PostcodeCheck />
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Shop */}
-      <section id="shop" className="bg-cream">
+      <section id="shop" className="bg-white">
         <div className="mx-auto max-w-6xl px-6 py-20">
           <div className="mb-10 flex items-end justify-between">
             <div>
@@ -137,8 +153,8 @@ export default async function Home() {
             ))}
           </div>
           <div className="mt-8 border border-ocean/20 bg-ocean-light p-6" style={{ borderRadius: '5px' }}>
-            <p className="text-sm leading-relaxed text-navy">
-              <strong>Fair pricing, always.</strong> We estimate the price at checkout based on your selected weight — you&apos;re not charged until your order is prepared and weighed, so you only ever pay for exactly what you receive. No overcharging, no surprises.
+            <p className="text-lg leading-relaxed text-navy">
+              <strong>Fair pricing, always.</strong> We estimate the price at checkout based on your selected weight, you&apos;re not charged until your order is prepared and weighed, so you only ever pay for exactly what you receive. No overcharging, no surprises.
             </p>
           </div>
         </div>
@@ -151,7 +167,7 @@ export default async function Home() {
             <div>
               <p className="text-xs tracking-widest text-text-light uppercase">Our heritage</p>
               <h2 className="mt-2 font-serif text-3xl font-bold text-navy">Local Since 1895</h2>
-              <div className="mt-6 space-y-4 text-sm leading-relaxed text-text-light">
+              <div className="mt-6 space-y-4 text-lg leading-relaxed text-text-light">
                 <p>
                   For over 130 years, Steve Hatt has been the heart of Islington&apos;s food community. What started as a small fishmonger on Essex Road has grown into one of London&apos;s most respected sources of fresh seafood.
                 </p>
@@ -162,17 +178,15 @@ export default async function Home() {
                   Now you can order online and have the same quality delivered to your door, or collect from the shop. Same fish, same standards, more convenience.
                 </p>
               </div>
+              <Link href="/about" className="mt-6 inline-block text-sm text-navy hover:underline">
+                Learn more about our story →
+              </Link>
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="relative h-48 overflow-hidden bg-navy/5" style={{ borderRadius: '5px' }}>
-                <Image src="/heritage-shop-front.jpg" alt="The Steve Hatt shop front today at 88 Essex Road" fill className="object-cover" />
-              </div>
-              <div className="relative h-48 overflow-hidden bg-navy/5" style={{ borderRadius: '5px' }}>
-                <Image src="/heritage-team.jpg" alt="The Steve Hatt team preparing fish in store" fill className="object-cover" />
-              </div>
-              <div className="relative h-48 overflow-hidden bg-navy/5" style={{ borderRadius: '5px' }}>
-                <Image src="/heritage-fresh-catch.jpg" alt="A whole fresh fish laid on ice" fill className="object-cover" />
-              </div>
+            <div
+              className="relative aspect-square overflow-hidden bg-navy/5"
+              style={{ borderRadius: "60% 40% 30% 70% / 60% 30% 70% 40%" }}
+            >
+              <Image src="/hero.svg" alt="Illustration of the fishing harbour" fill className="object-cover object-[74%_center]" />
             </div>
           </div>
         </div>
@@ -203,7 +217,7 @@ export default async function Home() {
           <div className="mb-10 text-center">
             <p className="text-xs tracking-widest text-text-light uppercase">Festive season</p>
             <h2 className="mt-2 font-serif text-3xl font-bold text-navy">Christmas Pre-Orders</h2>
-            <p className="mx-auto mt-4 max-w-lg text-sm leading-relaxed text-text-light">
+            <p className="mx-auto mt-4 max-w-lg text-lg leading-relaxed text-text-light">
               Reserve your Christmas feast now. Pre-order by 20th December for delivery or collection on 23rd-24th December. Every order prepared fresh by your fishmonger.
             </p>
           </div>
@@ -215,7 +229,7 @@ export default async function Home() {
                   <span className="absolute left-2 top-2 bg-lobster px-2 py-1 text-[10px] font-medium tracking-wide text-white uppercase" style={{ borderRadius: '2px' }}>{p.tag}</span>
                 </div>
                 <h3 className="font-serif text-lg font-semibold text-navy">{p.name}</h3>
-                <p className="mt-1 text-xs text-text-light">{p.weight}</p>
+                <p className="mt-1 text-sm text-text-light">{p.weight}</p>
                 <div className="mt-3 flex items-center justify-between">
                   <span className="text-base font-semibold text-navy">{p.priceLabel}</span>
                   <span className="bg-navy px-3 py-1.5 text-[10px] font-medium text-white transition-colors group-hover:bg-navy/90" style={{ borderRadius: '3px' }}>
@@ -237,7 +251,7 @@ export default async function Home() {
           <div className="grid gap-8 md:grid-cols-3">
             <div>
               <h3 className="mb-4 font-serif text-lg font-semibold text-navy">Opening Hours</h3>
-              <div className="space-y-2 text-sm text-text-light">
+              <div className="space-y-2 text-base text-text-light">
                 <p>Tuesday - Saturday: 7am - 5pm</p>
                 <p>Sunday: Closed</p>
                 <p>Monday: Closed</p>
@@ -245,18 +259,18 @@ export default async function Home() {
             </div>
             <div>
               <h3 className="mb-4 font-serif text-lg font-semibold text-navy">Visit Us</h3>
-              <p className="text-sm text-text-light">88 Essex Road<br />Islington, London<br />N1 8LU</p>
-              <p className="mt-2 text-sm text-text-light">
+              <p className="text-base text-text-light">88 Essex Road<br />Islington, London<br />N1 8LU</p>
+              <p className="mt-2 text-base text-text-light">
                 <a href="tel:+442072263963" className="transition-colors hover:text-navy">020 7226 3963</a>
               </p>
             </div>
             <div>
               <h3 className="mb-4 font-serif text-lg font-semibold text-navy">Delivery Zones</h3>
-              <p className="text-sm text-text-light">
+              <p className="text-base text-text-light">
                 <strong className="text-navy">Next-day delivery to:</strong><br />
                 EC1, EC2, E2, E5, E8, N1, N4, N5, N6, N7, N10, N16, N19, NW5
               </p>
-              <p className="mt-2 text-sm text-text-light">Minimum order £20 · Standard delivery £5.00</p>
+              <p className="mt-2 text-base text-text-light">Minimum order £20 · Standard delivery £5.00</p>
             </div>
           </div>
         </div>

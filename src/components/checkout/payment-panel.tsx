@@ -32,7 +32,7 @@ export default function PaymentPanel({ amount, onToken, disabled }: Props) {
       <div className="flex items-start gap-3 border border-dashed border-lobster/40 bg-lobster/5 p-4" style={{ borderRadius: "5px" }}>
         <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-lobster" />
         <p className="text-sm text-navy">
-          Card payment isn&apos;t wired up yet — Cardstream/Pay360&apos;s Hosted Payment Fields integration needs
+          Card payment isn&apos;t wired up yet, Cardstream/Pay360&apos;s Hosted Payment Fields integration needs
           developer portal access that wasn&apos;t available during this build. Set{" "}
           <code className="text-xs">NEXT_PUBLIC_CARDSTREAM_MOCK=true</code> to exercise this flow in development.
         </p>
@@ -52,7 +52,7 @@ export default function PaymentPanel({ amount, onToken, disabled }: Props) {
     <div className="border border-border bg-white p-4" style={{ borderRadius: "5px" }}>
       <div className="mb-3 flex items-center gap-1.5 text-xs text-text-light">
         <ShieldCheck className="h-3.5 w-3.5 text-teal" />
-        Mock Hosted Payment Fields (dev only) — no real card form, no card data collected here
+        Mock Hosted Payment Fields (dev only), no real card form, no card data collected here
       </div>
       <div className="flex flex-wrap gap-2">
         <button

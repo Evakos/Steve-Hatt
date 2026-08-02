@@ -36,7 +36,7 @@ export default function MiniCart() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="truncate text-sm font-medium text-navy">{item.product.name}</p>
-                      <p className="text-xs text-text-light">{item.preparation}</p>
+                      <p className="text-sm text-text-light">{item.preparation}</p>
                       <p className="mt-0.5 text-sm font-medium text-navy">£{lineTotal(item).toFixed(2)}</p>
                     </div>
                     <button
