@@ -32,8 +32,13 @@ export type Product = {
   sizeOptions?: SizeOption[];
   /** "per-kg" | "per-piece" | "fixed" — controls the selector shown on the product page */
   priceType?: "per-kg" | "per-piece" | "fixed";
-  /** Seasons/events this product is featured for, e.g. ["christmas"] */
+  /** Seasons/events this product is featured for, e.g. ["christmas"] — editorial promotion
+   * (which items appear in the homepage's "Christmas Pre-Orders" teaser), separate from whether
+   * the product can actually be pre-ordered for Christmas at all (see excludedFromChristmas). */
   featuredFor?: string[];
+  /** Almost every product can be pre-ordered for Christmas by default — this opts a specific
+   * product OUT (e.g. something that can't be held that long, or won't be in stock). */
+  excludedFromChristmas?: boolean;
   /** Optional date string for when pre-orders will be fulfilled/delivered */
   preOrderDelivery?: string;
   /** WooCommerce product id, needed to reference this product at checkout. */

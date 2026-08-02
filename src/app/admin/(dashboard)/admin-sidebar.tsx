@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ClipboardList, Package } from "lucide-react";
+import { ClipboardList, Package, BookOpen } from "lucide-react";
 
 const NAV_ITEMS = [
   { href: "/admin/orders", label: "Orders", icon: ClipboardList },
   { href: "/admin/products", label: "Products", icon: Package },
+  { href: "/admin/guide", label: "Guide", icon: BookOpen },
 ] as const;
 
 export default function AdminSidebar() {

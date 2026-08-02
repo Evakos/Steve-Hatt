@@ -90,7 +90,7 @@ function isChristmasDate(date: Date): boolean {
 }
 
 export default function CheckoutPage() {
-  const { items, estimatedTotal, clearCart } = useCart();
+  const { items, estimatedTotal, clearCart, mode: cartMode } = useCart();
   const { state: submitState, submit, confirmThreeDS, reset: resetSubmit } = useCheckoutSubmit();
 
   // Snapshot the slot/christmas-ness at the moment of payment, so the confirmation screen can
@@ -126,8 +126,10 @@ export default function CheckoutPage() {
 
   const [step, setStep] = useState<Step>("delivery");
 
-  // Christmas or standard?
-  const [orderType, setOrderType] = useState<"standard" | "christmas" | null>(null);
+  // Christmas or standard — derived from the cart's mode (see cart-context), chosen while
+  // shopping, not a separate choice made at checkout. A cart can only ever be one mode, so this
+  // can't mismatch what's actually in `items`.
+  const orderType: "standard" | "christmas" = cartMode;
 
   // Delivery method
   const [slotType, setSlotType] = useState<SlotType | null>(null);
@@ -162,7 +164,7 @@ export default function CheckoutPage() {
   const showSlots = !!slotType && postcodeChecked;
 
   const slots = useMemo(() => {
-    if (!slotType || !orderType) return [];
+    if (!slotType) return [];
     const dates = getAvailableDates();
     const result: Slot[] = [];
 
@@ -297,7 +299,7 @@ export default function CheckoutPage() {
                 <Gift className={`mt-0.5 h-4 w-4 shrink-0 ${confirmedOrder.isChristmas ? "text-[#1a3a2a]" : "text-teal"}`} />
                 <p className={`text-xs ${confirmedOrder.isChristmas ? "text-[#1a3a2a]/70" : "text-text-light"}`}>
                   {confirmedOrder.isChristmas
-                    ? "You haven't been charged yet. We've verified your card and will take payment automatically a few days before your delivery or collection date, once your order is weighed — no action needed from you."
+                    ? "You haven't been charged yet. We've verified your card and will take payment automatically a few days before your delivery or collection date, once your order is weighed, no action needed from you."
                     : "You haven't been charged yet. Since fish is priced by weight, we'll confirm the exact final amount once your order is prepared, then take payment for that amount only."}
                 </p>
               </div>
@@ -369,39 +371,32 @@ export default function CheckoutPage() {
             <div className="lg:col-span-2">
               {step === "delivery" ? (
                 <>
-                  {/* 1. Standard or Christmas? */}
+                  {/* 1. Standard or Christmas — decided by the cart's mode (chosen while shopping,
+                      see CartModeSwitcher), not a separate choice here. */}
                   <h2 className="font-serif text-2xl font-bold text-navy">
-                    What are you ordering for?
+                    {orderType === "christmas" ? "Christmas Pre-Order" : "Your Order"}
                   </h2>
-                  <p className="mt-1 text-sm text-text-light">
-                    This helps us show you the right delivery dates.
-                  </p>
-
-                  <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                    <button
-                      onClick={() => { setOrderType("standard"); setSlotType(null); setSelectedSlot(null); }}
-                      className={`flex items-center gap-3 border p-5 text-left transition-colors ${orderType === "standard" ? "border-navy bg-navy/5" : "border-border bg-white hover:border-navy/30"}`}
-                      style={{ borderRadius: "5px" }}
-                    >
-                      <Truck className={`h-5 w-5 ${orderType === "standard" ? "text-navy" : "text-text-light"}`} />
-                      <div>
-                        <p className="text-sm font-medium text-navy">Standard Order</p>
-                        <p className="text-xs text-text-light">Next-day delivery or collection</p>
-                      </div>
-                      {orderType === "standard" && <Check className="ml-auto h-4 w-4 text-navy" />}
-                    </button>
-                    <button
-                      onClick={() => { setOrderType("christmas"); setSlotType(null); setSelectedSlot(null); }}
-                      className={`flex items-center gap-3 border p-5 text-left transition-colors ${orderType === "christmas" ? "border-[#1a3a2a] bg-[#e8f5ed]" : "border-[#1a3a2a]/20 bg-[#e8f5ed]/30 hover:border-[#1a3a2a]/40"}`}
-                      style={{ borderRadius: "5px" }}
-                    >
-                      <Gift className={`h-5 w-5 ${orderType === "christmas" ? "text-[#1a3a2a]" : "text-[#1a3a2a]/50"}`} />
-                      <div>
-                        <p className={`text-sm font-medium ${orderType === "christmas" ? "text-[#1a3a2a]" : "text-navy"}`}>Christmas Pre-Order</p>
-                        <p className={`text-xs ${orderType === "christmas" ? "text-[#1a3a2a]/70" : "text-text-light"}`}>Delivery or collection, 20th-24th December</p>
-                      </div>
-                      {orderType === "christmas" && <Check className="ml-auto h-4 w-4 text-[#1a3a2a]" />}
-                    </button>
+                  <div
+                    className={`mt-3 flex items-center gap-3 border p-4 ${
+                      orderType === "christmas" ? "border-[#1a3a2a]/20 bg-[#e8f5ed]" : "border-border bg-white"
+                    }`}
+                    style={{ borderRadius: "5px" }}
+                  >
+                    {orderType === "christmas" ? (
+                      <Gift className="h-5 w-5 shrink-0 text-[#1a3a2a]" />
+                    ) : (
+                      <Truck className="h-5 w-5 shrink-0 text-navy" />
+                    )}
+                    <div>
+                      <p className={`text-sm font-medium ${orderType === "christmas" ? "text-[#1a3a2a]" : "text-navy"}`}>
+                        {orderType === "christmas" ? "Christmas Pre-Order" : "Standard Order"}
+                      </p>
+                      <p className={`text-xs ${orderType === "christmas" ? "text-[#1a3a2a]/70" : "text-text-light"}`}>
+                        {orderType === "christmas"
+                          ? "Delivery or collection, 20th-24th December"
+                          : "Next-day delivery or collection"}
+                      </p>
+                    </div>
                   </div>
 
                   {/* 2. Postcode check */}
@@ -545,7 +540,7 @@ export default function CheckoutPage() {
                             <div>
                               <p className="text-sm font-medium text-[#1a3a2a]">Christmas Pre-Order</p>
                               <p className="mt-1 text-xs leading-relaxed text-[#1a3a2a]/70">
-                                We&apos;ll verify your card now — you won&apos;t be charged today. Payment is taken
+                                We&apos;ll verify your card now, you won&apos;t be charged today. Payment is taken
                                 automatically a few days before your delivery or collection date, once your order
                                 is weighed, with no action needed from you.
                               </p>
@@ -624,7 +619,7 @@ export default function CheckoutPage() {
                       />
                       {!isSignedIn && (
                         <p className="mt-2 text-xs text-text-light">
-                          We&apos;ll save your details so you can track this order and sign in next time — no
+                          We&apos;ll save your details so you can track this order and sign in next time, no
                           password needed.
                         </p>
                       )}

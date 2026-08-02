@@ -17,6 +17,7 @@ const META_KEYS = {
   sustainability: "_steve_hatt_sustainability",
   storage: "_steve_hatt_storage",
   featuredFor: "_steve_hatt_featured_for", // JSON string array
+  excludedFromChristmas: "_steve_hatt_excluded_from_christmas", // "true" | "false"
   preOrderDelivery: "_steve_hatt_pre_order_delivery",
 } as const;
 
@@ -101,6 +102,7 @@ export function mapWooProductToProduct(wooProduct: WooProduct, variations: WooPr
     sizeOptions,
     priceType,
     featuredFor: readMetaJsonArray(wooProduct.meta_data, META_KEYS.featuredFor),
+    excludedFromChristmas: readMeta(wooProduct.meta_data, META_KEYS.excludedFromChristmas) === "true",
     preOrderDelivery: readMeta(wooProduct.meta_data, META_KEYS.preOrderDelivery) || undefined,
   };
 

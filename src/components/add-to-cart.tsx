@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Info } from "lucide-react";
+import { Check, Info, Gift } from "lucide-react";
 import type { Product } from "@/lib/products";
-import { useCart } from "@/lib/cart-context";
+import { useCart, isEligibleForMode } from "@/lib/cart-context";
 import { computeUnitPrice } from "@/lib/pricing";
 
 const prepTooltips: Record<string, string> = {
@@ -24,12 +24,14 @@ interface Props {
 }
 
 export default function AddToCart({ product }: Props) {
-  const { addItem } = useCart();
+  const { addItem, mode } = useCart();
   const [selectedPrep, setSelectedPrep] = useState(product.preparation[0]);
   const [selectedSize, setSelectedSize] = useState(product.sizeOptions?.[0]?.label ?? "");
   const [weight, setWeight] = useState(0.2);
   const [quantity, setQuantity] = useState(product.priceType === "per-piece" ? 6 : 1);
   const [added, setAdded] = useState(false);
+
+  const eligible = isEligibleForMode(product, mode);
 
   const selectedSizeOption = product.sizeOptions?.find((s) => s.label === selectedSize);
 
@@ -39,7 +41,7 @@ export default function AddToCart({ product }: Props) {
   );
 
   const handleAdd = () => {
-    addItem({
+    const wasAdded = addItem({
       product,
       quantity,
       weight,
@@ -47,9 +49,21 @@ export default function AddToCart({ product }: Props) {
       unitPrice,
       wooVariationId: selectedSizeOption?.wooVariationId,
     });
+    if (!wasAdded) return;
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   };
+
+  if (!eligible) {
+    return (
+      <div className="mt-8 flex items-start gap-3 border border-[#1a3a2a]/20 bg-[#e8f5ed]/50 p-4" style={{ borderRadius: "5px" }}>
+        <Gift className="mt-0.5 h-4 w-4 shrink-0 text-[#1a3a2a]" />
+        <p className="text-sm text-[#1a3a2a]/80">
+          This product isn&apos;t available as a Christmas pre-order. Switch your basket back to a standard order to add it.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <>

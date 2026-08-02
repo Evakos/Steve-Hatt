@@ -10,9 +10,12 @@ const META_KEYS = {
   origin: "_steve_hatt_origin",
   sustainability: "_steve_hatt_sustainability",
   storage: "_steve_hatt_storage",
+  excludedFromChristmas: "_steve_hatt_excluded_from_christmas",
 } as const;
 
 const VALID_STATUSES = new Set(["draft", "pending", "private", "publish"]);
+const VALID_BOOLEANS = new Set(["true", "false", "1", "0", "yes", "no"]);
+const TRUTHY = new Set(["true", "1", "yes"]);
 
 interface SyncResult {
   productId: number;
@@ -56,7 +59,7 @@ export async function POST() {
           productId,
           title,
           status: "error",
-          message: `preparation column isn't a valid JSON array — got: ${row.preparation}`,
+          message: `preparation column isn't a valid JSON array, got: ${row.preparation}`,
         });
         continue;
       }
@@ -66,7 +69,7 @@ export async function POST() {
     if (row.price) {
       const parsedPrice = Number(row.price);
       if (!Number.isFinite(parsedPrice) || parsedPrice < 0) {
-        results.push({ productId, title, status: "error", message: `price column isn't a valid non-negative number — got: ${row.price}` });
+        results.push({ productId, title, status: "error", message: `price column isn't a valid non-negative number, got: ${row.price}` });
         continue;
       }
       regularPrice = parsedPrice.toFixed(2);
@@ -79,11 +82,26 @@ export async function POST() {
           productId,
           title,
           status: "error",
-          message: `status column must be one of draft/pending/private/publish — got: ${row.status}`,
+          message: `status column must be one of draft/pending/private/publish, got: ${row.status}`,
         });
         continue;
       }
       wooStatus = row.status as typeof wooStatus;
+    }
+
+    let excludedFromChristmas: boolean | undefined;
+    if (row.excluded_from_christmas) {
+      const normalised = row.excluded_from_christmas.trim().toLowerCase();
+      if (!VALID_BOOLEANS.has(normalised)) {
+        results.push({
+          productId,
+          title,
+          status: "error",
+          message: `excluded_from_christmas column must be true/false, got: ${row.excluded_from_christmas}`,
+        });
+        continue;
+      }
+      excludedFromChristmas = TRUTHY.has(normalised);
     }
 
     const metaData: { key: string; value: string }[] = [];
@@ -92,6 +110,9 @@ export async function POST() {
     if (row.origin) metaData.push({ key: META_KEYS.origin, value: row.origin });
     if (row.sustainability) metaData.push({ key: META_KEYS.sustainability, value: row.sustainability });
     if (row.storage) metaData.push({ key: META_KEYS.storage, value: row.storage });
+    if (excludedFromChristmas !== undefined) {
+      metaData.push({ key: META_KEYS.excludedFromChristmas, value: String(excludedFromChristmas) });
+    }
 
     try {
       await updateWooProduct(productId, {
