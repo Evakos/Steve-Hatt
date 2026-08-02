@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getAllProducts } from "@/lib/products";
+import { isChristmasShopActive } from "@/lib/feature-flags";
 import { Truck, Fish, Scaling, Leaf, Anchor, Recycle, ShoppingBag, Search } from "lucide-react";
 import Header from "@/components/header";
 import PostcodeCheck from "@/components/postcode-check";
@@ -26,12 +27,12 @@ function pickRandom<T>(items: T[], n: number): T[] {
 }
 
 export default async function Home() {
-  const products = await getAllProducts();
+  const [products, christmasActive] = await Promise.all([getAllProducts(), isChristmasShopActive()]);
   const todaysCatch = pickRandom(products, 6);
 
   return (
     <main className="flex flex-1 flex-col">
-      <AnnouncementBanner />
+      {christmasActive && <AnnouncementBanner />}
       <Header />
 
       {/* Hero — text overlaid on the photo, matching a traditional hero banner */}
@@ -211,39 +212,41 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Christmas pre-orders */}
-      <section id="christmas" className="bg-cream">
-        <div className="mx-auto max-w-6xl px-6 py-20">
-          <div className="mb-10 text-center">
-            <p className="text-xs tracking-widest text-text-light uppercase">Festive season</p>
-            <h2 className="mt-2 font-serif text-3xl font-bold text-navy">Christmas Pre-Orders</h2>
-            <p className="mx-auto mt-4 max-w-lg text-lg leading-relaxed text-text-light">
-              Reserve your Christmas feast now. Pre-order by 20th December for delivery or collection on 23rd-24th December. Every order prepared fresh by your fishmonger.
-            </p>
+      {/* Christmas pre-orders — only while Christmas ordering is active site-wide (see /admin/guide) */}
+      {christmasActive && (
+        <section id="christmas" className="bg-cream">
+          <div className="mx-auto max-w-6xl px-6 py-20">
+            <div className="mb-10 text-center">
+              <p className="text-xs tracking-widest text-text-light uppercase">Festive season</p>
+              <h2 className="mt-2 font-serif text-3xl font-bold text-navy">Christmas Pre-Orders</h2>
+              <p className="mx-auto mt-4 max-w-lg text-lg leading-relaxed text-text-light">
+                Reserve your Christmas feast now. Pre-order by 20th December for delivery or collection on 23rd-24th December. Every order prepared fresh by your fishmonger.
+              </p>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {products.filter((p) => p.featuredFor?.includes("christmas")).map((p) => (
+                <Link key={p.slug} href={`/shop/${p.slug}`} className="group border border-border bg-white p-5 transition-all hover:border-navy/30 hover:shadow-md" style={{ borderRadius: '5px' }}>
+                  <div className="relative mb-3 h-32 overflow-hidden bg-sand" style={{ borderRadius: '3px' }}>
+                    <Image src={p.image} alt={p.name} fill className="object-cover transition-transform group-hover:scale-105" />
+                    <span className="absolute left-2 top-2 bg-lobster px-2 py-1 text-[10px] font-medium tracking-wide text-white uppercase" style={{ borderRadius: '2px' }}>{p.tag}</span>
+                  </div>
+                  <h3 className="font-serif text-lg font-semibold text-navy">{p.name}</h3>
+                  <p className="mt-1 text-sm text-text-light">{p.weight}</p>
+                  <div className="mt-3 flex items-center justify-between">
+                    <span className="text-base font-semibold text-navy">{p.priceLabel}</span>
+                    <span className="bg-navy px-3 py-1.5 text-[10px] font-medium text-white transition-colors group-hover:bg-navy/90" style={{ borderRadius: '3px' }}>
+                      Pre-order
+                    </span>
+                  </div>
+                  {p.preOrderDelivery && (
+                    <p className="mt-2 text-[10px] text-teal">{p.preOrderDelivery}</p>
+                  )}
+                </Link>
+              ))}
+            </div>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {products.filter((p) => p.featuredFor?.includes("christmas")).map((p) => (
-              <Link key={p.slug} href={`/shop/${p.slug}`} className="group border border-border bg-white p-5 transition-all hover:border-navy/30 hover:shadow-md" style={{ borderRadius: '5px' }}>
-                <div className="relative mb-3 h-32 overflow-hidden bg-sand" style={{ borderRadius: '3px' }}>
-                  <Image src={p.image} alt={p.name} fill className="object-cover transition-transform group-hover:scale-105" />
-                  <span className="absolute left-2 top-2 bg-lobster px-2 py-1 text-[10px] font-medium tracking-wide text-white uppercase" style={{ borderRadius: '2px' }}>{p.tag}</span>
-                </div>
-                <h3 className="font-serif text-lg font-semibold text-navy">{p.name}</h3>
-                <p className="mt-1 text-sm text-text-light">{p.weight}</p>
-                <div className="mt-3 flex items-center justify-between">
-                  <span className="text-base font-semibold text-navy">{p.priceLabel}</span>
-                  <span className="bg-navy px-3 py-1.5 text-[10px] font-medium text-white transition-colors group-hover:bg-navy/90" style={{ borderRadius: '3px' }}>
-                    Pre-order
-                  </span>
-                </div>
-                {p.preOrderDelivery && (
-                  <p className="mt-2 text-[10px] text-teal">{p.preOrderDelivery}</p>
-                )}
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Opening hours + contact */}
       <section className="bg-white">
