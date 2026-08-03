@@ -16,6 +16,12 @@ export default function AdminProductsPage() {
         <code className="text-xs">excluded_from_christmas</code> column to <code className="text-xs">true</code> to
         opt a specific product out (leave blank to leave it eligible).
       </p>
+      <p className="mt-2 text-sm text-text-light">
+        Weight/size-tiered products (Salmon Whole, Lobster, Halibut Steaks, Turbot, Crab | Dressed) have no single
+        price of their own, each size is its own WooCommerce variation. Sync now also reads the{" "}
+        <code className="text-xs">&quot;Variations&quot;</code> tab and updates each size&apos;s price from its{" "}
+        <code className="text-xs">price</code> column, matched by <code className="text-xs">variation_id</code>.
+      </p>
       <a
         href={SPREADSHEET_URL}
         target="_blank"

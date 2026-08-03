@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { revalidateTag } from "next/cache";
 import { isStaffAuthenticated } from "@/lib/staff-auth";
 import { readSheetAsRows } from "@/lib/google-sheets";
-import { updateWooProduct, PRODUCTS_TAG } from "@/lib/woocommerce/products";
+import { updateWooProduct, updateWooProductVariation, PRODUCTS_TAG } from "@/lib/woocommerce/products";
 
 const META_KEYS = {
   tag: "_steve_hatt_tag",
@@ -18,6 +18,7 @@ const VALID_BOOLEANS = new Set(["true", "false", "1", "0", "yes", "no"]);
 const TRUTHY = new Set(["true", "1", "yes"]);
 
 interface SyncResult {
+  kind: "product" | "variation";
   productId: number;
   title: string;
   status: "updated" | "skipped" | "error";
@@ -44,7 +45,7 @@ export async function POST() {
     const title = row.title ?? "";
     const productId = Number(row.product_id);
     if (!Number.isFinite(productId) || productId <= 0) {
-      results.push({ productId: NaN, title, status: "skipped", message: "Missing or invalid product_id" });
+      results.push({ kind: "product", productId: NaN, title, status: "skipped", message: "Missing or invalid product_id" });
       continue;
     }
 
@@ -56,6 +57,7 @@ export async function POST() {
         preparation = parsed;
       } catch {
         results.push({
+          kind: "product",
           productId,
           title,
           status: "error",
@@ -69,7 +71,7 @@ export async function POST() {
     if (row.price) {
       const parsedPrice = Number(row.price);
       if (!Number.isFinite(parsedPrice) || parsedPrice < 0) {
-        results.push({ productId, title, status: "error", message: `price column isn't a valid non-negative number, got: ${row.price}` });
+        results.push({ kind: "product", productId, title, status: "error", message: `price column isn't a valid non-negative number, got: ${row.price}` });
         continue;
       }
       regularPrice = parsedPrice.toFixed(2);
@@ -79,6 +81,7 @@ export async function POST() {
     if (row.status) {
       if (!VALID_STATUSES.has(row.status)) {
         results.push({
+          kind: "product",
           productId,
           title,
           status: "error",
@@ -94,6 +97,7 @@ export async function POST() {
       const normalised = row.excluded_from_christmas.trim().toLowerCase();
       if (!VALID_BOOLEANS.has(normalised)) {
         results.push({
+          kind: "product",
           productId,
           title,
           status: "error",
@@ -122,9 +126,57 @@ export async function POST() {
         description: row.description || undefined,
         meta_data: metaData.length > 0 ? metaData : undefined,
       });
-      results.push({ productId, title, status: "updated" });
+      results.push({ kind: "product", productId, title, status: "updated" });
     } catch (err) {
-      results.push({ productId, title, status: "error", message: err instanceof Error ? err.message : "Update failed" });
+      results.push({ kind: "product", productId, title, status: "error", message: err instanceof Error ? err.message : "Update failed" });
+    }
+  }
+
+  // Weight/size-tiered products (variable products, e.g. Salmon Whole, Turbot) have no single
+  // price of their own — each size is a separate WooCommerce variation, priced independently.
+  // The "Variations" tab lets staff edit those prices the same way as the main Products tab.
+  let variationRows: Record<string, string>[] = [];
+  try {
+    variationRows = await readSheetAsRows("Variations");
+  } catch (err) {
+    results.push({
+      kind: "variation",
+      productId: NaN,
+      title: "Variations tab",
+      status: "error",
+      message: err instanceof Error ? err.message : "Failed to read the Variations tab",
+    });
+  }
+
+  for (const row of variationRows) {
+    const title = `${row.parent_title ?? ""} (${row.attributes ?? ""})`.trim();
+    const variationId = Number(row.variation_id);
+    const parentProductId = Number(row.parent_product_id);
+
+    if (!Number.isFinite(variationId) || variationId <= 0) {
+      results.push({ kind: "variation", productId: NaN, title, status: "skipped", message: "Missing or invalid variation_id" });
+      continue;
+    }
+    if (!Number.isFinite(parentProductId) || parentProductId <= 0) {
+      results.push({ kind: "variation", productId: variationId, title, status: "skipped", message: "Missing or invalid parent_product_id" });
+      continue;
+    }
+
+    let regularPrice: string | undefined;
+    if (row.price) {
+      const parsedPrice = Number(row.price);
+      if (!Number.isFinite(parsedPrice) || parsedPrice < 0) {
+        results.push({ kind: "variation", productId: variationId, title, status: "error", message: `price column isn't a valid non-negative number, got: ${row.price}` });
+        continue;
+      }
+      regularPrice = parsedPrice.toFixed(2);
+    }
+
+    try {
+      await updateWooProductVariation(parentProductId, variationId, { regular_price: regularPrice });
+      results.push({ kind: "variation", productId: variationId, title, status: "updated" });
+    } catch (err) {
+      results.push({ kind: "variation", productId: variationId, title, status: "error", message: err instanceof Error ? err.message : "Update failed" });
     }
   }
 

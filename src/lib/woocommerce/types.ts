@@ -52,6 +52,10 @@ export interface WooProductVariation {
   meta_data: { key: string; value: unknown }[];
 }
 
+export interface WooProductVariationInput {
+  regular_price?: string;
+}
+
 export interface WooOrderLineItemInput {
   /** Include when updating an existing line item (e.g. setting the final weighed price on
    * capture) — omit when adding a new line item to an order. */

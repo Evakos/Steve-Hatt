@@ -1,7 +1,7 @@
 import "server-only";
 import { wooFetch } from "./client";
 import { mapWooProductToProduct } from "./map-product";
-import type { WooProduct, WooProductInput, WooProductVariation } from "./types";
+import type { WooProduct, WooProductInput, WooProductVariation, WooProductVariationInput } from "./types";
 import type { Product } from "@/lib/products";
 import type { PricingInput } from "@/lib/pricing";
 
@@ -44,6 +44,19 @@ export async function getFeaturedProducts(feature: string): Promise<Product[]> {
 /** Used by the /admin/products sheet sync to write back name/price/status/description/meta. */
 export async function updateWooProduct(id: number, input: WooProductInput): Promise<WooProduct> {
   return wooFetch<WooProduct>(`products/${id}`, { method: "PUT", body: input });
+}
+
+/** Same sheet sync, for the weight/size-tiered products (variable products) where price lives on
+ * each variation rather than the parent — see the "Variations" sheet tab. */
+export async function updateWooProductVariation(
+  parentProductId: number,
+  variationId: number,
+  input: WooProductVariationInput
+): Promise<WooProductVariation> {
+  return wooFetch<WooProductVariation>(`products/${parentProductId}/variations/${variationId}`, {
+    method: "PUT",
+    body: input,
+  });
 }
 
 /**

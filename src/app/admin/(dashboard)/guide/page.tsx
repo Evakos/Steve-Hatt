@@ -63,8 +63,10 @@ export default function AdminGuidePage() {
           </p>
           <p>
             Almost every product can be pre-ordered for Christmas by default, a few can be marked as excluded (see
-            the spreadsheet sync below). A customer&apos;s basket can only ever be one mode at a time, standard or
-            Christmas, they choose which on the shop page, and can&apos;t mix the two in a single order.
+            the spreadsheet sync below). Customers shop normally and choose Standard or Christmas at checkout,
+            same as before, but if their basket has an item that&apos;s not Christmas-eligible, choosing Christmas
+            is blocked with a message telling them to remove it first, so the two can&apos;t get mixed into one
+            order without us noticing.
           </p>
         </div>
       </section>
@@ -103,6 +105,14 @@ export default function AdminGuidePage() {
             with malformed data (e.g. a non-numeric price, an invalid status), are skipped and listed as errors
             rather than silently applied. The sync also refreshes the site&apos;s product cache automatically, so
             changes show up on the shop straight away rather than waiting for the normal cache window.
+          </p>
+          <p>
+            <strong className="text-navy">Weight/size-tiered products</strong> (Salmon Whole, Lobster Cooked,
+            Lobster Live, Halibut Steaks, Turbot, Crab | Dressed) don&apos;t have a single price, each size is a
+            separate WooCommerce variation. These live on the sheet&apos;s{" "}
+            <strong className="text-navy">&quot;Variations&quot;</strong> tab instead, matched by{" "}
+            <code className="text-xs">variation_id</code> (not <code className="text-xs">product_id</code>).
+            Sync now pulls both tabs in one go.
           </p>
         </div>
       </section>

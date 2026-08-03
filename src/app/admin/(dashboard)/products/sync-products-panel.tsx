@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 interface SyncResultRow {
+  kind: "product" | "variation";
   productId: number;
   title: string;
   status: "updated" | "skipped" | "error";
@@ -65,7 +66,7 @@ export default function SyncProductsPanel() {
             <ul className="mt-3 space-y-1 text-sm">
               {problems.map((r, i) => (
                 <li key={i} className={r.status === "error" ? "text-red-600" : "text-text-light"}>
-                  {r.title || `Product ${r.productId}`}: {r.message}
+                  {r.kind === "variation" ? "Variation" : "Product"} {r.title || r.productId}: {r.message}
                 </li>
               ))}
             </ul>
