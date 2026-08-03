@@ -22,6 +22,7 @@ export default function Header() {
           <Link href="/shop" className="text-base text-text-light transition-colors hover:text-navy">Shop</Link>
           <Link href="/#how" className="text-base text-text-light transition-colors hover:text-navy">How It Works</Link>
           <Link href="/#story" className="text-base text-text-light transition-colors hover:text-navy">Our Story</Link>
+          <Link href="/blog" className="text-base text-text-light transition-colors hover:text-navy">Recipes & News</Link>
         </div>
 
         {/* Desktop actions */}
@@ -66,6 +67,7 @@ export default function Header() {
             <Link href="/shop" className="text-base text-text-light hover:text-navy" onClick={() => setMobileOpen(false)}>Shop</Link>
             <Link href="/#how" className="text-base text-text-light hover:text-navy" onClick={() => setMobileOpen(false)}>How It Works</Link>
             <Link href="/#story" className="text-base text-text-light hover:text-navy" onClick={() => setMobileOpen(false)}>Our Story</Link>
+            <Link href="/blog" className="text-base text-text-light hover:text-navy" onClick={() => setMobileOpen(false)}>Recipes & News</Link>
             <Link
               href="/account"
               className="flex items-center gap-1.5 text-base text-text-light hover:text-navy"
