@@ -51,7 +51,7 @@ export default async function ProductPage({
       {/* Breadcrumb */}
       <div className="bg-white">
         <div className="mx-auto max-w-6xl px-6 py-4">
-          <nav className="text-base text-text-light">
+          <nav className="text-sm text-text-light">
             <Link href="/" className="hover:text-navy">Home</Link>
             <span className="mx-2">/</span>
             <Link href="/#shop" className="hover:text-navy">Shop</Link>
@@ -77,11 +77,11 @@ export default async function ProductPage({
             <div>
               <span className="text-xs tracking-widest text-text-light uppercase">{product.category}</span>
               <h1 className="mt-1.5 font-serif text-4xl font-bold text-navy">{product.name}</h1>
-              <p className="mt-1 text-base text-text-light">{product.origin}</p>
+              <p className="mt-1 text-sm text-text-light">{product.origin}</p>
 
               <div className="mt-4 flex items-baseline gap-3">
                 <span className="font-serif text-3xl font-bold text-navy">{product.priceLabel}</span>
-                <span className="text-base text-text-light">{product.weight}</span>
+                <span className="text-sm text-text-light">{product.weight}</span>
               </div>
 
               <p className="mt-4 leading-relaxed text-foreground">{product.description}</p>
@@ -113,14 +113,14 @@ export default async function ProductPage({
                     <MapPin className="h-3.5 w-3.5 text-text-light" />
                     <p className="text-xs tracking-widest text-text-light uppercase">Origin</p>
                   </div>
-                  <p className="text-base text-navy">{product.origin}</p>
+                  <p className="text-sm text-navy">{product.origin}</p>
                 </div>
                 <div className="border border-border bg-white p-4" style={{ borderRadius: '5px' }}>
                   <div className="mb-1 flex items-center gap-1.5">
                     <Thermometer className="h-3.5 w-3.5 text-text-light" />
                     <p className="text-xs tracking-widest text-text-light uppercase">Storage</p>
                   </div>
-                  <p className="text-base text-navy">{product.storage}</p>
+                  <p className="text-sm text-navy">{product.storage}</p>
                 </div>
               </div>
 
@@ -130,7 +130,7 @@ export default async function ProductPage({
                   <Leaf className="h-3.5 w-3.5 text-text-light" />
                   <p className="text-xs tracking-widest text-text-light uppercase">Sustainability</p>
                 </div>
-                <p className="text-base text-navy">{product.sustainability}</p>
+                <p className="text-sm text-navy">{product.sustainability}</p>
               </div>
             </div>
           </div>
@@ -149,7 +149,7 @@ export default async function ProductPage({
                     <Image src={p.image} alt={p.name} fill className="object-cover transition-transform group-hover:scale-105" />
                   </div>
                   <h3 className="font-serif text-base font-semibold text-navy">{p.name}</h3>
-                  <p className="mt-1 text-base text-text-light">{p.priceLabel}</p>
+                  <p className="mt-1 text-sm text-text-light">{p.priceLabel}</p>
                 </Link>
               ))}
             </div>

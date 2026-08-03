@@ -33,7 +33,14 @@ export default function AboutPage() {
                 alt: "The Steve Hatt shop front today at 88 Essex Road",
                 eyebrow: "Our story",
                 title: "130 Years in Islington",
-                body: "For over 130 years, our fish shop has been an integral part of the Islington community. Things have changed a bit over the years, but we're just as committed to providing the freshest, high-quality fish to our customers whilst adhering to strong ethical guidelines as we ever were.",
+                body: (
+                  <>
+                    <strong className="text-navy">For over 130 years</strong>, our fish shop has been an integral
+                    part of the Islington community. Things have changed a bit over the years, but we&apos;re just
+                    as committed to providing the freshest, high-quality fish to our customers whilst adhering to
+                    strong ethical guidelines as we ever were.
+                  </>
+                ),
                 tag: "Our Heritage",
               },
               {
