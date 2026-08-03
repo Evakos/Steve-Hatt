@@ -1,12 +1,10 @@
 import { getAllProducts } from "@/lib/products";
-import { isChristmasShopActive } from "@/lib/feature-flags";
 import Header from "@/components/header";
 import AnnouncementBanner from "@/components/announcement-banner";
-import CartModeSwitcher from "@/components/cart-mode-switcher";
 import ShopGrid from "./shop-grid";
 
 export default async function ShopPage() {
-  const [products, christmasActive] = await Promise.all([getAllProducts(), isChristmasShopActive()]);
+  const products = await getAllProducts();
 
   return (
     <main className="flex flex-1 flex-col">
@@ -21,12 +19,6 @@ export default async function ShopPage() {
             {products.length} products, priced by weight where noted, the amount shown at checkout is an estimate;
             we confirm the exact final price once your order is prepared.
           </p>
-
-          {christmasActive && (
-            <div className="mt-6 max-w-md">
-              <CartModeSwitcher />
-            </div>
-          )}
 
           <ShopGrid products={products} />
         </div>

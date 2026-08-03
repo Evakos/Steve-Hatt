@@ -4,9 +4,6 @@ import { createContext, useContext, useState, useCallback, useRef, useEffect, ty
 import type { Product } from "./products";
 
 const STORAGE_KEY = "steve-hatt-cart";
-const MODE_STORAGE_KEY = "steve-hatt-cart-mode";
-
-export type CartMode = "standard" | "christmas";
 
 function loadStoredItems(): CartItem[] {
   try {
@@ -16,15 +13,6 @@ function loadStoredItems(): CartItem[] {
     return Array.isArray(parsed) ? parsed : [];
   } catch {
     return [];
-  }
-}
-
-function loadStoredMode(): CartMode {
-  try {
-    const raw = localStorage.getItem(MODE_STORAGE_KEY);
-    return raw === "christmas" ? "christmas" : "standard";
-  } catch {
-    return "standard";
   }
 }
 
@@ -45,22 +33,9 @@ export function lineTotal(item: CartItem): number {
   return item.unitPrice * item.quantity;
 }
 
-/** Almost every product is Christmas-eligible by default — only explicitly excluded ones aren't. */
-export function isEligibleForMode(product: Product, mode: CartMode): boolean {
-  if (mode === "christmas") return !product.excludedFromChristmas;
-  return true;
-}
-
 interface CartContextValue {
   items: CartItem[];
-  mode: CartMode;
-  /** Switches the cart's mode. Fails (returns false, cart unchanged) if switching to "christmas"
-   * while the cart already holds an item that's excluded from Christmas pre-orders — the caller
-   * should have the customer remove/clear those first rather than silently dropping them. */
-  setMode: (mode: CartMode) => boolean;
-  /** Fails (returns false, cart unchanged) if the item isn't eligible for the cart's current mode
-   * — callers (add-to-cart UI) should disable adding in that case rather than relying on this. */
-  addItem: (item: Omit<CartItem, "id">) => boolean;
+  addItem: (item: Omit<CartItem, "id">) => void;
   removeItem: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
@@ -76,14 +51,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
   // Starts empty so server and first client render match (localStorage isn't available during
   // SSR) — the real cart loads in immediately after mount, in the effect below.
   const [items, setItems] = useState<CartItem[]>([]);
-  const [mode, setModeState] = useState<CartMode>("standard");
   const [hydrated, setHydrated] = useState(false);
   const [miniCartOpen, setMiniCartOpen] = useState(false);
   const miniCartTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     setItems(loadStoredItems());
-    setModeState(loadStoredMode());
     setHydrated(true);
   }, []);
 
@@ -95,28 +68,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
   }, [items, hydrated]);
 
-  useEffect(() => {
-    if (!hydrated) return;
-    localStorage.setItem(MODE_STORAGE_KEY, mode);
-  }, [mode, hydrated]);
-
   const addItem = useCallback((item: Omit<CartItem, "id">) => {
-    if (!isEligibleForMode(item.product, mode)) return false;
     setItems((prev) => [...prev, { ...item, id: crypto.randomUUID() }]);
     if (miniCartTimer.current) clearTimeout(miniCartTimer.current);
     setMiniCartOpen(true);
     miniCartTimer.current = setTimeout(() => setMiniCartOpen(false), 5000);
-    return true;
-  }, [mode]);
-
-  const setMode = useCallback((newMode: CartMode) => {
-    if (newMode === "christmas") {
-      const hasIneligibleItem = items.some((item) => !isEligibleForMode(item.product, "christmas"));
-      if (hasIneligibleItem) return false;
-    }
-    setModeState(newMode);
-    return true;
-  }, [items]);
+  }, []);
 
   const removeItem = useCallback((id: string) => {
     setItems((prev) => prev.filter((item) => item.id !== id));
@@ -136,21 +93,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const estimatedTotal = items.reduce((sum, item) => sum + lineTotal(item), 0);
 
   return (
-    <CartContext
-      value={{
-        items,
-        mode,
-        setMode,
-        addItem,
-        removeItem,
-        updateQuantity,
-        clearCart,
-        itemCount,
-        estimatedTotal,
-        miniCartOpen,
-        setMiniCartOpen,
-      }}
-    >
+    <CartContext value={{ items, addItem, removeItem, updateQuantity, clearCart, itemCount, estimatedTotal, miniCartOpen, setMiniCartOpen }}>
       {children}
     </CartContext>
   );

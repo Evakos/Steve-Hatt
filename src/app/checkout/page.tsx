@@ -90,7 +90,7 @@ function isChristmasDate(date: Date): boolean {
 }
 
 export default function CheckoutPage() {
-  const { items, estimatedTotal, clearCart, mode: cartMode } = useCart();
+  const { items, estimatedTotal, clearCart } = useCart();
   const { state: submitState, submit, confirmThreeDS, reset: resetSubmit } = useCheckoutSubmit();
 
   // Snapshot the slot/christmas-ness at the moment of payment, so the confirmation screen can
@@ -126,10 +126,44 @@ export default function CheckoutPage() {
 
   const [step, setStep] = useState<Step>("delivery");
 
-  // Christmas or standard — derived from the cart's mode (see cart-context), chosen while
-  // shopping, not a separate choice made at checkout. A cart can only ever be one mode, so this
-  // can't mismatch what's actually in `items`.
-  const orderType: "standard" | "christmas" = cartMode;
+  // One order can only ever have one delivery slot, so it's either a normal next-day order or a
+  // Christmas one, never both. That's asked as a *timing* question here rather than a "what kind
+  // of shop is this" mode chosen while browsing — the different payment treatment (verify now vs
+  // authorise now) falls out of how far away the date is, and isn't something a customer should
+  // have to reason about upfront.
+  const [orderType, setOrderType] = useState<"standard" | "christmas" | null>(null);
+  const [christmasBlockedReason, setChristmasBlockedReason] = useState<string | null>(null);
+
+  // Whether Christmas pre-ordering is being offered at all right now (site-wide admin toggle —
+  // see /admin/guide). Fetched client-side since this page needs to stay a client component.
+  // Outside the pre-order season there's no choice to make, so the question is skipped entirely.
+  const [christmasShopActive, setChristmasShopActive] = useState(false);
+  useEffect(() => {
+    fetch("/api/feature-flags/christmas")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: { active: boolean } | null) => {
+        const active = data?.active ?? false;
+        setChristmasShopActive(active);
+        if (!active) setOrderType("standard");
+      })
+      .catch(() => setOrderType("standard"));
+  }, []);
+
+  function chooseOrderType(next: "standard" | "christmas") {
+    if (next === "christmas") {
+      const ineligible = items.filter((item) => item.product.excludedFromChristmas);
+      if (ineligible.length > 0) {
+        setChristmasBlockedReason(
+          `${ineligible.map((item) => item.product.name).join(", ")} ${ineligible.length === 1 ? "isn't" : "aren't"} available for Christmas delivery, please remove ${ineligible.length === 1 ? "it" : "them"} to order for Christmas.`
+        );
+        return;
+      }
+    }
+    setChristmasBlockedReason(null);
+    setOrderType(next);
+    setSlotType(null);
+    setSelectedSlot(null);
+  }
 
   // Delivery method
   const [slotType, setSlotType] = useState<SlotType | null>(null);
@@ -164,7 +198,7 @@ export default function CheckoutPage() {
   const showSlots = !!slotType && postcodeChecked;
 
   const slots = useMemo(() => {
-    if (!slotType) return [];
+    if (!slotType || !orderType) return [];
     const dates = getAvailableDates();
     const result: Slot[] = [];
 
@@ -371,37 +405,53 @@ export default function CheckoutPage() {
             <div className="lg:col-span-2">
               {step === "delivery" ? (
                 <>
-                  {/* 1. Standard or Christmas — decided by the cart's mode (chosen while shopping,
-                      see CartModeSwitcher), not a separate choice here. */}
-                  <h2 className="font-serif text-2xl font-bold text-navy">
-                    {orderType === "christmas" ? "Christmas Pre-Order" : "Your Order"}
-                  </h2>
-                  <div
-                    className={`mt-3 flex items-center gap-3 border p-4 ${
-                      orderType === "christmas" ? "border-[#1a3a2a]/20 bg-[#e8f5ed]" : "border-border bg-white"
-                    }`}
-                    style={{ borderRadius: "5px" }}
-                  >
-                    {orderType === "christmas" ? (
-                      <Gift className="h-5 w-5 shrink-0 text-[#1a3a2a]" />
-                    ) : (
-                      <Truck className="h-5 w-5 shrink-0 text-navy" />
-                    )}
-                    <div>
-                      <p className={`text-sm font-medium ${orderType === "christmas" ? "text-[#1a3a2a]" : "text-navy"}`}>
-                        {orderType === "christmas" ? "Christmas Pre-Order" : "Standard Order"}
+                  {/* 1. When do you want it? Only asked while Christmas pre-ordering is running —
+                      the rest of the year every order is a normal one, so there's nothing to ask. */}
+                  {christmasShopActive && (
+                    <>
+                      <h2 className="font-serif text-2xl font-bold text-navy">
+                        When would you like your order?
+                      </h2>
+                      <p className="mt-1 text-sm text-text-light">
+                        An order goes out on a single date, so Christmas and everyday orders need placing
+                        separately.
                       </p>
-                      <p className={`text-xs ${orderType === "christmas" ? "text-[#1a3a2a]/70" : "text-text-light"}`}>
-                        {orderType === "christmas"
-                          ? "Delivery or collection, 20th-24th December"
-                          : "Next-day delivery or collection"}
-                      </p>
-                    </div>
-                  </div>
+
+                      <div className="mt-6 grid gap-3 sm:grid-cols-2">
+                        <button
+                          onClick={() => chooseOrderType("standard")}
+                          className={`flex items-center gap-3 border p-5 text-left transition-colors ${orderType === "standard" ? "border-navy bg-navy/5" : "border-border bg-white hover:border-navy/30"}`}
+                          style={{ borderRadius: "5px" }}
+                        >
+                          <Truck className={`h-5 w-5 ${orderType === "standard" ? "text-navy" : "text-text-light"}`} />
+                          <div>
+                            <p className="text-sm font-medium text-navy">As soon as possible</p>
+                            <p className="text-xs text-text-light">Next-day delivery or collection</p>
+                          </div>
+                          {orderType === "standard" && <Check className="ml-auto h-4 w-4 text-navy" />}
+                        </button>
+                        <button
+                          onClick={() => chooseOrderType("christmas")}
+                          className={`flex items-center gap-3 border p-5 text-left transition-colors ${orderType === "christmas" ? "border-[#1a3a2a] bg-[#e8f5ed]" : "border-[#1a3a2a]/20 bg-[#e8f5ed]/30 hover:border-[#1a3a2a]/40"}`}
+                          style={{ borderRadius: "5px" }}
+                        >
+                          <Gift className={`h-5 w-5 ${orderType === "christmas" ? "text-[#1a3a2a]" : "text-[#1a3a2a]/50"}`} />
+                          <div>
+                            <p className={`text-sm font-medium ${orderType === "christmas" ? "text-[#1a3a2a]" : "text-navy"}`}>For Christmas</p>
+                            <p className={`text-xs ${orderType === "christmas" ? "text-[#1a3a2a]/70" : "text-text-light"}`}>Delivery or collection, 20th-24th December</p>
+                          </div>
+                          {orderType === "christmas" && <Check className="ml-auto h-4 w-4 text-[#1a3a2a]" />}
+                        </button>
+                      </div>
+                      {christmasBlockedReason && (
+                        <p className="mt-3 text-sm text-red-600">{christmasBlockedReason}</p>
+                      )}
+                    </>
+                  )}
 
                   {/* 2. Postcode check */}
                   {orderType && (
-                    <div className="mt-8 border border-border bg-white p-5" style={{ borderRadius: "5px" }}>
+                    <div className={`${christmasShopActive ? "mt-8" : ""} border border-border bg-white p-5`} style={{ borderRadius: "5px" }}>
                       <p className="mb-1 text-sm font-medium text-navy">Enter your postcode</p>
                       <p className="mb-3 text-xs text-text-light">We&apos;ll check if we can deliver to you, or you can collect from our shop.</p>
                       <div className="flex gap-2">
