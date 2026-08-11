@@ -149,11 +149,10 @@ export interface AdminNewOrderNotificationInput {
 }
 
 /**
- * Notifies staff (ADMIN_NOTIFICATION_EMAIL, currently chris@stevehattfishmongers.co.uk — a real
- * Google Workspace inbox, unaffected by the send.stevehattfishmongers.co.uk Resend DNS setup)
- * that a new order needs preparing. Fires alongside sendOrderConfirmation at checkout time —
- * see /api/checkout and /api/checkout/confirm. Same failure handling: swallowed, doesn't fail
- * the order.
+ * Notifies staff (every address in ADMIN_NOTIFICATION_EMAIL — a comma-separated list, see
+ * .env.example) that a new order needs preparing. Fires alongside sendOrderConfirmation at
+ * checkout time — see /api/checkout and /api/checkout/confirm. Same failure handling: swallowed,
+ * doesn't fail the order.
  */
 export async function sendAdminNewOrderNotification(input: AdminNewOrderNotificationInput) {
   const { orderNumber, customerName, customerEmail, repriced, slotLabel, fulfilmentType } = input;

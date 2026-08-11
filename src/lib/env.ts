@@ -16,7 +16,20 @@ const serverEnvSchema = z.object({
     .default("false")
     .transform((v) => v === "true"),
   RESEND_API_KEY: z.string().min(1),
-  ADMIN_NOTIFICATION_EMAIL: z.email(),
+  // One or more comma-separated staff addresses — every new-order alert, pre-order auth
+  // failure and contact-form submission is sent to all of them (Resend's `to` accepts an array).
+  ADMIN_NOTIFICATION_EMAIL: z
+    .string()
+    .transform((value) =>
+      value
+        .split(",")
+        .map((email) => email.trim())
+        .filter(Boolean)
+    )
+    .refine(
+      (emails) => emails.length > 0 && emails.every((email) => z.email().safeParse(email).success),
+      { message: "must be one or more comma-separated email addresses" }
+    ),
   STAFF_PASSWORD: z.string().min(1),
   STAFF_SESSION_SECRET: z.string().min(1),
   CUSTOMER_SESSION_SECRET: z.string().min(1),
