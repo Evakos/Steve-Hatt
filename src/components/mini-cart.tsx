@@ -32,7 +32,7 @@ export default function MiniCart() {
                 return (
                   <div key={item.id} className="flex gap-3 border-b border-border/50 px-4 py-3">
                     <div className="relative h-14 w-14 shrink-0 overflow-hidden bg-cream" style={{ borderRadius: "3px" }}>
-                      <Image src={item.product.image} alt={item.product.name} fill className="object-cover" />
+                      <Image src={item.product.image} alt={item.product.name} fill sizes="56px" className="object-cover" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="truncate text-sm font-medium text-navy">{item.product.name}</p>

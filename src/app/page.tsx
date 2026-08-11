@@ -45,7 +45,7 @@ export default async function Home() {
               maskImage: "linear-gradient(115deg, transparent 0%, transparent 12%, black 40%, black 100%)",
             }}
           >
-            <Image src="/hero-shop-floor.jpg" alt="A Steve Hatt fishmonger setting out fresh fish on ice" fill className="object-cover object-[65%_center]" priority />
+            <Image src="/hero-shop-floor.jpg" alt="A Steve Hatt fishmonger setting out fresh fish on ice" fill sizes="100vw" className="object-cover object-[65%_center]" priority />
             <div className="absolute inset-0 bg-gradient-to-t from-navy/70 via-transparent to-transparent" />
           </div>
           <div className="absolute inset-0 flex items-end sm:items-center">
@@ -122,7 +122,7 @@ export default async function Home() {
             {todaysCatch.map((p) => (
               <Link key={p.slug} href={`/shop/${p.slug}`} className="group border border-border bg-white p-4 transition-all hover:border-navy/30 hover:shadow-md" style={{ borderRadius: '5px' }}>
                 <div className="relative mb-3 h-40 overflow-hidden bg-sand" style={{ borderRadius: '3px' }}>
-                  <Image src={p.image} alt={p.name} fill className="object-cover transition-transform group-hover:scale-105" />
+                  <Image src={p.image} alt={p.name} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover transition-transform group-hover:scale-105" />
                   <span className="absolute left-2 top-2 bg-lobster px-2 py-1 text-[10px] font-medium tracking-wide text-white uppercase" style={{ borderRadius: '2px' }}>{p.tag}</span>
                 </div>
                 <h3 className="font-serif text-lg font-semibold text-navy">{p.name}</h3>
@@ -187,7 +187,7 @@ export default async function Home() {
               className="relative aspect-square overflow-hidden bg-navy/5"
               style={{ borderRadius: "60% 40% 30% 70% / 60% 30% 70% 40%" }}
             >
-              <Image src="/hero.svg" alt="Illustration of the fishing harbour" fill className="object-cover object-[74%_center]" />
+              <Image src="/hero.svg" alt="Illustration of the fishing harbour" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover object-[74%_center]" />
             </div>
           </div>
         </div>
@@ -227,7 +227,7 @@ export default async function Home() {
               {products.filter((p) => p.featuredFor?.includes("christmas")).map((p) => (
                 <Link key={p.slug} href={`/shop/${p.slug}`} className="group border border-border bg-white p-5 transition-all hover:border-navy/30 hover:shadow-md" style={{ borderRadius: '5px' }}>
                   <div className="relative mb-3 h-32 overflow-hidden bg-sand" style={{ borderRadius: '3px' }}>
-                    <Image src={p.image} alt={p.name} fill className="object-cover transition-transform group-hover:scale-105" />
+                    <Image src={p.image} alt={p.name} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw" className="object-cover transition-transform group-hover:scale-105" />
                     <span className="absolute left-2 top-2 bg-lobster px-2 py-1 text-[10px] font-medium tracking-wide text-white uppercase" style={{ borderRadius: '2px' }}>{p.tag}</span>
                   </div>
                   <h3 className="font-serif text-lg font-semibold text-navy">{p.name}</h3>

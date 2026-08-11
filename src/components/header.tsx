@@ -14,7 +14,7 @@ export default function Header() {
     <header className="border-b border-border/50 bg-white sticky top-0 z-50">
       <nav className="grid h-20 w-full grid-cols-2 items-center px-6 md:grid-cols-3">
         <Link href="/" className="justify-self-start">
-          <Image src="/logo.svg" alt="Steve Hatt Fishmongers" width={180} height={80} className="h-11 w-auto" />
+          <Image src="/logo.svg" alt="Steve Hatt Fishmongers" width={180} height={80} className="h-11 w-auto" priority />
         </Link>
 
         {/* Desktop nav — centered links */}

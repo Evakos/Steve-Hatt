@@ -42,11 +42,11 @@ export default function SuppliersPage() {
     },
   ];
 
-  const renderCard = (card: (typeof cards)[number], imageHeight: string) => (
+  const renderCard = (card: (typeof cards)[number], imageHeight: string, sizes: string) => (
     <div key={card.title} className="flex flex-col overflow-hidden bg-white shadow-sm" style={{ borderRadius: "8px" }}>
       {"image" in card && card.image && (
         <div className={`relative ${imageHeight} overflow-hidden`}>
-          <Image src={card.image} alt={card.alt ?? ""} fill className="object-cover" />
+          <Image src={card.image} alt={card.alt ?? ""} fill sizes={sizes} className="object-cover" />
         </div>
       )}
       {"placeholder" in card && (
@@ -86,8 +86,8 @@ export default function SuppliersPage() {
       <section className="bg-white">
         <div className="relative z-10 mx-auto -mt-24 max-w-6xl px-6 pb-16 md:-mt-32">
           <div className="space-y-8">
-            {renderCard(first, "h-64 md:h-80")}
-            <div className="grid gap-8 md:grid-cols-3">{rest.map((card) => renderCard(card, "h-56"))}</div>
+            {renderCard(first, "h-64 md:h-80", "(max-width: 768px) 100vw, 90vw")}
+            <div className="grid gap-8 md:grid-cols-3">{rest.map((card) => renderCard(card, "h-56", "(max-width: 768px) 100vw, 33vw"))}</div>
           </div>
         </div>
       </section>

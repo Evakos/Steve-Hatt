@@ -67,7 +67,7 @@ export default async function ProductPage({
           <div className="grid gap-8 md:grid-cols-[1fr_1fr]">
             {/* Image */}
             <div className="relative aspect-5/4 overflow-hidden bg-white" style={{ borderRadius: '5px' }}>
-              <Image src={product.image} alt={product.name} fill className="object-cover" />
+              <Image src={product.image} alt={product.name} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" priority />
               <span className="absolute left-4 top-4 bg-lobster px-3 py-1.5 text-xs font-medium tracking-wide text-white uppercase" style={{ borderRadius: '2px' }}>
                 {product.tag}
               </span>
@@ -145,7 +145,7 @@ export default async function ProductPage({
               {related.map((p) => (
                 <Link key={p.slug} href={`/shop/${p.slug}`} className="group border border-border bg-cream p-4 transition-all hover:border-navy/30 hover:shadow-md" style={{ borderRadius: '5px' }}>
                   <div className="relative mb-3 aspect-square overflow-hidden" style={{ borderRadius: '3px' }}>
-                    <Image src={p.image} alt={p.name} fill className="object-cover transition-transform group-hover:scale-105" />
+                    <Image src={p.image} alt={p.name} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw" className="object-cover transition-transform group-hover:scale-105" />
                   </div>
                   <h3 className="font-serif text-base font-semibold text-navy">{p.name}</h3>
                   <p className="mt-1 text-sm text-text-light">{p.priceLabel}</p>

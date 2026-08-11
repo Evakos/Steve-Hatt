@@ -10,7 +10,7 @@ export default function ProductCallout({ product }: { product: Product }) {
       style={{ borderRadius: "5px" }}
     >
       <div className="relative h-16 w-16 shrink-0 overflow-hidden bg-sand" style={{ borderRadius: "3px" }}>
-        <Image src={product.image} alt={product.name} fill className="object-cover transition-transform group-hover:scale-105" />
+        <Image src={product.image} alt={product.name} fill sizes="64px" className="object-cover transition-transform group-hover:scale-105" />
       </div>
       <div className="min-w-0 flex-1">
         <p className="truncate font-serif text-base font-semibold text-navy">{product.name}</p>

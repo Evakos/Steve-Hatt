@@ -84,7 +84,7 @@ export default function ShopGrid({ products }: Props) {
             style={{ borderRadius: "5px" }}
           >
             <div className="relative mb-3 h-40 overflow-hidden bg-sand" style={{ borderRadius: "3px" }}>
-              <Image src={p.image} alt={p.name} fill className="object-cover transition-transform group-hover:scale-105" />
+              <Image src={p.image} alt={p.name} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover transition-transform group-hover:scale-105" />
               <span
                 className="absolute left-2 top-2 bg-lobster px-2 py-1 text-[10px] font-medium tracking-wide text-white uppercase"
                 style={{ borderRadius: "2px" }}

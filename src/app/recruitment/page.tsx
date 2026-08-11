@@ -57,7 +57,7 @@ export default function RecruitmentPage() {
               </p>
             </div>
             <div className="relative h-72 overflow-hidden" style={{ borderRadius: "5px" }}>
-              <Image src="/heritage-team.jpg" alt="The Steve Hatt team at work" fill className="object-cover" />
+              <Image src="/heritage-team.jpg" alt="The Steve Hatt team at work" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
             </div>
           </div>
         </div>

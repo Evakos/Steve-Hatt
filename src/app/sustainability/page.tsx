@@ -29,7 +29,7 @@ export default function SustainabilityPage() {
       </section>
 
       <section className="relative h-64" style={{ minHeight: "260px" }}>
-        <Image src="/sustainability-hero.jpg" alt="Brixham harbour, Devon" fill className="object-cover" />
+        <Image src="/sustainability-hero.jpg" alt="Brixham harbour, Devon" fill sizes="100vw" className="object-cover" />
       </section>
 
       {/* Three pillars */}
@@ -53,7 +53,7 @@ export default function SustainabilityPage() {
         <div className="mx-auto max-w-6xl px-6 py-16">
           <div className="grid items-center gap-12 md:grid-cols-2">
             <div className="relative h-64 overflow-hidden" style={{ borderRadius: "5px" }}>
-              <Image src="/sustainability-sourcing.jpg" alt="A fishmonger holding a whole salmon" fill className="object-cover" />
+              <Image src="/sustainability-sourcing.jpg" alt="A fishmonger holding a whole salmon" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
             </div>
             <div>
               <h2 className="font-serif text-2xl font-bold text-navy">Sourcing Fish: Wild vs Farmed</h2>
@@ -79,7 +79,7 @@ export default function SustainabilityPage() {
         <div className="mx-auto max-w-6xl px-6 py-16">
           <div className="grid items-center gap-12 md:grid-cols-2">
             <div className="relative h-64 overflow-hidden md:order-1" style={{ borderRadius: "5px" }}>
-              <Image src="/sustainability-plastic.jpg" alt="A Steve Hatt reusable bag" fill className="object-cover" />
+              <Image src="/sustainability-plastic.jpg" alt="A Steve Hatt reusable bag" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
             </div>
             <div>
               <h2 className="font-serif text-2xl font-bold text-navy">Single-Use Plastic</h2>
@@ -102,7 +102,7 @@ export default function SustainabilityPage() {
         <div className="mx-auto max-w-6xl px-6 py-16">
           <div className="grid items-center gap-12 md:grid-cols-2">
             <div className="relative h-64 overflow-hidden" style={{ borderRadius: "5px" }}>
-              <Image src="/sustainability-waste.jpg" alt="Staff preparing fish in store" fill className="object-cover" />
+              <Image src="/sustainability-waste.jpg" alt="Staff preparing fish in store" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
             </div>
             <div>
               <h2 className="font-serif text-2xl font-bold text-navy">Minimising Waste</h2>

@@ -90,7 +90,7 @@ export default async function BlogPostPage({
       </section>
 
       <section className="relative h-64 md:h-96" style={{ minHeight: "260px" }}>
-        <Image src={post.coverImage} alt="" fill className="object-cover" priority />
+        <Image src={post.coverImage} alt="" fill sizes="100vw" className="object-cover" priority />
       </section>
 
       <section className="bg-white">

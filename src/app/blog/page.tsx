@@ -60,7 +60,7 @@ export default function BlogIndexPage() {
               style={{ borderRadius: "8px" }}
             >
               <div className="relative h-56 overflow-hidden md:h-full">
-                <Image src={featured.coverImage} alt="" fill className="object-cover transition-transform duration-500 group-hover:scale-105" />
+                <Image src={featured.coverImage} alt="" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover transition-transform duration-500 group-hover:scale-105" />
                 <span
                   className="absolute left-4 top-4 bg-lobster px-3 py-1 text-[10px] font-medium tracking-widest text-white uppercase"
                   style={{ borderRadius: "2px" }}
@@ -89,7 +89,7 @@ export default function BlogIndexPage() {
                   style={{ borderRadius: "8px" }}
                 >
                   <div className="relative h-48 overflow-hidden">
-                    <Image src={post.coverImage} alt="" fill className="object-cover transition-transform group-hover:scale-105" />
+                    <Image src={post.coverImage} alt="" fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover transition-transform group-hover:scale-105" />
                   </div>
                   <div className="flex flex-1 flex-col p-6">
                     <PostMeta post={post} />
