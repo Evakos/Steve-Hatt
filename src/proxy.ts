@@ -22,7 +22,9 @@ export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (pathname.startsWith("/admin") || pathname.startsWith("/api/admin")) {
-    if (pathname === "/admin/login" || pathname === "/api/admin/login") {
+    // Login must be reachable without a session; logout must also work when the cookie is
+    // missing or already expired, otherwise the user couldn't clear it.
+    if (pathname === "/admin/login" || pathname === "/api/admin/login" || pathname === "/api/admin/logout") {
       return NextResponse.next();
     }
     const cookie = request.cookies.get(STAFF_COOKIE_NAME)?.value;
