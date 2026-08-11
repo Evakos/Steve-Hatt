@@ -28,6 +28,12 @@ import ContactAddressForm, { EMPTY_CONTACT_ADDRESS, type ContactAddressValue } f
 import PaymentPanel from "@/components/checkout/payment-panel";
 import ThreeDSChallenge from "@/components/checkout/three-ds-challenge";
 import { useCheckoutSubmit } from "@/components/checkout/use-checkout-submit";
+import {
+  getUpcomingChristmasDates,
+  isChristmasFulfilmentDate,
+  isTueToSat,
+  hasUpcomingChristmasDates,
+} from "@/lib/christmas-dates";
 import type { CheckoutRequest } from "@/lib/checkout/schema";
 
 type SlotType = "delivery" | "collection";
@@ -48,11 +54,6 @@ function formatDate(date: Date): string {
   });
 }
 
-function isTueToSat(date: Date): boolean {
-  const day = date.getDay();
-  return day >= 2 && day <= 6;
-}
-
 function getAvailableDates(): Date[] {
   const dates: Date[] = [];
   const today = new Date();
@@ -67,26 +68,17 @@ function getAvailableDates(): Date[] {
     }
   }
 
-  // Christmas pre-order dates (Dec 20-24) are only shown from 1st November onwards, and only for
-  // the December that's actually coming up — this page is never open long enough to need a
-  // "roll over to next year" case (pre-orders close 20th December, delivery/collection is the
-  // 23rd/24th, so the window never spans a New Year).
-  if (today.getMonth() >= 10) {
-    const christmasYear = today.getFullYear();
-    for (let day = 20; day <= 24; day++) {
-      const d = new Date(christmasYear, 11, day);
-      if (isTueToSat(d) && d > today && !dates.some((existing) => existing.getTime() === d.getTime())) {
-        dates.push(d);
-      }
+  // Christmas pre-order dates (Dec 20-24) come from the shared lib/christmas-dates.ts helper —
+  // whenever they're still ahead this December, they're bookable, de-duped against the 21-day
+  // window above for the late-November/December overlap.
+  for (const d of getUpcomingChristmasDates()) {
+    if (!dates.some((existing) => existing.getTime() === d.getTime())) {
+      dates.push(d);
     }
   }
 
   dates.sort((a, b) => a.getTime() - b.getTime());
   return dates;
-}
-
-function isChristmasDate(date: Date): boolean {
-  return date.getMonth() === 11 && date.getDate() >= 20 && date.getDate() <= 24;
 }
 
 export default function CheckoutPage() {
@@ -142,7 +134,10 @@ export default function CheckoutPage() {
     fetch("/api/feature-flags/christmas")
       .then((res) => (res.ok ? res.json() : null))
       .then((data: { active: boolean } | null) => {
-        const active = data?.active ?? false;
+        // Christmas is only offered while fulfilment dates are actually bookable (Dec 20-24
+        // still ahead). If the switch is on those dates exist year-round, so the flow works
+        // for testing/setup outside the November–December season too.
+        const active = (data?.active ?? false) && hasUpcomingChristmasDates();
         setChristmasShopActive(active);
         if (!active) setOrderType("standard");
       })
@@ -203,7 +198,7 @@ export default function CheckoutPage() {
     const result: Slot[] = [];
 
     dates.forEach((date) => {
-      const christmas = isChristmasDate(date);
+      const christmas = isChristmasFulfilmentDate(date);
       if (orderType === "christmas" && !christmas) return;
       if (orderType === "standard" && christmas) return;
 
@@ -549,39 +544,52 @@ export default function CheckoutPage() {
                             : "Select a collection date."}
                       </p>
 
-                      <div
-                        className="mt-4 max-h-80 space-y-1.5 overflow-y-auto border border-border p-2"
-                        style={{ borderRadius: "5px" }}
-                      >
-                        {slots.map((slot, i) => {
-                          const isSelected = selectedSlot?.label === slot.label && selectedSlot?.type === slot.type;
-                          const isXmas = orderType === "christmas";
-                          return (
-                            <button
-                              key={`${slot.label}-${i}`}
-                              onClick={() => setSelectedSlot(slot)}
-                              className={`flex w-full items-center justify-between border px-4 py-3 text-left text-sm transition-colors ${
-                                isSelected
-                                  ? isXmas ? "border-[#1a3a2a] bg-[#e8f5ed]" : "border-navy bg-navy/5"
-                                  : isXmas ? "border-[#1a3a2a]/20 bg-[#e8f5ed]/30 hover:border-[#1a3a2a]/40" : "border-border bg-white hover:border-navy/30"
-                              }`}
-                              style={{ borderRadius: "3px" }}
-                            >
-                              <div className="flex items-center gap-3">
-                                {slot.type === "delivery" ? (
-                                  <Truck className={`h-4 w-4 ${isSelected ? (isXmas ? "text-[#1a3a2a]" : "text-navy") : (isXmas ? "text-[#1a3a2a]/50" : "text-text-light")}`} />
-                                ) : (
-                                  <Store className={`h-4 w-4 ${isSelected ? (isXmas ? "text-[#1a3a2a]" : "text-navy") : (isXmas ? "text-[#1a3a2a]/50" : "text-text-light")}`} />
-                                )}
-                                <span className={isSelected ? (isXmas ? "text-[#1a3a2a]" : "text-navy") : (isXmas ? "text-[#1a3a2a]/70" : "text-text-light")}>
-                                  {slot.label}
-                                </span>
-                              </div>
-                              {isSelected && <Check className={`h-4 w-4 ${isXmas ? "text-[#1a3a2a]" : "text-navy"}`} />}
-                            </button>
-                          );
-                        })}
-                      </div>
+                      {slots.length > 0 ? (
+                        <div
+                          className="mt-4 max-h-80 space-y-1.5 overflow-y-auto border border-border p-2"
+                          style={{ borderRadius: "5px" }}
+                        >
+                          {slots.map((slot, i) => {
+                            const isSelected = selectedSlot?.label === slot.label && selectedSlot?.type === slot.type;
+                            const isXmas = orderType === "christmas";
+                            return (
+                              <button
+                                key={`${slot.label}-${i}`}
+                                onClick={() => setSelectedSlot(slot)}
+                                className={`flex w-full items-center justify-between border px-4 py-3 text-left text-sm transition-colors ${
+                                  isSelected
+                                    ? isXmas ? "border-[#1a3a2a] bg-[#e8f5ed]" : "border-navy bg-navy/5"
+                                    : isXmas ? "border-[#1a3a2a]/20 bg-[#e8f5ed]/30 hover:border-[#1a3a2a]/40" : "border-border bg-white hover:border-navy/30"
+                                }`}
+                                style={{ borderRadius: "3px" }}
+                              >
+                                <div className="flex items-center gap-3">
+                                  {slot.type === "delivery" ? (
+                                    <Truck className={`h-4 w-4 ${isSelected ? (isXmas ? "text-[#1a3a2a]" : "text-navy") : (isXmas ? "text-[#1a3a2a]/50" : "text-text-light")}`} />
+                                  ) : (
+                                    <Store className={`h-4 w-4 ${isSelected ? (isXmas ? "text-[#1a3a2a]" : "text-navy") : (isXmas ? "text-[#1a3a2a]/50" : "text-text-light")}`} />
+                                  )}
+                                  <span className={isSelected ? (isXmas ? "text-[#1a3a2a]" : "text-navy") : (isXmas ? "text-[#1a3a2a]/70" : "text-text-light")}>
+                                    {slot.label}
+                                  </span>
+                                </div>
+                                {isSelected && <Check className={`h-4 w-4 ${isXmas ? "text-[#1a3a2a]" : "text-navy"}`} />}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <div className="mt-4 border border-border bg-white p-6 text-center" style={{ borderRadius: "5px" }}>
+                          <p className="text-sm font-medium text-navy">
+                            No {orderType === "christmas" ? "Christmas" : "delivery or collection"} dates are available.
+                          </p>
+                          <p className="mt-1 text-xs text-text-light">
+                            {orderType === "christmas"
+                              ? "Christmas pre-orders run from 1st November for 20th–24th December. Please check back then."
+                              : "Please try again shortly, or contact the shop for help."}
+                          </p>
+                        </div>
+                      )}
 
                       {orderType === "christmas" && selectedSlot && (
                         <div className="mt-4 border border-[#1a3a2a]/20 bg-[#e8f5ed] p-4" style={{ borderRadius: "5px" }}>
