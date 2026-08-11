@@ -15,7 +15,7 @@ export default function InnerPageHero({ image, eyebrow, title, subtitle }: Props
   return (
     <section className="relative flex items-center justify-center bg-navy text-center" style={{ minHeight: "560px" }}>
       <Image src={image} alt="" fill className="object-cover" priority />
-      <div className="absolute inset-0 bg-navy/75" />
+      <div className="absolute inset-0 bg-navy/85" />
       <div className="relative mx-auto max-w-2xl px-6">
         <p className="text-sm tracking-widest text-white/70 uppercase">— {eyebrow} —</p>
         <h1 className="mt-3 font-serif text-4xl font-bold text-white md:text-5xl">{title}</h1>
