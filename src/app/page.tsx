@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { getAllProducts } from "@/lib/products";
 import { isChristmasShopActive } from "@/lib/feature-flags";
-import { Truck, Fish, Scaling, Leaf, Anchor, Recycle, ShoppingBag, Search } from "lucide-react";
+import { Truck, Fish, Scaling, Leaf, Anchor, Recycle, ShoppingBag, Search, Gift, Snowflake } from "lucide-react";
 import Header from "@/components/header";
 import PostcodeCheck from "@/components/postcode-check";
 import AnnouncementBanner from "@/components/announcement-banner";
@@ -212,29 +212,38 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Christmas pre-orders — only while Christmas ordering is active site-wide (see /admin/guide) */}
+      {/* Christmas pre-orders — only while Christmas ordering is active site-wide (see /admin/guide).
+          Deliberately styled as a festive band distinct from every other section on the page: deep
+          evergreen background (same #1a3a2a palette as the Christmas checkout), snowflake accents,
+          and the banner's festive red (#c94b4b) reused for the tag chips. */}
       {christmasActive && (
-        <section id="christmas" className="bg-cream">
-          <div className="mx-auto max-w-6xl px-6 py-20">
+        <section id="christmas" className="relative overflow-hidden bg-[#1a3a2a]">
+          <Snowflake className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 text-white/5" />
+          <Snowflake className="pointer-events-none absolute -bottom-14 -left-10 h-52 w-52 text-white/5" />
+          <div className="relative mx-auto max-w-6xl px-6 py-20">
             <div className="mb-10 text-center">
-              <p className="text-xs tracking-widest text-text-light uppercase">Festive season</p>
-              <h2 className="mt-2 font-serif text-3xl font-bold text-navy">Christmas Pre-Orders</h2>
-              <p className="mx-auto mt-4 max-w-lg text-lg leading-relaxed text-text-light">
+              <p className="flex items-center justify-center gap-2 text-xs tracking-widest text-[#e8f5ed]/70 uppercase">
+                <Gift className="h-4 w-4" />
+                Festive season
+                <Gift className="h-4 w-4" />
+              </p>
+              <h2 className="mt-2 font-serif text-3xl font-bold text-white md:text-4xl">Christmas Pre-Orders</h2>
+              <p className="mx-auto mt-4 max-w-lg text-lg leading-relaxed text-white/70">
                 Reserve your Christmas feast now. Pre-order by 20th December for delivery or collection on 23rd-24th December. Every order prepared fresh by your fishmonger.
               </p>
             </div>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {products.filter((p) => p.featuredFor?.includes("christmas")).map((p) => (
-                <Link key={p.slug} href={`/shop/${p.slug}`} className="group border border-border bg-white p-5 transition-all hover:border-navy/30 hover:shadow-md" style={{ borderRadius: '5px' }}>
+                <Link key={p.slug} href={`/shop/${p.slug}`} className="group border border-white/10 bg-white p-5 transition-all hover:border-[#e8f5ed] hover:shadow-xl" style={{ borderRadius: '5px' }}>
                   <div className="relative mb-3 h-32 overflow-hidden bg-sand" style={{ borderRadius: '3px' }}>
                     <Image src={p.image} alt={p.name} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw" className="object-cover transition-transform group-hover:scale-105" />
-                    <span className="absolute left-2 top-2 bg-lobster px-2 py-1 text-[10px] font-medium tracking-wide text-white uppercase" style={{ borderRadius: '2px' }}>{p.tag}</span>
+                    <span className="absolute left-2 top-2 bg-[#c94b4b] px-2 py-1 text-[10px] font-medium tracking-wide text-white uppercase" style={{ borderRadius: '2px' }}>{p.tag}</span>
                   </div>
-                  <h3 className="font-serif text-lg font-semibold text-navy">{p.name}</h3>
+                  <h3 className="font-serif text-lg font-semibold text-[#1a3a2a]">{p.name}</h3>
                   <p className="mt-1 text-sm text-text-light">{p.weight}</p>
                   <div className="mt-3 flex items-center justify-between">
-                    <span className="text-base font-semibold text-navy">{p.priceLabel}</span>
-                    <span className="bg-navy px-3 py-1.5 text-[10px] font-medium text-white transition-colors group-hover:bg-navy/90" style={{ borderRadius: '3px' }}>
+                    <span className="text-base font-semibold text-[#1a3a2a]">{p.priceLabel}</span>
+                    <span className="bg-[#1a3a2a] px-3 py-1.5 text-xs font-medium text-white transition-colors group-hover:bg-[#1a3a2a]/85" style={{ borderRadius: '3px' }}>
                       Pre-order
                     </span>
                   </div>
