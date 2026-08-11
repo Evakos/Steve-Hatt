@@ -77,7 +77,6 @@ export default async function ProductPage({
             <div>
               <span className="text-xs tracking-widest text-text-light uppercase">{product.category}</span>
               <h1 className="mt-1.5 font-serif text-4xl font-bold text-navy">{product.name}</h1>
-              <p className="mt-1 text-sm text-text-light">{product.origin}</p>
 
               <div className="mt-4 flex items-baseline gap-3">
                 <span className="font-serif text-3xl font-bold text-navy">{product.priceLabel}</span>
