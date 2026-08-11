@@ -15,6 +15,16 @@ const howItWorks = [
   { icon: <Truck className="h-5 w-5" />, step: "04", title: "Delivered Fresh", desc: "Next-day delivery to your door, or collect from Essex Road. Always fresh, never frozen." },
 ];
 
+/** The four products shown in the homepage Christmas pre-order grid — a fixed, curated festive
+ * shortlist (smoked salmon, lobster, scallops, oysters) rather than every Christmas-tagged
+ * product. Swap slugs here to change what's featured. */
+const CHRISTMAS_FEATURED_SLUGS = [
+  "smoked-salmon-gold-board",
+  "lobster-live",
+  "scallops",
+  "oysters-carlingford-2",
+];
+
 /** Fisher-Yates shuffle, then take the first n — used to rotate "Today's Catch" rather than
  * always showing the same fixed products. */
 function pickRandom<T>(items: T[], n: number): T[] {
@@ -29,6 +39,11 @@ function pickRandom<T>(items: T[], n: number): T[] {
 export default async function Home() {
   const [products, christmasActive] = await Promise.all([getAllProducts(), isChristmasShopActive()]);
   const todaysCatch = pickRandom(products, 6);
+  // Curated festive picks for the Christmas section — only products whose slug is in the
+  // shortlist above are shown (each still needs the christmas tag to be eligible to order).
+  const christmasFeatured = CHRISTMAS_FEATURED_SLUGS.map((slug) => products.find((p) => p.slug === slug)).filter(
+    (p): p is NonNullable<typeof p> => Boolean(p)
+  );
 
   return (
     <main className="flex flex-1 flex-col">
@@ -213,31 +228,31 @@ export default async function Home() {
       </section>
 
       {/* Christmas pre-orders — only while Christmas ordering is active site-wide (see /admin/guide).
-          Deliberately styled as a festive band distinct from every other section on the page: deep
-          evergreen background (same #1a3a2a palette as the Christmas checkout), snowflake accents,
-          and the banner's festive red (#c94b4b) reused for the tag chips. */}
+          Deliberately styled as a festive band distinct from every other section on the page: the
+          announcement banner's festive red (#c94b4b), snowflake accents, and a curated four-product
+          grid of classic Christmas picks (see CHRISTMAS_FEATURED_SLUGS above). */}
       {christmasActive && (
-        <section id="christmas" className="relative overflow-hidden bg-[#1a3a2a]">
-          <Snowflake className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 text-white/5" />
-          <Snowflake className="pointer-events-none absolute -bottom-14 -left-10 h-52 w-52 text-white/5" />
+        <section id="christmas" className="relative overflow-hidden bg-[#c94b4b]">
+          <Snowflake className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 text-white/10" />
+          <Snowflake className="pointer-events-none absolute -bottom-14 -left-10 h-52 w-52 text-white/10" />
           <div className="relative mx-auto max-w-6xl px-6 py-20">
             <div className="mb-10 text-center">
-              <p className="flex items-center justify-center gap-2 text-xs tracking-widest text-[#e8f5ed]/70 uppercase">
+              <p className="flex items-center justify-center gap-2 text-xs tracking-widest text-white/80 uppercase">
                 <Gift className="h-4 w-4" />
                 Festive season
                 <Gift className="h-4 w-4" />
               </p>
               <h2 className="mt-2 font-serif text-3xl font-bold text-white md:text-4xl">Christmas Pre-Orders</h2>
-              <p className="mx-auto mt-4 max-w-lg text-lg leading-relaxed text-white/70">
+              <p className="mx-auto mt-4 max-w-lg text-lg leading-relaxed text-white/85">
                 Reserve your Christmas feast now. Pre-order by 20th December for delivery or collection on 23rd-24th December. Every order prepared fresh by your fishmonger.
               </p>
             </div>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {products.filter((p) => p.featuredFor?.includes("christmas")).map((p) => (
-                <Link key={p.slug} href={`/shop/${p.slug}`} className="group border border-white/10 bg-white p-5 transition-all hover:border-[#e8f5ed] hover:shadow-xl" style={{ borderRadius: '5px' }}>
+              {christmasFeatured.map((p) => (
+                <Link key={p.slug} href={`/shop/${p.slug}`} className="group border border-white/20 bg-white p-5 transition-all hover:border-white hover:shadow-xl" style={{ borderRadius: '5px' }}>
                   <div className="relative mb-3 h-32 overflow-hidden bg-sand" style={{ borderRadius: '3px' }}>
                     <Image src={p.image} alt={p.name} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw" className="object-cover transition-transform group-hover:scale-105" />
-                    <span className="absolute left-2 top-2 bg-[#c94b4b] px-2 py-1 text-[10px] font-medium tracking-wide text-white uppercase" style={{ borderRadius: '2px' }}>{p.tag}</span>
+                    <span className="absolute left-2 top-2 bg-[#1a3a2a] px-2 py-1 text-[10px] font-medium tracking-wide text-white uppercase" style={{ borderRadius: '2px' }}>{p.tag}</span>
                   </div>
                   <h3 className="font-serif text-lg font-semibold text-[#1a3a2a]">{p.name}</h3>
                   <p className="mt-1 text-sm text-text-light">{p.weight}</p>
