@@ -72,13 +72,23 @@ export async function getProductForPricing(
   const wooProduct = await wooFetch<WooProduct>(`products/${wooProductId}`, { next: { revalidate: 0 } });
   const pricePerKgMeta = wooProduct.meta_data.find((m) => m.key === "_steve_hatt_price_per_kg");
   const pricePerKg = typeof pricePerKgMeta?.value === "string" ? Number.parseFloat(pricePerKgMeta.value) || 0 : 0;
+  const christmasPriceMeta = wooProduct.meta_data.find((m) => m.key === "_steve_hatt_christmas_price");
+  const christmasPrice =
+    typeof christmasPriceMeta?.value === "string" ? Number.parseFloat(christmasPriceMeta.value) || undefined : undefined;
 
   if (wooVariationId) {
     const variation = await wooFetch<WooProductVariation>(`products/${wooProductId}/variations/${wooVariationId}`, {
       next: { revalidate: 0 },
     });
-    return { pricePerKg, price: Number.parseFloat(wooProduct.price || wooProduct.regular_price) || 0, sizeOptionPrice: Number.parseFloat(variation.price) || 0 };
+    // Christmas pricing isn't supported for weight/size-tiered products yet — sizeOptionPrice
+    // being set is what tells computeUnitPriceForOrder to skip the christmasPrice override.
+    return {
+      pricePerKg,
+      price: Number.parseFloat(wooProduct.price || wooProduct.regular_price) || 0,
+      sizeOptionPrice: Number.parseFloat(variation.price) || 0,
+      christmasPrice,
+    };
   }
 
-  return { pricePerKg, price: Number.parseFloat(wooProduct.price || wooProduct.regular_price) || 0 };
+  return { pricePerKg, price: Number.parseFloat(wooProduct.price || wooProduct.regular_price) || 0, christmasPrice };
 }

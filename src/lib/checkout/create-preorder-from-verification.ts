@@ -72,6 +72,9 @@ export async function createPreOrderFromVerification(
       meta_data: [
         { key: "Preparation", value: item.preparation },
         ...(item.weight > 0 ? [{ key: "Weight (estimated)", value: `${item.weight}kg` }] : []),
+        // See create-order-from-payment.ts — same reasoning, this is the rate re-authorise-preorders
+        // priced the order at, so staff still see it applied when they capture after the real weigh-in.
+        { key: "Unit price applied", value: `£${item.unitPrice.toFixed(2)}${fulfilment.slot.isChristmas ? " (Christmas)" : ""}` },
       ],
     })),
     shipping_lines:

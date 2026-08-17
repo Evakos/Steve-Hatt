@@ -16,7 +16,8 @@ import {
   AlertCircle,
   Loader2,
 } from "lucide-react";
-import { useCart, lineTotal } from "@/lib/cart-context";
+import { useCart } from "@/lib/cart-context";
+import { computeUnitPriceForOrder } from "@/lib/pricing";
 import {
   normalisePostcode,
   extractOutcode,
@@ -82,7 +83,7 @@ function getAvailableDates(): Date[] {
 }
 
 export default function CheckoutPage() {
-  const { items, estimatedTotal, clearCart } = useCart();
+  const { items, clearCart } = useCart();
   const { state: submitState, submit, confirmThreeDS, reset: resetSubmit } = useCheckoutSubmit();
 
   // Snapshot the slot/christmas-ness at the moment of payment, so the confirmation screen can
@@ -127,32 +128,43 @@ export default function CheckoutPage() {
   const [christmasBlockedReason, setChristmasBlockedReason] = useState<string | null>(null);
 
   // Whether Christmas pre-ordering is being offered at all right now (site-wide admin toggle —
-  // see /admin/guide), and the seasonal premium percentage applied to Christmas orders (also
-  // admin-configurable — see getChristmasPremiumPercent). Fetched client-side since this page
-  // needs to stay a client component. Outside the pre-order season there's no choice to make, so
-  // the question is skipped entirely.
+  // see /admin/products). Fetched client-side since this page needs to stay a client component.
+  // Outside the pre-order season there's no choice to make, so the question is skipped entirely.
+  // (The feature-flags endpoint also returns a premiumPercent — a dormant/experimental
+  // percentage mechanism, not the live one, see reprice.ts — deliberately ignored here.)
   const [christmasShopActive, setChristmasShopActive] = useState(false);
-  const [christmasPremiumPercent, setChristmasPremiumPercent] = useState(0);
   useEffect(() => {
     fetch("/api/feature-flags/christmas")
       .then((res) => (res.ok ? res.json() : null))
-      .then((data: { active: boolean; premiumPercent: number } | null) => {
+      .then((data: { active: boolean } | null) => {
         // Christmas is only offered while fulfilment dates are actually bookable (Dec 20-24
         // still ahead). If the switch is on those dates exist year-round, so the flow works
         // for testing/setup outside the November–December season too.
         const active = (data?.active ?? false) && hasUpcomingChristmasDates();
         setChristmasShopActive(active);
-        setChristmasPremiumPercent(data?.premiumPercent ?? 0);
         if (!active) setOrderType("standard");
       })
       .catch(() => setOrderType("standard"));
   }, []);
 
+  const isChristmasOrder = orderType === "christmas";
   // The price shown at checkout must match what actually gets authorised/verified server-side
-  // (see repriceCheckoutRequest) — so once a Christmas order is chosen, the same premium is
-  // applied here to what's displayed, never as a separate price shown anywhere in the catalogue.
-  const christmasPriceMultiplier = orderType === "christmas" ? 1 + christmasPremiumPercent / 100 : 1;
-  const displayEstimatedTotal = Math.round(estimatedTotal * christmasPriceMultiplier * 100) / 100;
+  // (see repriceCheckoutRequest / computeUnitPriceForOrder) — each item's manual Christmas price
+  // is applied here per-product, the same priority logic the server uses, never a blanket
+  // percentage and never shown anywhere outside checkout.
+  const displayUnitPrice = (item: (typeof items)[number]) =>
+    computeUnitPriceForOrder(
+      {
+        pricePerKg: item.product.pricePerKg,
+        price: item.product.price,
+        sizeOptionPrice: item.wooVariationId ? item.unitPrice : undefined,
+        christmasPrice: item.product.christmasPrice,
+      },
+      item.weight,
+      isChristmasOrder
+    );
+  const displayEstimatedTotal =
+    Math.round(items.reduce((sum, item) => sum + displayUnitPrice(item) * item.quantity, 0) * 100) / 100;
 
   function chooseOrderType(next: "standard" | "christmas") {
     if (next === "christmas") {
@@ -222,7 +234,6 @@ export default function CheckoutPage() {
     return result;
   }, [slotType, orderType]);
 
-  const isChristmasOrder = orderType === "christmas";
   const canProceedToPayment = !!selectedSlot;
   const deliveryCost = slotType === "delivery" ? 5 : 0;
 
@@ -448,13 +459,14 @@ export default function CheckoutPage() {
                           {orderType === "christmas" && <Check className="ml-auto h-4 w-4 text-[#1a3a2a]" />}
                         </button>
                       </div>
-                      {christmasPremiumPercent > 0 && (
+                      {items.some((item) => !item.wooVariationId && item.product.christmasPrice) && (
                         <div className="mt-3 flex items-start gap-2 border border-[#1a3a2a]/20 bg-[#e8f5ed]/50 px-4 py-3" style={{ borderRadius: "5px" }}>
                           <Gift className="mt-0.5 h-4 w-4 shrink-0 text-[#1a3a2a]" />
                           <p className="text-sm text-[#1a3a2a]/80">
-                            A {christmasPremiumPercent}% seasonal premium applies to Christmas orders, reflecting
-                            higher market prices over the festive period. Prices shown elsewhere on the site are
-                            unaffected, this only applies once you choose to order for Christmas.
+                            Some items in your basket have a different price for Christmas, reflecting higher
+                            market prices over the festive period. Prices shown elsewhere on the site are
+                            unaffected, this only applies once you choose to order for Christmas, and is reflected
+                            in the totals below.
                           </p>
                         </div>
                       )}
@@ -741,7 +753,7 @@ export default function CheckoutPage() {
                           <p className="font-medium text-navy">{item.product.name}</p>
                           <p className="text-text-light">{item.preparation}</p>
                         </div>
-                        <span className="text-xs font-medium text-navy">£{(lineTotal(item) * christmasPriceMultiplier).toFixed(2)}</span>
+                        <span className="text-xs font-medium text-navy">£{(displayUnitPrice(item) * item.quantity).toFixed(2)}</span>
                       </div>
                   ))}
                 </div>
@@ -749,14 +761,8 @@ export default function CheckoutPage() {
                 <div className="mt-4 space-y-2 border-t border-border pt-4 text-sm">
                   <div className="flex justify-between text-text-light">
                     <span>Subtotal</span>
-                    <span>£{estimatedTotal.toFixed(2)}</span>
+                    <span>£{displayEstimatedTotal.toFixed(2)}</span>
                   </div>
-                  {christmasPriceMultiplier > 1 && (
-                    <div className="flex justify-between text-[#1a3a2a]">
-                      <span>Christmas premium ({christmasPremiumPercent}%)</span>
-                      <span>+£{(displayEstimatedTotal - estimatedTotal).toFixed(2)}</span>
-                    </div>
-                  )}
                   <div className="flex justify-between text-text-light">
                     <span>{slotType === "delivery" ? "Delivery" : slotType === "collection" ? "Collection" : "Fulfilment"}</span>
                     <span>{!slotType ? "—" : slotType === "collection" ? "Free" : "£5.00"}</span>

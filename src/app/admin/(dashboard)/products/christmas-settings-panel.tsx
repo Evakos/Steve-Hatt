@@ -74,12 +74,16 @@ export default function ChristmasSettingsPanel() {
         </button>
       </div>
 
-      <div className="mt-3 border border-border bg-cream p-4" style={{ borderRadius: "5px" }}>
+      <div className="mt-3 border border-dashed border-border bg-cream/60 p-4 opacity-70" style={{ borderRadius: "5px" }}>
         <div className="flex items-center justify-between">
-          <p className="text-sm font-medium text-navy">Seasonal price premium</p>
+          <p className="text-sm font-medium text-navy">Seasonal price premium (experimental, not active)</p>
           <p className="text-sm font-semibold text-navy">{premiumPercent}%</p>
         </div>
-        <p className="text-xs text-text-light">Added to every product&apos;s price, only for Christmas orders.</p>
+        <p className="text-xs text-text-light">
+          Not currently used. Christmas prices are set per-product instead, in the &quot;christmas_price&quot;
+          column of the Products sheet below. This blanket-percentage option is kept here in case it&apos;s
+          ever wanted again, but changing it has no effect on checkout right now.
+        </p>
         <input
           type="range"
           min={0}

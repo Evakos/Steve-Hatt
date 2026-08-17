@@ -39,6 +39,12 @@ export type Product = {
   /** Almost every product can be pre-ordered for Christmas by default — this opts a specific
    * product OUT (e.g. something that can't be held that long, or won't be in stock). */
   excludedFromChristmas?: boolean;
+  /** Manual per-product Christmas price override, set via the Products sheet's `christmas_price`
+   * column — same units as pricePerKg/price (a £/kg rate if priced by weight, a flat price
+   * otherwise). Undefined means no Christmas-specific price is set for this product. Never shown
+   * anywhere in the catalogue (see computeUnitPriceForOrder) — only used to compute an accurate
+   * checkout-time estimate for a Christmas order, the real price is always recomputed server-side. */
+  christmasPrice?: number;
   /** Optional date string for when pre-orders will be fulfilled/delivered */
   preOrderDelivery?: string;
   /** WooCommerce product id, needed to reference this product at checkout. */

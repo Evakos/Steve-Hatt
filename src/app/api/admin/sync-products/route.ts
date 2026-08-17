@@ -11,6 +11,7 @@ const META_KEYS = {
   sustainability: "_steve_hatt_sustainability",
   storage: "_steve_hatt_storage",
   excludedFromChristmas: "_steve_hatt_excluded_from_christmas",
+  christmasPrice: "_steve_hatt_christmas_price",
 } as const;
 
 const VALID_STATUSES = new Set(["draft", "pending", "private", "publish"]);
@@ -108,6 +109,25 @@ export async function POST() {
       excludedFromChristmas = TRUTHY.has(normalised);
     }
 
+    // Manual per-product Christmas price override (same idea as previous years' separate
+    // Christmas price spreadsheet) — see computeUnitPriceForOrder for how this is applied at
+    // checkout. Blank means "no override, use the normal price even for Christmas orders".
+    let christmasPrice: string | undefined;
+    if (row.christmas_price) {
+      const parsedChristmasPrice = Number(row.christmas_price);
+      if (!Number.isFinite(parsedChristmasPrice) || parsedChristmasPrice < 0) {
+        results.push({
+          kind: "product",
+          productId,
+          title,
+          status: "error",
+          message: `christmas_price column isn't a valid non-negative number, got: ${row.christmas_price}`,
+        });
+        continue;
+      }
+      christmasPrice = parsedChristmasPrice.toFixed(2);
+    }
+
     const metaData: { key: string; value: string }[] = [];
     if (row.tag) metaData.push({ key: META_KEYS.tag, value: row.tag });
     if (preparation) metaData.push({ key: META_KEYS.preparation, value: JSON.stringify(preparation) });
@@ -116,6 +136,9 @@ export async function POST() {
     if (row.storage) metaData.push({ key: META_KEYS.storage, value: row.storage });
     if (excludedFromChristmas !== undefined) {
       metaData.push({ key: META_KEYS.excludedFromChristmas, value: String(excludedFromChristmas) });
+    }
+    if (christmasPrice !== undefined) {
+      metaData.push({ key: META_KEYS.christmasPrice, value: christmasPrice });
     }
 
     try {

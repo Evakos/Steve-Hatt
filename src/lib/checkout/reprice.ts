@@ -1,7 +1,6 @@
 import "server-only";
 import { getProductForPricing } from "@/lib/woocommerce/products";
-import { computeUnitPrice } from "@/lib/pricing";
-import { getChristmasPremiumPercent } from "@/lib/feature-flags";
+import { computeUnitPriceForOrder } from "@/lib/pricing";
 import type { CheckoutRequest } from "./schema";
 
 // Mirrors the client-side delivery fee shown in src/app/checkout/page.tsx — the delivery-step
@@ -27,10 +26,7 @@ export interface RepricedOrder {
   subtotal: number;
   deliveryFee: number;
   total: number;
-  /** 0 unless this is a Christmas order and a premium is currently configured — see
-   * getChristmasPremiumPercent. Surfaced so callers (order emails) can disclose it rather than
-   * customers just seeing an unexplained higher total. */
-  christmasPremiumPercent: number;
+  isChristmas: boolean;
 }
 
 /**
@@ -38,13 +34,19 @@ export interface RepricedOrder {
  * This is the fix for the price-tampering gap a real payment integration must close — the old
  * fake checkout had nothing to tamper with, since nothing was ever charged.
  *
- * Christmas orders get a seasonal percentage premium applied here, on the price itself — never
- * shown as a separate "Christmas price" on the shop/product pages (see getChristmasPremiumPercent
- * for why: one catalogue, one price per product, the premium only exists at checkout).
+ * Christmas orders use each product's manual christmasPrice override where one's set (the
+ * Products sheet's `christmas_price` column, staff-managed, same idea as previous years'
+ * separate Christmas price sheet) — never a blanket percentage, and never shown as a second
+ * price on the shop/product pages, only here, once a customer has actually chosen a Christmas
+ * order. See computeUnitPriceForOrder for the full priority logic.
+ *
+ * NOTE: getChristmasPremiumPercent (src/lib/feature-flags.ts) still exists and is editable from
+ * /admin/products, but is deliberately NOT applied here — kept as a dormant/experimental
+ * mechanism, not the live one, per product decision. If it's ever reactivated, it should layer
+ * on top of computeUnitPriceForOrder's result rather than replacing this per-product approach.
  */
 export async function repriceCheckoutRequest(checkout: CheckoutRequest): Promise<RepricedOrder> {
-  const christmasPremiumPercent = checkout.fulfilment.slot.isChristmas ? await getChristmasPremiumPercent() : 0;
-  const premiumMultiplier = 1 + christmasPremiumPercent / 100;
+  const isChristmas = checkout.fulfilment.slot.isChristmas;
 
   const lineItems = await Promise.all(
     checkout.items.map(async (item) => {
@@ -52,10 +54,7 @@ export async function repriceCheckoutRequest(checkout: CheckoutRequest): Promise
       if (!pricing) {
         throw new Error(`Product ${item.wooProductId} not found while repricing checkout`);
       }
-      // Rounded to the penny — repeatedly compounding an unrounded percentage into money values
-      // downstream (line totals, subtotal, capture amounts) would otherwise drift by fractions
-      // of a penny and show up as odd totals.
-      const unitPrice = Math.round(computeUnitPrice(pricing, item.weight) * premiumMultiplier * 100) / 100;
+      const unitPrice = Math.round(computeUnitPriceForOrder(pricing, item.weight, isChristmas) * 100) / 100;
       return {
         wooProductId: item.wooProductId,
         wooVariationId: item.wooVariationId,
@@ -72,5 +71,5 @@ export async function repriceCheckoutRequest(checkout: CheckoutRequest): Promise
   const subtotal = lineItems.reduce((sum, item) => sum + item.lineTotal, 0);
   const deliveryFee = checkout.fulfilment.type === "delivery" ? DELIVERY_FEE : 0;
 
-  return { lineItems, subtotal, deliveryFee, total: subtotal + deliveryFee, christmasPremiumPercent };
+  return { lineItems, subtotal, deliveryFee, total: subtotal + deliveryFee, isChristmas };
 }

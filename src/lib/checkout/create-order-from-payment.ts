@@ -79,6 +79,11 @@ export async function createOrderFromPayment(
       meta_data: [
         { key: "Preparation", value: item.preparation },
         ...(item.weight > 0 ? [{ key: "Weight (estimated)", value: `${item.weight}kg` }] : []),
+        // Staff re-price each line by hand at capture time (see capture-order-card.tsx) after the
+        // real weigh-in — this is the rate that produced the estimate above, so a Christmas order's
+        // per-product Christmas price (if any) stays visible instead of silently reverting to the
+        // normal price once nobody but this order remembers it was ever applied.
+        { key: "Unit price applied", value: `£${item.unitPrice.toFixed(2)}${fulfilment.slot.isChristmas ? " (Christmas)" : ""}` },
       ],
     })),
     shipping_lines:

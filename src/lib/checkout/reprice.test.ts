@@ -1,10 +1,8 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 
 const getProductForPricing = vi.fn();
-const getChristmasPremiumPercent = vi.fn();
 
 vi.mock("@/lib/woocommerce/products", () => ({ getProductForPricing }));
-vi.mock("@/lib/feature-flags", () => ({ getChristmasPremiumPercent }));
 
 const { repriceCheckoutRequest } = await import("./reprice");
 
@@ -27,56 +25,63 @@ describe("repriceCheckoutRequest", () => {
     vi.clearAllMocks();
   });
 
-  it("does not apply a premium on a standard order, even if one is configured", async () => {
-    getProductForPricing.mockResolvedValue({ pricePerKg: 0, price: 10, sizeOptionPrice: undefined });
-    getChristmasPremiumPercent.mockResolvedValue(10);
+  it("uses the normal price on a standard order, even if a Christmas price is set", async () => {
+    getProductForPricing.mockResolvedValue({ pricePerKg: 0, price: 10, sizeOptionPrice: undefined, christmasPrice: 15 });
 
     const result = await repriceCheckoutRequest(baseCheckout({ isChristmas: false }));
 
-    expect(getChristmasPremiumPercent).not.toHaveBeenCalled();
-    expect(result.christmasPremiumPercent).toBe(0);
+    expect(result.isChristmas).toBe(false);
     expect(result.lineItems[0].unitPrice).toBe(10);
     expect(result.subtotal).toBe(20);
   });
 
-  it("applies the configured percentage premium on a Christmas order", async () => {
-    getProductForPricing.mockResolvedValue({ pricePerKg: 0, price: 10, sizeOptionPrice: undefined });
-    getChristmasPremiumPercent.mockResolvedValue(10);
+  it("uses the manual Christmas price on a Christmas order when one is set", async () => {
+    getProductForPricing.mockResolvedValue({ pricePerKg: 0, price: 10, sizeOptionPrice: undefined, christmasPrice: 15 });
 
     const result = await repriceCheckoutRequest(baseCheckout({ isChristmas: true }));
 
-    expect(result.christmasPremiumPercent).toBe(10);
-    expect(result.lineItems[0].unitPrice).toBe(11);
-    expect(result.subtotal).toBe(22);
+    expect(result.isChristmas).toBe(true);
+    expect(result.lineItems[0].unitPrice).toBe(15);
+    expect(result.subtotal).toBe(30);
   });
 
-  it("rounds the premium-adjusted unit price to the nearest penny", async () => {
-    getProductForPricing.mockResolvedValue({ pricePerKg: 0, price: 4.99, sizeOptionPrice: undefined });
-    getChristmasPremiumPercent.mockResolvedValue(7.5);
-
-    const result = await repriceCheckoutRequest(baseCheckout({ isChristmas: true }));
-
-    // 4.99 * 1.075 = 5.36425 -> rounds to 5.36
-    expect(result.lineItems[0].unitPrice).toBe(5.36);
-  });
-
-  it("is a no-op when no premium is configured, even on a Christmas order", async () => {
-    getProductForPricing.mockResolvedValue({ pricePerKg: 0, price: 10, sizeOptionPrice: undefined });
-    getChristmasPremiumPercent.mockResolvedValue(0);
+  it("falls back to the normal price on a Christmas order when no Christmas price is set", async () => {
+    getProductForPricing.mockResolvedValue({ pricePerKg: 0, price: 10, sizeOptionPrice: undefined, christmasPrice: undefined });
 
     const result = await repriceCheckoutRequest(baseCheckout({ isChristmas: true }));
 
     expect(result.lineItems[0].unitPrice).toBe(10);
-    expect(result.christmasPremiumPercent).toBe(0);
   });
 
-  it("adds the delivery fee on top of the premium-adjusted subtotal", async () => {
-    getProductForPricing.mockResolvedValue({ pricePerKg: 0, price: 10, sizeOptionPrice: undefined });
-    getChristmasPremiumPercent.mockResolvedValue(10);
+  it("applies a per-kg Christmas price against the real weight, same as normal pricing", async () => {
+    getProductForPricing.mockResolvedValue({ pricePerKg: 20, price: 0, sizeOptionPrice: undefined, christmasPrice: 25 });
+
+    const result = await repriceCheckoutRequest({
+      ...baseCheckout({ isChristmas: true }),
+      items: [{ wooProductId: 1, quantity: 1, weight: 0.5, preparation: "Whole", productName: "Salmon" }],
+    });
+
+    // 25/kg * 0.5kg = 12.50
+    expect(result.lineItems[0].unitPrice).toBe(12.5);
+  });
+
+  it("never applies a Christmas price to a weight/size-tiered (variation) product", async () => {
+    getProductForPricing.mockResolvedValue({ pricePerKg: 0, price: 0, sizeOptionPrice: 60, christmasPrice: 75 });
+
+    const result = await repriceCheckoutRequest({
+      ...baseCheckout({ isChristmas: true }),
+      items: [{ wooProductId: 1, wooVariationId: 36, quantity: 1, weight: 0, preparation: "Live", productName: "Lobster Live" }],
+    });
+
+    expect(result.lineItems[0].unitPrice).toBe(60);
+  });
+
+  it("adds the delivery fee on top of the repriced subtotal", async () => {
+    getProductForPricing.mockResolvedValue({ pricePerKg: 0, price: 10, sizeOptionPrice: undefined, christmasPrice: 15 });
 
     const result = await repriceCheckoutRequest(baseCheckout({ isChristmas: true, type: "delivery" }));
 
     expect(result.deliveryFee).toBe(5);
-    expect(result.total).toBe(27);
+    expect(result.total).toBe(35);
   });
 });

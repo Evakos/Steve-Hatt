@@ -19,6 +19,7 @@ export default function CaptureOrderCard({ order }: Props) {
   const router = useRouter();
   const authorisedAmount = Number(order.meta_data.find((m) => m.key === "_cardstream_authorised_amount")?.value ?? order.total);
   const slotLabel = order.meta_data.find((m) => m.key === "_checkout_slot_label")?.value as string | undefined;
+  const isChristmasOrder = order.meta_data.find((m) => m.key === "_checkout_is_christmas")?.value === "true";
 
   const daysSinceAuth = Math.floor((new Date().getTime() - new Date(order.date_created).getTime()) / 86_400_000);
   const authExpired = daysSinceAuth >= AUTH_EXPIRY_DAYS;
@@ -63,6 +64,11 @@ export default function CaptureOrderCard({ order }: Props) {
       <div className="flex items-baseline justify-between">
         <h2 className="font-medium text-navy">
           Order #{order.number}, {order.billing.first_name} {order.billing.last_name}
+          {isChristmasOrder && (
+            <span className="ml-2 bg-[#c94b4b] px-2 py-0.5 align-middle text-xs font-medium text-white" style={{ borderRadius: "999px" }}>
+              Christmas
+            </span>
+          )}
         </h2>
         <span className="text-sm text-text-light">Authorised: £{authorisedAmount.toFixed(2)}</span>
       </div>
@@ -79,23 +85,40 @@ export default function CaptureOrderCard({ order }: Props) {
       </p>
 
       <div className="mt-3 space-y-2">
-        {order.line_items.map((li) => (
-          <div key={li.id} className="flex items-center justify-between gap-3 text-base">
-            <span className="text-navy">{li.name}</span>
-            <div className="flex items-center gap-1">
-              <span className="text-text-light">£</span>
-              <input
-                type="number"
-                step="0.01"
-                min="0"
-                value={amounts[li.id]}
-                onChange={(e) => setAmounts((prev) => ({ ...prev, [li.id]: e.target.value }))}
-                className="w-24 border border-border px-2 py-1 text-right text-sm"
-                style={{ borderRadius: "4px" }}
-              />
+        {order.line_items.map((li) => {
+          const unitPriceApplied = li.meta_data.find((m) => m.key === "Unit price applied")?.value as
+            | string
+            | undefined;
+          const weightEstimated = li.meta_data.find((m) => m.key === "Weight (estimated)")?.value as
+            | string
+            | undefined;
+          return (
+            <div key={li.id} className="flex items-center justify-between gap-3 text-base">
+              <span className="text-navy">
+                {li.name}
+                {(unitPriceApplied || weightEstimated) && (
+                  <span className="ml-2 text-xs text-text-light">
+                    {[unitPriceApplied && `${unitPriceApplied} applied`, weightEstimated && `est. ${weightEstimated}`]
+                      .filter(Boolean)
+                      .join(" · ")}
+                  </span>
+                )}
+              </span>
+              <div className="flex items-center gap-1">
+                <span className="text-text-light">£</span>
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={amounts[li.id]}
+                  onChange={(e) => setAmounts((prev) => ({ ...prev, [li.id]: e.target.value }))}
+                  className="w-24 border border-border px-2 py-1 text-right text-sm"
+                  style={{ borderRadius: "4px" }}
+                />
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className="mt-3 flex items-center justify-between border-t border-border pt-3">

@@ -1,5 +1,3 @@
-import ChristmasSettingsPanel from "./christmas-settings-panel";
-
 const SPREADSHEET_URL = "https://docs.google.com/spreadsheets/d/1u0g6qC-xsbrjuhRpha80i8MvZdM5frfKhX9fG0a_VUY/edit?usp=sharing";
 
 export default function AdminGuidePage() {
@@ -74,33 +72,38 @@ export default function AdminGuidePage() {
       </section>
 
       <section className="mt-6 border border-border bg-white p-5" style={{ borderRadius: "5px" }}>
-        <h2 className="font-medium text-navy">4. Christmas ordering &amp; seasonal premium</h2>
+        <h2 className="font-medium text-navy">4. Christmas ordering &amp; pricing</h2>
         <div className="mt-3 space-y-3 text-base leading-relaxed text-text-light">
           <p>
             Whether customers see the option to shop for Christmas at all is controlled by a single site-wide
             switch, so it doesn&apos;t show up outside the pre-order season. Christmas items (turkey, whole
             salmon, lobster etc.) typically cost more around the festive period too, rather than duplicating
             every seasonal product into a separate &quot;Christmas version&quot; with its own price (two
-            catalogues to keep in sync, easy to get wrong), a single percentage premium is added on top of the
-            normal price automatically, only once a customer has chosen to order for Christmas at checkout.
+            catalogues to keep in sync, easy to get wrong), each product can have its own manual Christmas price
+            set via the spreadsheet, same idea as previous years&apos; separate Christmas price sheet, applied
+            automatically once a customer has chosen to order for Christmas at checkout.
           </p>
           <p>
-            <strong className="text-navy">The premium never shows up as a second price anywhere in the shop.</strong>{" "}
+            <strong className="text-navy">The Christmas price never shows up as a second price anywhere in the shop.</strong>{" "}
             Every product page and the shop grid always show one price, the same one, all year round. It&apos;s a
             checkout-time calculation only, disclosed to the customer with a note next to the &quot;For
-            Christmas&quot; option before they commit, then itemised as its own line in the order summary.
+            Christmas&quot; option before they commit, then reflected directly in each line&apos;s price in the
+            order summary.
           </p>
-          <p>Both settings take effect immediately, no redeploy needed, and can be changed as often as needed through the season.</p>
+          <p>
+            The site-wide switch and the per-product Christmas prices are managed on the{" "}
+            <strong className="text-navy">Products</strong> page, alongside the spreadsheet sync. Both take effect
+            immediately, no redeploy needed.
+          </p>
         </div>
-        <ChristmasSettingsPanel />
       </section>
 
       <section className="mt-6 border border-border bg-white p-5" style={{ borderRadius: "5px" }}>
         <h2 className="font-medium text-navy">5. Product spreadsheet sync</h2>
         <div className="mt-3 space-y-3 text-base leading-relaxed text-text-light">
           <p>
-            Product details (title, price, status, description, tag, preparation, origin, sustainability, storage)
-            can be edited in the{" "}
+            Product details (title, price, status, description, tag, preparation, origin, sustainability, storage,
+            Christmas price) can be edited in the{" "}
             <a href={SPREADSHEET_URL} target="_blank" rel="noopener noreferrer" className="text-navy underline hover:text-lobster">
               shared Google Sheet
             </a>{" "}
