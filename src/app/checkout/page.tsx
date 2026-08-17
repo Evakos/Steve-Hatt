@@ -127,22 +127,32 @@ export default function CheckoutPage() {
   const [christmasBlockedReason, setChristmasBlockedReason] = useState<string | null>(null);
 
   // Whether Christmas pre-ordering is being offered at all right now (site-wide admin toggle —
-  // see /admin/guide). Fetched client-side since this page needs to stay a client component.
-  // Outside the pre-order season there's no choice to make, so the question is skipped entirely.
+  // see /admin/guide), and the seasonal premium percentage applied to Christmas orders (also
+  // admin-configurable — see getChristmasPremiumPercent). Fetched client-side since this page
+  // needs to stay a client component. Outside the pre-order season there's no choice to make, so
+  // the question is skipped entirely.
   const [christmasShopActive, setChristmasShopActive] = useState(false);
+  const [christmasPremiumPercent, setChristmasPremiumPercent] = useState(0);
   useEffect(() => {
     fetch("/api/feature-flags/christmas")
       .then((res) => (res.ok ? res.json() : null))
-      .then((data: { active: boolean } | null) => {
+      .then((data: { active: boolean; premiumPercent: number } | null) => {
         // Christmas is only offered while fulfilment dates are actually bookable (Dec 20-24
         // still ahead). If the switch is on those dates exist year-round, so the flow works
         // for testing/setup outside the November–December season too.
         const active = (data?.active ?? false) && hasUpcomingChristmasDates();
         setChristmasShopActive(active);
+        setChristmasPremiumPercent(data?.premiumPercent ?? 0);
         if (!active) setOrderType("standard");
       })
       .catch(() => setOrderType("standard"));
   }, []);
+
+  // The price shown at checkout must match what actually gets authorised/verified server-side
+  // (see repriceCheckoutRequest) — so once a Christmas order is chosen, the same premium is
+  // applied here to what's displayed, never as a separate price shown anywhere in the catalogue.
+  const christmasPriceMultiplier = orderType === "christmas" ? 1 + christmasPremiumPercent / 100 : 1;
+  const displayEstimatedTotal = Math.round(estimatedTotal * christmasPriceMultiplier * 100) / 100;
 
   function chooseOrderType(next: "standard" | "christmas") {
     if (next === "christmas") {
@@ -438,6 +448,16 @@ export default function CheckoutPage() {
                           {orderType === "christmas" && <Check className="ml-auto h-4 w-4 text-[#1a3a2a]" />}
                         </button>
                       </div>
+                      {christmasPremiumPercent > 0 && (
+                        <div className="mt-3 flex items-start gap-2 border border-[#1a3a2a]/20 bg-[#e8f5ed]/50 px-4 py-3" style={{ borderRadius: "5px" }}>
+                          <Gift className="mt-0.5 h-4 w-4 shrink-0 text-[#1a3a2a]" />
+                          <p className="text-sm text-[#1a3a2a]/80">
+                            A {christmasPremiumPercent}% seasonal premium applies to Christmas orders, reflecting
+                            higher market prices over the festive period. Prices shown elsewhere on the site are
+                            unaffected, this only applies once you choose to order for Christmas.
+                          </p>
+                        </div>
+                      )}
                       {christmasBlockedReason && (
                         <p className="mt-3 text-sm text-red-600">{christmasBlockedReason}</p>
                       )}
@@ -668,10 +688,10 @@ export default function CheckoutPage() {
                   ) : (
                     <div className="mt-6">
                       <p className="mb-2 text-xs font-medium tracking-wide text-navy uppercase">
-                        {isChristmasOrder ? "Place Pre-Order" : "Place Order"} · £{(estimatedTotal + deliveryCost).toFixed(2)} (estimated)
+                        {isChristmasOrder ? "Place Pre-Order" : "Place Order"} · £{(displayEstimatedTotal + deliveryCost).toFixed(2)} (estimated)
                       </p>
                       <PaymentPanel
-                        amount={estimatedTotal + deliveryCost}
+                        amount={displayEstimatedTotal + deliveryCost}
                         onToken={handleToken}
                         disabled={false}
                       />
@@ -721,7 +741,7 @@ export default function CheckoutPage() {
                           <p className="font-medium text-navy">{item.product.name}</p>
                           <p className="text-text-light">{item.preparation}</p>
                         </div>
-                        <span className="text-xs font-medium text-navy">£{lineTotal(item).toFixed(2)}</span>
+                        <span className="text-xs font-medium text-navy">£{(lineTotal(item) * christmasPriceMultiplier).toFixed(2)}</span>
                       </div>
                   ))}
                 </div>
@@ -731,6 +751,12 @@ export default function CheckoutPage() {
                     <span>Subtotal</span>
                     <span>£{estimatedTotal.toFixed(2)}</span>
                   </div>
+                  {christmasPriceMultiplier > 1 && (
+                    <div className="flex justify-between text-[#1a3a2a]">
+                      <span>Christmas premium ({christmasPremiumPercent}%)</span>
+                      <span>+£{(displayEstimatedTotal - estimatedTotal).toFixed(2)}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between text-text-light">
                     <span>{slotType === "delivery" ? "Delivery" : slotType === "collection" ? "Collection" : "Fulfilment"}</span>
                     <span>{!slotType ? "—" : slotType === "collection" ? "Free" : "£5.00"}</span>
@@ -738,7 +764,7 @@ export default function CheckoutPage() {
                   <div className="border-t border-border pt-2">
                     <div className="flex justify-between font-semibold text-navy">
                       <span>Estimated total</span>
-                      <span>£{(estimatedTotal + deliveryCost).toFixed(2)}</span>
+                      <span>£{(displayEstimatedTotal + deliveryCost).toFixed(2)}</span>
                     </div>
                   </div>
                 </div>

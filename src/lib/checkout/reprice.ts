@@ -1,6 +1,7 @@
 import "server-only";
 import { getProductForPricing } from "@/lib/woocommerce/products";
 import { computeUnitPrice } from "@/lib/pricing";
+import { getChristmasPremiumPercent } from "@/lib/feature-flags";
 import type { CheckoutRequest } from "./schema";
 
 // Mirrors the client-side delivery fee shown in src/app/checkout/page.tsx — the delivery-step
@@ -26,21 +27,35 @@ export interface RepricedOrder {
   subtotal: number;
   deliveryFee: number;
   total: number;
+  /** 0 unless this is a Christmas order and a premium is currently configured — see
+   * getChristmasPremiumPercent. Surfaced so callers (order emails) can disclose it rather than
+   * customers just seeing an unexplained higher total. */
+  christmasPremiumPercent: number;
 }
 
 /**
  * Recomputes every line's price from WooCommerce, ignoring any price implied by the client.
  * This is the fix for the price-tampering gap a real payment integration must close — the old
  * fake checkout had nothing to tamper with, since nothing was ever charged.
+ *
+ * Christmas orders get a seasonal percentage premium applied here, on the price itself — never
+ * shown as a separate "Christmas price" on the shop/product pages (see getChristmasPremiumPercent
+ * for why: one catalogue, one price per product, the premium only exists at checkout).
  */
 export async function repriceCheckoutRequest(checkout: CheckoutRequest): Promise<RepricedOrder> {
+  const christmasPremiumPercent = checkout.fulfilment.slot.isChristmas ? await getChristmasPremiumPercent() : 0;
+  const premiumMultiplier = 1 + christmasPremiumPercent / 100;
+
   const lineItems = await Promise.all(
     checkout.items.map(async (item) => {
       const pricing = await getProductForPricing(item.wooProductId, item.wooVariationId);
       if (!pricing) {
         throw new Error(`Product ${item.wooProductId} not found while repricing checkout`);
       }
-      const unitPrice = computeUnitPrice(pricing, item.weight);
+      // Rounded to the penny — repeatedly compounding an unrounded percentage into money values
+      // downstream (line totals, subtotal, capture amounts) would otherwise drift by fractions
+      // of a penny and show up as odd totals.
+      const unitPrice = Math.round(computeUnitPrice(pricing, item.weight) * premiumMultiplier * 100) / 100;
       return {
         wooProductId: item.wooProductId,
         wooVariationId: item.wooVariationId,
@@ -57,5 +72,5 @@ export async function repriceCheckoutRequest(checkout: CheckoutRequest): Promise
   const subtotal = lineItems.reduce((sum, item) => sum + item.lineTotal, 0);
   const deliveryFee = checkout.fulfilment.type === "delivery" ? DELIVERY_FEE : 0;
 
-  return { lineItems, subtotal, deliveryFee, total: subtotal + deliveryFee };
+  return { lineItems, subtotal, deliveryFee, total: subtotal + deliveryFee, christmasPremiumPercent };
 }

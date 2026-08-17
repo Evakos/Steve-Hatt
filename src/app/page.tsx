@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getAllProducts } from "@/lib/products";
-import { isChristmasShopActive } from "@/lib/feature-flags";
+import { isChristmasShopActive, getChristmasPremiumPercent } from "@/lib/feature-flags";
 import { Truck, Fish, Scaling, Leaf, Anchor, Recycle, ShoppingBag, Search, Gift, Snowflake } from "lucide-react";
 import Header from "@/components/header";
 import PostcodeCheck from "@/components/postcode-check";
@@ -37,7 +37,11 @@ function pickRandom<T>(items: T[], n: number): T[] {
 }
 
 export default async function Home() {
-  const [products, christmasActive] = await Promise.all([getAllProducts(), isChristmasShopActive()]);
+  const [products, christmasActive, christmasPremiumPercent] = await Promise.all([
+    getAllProducts(),
+    isChristmasShopActive(),
+    getChristmasPremiumPercent(),
+  ]);
   const todaysCatch = pickRandom(products, 6);
   // Curated festive picks for the Christmas section — only products whose slug is in the
   // shortlist above are shown (each still needs the christmas tag to be eligible to order).
@@ -246,6 +250,13 @@ export default async function Home() {
               <p className="mx-auto mt-4 max-w-lg text-lg leading-relaxed text-white/85">
                 Reserve your Christmas feast now. Pre-order by 20th December for delivery or collection on 23rd-24th December. Every order prepared fresh by your fishmonger.
               </p>
+              {christmasPremiumPercent > 0 && (
+                <p className="mx-auto mt-3 max-w-lg text-sm text-white/70">
+                  Prices shown are our standard prices, a {christmasPremiumPercent}% seasonal premium applies once
+                  you choose to order for Christmas at checkout, reflecting higher market prices over the festive
+                  period.
+                </p>
+              )}
             </div>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {christmasFeatured.map((p) => (

@@ -21,3 +21,22 @@ export async function isChristmasShopActive(): Promise<boolean> {
     return false;
   }
 }
+
+/**
+ * Seasonal percentage premium applied to Christmas orders only, on top of a product's normal
+ * price — the deliberate alternative to giving products a separate "Christmas price" (which
+ * would mean duplicate listings, effectively two shops sharing one catalogue). Never shown on
+ * the shop/product pages, applied only at checkout once a customer has chosen a Christmas order
+ * (see repriceCheckoutRequest), and disclosed there rather than as a second price tag anywhere
+ * in the catalogue. Same Edge Config mechanism as isChristmasShopActive, editable without a
+ * redeploy since the market rate driving this changes year to year. Defaults to 0 (no premium)
+ * if unset or unreachable.
+ */
+export async function getChristmasPremiumPercent(): Promise<number> {
+  try {
+    const value = await get("christmasPremiumPercent");
+    return typeof value === "number" && value >= 0 ? value : 0;
+  } catch {
+    return 0;
+  }
+}

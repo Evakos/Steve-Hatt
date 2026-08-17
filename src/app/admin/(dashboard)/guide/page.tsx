@@ -88,7 +88,35 @@ export default function AdminGuidePage() {
       </section>
 
       <section className="mt-6 border border-border bg-white p-5" style={{ borderRadius: "5px" }}>
-        <h2 className="font-medium text-navy">5. Product spreadsheet sync</h2>
+        <h2 className="font-medium text-navy">5. Christmas seasonal price premium</h2>
+        <div className="mt-3 space-y-3 text-base leading-relaxed text-text-light">
+          <p>
+            Christmas items (turkey, whole salmon, lobster etc.) typically cost more around the festive period.
+            Rather than duplicating every seasonal product into a separate &quot;Christmas version&quot; with its
+            own price (two catalogues to keep in sync, easy to get wrong), there&apos;s a single percentage
+            premium that&apos;s added on top of the normal price, automatically, only once a customer has chosen
+            to order for Christmas at checkout.
+          </p>
+          <p>
+            <strong className="text-navy">This never shows up as a second price anywhere in the shop.</strong> Every
+            product page and the shop grid always show one price, the same one, all year round. The premium is
+            purely a checkout-time calculation, disclosed to the customer with a note next to the &quot;For
+            Christmas&quot; option before they commit, then itemised as its own line in the order summary.
+          </p>
+          <p>Same mechanism as the on/off switch above, one more Edge Config value:</p>
+          <pre className="overflow-x-auto border border-border bg-cream p-3 text-xs text-navy" style={{ borderRadius: "5px" }}>
+            {`vercel edge-config update ecfg_1xaio7etrgjc7pabu3esnegidumg --patch '[{"operation":"upsert","key":"christmasPremiumPercent","value":10}]'`}
+          </pre>
+          <p>
+            That example sets a 10% premium. Set <code className="text-xs">value:0</code> to switch it off without
+            turning off Christmas ordering entirely. Takes effect immediately, no redeploy, and can be changed as
+            often as needed through the season.
+          </p>
+        </div>
+      </section>
+
+      <section className="mt-6 border border-border bg-white p-5" style={{ borderRadius: "5px" }}>
+        <h2 className="font-medium text-navy">6. Product spreadsheet sync</h2>
         <div className="mt-3 space-y-3 text-base leading-relaxed text-text-light">
           <p>
             Product details (title, price, status, description, tag, preparation, origin, sustainability, storage)
