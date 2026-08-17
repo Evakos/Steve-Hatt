@@ -68,8 +68,8 @@ export default function ChristmasSettingsPanel() {
           style={{ borderRadius: "999px" }}
         >
           <span
-            className="absolute top-1 h-5 w-5 bg-white transition-transform"
-            style={{ borderRadius: "999px", transform: active ? "translateX(22px)" : "translateX(4px)" }}
+            className="absolute top-1 left-1 h-5 w-5 bg-white transition-transform"
+            style={{ borderRadius: "999px", transform: active ? "translateX(20px)" : "translateX(0)" }}
           />
         </button>
       </div>
