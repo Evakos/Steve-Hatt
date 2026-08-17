@@ -93,16 +93,17 @@ export async function POST() {
       wooStatus = row.status as typeof wooStatus;
     }
 
+    const excludedFromChristmasRaw = row["Excluded from Christmas?"];
     let excludedFromChristmas: boolean | undefined;
-    if (row.excluded_from_christmas) {
-      const normalised = row.excluded_from_christmas.trim().toLowerCase();
+    if (excludedFromChristmasRaw) {
+      const normalised = excludedFromChristmasRaw.trim().toLowerCase();
       if (!VALID_BOOLEANS.has(normalised)) {
         results.push({
           kind: "product",
           productId,
           title,
           status: "error",
-          message: `excluded_from_christmas column must be true/false, got: ${row.excluded_from_christmas}`,
+          message: `"Excluded from Christmas?" column must be true/false, got: ${excludedFromChristmasRaw}`,
         });
         continue;
       }
@@ -112,16 +113,17 @@ export async function POST() {
     // Manual per-product Christmas price override (same idea as previous years' separate
     // Christmas price spreadsheet) — see computeUnitPriceForOrder for how this is applied at
     // checkout. Blank means "no override, use the normal price even for Christmas orders".
+    const christmasPriceRaw = row["Christmas price"];
     let christmasPrice: string | undefined;
-    if (row.christmas_price) {
-      const parsedChristmasPrice = Number(row.christmas_price);
+    if (christmasPriceRaw) {
+      const parsedChristmasPrice = Number(christmasPriceRaw);
       if (!Number.isFinite(parsedChristmasPrice) || parsedChristmasPrice < 0) {
         results.push({
           kind: "product",
           productId,
           title,
           status: "error",
-          message: `christmas_price column isn't a valid non-negative number, got: ${row.christmas_price}`,
+          message: `"Christmas price" column isn't a valid non-negative number, got: ${christmasPriceRaw}`,
         });
         continue;
       }

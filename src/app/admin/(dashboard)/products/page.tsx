@@ -14,12 +14,12 @@ export default function AdminProductsPage() {
       </p>
       <p className="mt-2 text-sm text-text-light">
         Almost every product can be pre-ordered for Christmas by default. Set a row&apos;s{" "}
-        <code className="text-xs">excluded_from_christmas</code> column to <code className="text-xs">true</code> to
+        <code className="text-xs">Excluded from Christmas?</code> column to <code className="text-xs">true</code> to
         opt a specific product out (leave blank to leave it eligible).
       </p>
       <p className="mt-2 text-sm text-text-light">
         Christmas items typically cost more around the festive period. Set a row&apos;s{" "}
-        <code className="text-xs">christmas_price</code> column to override that product&apos;s price, only for
+        <code className="text-xs">Christmas price</code> column to override that product&apos;s price, only for
         Christmas orders, same as previous years&apos; separate Christmas price sheet. Leave it blank to charge the
         normal price even at Christmas. It never shows up as a second price anywhere in the shop, it&apos;s applied
         once a customer has chosen to order for Christmas at checkout.
