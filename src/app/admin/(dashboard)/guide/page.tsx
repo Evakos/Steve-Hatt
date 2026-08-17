@@ -1,3 +1,5 @@
+import ChristmasSettingsPanel from "./christmas-settings-panel";
+
 const SPREADSHEET_URL = "https://docs.google.com/spreadsheets/d/1u0g6qC-xsbrjuhRpha80i8MvZdM5frfKhX9fG0a_VUY/edit?usp=sharing";
 
 export default function AdminGuidePage() {
@@ -72,51 +74,29 @@ export default function AdminGuidePage() {
       </section>
 
       <section className="mt-6 border border-border bg-white p-5" style={{ borderRadius: "5px" }}>
-        <h2 className="font-medium text-navy">4. Turning Christmas ordering on/off</h2>
+        <h2 className="font-medium text-navy">4. Christmas ordering &amp; seasonal premium</h2>
         <div className="mt-3 space-y-3 text-base leading-relaxed text-text-light">
           <p>
             Whether customers see the option to shop for Christmas at all is controlled by a single site-wide
-            switch, so it doesn&apos;t show up outside the pre-order season. There isn&apos;t a self-service button
-            for this yet (it needs a Vercel API token this environment couldn&apos;t create), so for now flipping it
-            means running one command:
-          </p>
-          <pre className="overflow-x-auto border border-border bg-cream p-3 text-xs text-navy" style={{ borderRadius: "5px" }}>
-            {`vercel edge-config update ecfg_1xaio7etrgjc7pabu3esnegidumg --patch '[{"operation":"upsert","key":"christmasShopActive","value":true}]'`}
-          </pre>
-          <p>Use <code className="text-xs">value:false</code> to turn it back off. Takes effect immediately, no redeploy needed.</p>
-        </div>
-      </section>
-
-      <section className="mt-6 border border-border bg-white p-5" style={{ borderRadius: "5px" }}>
-        <h2 className="font-medium text-navy">5. Christmas seasonal price premium</h2>
-        <div className="mt-3 space-y-3 text-base leading-relaxed text-text-light">
-          <p>
-            Christmas items (turkey, whole salmon, lobster etc.) typically cost more around the festive period.
-            Rather than duplicating every seasonal product into a separate &quot;Christmas version&quot; with its
-            own price (two catalogues to keep in sync, easy to get wrong), there&apos;s a single percentage
-            premium that&apos;s added on top of the normal price, automatically, only once a customer has chosen
-            to order for Christmas at checkout.
+            switch, so it doesn&apos;t show up outside the pre-order season. Christmas items (turkey, whole
+            salmon, lobster etc.) typically cost more around the festive period too, rather than duplicating
+            every seasonal product into a separate &quot;Christmas version&quot; with its own price (two
+            catalogues to keep in sync, easy to get wrong), a single percentage premium is added on top of the
+            normal price automatically, only once a customer has chosen to order for Christmas at checkout.
           </p>
           <p>
-            <strong className="text-navy">This never shows up as a second price anywhere in the shop.</strong> Every
-            product page and the shop grid always show one price, the same one, all year round. The premium is
-            purely a checkout-time calculation, disclosed to the customer with a note next to the &quot;For
+            <strong className="text-navy">The premium never shows up as a second price anywhere in the shop.</strong>{" "}
+            Every product page and the shop grid always show one price, the same one, all year round. It&apos;s a
+            checkout-time calculation only, disclosed to the customer with a note next to the &quot;For
             Christmas&quot; option before they commit, then itemised as its own line in the order summary.
           </p>
-          <p>Same mechanism as the on/off switch above, one more Edge Config value:</p>
-          <pre className="overflow-x-auto border border-border bg-cream p-3 text-xs text-navy" style={{ borderRadius: "5px" }}>
-            {`vercel edge-config update ecfg_1xaio7etrgjc7pabu3esnegidumg --patch '[{"operation":"upsert","key":"christmasPremiumPercent","value":10}]'`}
-          </pre>
-          <p>
-            That example sets a 10% premium. Set <code className="text-xs">value:0</code> to switch it off without
-            turning off Christmas ordering entirely. Takes effect immediately, no redeploy, and can be changed as
-            often as needed through the season.
-          </p>
+          <p>Both settings take effect immediately, no redeploy needed, and can be changed as often as needed through the season.</p>
         </div>
+        <ChristmasSettingsPanel />
       </section>
 
       <section className="mt-6 border border-border bg-white p-5" style={{ borderRadius: "5px" }}>
-        <h2 className="font-medium text-navy">6. Product spreadsheet sync</h2>
+        <h2 className="font-medium text-navy">5. Product spreadsheet sync</h2>
         <div className="mt-3 space-y-3 text-base leading-relaxed text-text-light">
           <p>
             Product details (title, price, status, description, tag, preparation, origin, sustainability, storage)

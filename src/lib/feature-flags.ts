@@ -15,6 +15,14 @@ import { hasUpcomingChristmasDates } from "./christmas-dates";
  */
 export async function isChristmasShopActive(): Promise<boolean> {
   if (!hasUpcomingChristmasDates()) return false;
+  return getChristmasShopActiveRaw();
+}
+
+/** The stored switch value with no date-gating applied — used by the admin settings panel so
+ * staff see exactly what they've set (e.g. flipped on in October), not the customer-facing
+ * derived availability, which is only ever false in the dead week between Christmas Eve and New
+ * Year once this December's dates have passed. Everywhere else should use isChristmasShopActive. */
+export async function getChristmasShopActiveRaw(): Promise<boolean> {
   try {
     return (await get("christmasShopActive")) === true;
   } catch {

@@ -38,6 +38,12 @@ const serverEnvSchema = z.object({
   GOOGLE_SHEETS_SERVICE_ACCOUNT_EMAIL: z.string().min(1).optional(),
   GOOGLE_SHEETS_PRIVATE_KEY: z.string().min(1).optional(),
   GOOGLE_SHEETS_SPREADSHEET_ID: z.string().min(1).optional(),
+  // Optional — only needed for the write side of Christmas settings (/admin/guide's on/off +
+  // premium controls). Reading those settings (isChristmasShopActive, getChristmasPremiumPercent)
+  // uses the separate read-only EDGE_CONFIG connection string and works without these.
+  VERCEL_API_TOKEN: z.string().min(1).optional(),
+  VERCEL_TEAM_ID: z.string().min(1).optional(),
+  EDGE_CONFIG_ID: z.string().min(1).optional(),
 });
 
 let cached: z.infer<typeof serverEnvSchema> | null = null;
