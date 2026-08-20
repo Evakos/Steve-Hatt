@@ -5,6 +5,14 @@ export default function AdminGuidePage() {
     <div className="max-w-3xl">
       <h1 className="font-serif text-2xl font-bold text-navy">Admin Guide</h1>
       <p className="mt-1 text-base text-text-light">How payment capture and the product spreadsheet sync work.</p>
+      <a
+        href="https://github.com/Evakos/Steve-Hatt/blob/main/SHOP-GUIDE.md"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mt-2 inline-block text-base text-navy underline hover:text-lobster"
+      >
+        Open the full shop guide (how it all fits together) →
+      </a>
 
       <section className="mt-8 border border-border bg-white p-5" style={{ borderRadius: "5px" }}>
         <h2 className="font-medium text-navy">Payment in two steps: hold, then take</h2>
