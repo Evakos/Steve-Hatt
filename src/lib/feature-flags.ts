@@ -48,3 +48,19 @@ export async function getChristmasPremiumPercent(): Promise<number> {
     return 0;
   }
 }
+
+/**
+ * Fixed deposit (£) captured at checkout on a Christmas pre-order — Carole's preferred model: pay
+ * a lump sum up front (so the shop isn't exposed to the November→December card-expiry risk on the
+ * whole order), verify the card for the outstanding balance, and settle that balance on collection.
+ * Staff-set via /admin/guide, same Edge Config mechanism as isChristmasShopActive, editable without
+ * a redeploy. Returns 0 (off) if unset or unreachable; callers cap it at the estimated order total.
+ */
+export async function getChristmasDepositAmount(): Promise<number> {
+  try {
+    const value = await get("christmasDepositAmount");
+    return typeof value === "number" && value > 0 ? value : 0;
+  } catch {
+    return 0;
+  }
+}

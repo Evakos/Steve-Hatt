@@ -26,7 +26,8 @@ export async function createPreOrderFromVerification(
   checkout: CheckoutRequest,
   cardToken: string,
   orderRef: string,
-  sessionCustomerId?: number | null
+  sessionCustomerId?: number | null,
+  deposit?: { amount: number; transactionId: string }
 ): Promise<{ order: WooOrder; repriced: RepricedOrder }> {
   const repriced = await repriceCheckoutRequest(checkout);
   const { customer, fulfilment } = checkout;
@@ -61,7 +62,9 @@ export async function createPreOrderFromVerification(
     status: "pending",
     set_paid: false,
     payment_method: "cardstream",
-    payment_method_title: "Card (Cardstream/Pay360) — verified, auto-authorisation pending",
+    payment_method_title: deposit
+      ? "Card (Cardstream/Pay360) — deposit paid, balance authorised before collection"
+      : "Card (Cardstream/Pay360) — verified, auto-authorisation pending",
     customer_id: customerId,
     billing,
     shipping: fulfilment.type === "delivery" ? billing : undefined,
@@ -92,6 +95,17 @@ export async function createPreOrderFromVerification(
       { key: "_cardstream_card_token", value: cardToken },
       { key: "_cardstream_estimated_amount", value: repriced.total.toFixed(2) },
       { key: "_cardstream_preauth_status", value: "awaiting_scheduled_auth" },
+      // Deposit model (Carole's flow): a lump sum was captured at checkout, so the cron only
+      // re-authorises the outstanding balance and the capture route only settles that balance.
+      ...(deposit
+        ? [
+            { key: "_payment_plan", value: "deposit" },
+            { key: "_cardstream_deposit_amount", value: deposit.amount.toFixed(2) },
+            { key: "_cardstream_deposit_transaction_id", value: deposit.transactionId },
+            { key: "_cardstream_deposit_capture_status", value: "captured" },
+            { key: "_cardstream_balance_amount", value: (repriced.total - deposit.amount).toFixed(2) },
+          ]
+        : []),
     ],
   };
 

@@ -40,16 +40,24 @@ export async function POST(request: Request) {
   }
   const authorisedAmount = Number(authorisedAmountStr);
 
+  // Deposit orders (pay-a-lump-sum-up-front) had their deposit captured at checkout — `authorisedAmount`
+  // here is only the *balance* hold placed by the cron. Plain orders authorised the full total.
+  const depositAmountStr = order.meta_data.find((m) => m.key === "_cardstream_deposit_amount")?.value as
+    | string
+    | undefined;
+  const depositAmount = depositAmountStr ? Number(depositAmountStr) : 0;
+
   const finalTotal = lineItems.reduce((sum, li) => sum + li.finalTotal, 0);
 
-  // Confirmed via docs.pay360.com/cards/captures: Pay360's Capture endpoint always takes the
-  // full authorised amount, there's no partial capture. So finalTotal can never exceed
-  // authorisedAmount either way — anything above it would need a *new* authorisation for the
-  // difference, which isn't supported yet.
-  if (finalTotal > authorisedAmount) {
+  // What's still owed is the final total minus anything already collected as a deposit. Confirmed via
+  // docs.pay360.com/cards/captures: Capture always takes the full authorised amount, no partial capture
+  // — so the balance owed can never exceed the balance hold; anything above it needs a *new*
+  // authorisation for the difference, which isn't supported yet.
+  const balanceOwed = Math.max(0, finalTotal - depositAmount);
+  if (balanceOwed > authorisedAmount) {
     return NextResponse.json(
       {
-        error: `Final total (£${finalTotal.toFixed(2)}) exceeds the authorised amount (£${authorisedAmount.toFixed(2)}), a new authorisation is needed for the difference, this isn't supported yet.`,
+        error: `Balance still owed (£${balanceOwed.toFixed(2)}) exceeds the authorised balance (£${authorisedAmount.toFixed(2)}), a new authorisation is needed for the difference, this isn't supported yet.`,
       },
       { status: 422 }
     );
@@ -64,15 +72,19 @@ export async function POST(request: Request) {
   const cardstream = getCardstreamClient();
   const orderRef = order.meta_data.find((m) => m.key === "_checkout_order_ref")?.value as string | undefined;
 
-  // Capture always takes the full authorised amount (Pay360 doesn't support capturing less).
-  // Since fish is priced by weight, the final weighed total is usually lower — the difference
-  // is refunded immediately afterwards rather than captured as a smaller amount.
-  const captureResult = await cardstream.captureSale({ transactionId, orderRef: orderRef ?? String(orderId) });
-  if (captureResult.status === "failed") {
-    return NextResponse.json({ error: `Capture failed: ${captureResult.reason}` }, { status: 502 });
+  // Capture the balance hold in full (Pay360 doesn't support capturing less), then refund any
+  // difference back down to what's actually owed. If nothing more is owed (weighed to or below the
+  // deposit already collected), skip the balance capture entirely — and refund any deposit
+  // overpayment back from the deposit transaction.
+  const refundAmount = authorisedAmount - balanceOwed;
+
+  if (balanceOwed > 0.001) {
+    const captureResult = await cardstream.captureSale({ transactionId, orderRef: orderRef ?? String(orderId) });
+    if (captureResult.status === "failed") {
+      return NextResponse.json({ error: `Capture failed: ${captureResult.reason}` }, { status: 502 });
+    }
   }
 
-  const refundAmount = authorisedAmount - finalTotal;
   if (refundAmount > 0.001) {
     const refundResult = await cardstream.refundSale({
       transactionId,
@@ -80,10 +92,9 @@ export async function POST(request: Request) {
       orderRef: orderRef ?? String(orderId),
     });
     if (refundResult.status === "failed") {
-      // The customer's card has already been charged the *full* authorised amount — that part
-      // succeeded and fulfilment should proceed. What failed is only handing back the
-      // difference, so flag it for a manual refund via the Pay360 Merchant Portal rather than
-      // silently under-reporting what was actually charged.
+      // The balance hold was already captured in full — that part succeeded and fulfilment should
+      // proceed. What failed is only handing back the difference, so flag it for a manual refund via
+      // the Pay360 Merchant Portal rather than silently under-reporting what was actually charged.
       await updateWooOrder(orderId, {
         status: "processing",
         set_paid: true,
@@ -96,16 +107,35 @@ export async function POST(request: Request) {
         })),
         meta_data: [
           { key: "_cardstream_capture_status", value: "captured_refund_failed" },
-          { key: "_cardstream_captured_amount", value: authorisedAmount.toFixed(2) },
+          { key: "_cardstream_captured_amount", value: finalTotal.toFixed(2) },
           { key: "_cardstream_refund_pending_amount", value: refundAmount.toFixed(2) },
         ],
       });
       return NextResponse.json(
         {
-          error: `Captured the full £${authorisedAmount.toFixed(2)} authorised amount, but refunding the £${refundAmount.toFixed(2)} difference failed: ${refundResult.reason}. The order has been marked as processing, refund the difference manually via the Pay360 Merchant Portal.`,
+          error: `Captured the £${authorisedAmount.toFixed(2)} balance, but refunding the £${refundAmount.toFixed(2)} difference failed: ${refundResult.reason}. The order has been marked as processing, refund the difference manually via the Pay360 Merchant Portal.`,
         },
         { status: 502 }
       );
+    }
+  }
+
+  // Refund any deposit overpayment (weighed to less than the deposit already collected at checkout).
+  let depositRefundMeta: { key: string; value: string }[] = [];
+  if (depositAmount > 0 && finalTotal < depositAmount - 0.001) {
+    const depositTransactionId = order.meta_data.find((m) => m.key === "_cardstream_deposit_transaction_id")?.value as
+      | string
+      | undefined;
+    const overpayment = depositAmount - finalTotal;
+    if (depositTransactionId) {
+      const overRefund = await cardstream.refundSale({
+        transactionId: depositTransactionId,
+        amount: overpayment,
+        orderRef: orderRef ?? String(orderId),
+      });
+      if (overRefund.status === "failed") {
+        depositRefundMeta = [{ key: "_cardstream_deposit_refund_pending_amount", value: overpayment.toFixed(2) }];
+      }
     }
   }
 
@@ -123,6 +153,7 @@ export async function POST(request: Request) {
       { key: "_cardstream_capture_status", value: "captured" },
       { key: "_cardstream_captured_amount", value: finalTotal.toFixed(2) },
       ...(refundAmount > 0.001 ? [{ key: "_cardstream_refunded_amount", value: refundAmount.toFixed(2) }] : []),
+      ...depositRefundMeta,
     ],
   });
 
@@ -133,6 +164,7 @@ export async function POST(request: Request) {
     orderNumber: updated.number,
     capturedAmount: finalTotal,
     authorisedAmount,
+    ...(depositAmount > 0 ? { depositAmount } : {}),
   });
 
   return NextResponse.json({ status: "captured", orderId: updated.id, orderNumber: updated.number, capturedAmount: finalTotal });

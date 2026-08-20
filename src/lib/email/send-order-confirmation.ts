@@ -19,6 +19,9 @@ export interface OrderConfirmationInput {
   repriced: RepricedOrder;
   slotLabel: string;
   fulfilmentType: "delivery" | "collection";
+  /** Set when a deposit was captured at checkout (Christmas deposit model) — the confirmation then
+   * says "deposit paid now, balance to settle on collection" instead of "you haven't been charged yet". */
+  depositAmount?: number;
 }
 
 /**
@@ -29,9 +32,20 @@ export interface OrderConfirmationInput {
  * otherwise-successful order.
  */
 export async function sendOrderConfirmation(input: OrderConfirmationInput) {
-  const { to, customerName, orderNumber, repriced, slotLabel, fulfilmentType } = input;
+  const { to, customerName, orderNumber, repriced, slotLabel, fulfilmentType, depositAmount } = input;
+  const deposit = depositAmount ?? 0;
+  const hasDeposit = deposit > 0;
+  const balance = hasDeposit ? repriced.total - deposit : repriced.total;
 
-  const totalsTable = `
+  const totalsTable = hasDeposit
+    ? `
+    <table style="width:100%;border-collapse:collapse;margin-top:8px;font-size:13px;">
+      <tr><td style="padding:4px 0;color:${COLORS.textLight};">Estimated total</td><td style="padding:4px 0;text-align:right;color:${COLORS.text};">&pound;${repriced.total.toFixed(2)}</td></tr>
+      <tr><td style="padding:8px 0 0;font-weight:700;color:${COLORS.navy};border-top:1px solid ${COLORS.border};">Deposit paid now</td><td style="padding:8px 0 0;text-align:right;font-weight:700;color:${COLORS.navy};border-top:1px solid ${COLORS.border};">&pound;${deposit.toFixed(2)}</td></tr>
+      <tr><td style="padding:4px 0;color:${COLORS.textLight};">Balance to settle on collection (estimated)</td><td style="padding:4px 0;text-align:right;color:${COLORS.text};">&pound;${balance.toFixed(2)}</td></tr>
+    </table>
+  `
+    : `
     <table style="width:100%;border-collapse:collapse;margin-top:8px;font-size:13px;">
       <tr><td style="padding:4px 0;color:${COLORS.textLight};">Estimated subtotal</td><td style="padding:4px 0;text-align:right;color:${COLORS.text};">&pound;${repriced.subtotal.toFixed(2)}</td></tr>
       ${fulfilmentType === "delivery" ? `<tr><td style="padding:4px 0;color:${COLORS.textLight};">Delivery</td><td style="padding:4px 0;text-align:right;color:${COLORS.text};">&pound;${repriced.deliveryFee.toFixed(2)}</td></tr>` : ""}
@@ -43,8 +57,12 @@ export async function sendOrderConfirmation(input: OrderConfirmationInput) {
     ${emailHeading(`Order #${orderNumber} received`)}
     <p>Hi ${customerName}, thanks for your order from Steve Hatt Fishmongers.</p>
     ${emailNotice(
-      `<strong>You haven't been charged yet.</strong> Since fish is priced by weight, we'll confirm the exact
-      final amount once your order is prepared, then take payment for that confirmed amount only.`
+      hasDeposit
+        ? `<strong>Your £${deposit.toFixed(2)} deposit has been paid.</strong> The remaining balance
+        (estimated £${balance.toFixed(2)}) will be confirmed and settled on collection, once your order has
+        been weighed and prepared.`
+        : `<strong>You haven't been charged yet.</strong> Since fish is priced by weight, we'll confirm the exact
+        final amount once your order is prepared, then take payment for that confirmed amount only.`
     )}
     ${emailLineItemsTable(repriced.lineItems)}
     ${totalsTable}
@@ -69,6 +87,8 @@ export interface CaptureConfirmationInput {
   orderNumber: string;
   capturedAmount: number;
   authorisedAmount: number;
+  /** Set when a deposit was captured at checkout — shown as a separate "deposit already paid" line. */
+  depositAmount?: number;
 }
 
 /**
@@ -78,15 +98,19 @@ export interface CaptureConfirmationInput {
  * Same failure handling as sendOrderConfirmation: swallowed here, doesn't fail the capture.
  */
 export async function sendCaptureConfirmation(input: CaptureConfirmationInput) {
-  const { to, customerName, orderNumber, capturedAmount, authorisedAmount } = input;
-  const adjustedDown = capturedAmount < authorisedAmount - 0.001;
+  const { to, customerName, orderNumber, capturedAmount, authorisedAmount, depositAmount } = input;
+  const deposit = depositAmount ?? 0;
+  const hasDeposit = deposit > 0;
+  const adjustedDown = capturedAmount < (hasDeposit ? deposit + authorisedAmount : authorisedAmount) - 0.001;
 
   const html = emailShell(`
     ${emailHeading(`Order #${orderNumber} is now processing`)}
     <p>Hi ${customerName}, your order has been weighed and prepared, and your card has now been charged the
     confirmed final amount. We're getting it ready for you.</p>
     <table style="width:100%;border-collapse:collapse;margin:16px 0;font-size:13px;">
-      <tr><td style="padding:4px 0;color:${COLORS.textLight};">Estimated amount (at checkout)</td><td style="padding:4px 0;text-align:right;color:${COLORS.text};">&pound;${authorisedAmount.toFixed(2)}</td></tr>
+      ${hasDeposit
+        ? `<tr><td style="padding:4px 0;color:${COLORS.textLight};">Deposit (paid at checkout)</td><td style="padding:4px 0;text-align:right;color:${COLORS.text};">&pound;${deposit.toFixed(2)}</td></tr>`
+        : `<tr><td style="padding:4px 0;color:${COLORS.textLight};">Estimated amount (at checkout)</td><td style="padding:4px 0;text-align:right;color:${COLORS.text};">&pound;${authorisedAmount.toFixed(2)}</td></tr>`}
       <tr><td style="padding:8px 0 0;font-weight:700;color:${COLORS.navy};border-top:1px solid ${COLORS.border};">Final amount charged</td><td style="padding:8px 0 0;text-align:right;font-weight:700;color:${COLORS.navy};border-top:1px solid ${COLORS.border};">&pound;${capturedAmount.toFixed(2)}</td></tr>
     </table>
     ${adjustedDown ? `<p style="font-size:13px;color:${COLORS.textLight};">The final weighed price came to less than the original estimate, so that's all you've been charged.</p>` : ""}
@@ -146,6 +170,8 @@ export interface AdminNewOrderNotificationInput {
   repriced: RepricedOrder;
   slotLabel: string;
   fulfilmentType: "delivery" | "collection";
+  /** Set when a deposit was captured at checkout — flags the order as deposit+balance rather than full-hold. */
+  depositAmount?: number;
 }
 
 /**
@@ -155,15 +181,19 @@ export interface AdminNewOrderNotificationInput {
  * doesn't fail the order.
  */
 export async function sendAdminNewOrderNotification(input: AdminNewOrderNotificationInput) {
-  const { orderNumber, customerName, customerEmail, repriced, slotLabel, fulfilmentType } = input;
+  const { orderNumber, customerName, customerEmail, repriced, slotLabel, fulfilmentType, depositAmount } = input;
   const to = getServerEnv().ADMIN_NOTIFICATION_EMAIL;
+  const deposit = depositAmount ?? 0;
+  const hasDeposit = deposit > 0;
+  const balance = hasDeposit ? repriced.total - deposit : repriced.total;
 
   const html = emailShell(`
     ${emailHeading(`New order #${orderNumber} — needs preparing`)}
     <p>${customerName} (${customerEmail}) — ${fulfilmentType === "delivery" ? "Delivery" : "Collection"}: ${slotLabel}</p>
     ${emailLineItemsTable(repriced.lineItems)}
     <table style="width:100%;border-collapse:collapse;">
-      <tr><td style="padding:8px 0 0;font-weight:700;color:${COLORS.navy};border-top:1px solid ${COLORS.border};">Estimated total (held, not yet charged)</td><td style="padding:8px 0 0;text-align:right;font-weight:700;color:${COLORS.navy};border-top:1px solid ${COLORS.border};">&pound;${repriced.total.toFixed(2)}</td></tr>
+      ${hasDeposit ? `<tr><td style="padding:4px 0;color:${COLORS.textLight};">Deposit captured at checkout</td><td style="padding:4px 0;text-align:right;color:${COLORS.text};">&pound;${deposit.toFixed(2)}</td></tr>` : ""}
+      <tr><td style="padding:8px 0 0;font-weight:700;color:${COLORS.navy};border-top:1px solid ${COLORS.border};">${hasDeposit ? "Balance to capture on collection (estimate)" : "Estimated total (held, not yet charged)"}</td><td style="padding:8px 0 0;text-align:right;font-weight:700;color:${COLORS.navy};border-top:1px solid ${COLORS.border};">&pound;${(hasDeposit ? balance : repriced.total).toFixed(2)}</td></tr>
     </table>
     <p style="margin-top:16px;font-size:13px;color:${COLORS.textLight};">Once weighed and prepared, capture the final price on the orders page.</p>
     ${emailButton(`${SITE_URL}/admin/orders`, "Go to admin orders")}

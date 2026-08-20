@@ -7,7 +7,14 @@ import { getServerEnv } from "@/lib/env";
  * by design. Only used by the staff-authenticated /admin/guide controls; every other read in the
  * app never touches this.
  */
-export async function updateChristmasSettings(input: { active: boolean; premiumPercent: number }): Promise<void> {
+export interface ChristmasSettings {
+  active: boolean;
+  premiumPercent: number;
+  /** Fixed deposit (£) captured at checkout on Christmas pre-orders — 0 disables it. */
+  christmasDepositAmount: number;
+}
+
+export async function updateChristmasSettings(input: ChristmasSettings): Promise<void> {
   const env = getServerEnv();
   if (!env.VERCEL_API_TOKEN || !env.EDGE_CONFIG_ID) {
     throw new Error(
@@ -28,6 +35,7 @@ export async function updateChristmasSettings(input: { active: boolean; premiumP
       items: [
         { operation: "upsert", key: "christmasShopActive", value: input.active },
         { operation: "upsert", key: "christmasPremiumPercent", value: input.premiumPercent },
+        { operation: "upsert", key: "christmasDepositAmount", value: input.christmasDepositAmount },
       ],
     }),
   });

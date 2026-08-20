@@ -38,10 +38,17 @@ export async function GET(request: Request) {
     const estimatedAmountStr = order.meta_data.find((m) => m.key === "_cardstream_estimated_amount")?.value as
       | string
       | undefined;
+    const balanceAmountStr = order.meta_data.find((m) => m.key === "_cardstream_balance_amount")?.value as
+      | string
+      | undefined;
     const slotDateStr = order.meta_data.find((m) => m.key === "_checkout_slot_date")?.value as string | undefined;
     const orderRef = order.meta_data.find((m) => m.key === "_checkout_order_ref")?.value as string | undefined;
 
-    if (!cardToken || !estimatedAmountStr || !slotDateStr) {
+    // Deposit orders (pay-a-lump-sum-up-front) re-authorise only the outstanding balance, since the
+    // deposit was already captured at checkout. Plain pre-orders re-authorise the whole estimate.
+    const authAmountStr = balanceAmountStr ?? estimatedAmountStr;
+
+    if (!cardToken || !authAmountStr || !slotDateStr) {
       // Shouldn't happen for orders created via createPreOrderFromVerification, but a "pending"
       // order could in principle come from elsewhere — skip rather than guessing.
       summary.skippedIncomplete++;
@@ -56,7 +63,7 @@ export async function GET(request: Request) {
 
     const authResult = await cardstream.authoriseSaleWithToken({
       cardToken,
-      amount: Number(estimatedAmountStr),
+      amount: Number(authAmountStr),
       currency: "GBP",
       orderRef: orderRef ?? String(order.id),
     });
@@ -91,7 +98,7 @@ export async function GET(request: Request) {
       status: "on-hold",
       meta_data: [
         { key: "_cardstream_transaction_id", value: authResult.transactionId },
-        { key: "_cardstream_authorised_amount", value: estimatedAmountStr },
+        { key: "_cardstream_authorised_amount", value: authAmountStr },
         { key: "_cardstream_capture_status", value: "pending" },
         { key: "_cardstream_preauth_status", value: "authorised" },
       ],

@@ -6,25 +6,28 @@ export default function ChristmasSettingsPanel() {
   const [loading, setLoading] = useState(true);
   const [active, setActive] = useState(false);
   const [premiumPercent, setPremiumPercent] = useState(0);
+  const [depositAmount, setDepositAmount] = useState(0);
   // Tracks the last-saved values so "Save" can be disabled when there's nothing new to apply,
   // and so a failed save doesn't leave the UI claiming a value that was never actually stored.
-  const [saved, setSaved] = useState<{ active: boolean; premiumPercent: number } | null>(null);
+  const [saved, setSaved] = useState<{ active: boolean; premiumPercent: number; depositAmount: number } | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/admin/christmas-settings")
       .then((res) => (res.ok ? res.json() : Promise.reject(res)))
-      .then((data: { active: boolean; premiumPercent: number }) => {
+      .then((data: { active: boolean; premiumPercent: number; depositAmount: number }) => {
         setActive(data.active);
         setPremiumPercent(data.premiumPercent);
+        setDepositAmount(data.depositAmount ?? 0);
         setSaved(data);
       })
       .catch(() => setError("Couldn't load current settings."))
       .finally(() => setLoading(false));
   }, []);
 
-  const dirty = !saved || saved.active !== active || saved.premiumPercent !== premiumPercent;
+  const dirty =
+    !saved || saved.active !== active || saved.premiumPercent !== premiumPercent || saved.depositAmount !== depositAmount;
 
   async function handleSave() {
     setSaving(true);
@@ -33,14 +36,14 @@ export default function ChristmasSettingsPanel() {
       const res = await fetch("/api/admin/christmas-settings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ active, premiumPercent }),
+        body: JSON.stringify({ active, premiumPercent, christmasDepositAmount: depositAmount }),
       });
       const data = await res.json();
       if (!res.ok) {
         setError(data.error ?? "Save failed");
         return;
       }
-      setSaved({ active, premiumPercent });
+      setSaved({ active, premiumPercent, depositAmount });
     } catch {
       setError("Network error. Please try again.");
     } finally {
@@ -72,6 +75,27 @@ export default function ChristmasSettingsPanel() {
             style={{ borderRadius: "999px", transform: active ? "translateX(20px)" : "translateX(0)" }}
           />
         </button>
+      </div>
+
+      <div className="mt-3 border border-border bg-cream p-4" style={{ borderRadius: "5px" }}>
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <p className="text-sm font-medium text-navy">Christmas deposit (£)</p>
+            <p className="text-xs text-text-light">
+              Lump sum captured at checkout on a Christmas pre-order (pay-a-deposit-up-front model);
+              the balance is tokenised and settled on collection. Leave £0 to disable the deposit.
+            </p>
+          </div>
+          <input
+            type="number"
+            min={0}
+            step={1}
+            value={depositAmount}
+            onChange={(e) => setDepositAmount(Number(e.target.value))}
+            className="w-24 shrink-0 border border-border px-2 py-1 text-right text-sm"
+            style={{ borderRadius: "4px" }}
+          />
+        </div>
       </div>
 
       <div className="mt-3 border border-dashed border-border bg-cream/60 p-4 opacity-70" style={{ borderRadius: "5px" }}>

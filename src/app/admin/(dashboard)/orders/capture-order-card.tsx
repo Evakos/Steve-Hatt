@@ -18,6 +18,7 @@ interface Props {
 export default function CaptureOrderCard({ order }: Props) {
   const router = useRouter();
   const authorisedAmount = Number(order.meta_data.find((m) => m.key === "_cardstream_authorised_amount")?.value ?? order.total);
+  const depositAmount = Number(order.meta_data.find((m) => m.key === "_cardstream_deposit_amount")?.value ?? 0);
   const slotLabel = order.meta_data.find((m) => m.key === "_checkout_slot_label")?.value as string | undefined;
   const isChristmasOrder = order.meta_data.find((m) => m.key === "_checkout_is_christmas")?.value === "true";
 
@@ -32,7 +33,10 @@ export default function CaptureOrderCard({ order }: Props) {
   const [error, setError] = useState<string | null>(null);
 
   const finalTotal = Object.values(amounts).reduce((sum, v) => sum + (Number(v) || 0), 0);
-  const overAuthorised = finalTotal > authorisedAmount + 0.001; // small epsilon for float rounding
+  // Deposit orders already collected a lump sum at checkout — only the balance needs capturing now.
+  const balanceOwed = Math.max(0, finalTotal - depositAmount);
+  const overAuthorised = balanceOwed > authorisedAmount + 0.001; // small epsilon for float rounding
+  const depositOverpaid = depositAmount > 0 && finalTotal < depositAmount - 0.001;
 
   async function handleCapture() {
     setSubmitting(true);
@@ -70,7 +74,11 @@ export default function CaptureOrderCard({ order }: Props) {
             </span>
           )}
         </h2>
-        <span className="text-sm text-text-light">Authorised: £{authorisedAmount.toFixed(2)}</span>
+        <span className="text-sm text-text-light">
+          {depositAmount > 0
+            ? `Deposit paid: £${depositAmount.toFixed(2)} · Balance held: £${authorisedAmount.toFixed(2)}`
+            : `Authorised: £${authorisedAmount.toFixed(2)}`}
+        </span>
       </div>
       {slotLabel && <p className="mt-0.5 text-sm text-text-light">{slotLabel}</p>}
       <p className={`mt-0.5 text-sm ${authExpired ? "font-medium text-red-600" : authExpiringSoon ? "font-medium text-amber-600" : "text-text-light"}`}>
@@ -124,7 +132,10 @@ export default function CaptureOrderCard({ order }: Props) {
       <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
         <span className="text-base font-medium text-navy">
           Final total: £{finalTotal.toFixed(2)}
-          {overAuthorised && <span className="ml-2 text-xs font-normal text-red-600">exceeds authorised amount</span>}
+          {overAuthorised && <span className="ml-2 text-xs font-normal text-red-600">exceeds balance held</span>}
+          {!overAuthorised && depositOverpaid && (
+            <span className="ml-2 text-xs font-normal text-amber-600">deposit overpayment will be refunded</span>
+          )}
         </span>
         <button
           type="button"
