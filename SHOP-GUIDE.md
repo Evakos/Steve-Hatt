@@ -45,7 +45,8 @@ Everything happens in **`/admin`** (one shared staff login).
 **Sheet columns**
 | Column | What it does |
 |---|---|
-| `price`, `title`, `status`, `description`, `tag`, `preparation`, `origin`, `sustainability`, `storage` | day-to-day product content |
+| `price`, `title`, `description`, `status`, `tag`, `preparation`, `origin`, `sustainability`, `storage` | day-to-day product content |
+| `Stock` | `In stock` / `Out of stock` (drives the Sold out badge) |
 | `Excluded from Christmas?` | `Excluded` / `Included` |
 | `Christmas price` | festive price (blank = normal price) |
 | `Christmas deposit` | up-front deposit (blank = falls back to the Default) |
@@ -53,5 +54,3 @@ Everything happens in **`/admin`** (one shared staff login).
 **Orders page**
 - **Awaiting capture** queue: weigh the fish → enter the real weights/prices → **Capture payment**.
 - Watch the **7-day clock**.
-
-**Not in the sheet yet:** stock levels - those still live in WooCommerce directly.

@@ -141,7 +141,7 @@ export default function AdminGuidePage() {
         <h2 className="font-medium text-navy">5. Product spreadsheet sync</h2>
         <div className="mt-3 space-y-3 text-base leading-relaxed text-text-light">
           <p>
-            Product details (title, price, status, description, tag, preparation, origin, sustainability, storage,
+            Product details (title, price, stock, status, description, tag, preparation, origin, sustainability, storage,
             Christmas price, Christmas deposit) can be edited in the{" "}
             <a href={SPREADSHEET_URL} target="_blank" rel="noopener noreferrer" className="text-navy underline hover:text-lobster">
               shared Google Sheet

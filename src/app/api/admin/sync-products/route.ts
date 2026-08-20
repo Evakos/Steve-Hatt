@@ -153,6 +153,30 @@ export async function POST() {
       christmasDeposit = parsedChristmasDeposit.toFixed(2);
     }
 
+    // Manual availability toggle - "In stock" / "Out of stock" (optionally "On backorder").
+    // Blank leaves WooCommerce's current stock status untouched.
+    const stockRaw = row["Stock"];
+    let stockStatus: "instock" | "outofstock" | "onbackorder" | undefined;
+    if (stockRaw) {
+      const normalisedStock = stockRaw.trim().toLowerCase();
+      if (normalisedStock === "in stock" || normalisedStock === "instock") {
+        stockStatus = "instock";
+      } else if (normalisedStock === "out of stock" || normalisedStock === "outofstock") {
+        stockStatus = "outofstock";
+      } else if (normalisedStock === "on backorder" || normalisedStock === "onbackorder") {
+        stockStatus = "onbackorder";
+      } else {
+        results.push({
+          kind: "product",
+          productId,
+          title,
+          status: "error",
+          message: `"Stock" column must be "In stock" or "Out of stock", got: ${stockRaw}`,
+        });
+        continue;
+      }
+    }
+
     const metaData: { key: string; value: string }[] = [];
     if (row.tag) metaData.push({ key: META_KEYS.tag, value: row.tag });
     if (preparation) metaData.push({ key: META_KEYS.preparation, value: JSON.stringify(preparation) });
@@ -174,6 +198,7 @@ export async function POST() {
         name: row.title || undefined,
         regular_price: regularPrice,
         status: wooStatus,
+        stock_status: stockStatus,
         description: row.description || undefined,
         meta_data: metaData.length > 0 ? metaData : undefined,
       });

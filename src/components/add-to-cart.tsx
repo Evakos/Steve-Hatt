@@ -30,6 +30,7 @@ export default function AddToCart({ product }: Props) {
   const [weight, setWeight] = useState(0.2);
   const [quantity, setQuantity] = useState(product.priceType === "per-piece" ? 6 : 1);
   const [added, setAdded] = useState(false);
+  const outOfStock = product.stockStatus === "outofstock";
 
   const selectedSizeOption = product.sizeOptions?.find((s) => s.label === selectedSize);
 
@@ -157,12 +158,19 @@ export default function AddToCart({ product }: Props) {
         </div>
         <button
           onClick={handleAdd}
-          className={`flex flex-1 items-center justify-center gap-2 px-6 py-3 text-sm font-medium tracking-wide text-white transition-colors ${
-            added ? "bg-teal" : "bg-lobster hover:bg-lobster/90"
+          disabled={outOfStock}
+          className={`flex flex-1 items-center justify-center gap-2 px-6 py-3 text-sm font-medium tracking-wide transition-colors ${
+            outOfStock
+              ? "cursor-not-allowed bg-border text-text-light"
+              : added
+                ? "bg-teal text-white"
+                : "bg-lobster text-white hover:bg-lobster/90"
           }`}
           style={{ borderRadius: "3px" }}
         >
-        {added ? (
+        {outOfStock ? (
+          "Out of stock"
+        ) : added ? (
           <>
             <Check className="h-4 w-4" />
             Added to Order

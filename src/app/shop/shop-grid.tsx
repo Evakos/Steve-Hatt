@@ -91,6 +91,14 @@ export default function ShopGrid({ products }: Props) {
               >
                 {p.tag}
               </span>
+              {p.stockStatus === "outofstock" && (
+                <span
+                  className="absolute right-2 top-2 bg-navy px-2 py-1 text-[10px] font-medium tracking-wide text-white uppercase"
+                  style={{ borderRadius: "2px" }}
+                >
+                  Sold out
+                </span>
+              )}
             </div>
             <h3 className="font-serif text-lg font-semibold text-navy">{p.name}</h3>
             <p className="mt-1 min-h-[45px] text-sm text-text-light">{p.weight}</p>

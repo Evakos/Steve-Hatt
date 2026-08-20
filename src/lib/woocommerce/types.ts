@@ -20,9 +20,11 @@ export interface WooAttribute {
 export interface WooProductInput {
   name?: string;
   regular_price?: string;
-  /** WooCommerce's publish state (draft/pending/private/publish) - not to be confused with
-   * stock_status (in stock/out of stock/on backorder), which this app doesn't sync. */
+  /** WooCommerce's publish state (draft/pending/private/publish) - distinct from stock_status,
+   * which lives on its own field below. */
   status?: "draft" | "pending" | "private" | "publish";
+  /** Manual in/out/backorder availability, synced from the sheet's "Stock" column. */
+  stock_status?: "instock" | "outofstock" | "onbackorder";
   description?: string;
   meta_data?: { key: string; value: string }[];
 }

@@ -9,8 +9,13 @@ export default function AdminProductsPage() {
       <h1 className="font-serif text-2xl font-bold text-navy">Sync products from Google Sheet</h1>
       <p className="mt-1 text-base text-text-light">
         Pulls the &quot;Products&quot; tab of the shared spreadsheet and updates each product&apos;s title, price,
-        publish status, description, preparation options, origin, sustainability, storage text and Christmas
+        publish status, stock, description, preparation options, origin, sustainability, storage text and Christmas
         pre-order eligibility on the live site.
+      </p>
+      <p className="mt-2 text-sm text-text-light">
+        Set a row&apos;s <code className="text-xs">Stock</code> column to <code className="text-xs">In stock</code> or{" "}
+        <code className="text-xs">Out of stock</code> to switch a product between available and sold out. Out-of-stock
+        products still show in the shop but are marked &quot;Sold out&quot; and can&apos;t be added to an order.
       </p>
       <p className="mt-2 text-sm text-text-light">
         Almost every product can be pre-ordered for Christmas by default. Set a row&apos;s{" "}

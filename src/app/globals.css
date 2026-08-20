@@ -40,7 +40,7 @@
 }
 
 html {
-  /* Larger base size than the 16px default — all rem-based Tailwind text utilities (text-sm,
+  /* Larger base size than the 16px default - all rem-based Tailwind text utilities (text-sm,
    * text-base, etc.) scale proportionally from this. */
   font-size: 112.5%;
 }

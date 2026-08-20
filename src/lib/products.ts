@@ -28,6 +28,9 @@ export type Product = {
   origin: string;
   sustainability: string;
   storage: string;
+  /** WooCommerce stock status - "instock" | "outofstock" | "onbackorder". Read from Woo and
+   * written back from the sheet's "Stock" column; drives the "Sold out" treatment on the shop. */
+  stockStatus?: "instock" | "outofstock" | "onbackorder";
   /** Discrete size options with fixed prices, e.g. Small/Medium/Large lobster */
   sizeOptions?: SizeOption[];
   /** "per-kg" | "per-piece" | "fixed" - controls the selector shown on the product page */

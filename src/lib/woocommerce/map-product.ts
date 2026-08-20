@@ -101,6 +101,8 @@ export function mapWooProductToProduct(wooProduct: WooProduct, variations: WooPr
     origin: readMeta(wooProduct.meta_data, META_KEYS.origin),
     sustainability: readMeta(wooProduct.meta_data, META_KEYS.sustainability),
     storage: readMeta(wooProduct.meta_data, META_KEYS.storage),
+    stockStatus:
+      wooProduct.stock_status === "outofstock" || wooProduct.stock_status === "onbackorder" ? wooProduct.stock_status : "instock",
     sizeOptions,
     priceType,
     featuredFor: readMetaJsonArray(wooProduct.meta_data, META_KEYS.featuredFor),
