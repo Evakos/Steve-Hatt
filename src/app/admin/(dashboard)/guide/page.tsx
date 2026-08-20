@@ -62,7 +62,8 @@ export default function AdminGuidePage() {
           <p>
             Pay360 authorisations expire <strong className="text-navy">7 days</strong> after they&apos;re placed,
             after that, capture will likely fail outright. The order card shows an amber warning from day 5, and
-            a red one once it&apos;s past 7 days. Capture orders promptly, don&apos;t let them sit.
+            a red one once it&apos;s past 7 days. Capture orders promptly, don&apos;t let them sit. A daily email to
+            the team also lists any orders that are at day 5 or more, so nothing quietly lapses.
           </p>
         </div>
       </section>

@@ -281,3 +281,48 @@ export async function sendAdminPreOrderAuthFailedAlert(input: AdminPreOrderAuthF
     console.error("Failed to send admin pre-order auth-failed alert", err);
   }
 }
+
+export interface ExpiringAuthAlertInput {
+  orders: { number: string; customerName: string; daysSinceAuth: number; total: string }[];
+}
+
+/**
+ * Sent by the daily /api/cron/expiring-auths job when on-hold orders (authorised but not yet
+ * captured) are at or past day 5 of the 7-day hold window - staff get one summary email rather than
+ * watching the orders page for the amber/red warnings. A nudge only: normal orders don't retain a
+ * card token to silently re-authorise (only Christmas pre-orders do, via verifyCard - see the
+ * reauthorise-preorders cron), so this asks the team to capture in time.
+ */
+export async function sendExpiringAuthAlert(input: ExpiringAuthAlertInput) {
+  const { orders } = input;
+  const to = getServerEnv().ADMIN_NOTIFICATION_EMAIL;
+
+  const rows = orders
+    .map(
+      (o) =>
+        `<tr><td style="padding:4px 0;color:${COLORS.text};">#${o.number} - ${o.customerName}</td><td style="padding:4px 0;text-align:right;color:${COLORS.text};">&pound;${o.total}</td><td style="padding:4px 0;text-align:right;color:${o.daysSinceAuth >= 7 ? COLORS.textLight : COLORS.navy};">${o.daysSinceAuth} day${o.daysSinceAuth === 1 ? "" : "s"} old</td></tr>`
+    )
+    .join("");
+
+  const html = emailShell(`
+    ${emailHeading(`${orders.length} authorised order${orders.length === 1 ? "" : "s"} with expiring holds`)}
+    ${emailAlert(
+      `Pay360 holds expire 7 days after they're placed, after which payment can't be taken. Capture these on the orders page before that happens.`
+    )}
+    <table style="width:100%;border-collapse:collapse;margin-top:12px;font-size:13px;">
+      ${rows}
+    </table>
+    ${emailButton(`${SITE_URL}/admin/orders`, "Go to admin orders")}
+  `);
+
+  try {
+    await resend().emails.send({
+      from: `Steve Hatt Fishmongers <${FROM_ADDRESS}>`,
+      to,
+      subject: `Action needed: ${orders.length} order${orders.length === 1 ? "" : "s"} with expiring holds`,
+      html,
+    });
+  } catch (err) {
+    console.error("Failed to send expiring-auth alert email", err);
+  }
+}

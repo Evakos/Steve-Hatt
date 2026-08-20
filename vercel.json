@@ -3,6 +3,10 @@
     {
       "path": "/api/cron/reauthorise-preorders",
       "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/cron/expiring-auths",
+      "schedule": "0 7 * * *"
     }
   ]
 }
