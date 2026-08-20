@@ -16,8 +16,10 @@ const META_KEYS = {
 } as const;
 
 const VALID_STATUSES = new Set(["draft", "pending", "private", "publish"]);
-const VALID_BOOLEANS = new Set(["true", "false", "1", "0", "yes", "no"]);
-const TRUTHY = new Set(["true", "1", "yes"]);
+// "Excluded from Christmas?" takes a dropdown now: "Excluded" opts the product out, "Included" (or
+// a blank cell) leaves it eligible. The legacy true/false values are still accepted for old rows.
+const EXCLUDED_TRUE_VALUES = new Set(["excluded", "true", "1", "yes"]);
+const EXCLUDED_FALSE_VALUES = new Set(["included", "false", "0", "no"]);
 
 interface SyncResult {
   kind: "product" | "variation";
@@ -98,17 +100,20 @@ export async function POST() {
     let excludedFromChristmas: boolean | undefined;
     if (excludedFromChristmasRaw) {
       const normalised = excludedFromChristmasRaw.trim().toLowerCase();
-      if (!VALID_BOOLEANS.has(normalised)) {
+      if (EXCLUDED_TRUE_VALUES.has(normalised)) {
+        excludedFromChristmas = true;
+      } else if (EXCLUDED_FALSE_VALUES.has(normalised)) {
+        excludedFromChristmas = false;
+      } else {
         results.push({
           kind: "product",
           productId,
           title,
           status: "error",
-          message: `"Excluded from Christmas?" column must be true/false, got: ${excludedFromChristmasRaw}`,
+          message: `"Excluded from Christmas?" column must be Excluded or Included, got: ${excludedFromChristmasRaw}`,
         });
         continue;
       }
-      excludedFromChristmas = TRUTHY.has(normalised);
     }
 
     // Manual per-product Christmas price override (same idea as previous years' separate

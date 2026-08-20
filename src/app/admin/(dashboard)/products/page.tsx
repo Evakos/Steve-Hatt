@@ -14,8 +14,8 @@ export default function AdminProductsPage() {
       </p>
       <p className="mt-2 text-sm text-text-light">
         Almost every product can be pre-ordered for Christmas by default. Set a row&apos;s{" "}
-        <code className="text-xs">Excluded from Christmas?</code> column to <code className="text-xs">true</code> to
-        opt a specific product out (leave blank to leave it eligible).
+        <code className="text-xs">Excluded from Christmas?</code> column to <code className="text-xs">Excluded</code> to
+        opt a specific product out (<code className="text-xs">Included</code> or blank leaves it eligible).
       </p>
       <p className="mt-2 text-sm text-text-light">
         Christmas items typically cost more around the festive period. Set a row&apos;s{" "}
