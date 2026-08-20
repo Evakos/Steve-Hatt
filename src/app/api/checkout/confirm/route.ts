@@ -30,7 +30,8 @@ export async function POST(request: Request) {
   if (checkout.fulfilment.slot.isChristmas) {
     const repriced = await repriceCheckoutRequest(checkout);
     const depositConfig = await getChristmasDepositAmount();
-    const depositAmount = Math.round(Math.min(depositConfig, repriced.total) * 100) / 100;
+    const perProductDeposit = repriced.lineItems.reduce((sum, li) => sum + (li.christmasDeposit ?? 0) * li.quantity, 0);
+    const depositAmount = Math.round(Math.min(perProductDeposit > 0 ? perProductDeposit : depositConfig, repriced.total) * 100) / 100;
 
     if (depositAmount > 0) {
       const captureResult = await cardstream.captureSale({ transactionId: result.transactionId, orderRef });

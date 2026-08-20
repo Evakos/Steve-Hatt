@@ -45,6 +45,10 @@ export type Product = {
    * anywhere in the catalogue (see computeUnitPriceForOrder) — only used to compute an accurate
    * checkout-time estimate for a Christmas order, the real price is always recomputed server-side. */
   christmasPrice?: number;
+  /** Per-product deposit required for a Christmas pre-order, set via the Products sheet's
+   * "Christmas deposit" column (£ per unit). Blank means no per-product deposit — the blanket
+   * default applies instead (see repriceCheckoutRequest). */
+  christmasDeposit?: number;
   /** Optional date string for when pre-orders will be fulfilled/delivered */
   preOrderDelivery?: string;
   /** WooCommerce product id, needed to reference this product at checkout. */

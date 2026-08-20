@@ -19,6 +19,8 @@ export interface RepricedLineItem {
   preparation: string;
   unitPrice: number;
   lineTotal: number;
+  /** Per-product Christmas deposit (£ per unit) — summed at checkout to derive the order deposit. */
+  christmasDeposit?: number;
 }
 
 export interface RepricedOrder {
@@ -64,6 +66,7 @@ export async function repriceCheckoutRequest(checkout: CheckoutRequest): Promise
         preparation: item.preparation,
         unitPrice,
         lineTotal: unitPrice * item.quantity,
+        christmasDeposit: pricing.christmasDeposit,
       };
     })
   );

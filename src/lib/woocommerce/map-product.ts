@@ -19,6 +19,7 @@ const META_KEYS = {
   featuredFor: "_steve_hatt_featured_for", // JSON string array
   excludedFromChristmas: "_steve_hatt_excluded_from_christmas", // "true" | "false"
   christmasPrice: "_steve_hatt_christmas_price", // manual Christmas price override, same units as price/pricePerKg
+  christmasDeposit: "_steve_hatt_christmas_deposit", // per-product Christmas deposit (£ per unit)
   preOrderDelivery: "_steve_hatt_pre_order_delivery",
 } as const;
 
@@ -105,6 +106,7 @@ export function mapWooProductToProduct(wooProduct: WooProduct, variations: WooPr
     featuredFor: readMetaJsonArray(wooProduct.meta_data, META_KEYS.featuredFor),
     excludedFromChristmas: readMeta(wooProduct.meta_data, META_KEYS.excludedFromChristmas) === "true",
     christmasPrice: Number.parseFloat(readMeta(wooProduct.meta_data, META_KEYS.christmasPrice)) || undefined,
+    christmasDeposit: Number.parseFloat(readMeta(wooProduct.meta_data, META_KEYS.christmasDeposit)) || undefined,
     preOrderDelivery: readMeta(wooProduct.meta_data, META_KEYS.preOrderDelivery) || undefined,
   };
 

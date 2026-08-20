@@ -12,6 +12,7 @@ const META_KEYS = {
   storage: "_steve_hatt_storage",
   excludedFromChristmas: "_steve_hatt_excluded_from_christmas",
   christmasPrice: "_steve_hatt_christmas_price",
+  christmasDeposit: "_steve_hatt_christmas_deposit",
 } as const;
 
 const VALID_STATUSES = new Set(["draft", "pending", "private", "publish"]);
@@ -130,6 +131,23 @@ export async function POST() {
       christmasPrice = parsedChristmasPrice.toFixed(2);
     }
 
+    const christmasDepositRaw = row["Christmas deposit"];
+    let christmasDeposit: string | undefined;
+    if (christmasDepositRaw) {
+      const parsedChristmasDeposit = Number(christmasDepositRaw);
+      if (!Number.isFinite(parsedChristmasDeposit) || parsedChristmasDeposit < 0) {
+        results.push({
+          kind: "product",
+          productId,
+          title,
+          status: "error",
+          message: `"Christmas deposit" column isn't a valid non-negative number, got: ${christmasDepositRaw}`,
+        });
+        continue;
+      }
+      christmasDeposit = parsedChristmasDeposit.toFixed(2);
+    }
+
     const metaData: { key: string; value: string }[] = [];
     if (row.tag) metaData.push({ key: META_KEYS.tag, value: row.tag });
     if (preparation) metaData.push({ key: META_KEYS.preparation, value: JSON.stringify(preparation) });
@@ -141,6 +159,9 @@ export async function POST() {
     }
     if (christmasPrice !== undefined) {
       metaData.push({ key: META_KEYS.christmasPrice, value: christmasPrice });
+    }
+    if (christmasDeposit !== undefined) {
+      metaData.push({ key: META_KEYS.christmasDeposit, value: christmasDeposit });
     }
 
     try {

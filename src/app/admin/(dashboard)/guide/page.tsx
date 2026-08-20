@@ -70,12 +70,14 @@ export default function AdminGuidePage() {
           </p>
           <p>
             <strong className="text-navy">Optional deposit.</strong> You can take an up-front deposit on Christmas
-            pre-orders instead of waiting to collect the whole amount on the day. Set the{" "}
-            <strong className="text-navy">Christmas deposit (£)</strong> field on the Products page: the customer pays
-            that sum straight away at checkout, and only the remaining balance is authorised a few days before their
-            slot and settled once weighed. The shop holds guaranteed money even if a card expires or declines between
-            November and the delivery date, which otherwise risks the whole order. £0 leaves the previous behaviour
-            (the full amount is held and captured on the day).
+            pre-orders instead of waiting to collect the whole amount on the day. Add a per-product deposit in the{" "}
+            <strong className="text-navy">Christmas deposit</strong> column of the spreadsheet — the customer pays the
+            total of those deposits straight away at checkout, and only the remaining balance is authorised a few days
+            before their slot and settled once weighed. If no product has a deposit set, the{" "}
+            <strong className="text-navy">Default deposit (£)</strong> on the Products page applies instead. The shop
+            holds guaranteed money even if a card expires or declines between November and the delivery date, which
+            otherwise risks the whole order. £0 everywhere leaves the previous behaviour (the full amount is held and
+            captured on the day).
           </p>
         </div>
       </section>
@@ -112,7 +114,7 @@ export default function AdminGuidePage() {
         <div className="mt-3 space-y-3 text-base leading-relaxed text-text-light">
           <p>
             Product details (title, price, status, description, tag, preparation, origin, sustainability, storage,
-            Christmas price) can be edited in the{" "}
+            Christmas price, Christmas deposit) can be edited in the{" "}
             <a href={SPREADSHEET_URL} target="_blank" rel="noopener noreferrer" className="text-navy underline hover:text-lobster">
               shared Google Sheet
             </a>{" "}

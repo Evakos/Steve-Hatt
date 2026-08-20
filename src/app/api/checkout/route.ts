@@ -32,7 +32,10 @@ export async function POST(request: Request) {
     // Deposit model (Carole's flow): capture a fixed lump sum now so the shop isn't exposed to the
     // November→December card-expiry risk on the whole order, then verify the card for the balance.
     const depositConfig = await getChristmasDepositAmount();
-    const depositAmount = Math.round(Math.min(depositConfig, repriced.total) * 100) / 100;
+    // Per-product "Christmas deposit" in the spreadsheet takes priority (matches how the shop has
+    // always worked); the blanket default applies only when no product has a deposit set.
+    const perProductDeposit = repriced.lineItems.reduce((sum, li) => sum + (li.christmasDeposit ?? 0) * li.quantity, 0);
+    const depositAmount = Math.round(Math.min(perProductDeposit > 0 ? perProductDeposit : depositConfig, repriced.total) * 100) / 100;
 
     if (depositAmount > 0) {
       const depositAuth = await cardstream.authoriseSale({

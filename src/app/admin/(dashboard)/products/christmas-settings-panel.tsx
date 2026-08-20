@@ -80,10 +80,11 @@ export default function ChristmasSettingsPanel() {
       <div className="mt-3 border border-border bg-cream p-4" style={{ borderRadius: "5px" }}>
         <div className="flex items-center justify-between gap-3">
           <div>
-            <p className="text-sm font-medium text-navy">Christmas deposit (£)</p>
+            <p className="text-sm font-medium text-navy">Default deposit (£)</p>
             <p className="text-xs text-text-light">
-              Lump sum captured at checkout on a Christmas pre-order (pay-a-deposit-up-front model);
-              the balance is tokenised and settled on collection. Leave £0 to disable the deposit.
+              Fallback deposit captured at checkout on a Christmas pre-order, used only for products whose{" "}
+              &quot;Christmas deposit&quot; cell is blank in the sheet. The per-product Christmas deposit column
+              takes priority — leave this £0 to rely on the sheet alone.
             </p>
           </div>
           <input
