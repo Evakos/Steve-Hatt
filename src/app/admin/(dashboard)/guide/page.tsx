@@ -7,6 +7,26 @@ export default function AdminGuidePage() {
       <p className="mt-1 text-base text-text-light">How payment capture and the product spreadsheet sync work.</p>
 
       <section className="mt-8 border border-border bg-white p-5" style={{ borderRadius: "5px" }}>
+        <h2 className="font-medium text-navy">Payment in two steps: hold, then take</h2>
+        <div className="mt-3 space-y-3 text-base leading-relaxed text-text-light">
+          <p>
+            <strong className="text-navy">Authorise</strong> = place a hold — the card is checked and the money is
+            ring-fenced, but nothing is taken yet. <strong className="text-navy">Capture</strong> = actually take the
+            money for that hold. Fish is priced by weight, so the exact total isn&apos;t known until it&apos;s weighed —
+            so we hold an estimate at checkout, then take the real amount once staff confirm the weight.
+          </p>
+          <p>
+            A hold only lasts <strong className="text-navy">7 days</strong>, and once it expires capture fails. For
+            Christmas orders (placed weeks ahead) we therefore <strong className="text-navy">verify</strong> the card
+            with no hold, then place the hold a few days before the slot. And with the optional{" "}
+            <strong className="text-navy">deposit</strong>, we <strong className="text-navy">capture the deposit
+            immediately</strong> at checkout and only hold the remaining balance — so most of the money is already
+            safely banked, and only that small balance is still exposed to expiry or a declined card.
+          </p>
+        </div>
+      </section>
+
+      <section className="mt-6 border border-border bg-white p-5" style={{ borderRadius: "5px" }}>
         <h2 className="font-medium text-navy">1. Capturing payment</h2>
         <div className="mt-3 space-y-3 text-base leading-relaxed text-text-light">
           <p>
