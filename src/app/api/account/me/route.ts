@@ -3,7 +3,7 @@ import { getCustomerSession } from "@/lib/customer-auth";
 import { getCustomer } from "@/lib/woocommerce/customers";
 
 /** Used by checkout to prefill contact/address fields for a signed-in customer. Returns 401 with
- * no body detail for guests — this is a convenience lookup, not something guest checkout depends on. */
+ * no body detail for guests - this is a convenience lookup, not something guest checkout depends on. */
 export async function GET() {
   const customerId = await getCustomerSession();
   if (!customerId) {

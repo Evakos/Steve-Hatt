@@ -17,7 +17,7 @@ export interface ContactMessageInput {
   message: string;
 }
 
-/** Forwards a /contact form submission to staff (ADMIN_NOTIFICATION_EMAIL) — mirrors the live
+/** Forwards a /contact form submission to staff (ADMIN_NOTIFICATION_EMAIL) - mirrors the live
  * site's own "we don't take orders via email, but reply to enquiries within 48 hours" wording.
  * Thrown, not swallowed: unlike order confirmations, there's no other record of this submission
  * if the email fails, so the caller needs to know and tell the customer to try again. */

@@ -50,7 +50,7 @@ export async function GET(request: Request) {
 
     if (!cardToken || !authAmountStr || !slotDateStr) {
       // Shouldn't happen for orders created via createPreOrderFromVerification, but a "pending"
-      // order could in principle come from elsewhere — skip rather than guessing.
+      // order could in principle come from elsewhere - skip rather than guessing.
       summary.skippedIncomplete++;
       continue;
     }
@@ -91,7 +91,7 @@ export async function GET(request: Request) {
     }
 
     summary.reauthorised++;
-    // Same shape as create-order-from-payment.ts's outcome — from here the order is
+    // Same shape as create-order-from-payment.ts's outcome - from here the order is
     // indistinguishable from a normal authorised order and needs no special handling in
     // /admin/orders or the capture route.
     await updateWooOrder(order.id, {

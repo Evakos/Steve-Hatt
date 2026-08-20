@@ -17,7 +17,7 @@ export default function Header() {
           <Image src="/logo.svg" alt="Steve Hatt Fishmongers" width={180} height={80} className="h-11 w-auto" priority />
         </Link>
 
-        {/* Desktop nav — centered links */}
+        {/* Desktop nav - centered links */}
         <div className="hidden items-center justify-self-center gap-8 md:flex">
           <Link href="/shop" className="text-base text-text-light transition-colors hover:text-navy">Shop</Link>
           <Link href="/#how" className="text-base text-text-light transition-colors hover:text-navy">How It Works</Link>
@@ -27,7 +27,7 @@ export default function Header() {
 
         {/* Desktop actions */}
         <div className="hidden items-center justify-self-end gap-8 md:flex">
-          {/* Account link — /account redirects to sign-in if not authenticated */}
+          {/* Account link - /account redirects to sign-in if not authenticated */}
           <Link
             href="/account"
             className="flex items-center gap-1.5 text-base text-text-light transition-colors hover:text-navy"

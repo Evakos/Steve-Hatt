@@ -19,16 +19,16 @@ export interface OrderConfirmationInput {
   repriced: RepricedOrder;
   slotLabel: string;
   fulfilmentType: "delivery" | "collection";
-  /** Set when a deposit was captured at checkout (Christmas deposit model) — the confirmation then
+  /** Set when a deposit was captured at checkout (Christmas deposit model) - the confirmation then
    * says "deposit paid now, balance to settle on collection" instead of "you haven't been charged yet". */
   depositAmount?: number;
 }
 
 /**
  * Sends the order confirmation. The amount shown here is the *estimated* total (an
- * authorisation hold, not a charge) — fish is priced by weight, so the wording is deliberately
+ * authorisation hold, not a charge) - fish is priced by weight, so the wording is deliberately
  * "estimated total" / "final amount confirmed once weighed", not "amount charged". Failures are
- * swallowed by the caller (see checkout route) — a lost confirmation email shouldn't fail an
+ * swallowed by the caller (see checkout route) - a lost confirmation email shouldn't fail an
  * otherwise-successful order.
  */
 export async function sendOrderConfirmation(input: OrderConfirmationInput) {
@@ -87,13 +87,13 @@ export interface CaptureConfirmationInput {
   orderNumber: string;
   capturedAmount: number;
   authorisedAmount: number;
-  /** Set when a deposit was captured at checkout — shown as a separate "deposit already paid" line. */
+  /** Set when a deposit was captured at checkout - shown as a separate "deposit already paid" line. */
   depositAmount?: number;
 }
 
 /**
  * Sent once staff confirm the final weighed price and capture payment (see
- * src/app/api/admin/capture/route.ts) — this is the email that actually says money moved,
+ * src/app/api/admin/capture/route.ts) - this is the email that actually says money moved,
  * distinct from sendOrderConfirmation's "you haven't been charged yet" wording at checkout time.
  * Same failure handling as sendOrderConfirmation: swallowed here, doesn't fail the capture.
  */
@@ -136,7 +136,7 @@ export interface OrderCompleteInput {
 }
 
 /**
- * Sent once staff mark the order complete (src/app/api/admin/complete/route.ts) — the third and
+ * Sent once staff mark the order complete (src/app/api/admin/complete/route.ts) - the third and
  * final stage after "order received" (checkout) and "processing" (capture): on-hold -> processing
  * -> completed, mirroring WooCommerce's own order status names. Same failure handling as the
  * other order emails: swallowed here, doesn't fail the "mark complete" action.
@@ -170,14 +170,14 @@ export interface AdminNewOrderNotificationInput {
   repriced: RepricedOrder;
   slotLabel: string;
   fulfilmentType: "delivery" | "collection";
-  /** Set when a deposit was captured at checkout — flags the order as deposit+balance rather than full-hold. */
+  /** Set when a deposit was captured at checkout - flags the order as deposit+balance rather than full-hold. */
   depositAmount?: number;
 }
 
 /**
- * Notifies staff (every address in ADMIN_NOTIFICATION_EMAIL — a comma-separated list, see
+ * Notifies staff (every address in ADMIN_NOTIFICATION_EMAIL - a comma-separated list, see
  * .env.example) that a new order needs preparing. Fires alongside sendOrderConfirmation at
- * checkout time — see /api/checkout and /api/checkout/confirm. Same failure handling: swallowed,
+ * checkout time - see /api/checkout and /api/checkout/confirm. Same failure handling: swallowed,
  * doesn't fail the order.
  */
 export async function sendAdminNewOrderNotification(input: AdminNewOrderNotificationInput) {
@@ -188,8 +188,8 @@ export async function sendAdminNewOrderNotification(input: AdminNewOrderNotifica
   const balance = hasDeposit ? repriced.total - deposit : repriced.total;
 
   const html = emailShell(`
-    ${emailHeading(`New order #${orderNumber} — needs preparing`)}
-    <p>${customerName} (${customerEmail}) — ${fulfilmentType === "delivery" ? "Delivery" : "Collection"}: ${slotLabel}</p>
+    ${emailHeading(`New order #${orderNumber} - needs preparing`)}
+    <p>${customerName} (${customerEmail}) - ${fulfilmentType === "delivery" ? "Delivery" : "Collection"}: ${slotLabel}</p>
     ${emailLineItemsTable(repriced.lineItems)}
     <table style="width:100%;border-collapse:collapse;">
       ${hasDeposit ? `<tr><td style="padding:4px 0;color:${COLORS.textLight};">Deposit captured at checkout</td><td style="padding:4px 0;text-align:right;color:${COLORS.text};">&pound;${deposit.toFixed(2)}</td></tr>` : ""}
@@ -203,7 +203,7 @@ export async function sendAdminNewOrderNotification(input: AdminNewOrderNotifica
     await resend().emails.send({
       from: `Steve Hatt Fishmongers <${FROM_ADDRESS}>`,
       to,
-      subject: `New order #${orderNumber} — £${repriced.total.toFixed(2)} est.`,
+      subject: `New order #${orderNumber} - £${repriced.total.toFixed(2)} est.`,
       html,
     });
   } catch (err) {
@@ -220,9 +220,9 @@ export interface PreOrderAuthFailedInput {
 /**
  * Sent when src/app/api/cron/reauthorise-preorders/route.ts tries to place the real hold on a
  * Christmas pre-order a few days before the delivery slot, and the card is declined (expired,
- * insufficient funds, etc.) — there's no customer present at that point to retry or complete a
+ * insufficient funds, etc.) - there's no customer present at that point to retry or complete a
  * 3DS challenge (see AuthoriseSaleWithTokenResult), so this is the recovery path. Deliberately
- * doesn't link to a self-service "update your card" page — that doesn't exist yet, this asks the
+ * doesn't link to a self-service "update your card" page - that doesn't exist yet, this asks the
  * customer to contact the shop directly. Same failure handling as the other order emails.
  */
 export async function sendPreOrderAuthFailedEmail(input: PreOrderAuthFailedInput) {
@@ -257,7 +257,7 @@ export interface AdminPreOrderAuthFailedInput {
   reason: string;
 }
 
-/** Staff-side counterpart to sendPreOrderAuthFailedEmail — flags the order for follow-up, since
+/** Staff-side counterpart to sendPreOrderAuthFailedEmail - flags the order for follow-up, since
  * it won't move into the normal /admin/orders capture queue until payment is resolved. */
 export async function sendAdminPreOrderAuthFailedAlert(input: AdminPreOrderAuthFailedInput) {
   const { orderNumber, customerName, customerEmail, reason } = input;

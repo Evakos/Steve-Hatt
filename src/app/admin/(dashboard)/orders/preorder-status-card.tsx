@@ -1,6 +1,6 @@
 import type { WooOrder } from "@/lib/woocommerce/types";
 
-// Mirrors AUTH_LEAD_DAYS in src/app/api/cron/reauthorise-preorders/route.ts — used here only to
+// Mirrors AUTH_LEAD_DAYS in src/app/api/cron/reauthorise-preorders/route.ts - used here only to
 // describe the schedule to staff, not to make any decision.
 const AUTH_LEAD_DAYS = 5;
 
@@ -8,7 +8,7 @@ interface Props {
   order: WooOrder;
 }
 
-/** Read-only — staff don't act on these directly. The cron job authorises them automatically;
+/** Read-only - staff don't act on these directly. The cron job authorises them automatically;
  * this exists so a pending pre-order (or a failed auto-charge) is visible before/without staff
  * having to go looking for it. See src/lib/checkout/create-preorder-from-verification.ts. */
 export default function PreOrderStatusCard({ order }: Props) {

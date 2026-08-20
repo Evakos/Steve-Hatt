@@ -12,10 +12,10 @@ function resend() {
 }
 
 /**
- * The only email in the passwordless sign-in flow (see customer-auth.ts) — there's no separate
+ * The only email in the passwordless sign-in flow (see customer-auth.ts) - there's no separate
  * "welcome" or "verify your address" email, since clicking this link both proves the address and
  * completes sign-in/sign-up in one step. Unlike the order emails, a failure here **is** surfaced
- * to the caller (thrown, not swallowed) — silently failing would leave someone stuck with a
+ * to the caller (thrown, not swallowed) - silently failing would leave someone stuck with a
  * "check your email" screen and no way to get in.
  */
 export async function sendMagicLinkEmail(to: string, verifyUrl: string): Promise<void> {

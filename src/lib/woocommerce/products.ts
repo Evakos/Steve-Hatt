@@ -47,7 +47,7 @@ export async function updateWooProduct(id: number, input: WooProductInput): Prom
 }
 
 /** Same sheet sync, for the weight/size-tiered products (variable products) where price lives on
- * each variation rather than the parent — see the "Variations" sheet tab. */
+ * each variation rather than the parent - see the "Variations" sheet tab. */
 export async function updateWooProductVariation(
   parentProductId: number,
   variationId: number,
@@ -61,7 +61,7 @@ export async function updateWooProductVariation(
 
 /**
  * Always-fresh (never cached) lookup used only for server-side repricing at checkout.
- * Deliberately bypasses the ISR-cached browsing path above — payment math must never trust a stale cache.
+ * Deliberately bypasses the ISR-cached browsing path above - payment math must never trust a stale cache.
  * Returns raw pricing inputs (not a collapsed total) so the caller applies the same
  * `computeUnitPrice` priority logic used client-side, keeping pricing rules in one place.
  */
@@ -83,7 +83,7 @@ export async function getProductForPricing(
     const variation = await wooFetch<WooProductVariation>(`products/${wooProductId}/variations/${wooVariationId}`, {
       next: { revalidate: 0 },
     });
-    // Christmas pricing isn't supported for weight/size-tiered products yet — sizeOptionPrice
+    // Christmas pricing isn't supported for weight/size-tiered products yet - sizeOptionPrice
     // being set is what tells computeUnitPriceForOrder to skip the christmasPrice override.
     return {
       pricePerKg,

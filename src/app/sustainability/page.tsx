@@ -15,7 +15,7 @@ export default function SustainabilityPage() {
       <AnnouncementBanner />
       <Header />
 
-      {/* Plain white intro — the real site has no photo hero on this page */}
+      {/* Plain white intro - the real site has no photo hero on this page */}
       <section className="bg-white">
         <div className="mx-auto max-w-3xl px-6 pt-16 pb-8">
           <p className="text-xs tracking-widest text-text-light uppercase">Sustainability</p>

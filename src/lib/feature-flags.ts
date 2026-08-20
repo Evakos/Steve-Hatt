@@ -3,13 +3,13 @@ import { get } from "@vercel/edge-config";
 import { hasUpcomingChristmasDates } from "./christmas-dates";
 
 /**
- * Whether Christmas pre-ordering is currently being offered site-wide — staff flip this via a
+ * Whether Christmas pre-ordering is currently being offered site-wide - staff flip this via a
  * Vercel Edge Config item so it takes effect instantly, no redeploy (see /admin for how to flip
- * it until a write-capable admin button exists — see EDGE_CONFIG in .env.example). Defaults to
+ * it until a write-capable admin button exists - see EDGE_CONFIG in .env.example). Defaults to
  * off if Edge Config isn't reachable (e.g. local dev without EDGE_CONFIG set) rather than
  * failing the page.
  *
- * The switch is ANDed with whether Christmas fulfilment dates (20th–24th Dec) still exist —
+ * The switch is ANDed with whether Christmas fulfilment dates (20th-24th Dec) still exist -
  * that's only ever false after this December's window has closed (Christmas Eve onward), so the
  * option is never presented with no bookable dates behind it.
  */
@@ -18,7 +18,7 @@ export async function isChristmasShopActive(): Promise<boolean> {
   return getChristmasShopActiveRaw();
 }
 
-/** The stored switch value with no date-gating applied — used by the admin settings panel so
+/** The stored switch value with no date-gating applied - used by the admin settings panel so
  * staff see exactly what they've set (e.g. flipped on in October), not the customer-facing
  * derived availability, which is only ever false in the dead week between Christmas Eve and New
  * Year once this December's dates have passed. Everywhere else should use isChristmasShopActive. */
@@ -32,7 +32,7 @@ export async function getChristmasShopActiveRaw(): Promise<boolean> {
 
 /**
  * Seasonal percentage premium applied to Christmas orders only, on top of a product's normal
- * price — the deliberate alternative to giving products a separate "Christmas price" (which
+ * price - the deliberate alternative to giving products a separate "Christmas price" (which
  * would mean duplicate listings, effectively two shops sharing one catalogue). Never shown on
  * the shop/product pages, applied only at checkout once a customer has chosen a Christmas order
  * (see repriceCheckoutRequest), and disclosed there rather than as a second price tag anywhere
@@ -50,7 +50,7 @@ export async function getChristmasPremiumPercent(): Promise<number> {
 }
 
 /**
- * Fixed deposit (£) captured at checkout on a Christmas pre-order — Carole's preferred model: pay
+ * Fixed deposit (£) captured at checkout on a Christmas pre-order - Carole's preferred model: pay
  * a lump sum up front (so the shop isn't exposed to the November→December card-expiry risk on the
  * whole order), verify the card for the outstanding balance, and settle that balance on collection.
  * Staff-set via /admin/guide, same Edge Config mechanism as isChristmasShopActive, editable without

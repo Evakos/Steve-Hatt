@@ -40,7 +40,7 @@ export async function POST(request: Request) {
   }
   const authorisedAmount = Number(authorisedAmountStr);
 
-  // Deposit orders (pay-a-lump-sum-up-front) had their deposit captured at checkout — `authorisedAmount`
+  // Deposit orders (pay-a-lump-sum-up-front) had their deposit captured at checkout - `authorisedAmount`
   // here is only the *balance* hold placed by the cron. Plain orders authorised the full total.
   const depositAmountStr = order.meta_data.find((m) => m.key === "_cardstream_deposit_amount")?.value as
     | string
@@ -51,7 +51,7 @@ export async function POST(request: Request) {
 
   // What's still owed is the final total minus anything already collected as a deposit. Confirmed via
   // docs.pay360.com/cards/captures: Capture always takes the full authorised amount, no partial capture
-  // — so the balance owed can never exceed the balance hold; anything above it needs a *new*
+  // - so the balance owed can never exceed the balance hold; anything above it needs a *new*
   // authorisation for the difference, which isn't supported yet.
   const balanceOwed = Math.max(0, finalTotal - depositAmount);
   if (balanceOwed > authorisedAmount) {
@@ -74,7 +74,7 @@ export async function POST(request: Request) {
 
   // Capture the balance hold in full (Pay360 doesn't support capturing less), then refund any
   // difference back down to what's actually owed. If nothing more is owed (weighed to or below the
-  // deposit already collected), skip the balance capture entirely — and refund any deposit
+  // deposit already collected), skip the balance capture entirely - and refund any deposit
   // overpayment back from the deposit transaction.
   const refundAmount = authorisedAmount - balanceOwed;
 
@@ -92,7 +92,7 @@ export async function POST(request: Request) {
       orderRef: orderRef ?? String(orderId),
     });
     if (refundResult.status === "failed") {
-      // The balance hold was already captured in full — that part succeeded and fulfilment should
+      // The balance hold was already captured in full - that part succeeded and fulfilment should
       // proceed. What failed is only handing back the difference, so flag it for a manual refund via
       // the Pay360 Merchant Portal rather than silently under-reporting what was actually charged.
       await updateWooOrder(orderId, {
@@ -157,7 +157,7 @@ export async function POST(request: Request) {
     ],
   });
 
-  // A failed email shouldn't fail the capture — payment has already moved.
+  // A failed email shouldn't fail the capture - payment has already moved.
   await sendCaptureConfirmation({
     to: order.billing.email,
     customerName: order.billing.first_name,

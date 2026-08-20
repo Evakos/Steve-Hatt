@@ -48,7 +48,7 @@ describe("GET /api/cron/reauthorise-preorders", () => {
 
   it("re-authorises orders inside the lead window, leaves distant ones alone, and flags declines", async () => {
     const orders = [
-      // Within the 5-day lead window and a token the mock client accepts — should re-authorise.
+      // Within the 5-day lead window and a token the mock client accepts - should re-authorise.
       preOrder(1, {
         _checkout_is_christmas: "true",
         _cardstream_card_token: "mock_mt_ready",
@@ -56,7 +56,7 @@ describe("GET /api/cron/reauthorise-preorders", () => {
         _checkout_slot_date: daysFromNow(3),
         _checkout_order_ref: "ref-1",
       }),
-      // Slot is 10 days out — too early, should be left untouched.
+      // Slot is 10 days out - too early, should be left untouched.
       preOrder(2, {
         _checkout_is_christmas: "true",
         _cardstream_card_token: "mock_mt_toosoon",
@@ -64,7 +64,7 @@ describe("GET /api/cron/reauthorise-preorders", () => {
         _checkout_slot_date: daysFromNow(10),
         _checkout_order_ref: "ref-2",
       }),
-      // Within the window but the mock client's decline token — should be flagged, not authorised.
+      // Within the window but the mock client's decline token - should be flagged, not authorised.
       preOrder(3, {
         _checkout_is_christmas: "true",
         _cardstream_card_token: "mock_mt_decline",

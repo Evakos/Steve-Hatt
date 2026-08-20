@@ -4,7 +4,7 @@ import { createHmac } from "node:crypto";
 const WEBHOOK_SECRET = "test-secret";
 
 // env.ts validates and caches on first access, and CARDSTREAM_MOCK selects the mock client
-// (which uses the same real HMAC-SHA256 signature logic as the real client) — see
+// (which uses the same real HMAC-SHA256 signature logic as the real client) - see
 // src/lib/cardstream/mock-client.ts. These must be set before the route module is imported.
 beforeAll(() => {
   process.env.WOOCOMMERCE_URL = "https://example.test";

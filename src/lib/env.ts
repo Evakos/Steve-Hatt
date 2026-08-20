@@ -16,7 +16,7 @@ const serverEnvSchema = z.object({
     .default("false")
     .transform((v) => v === "true"),
   RESEND_API_KEY: z.string().min(1),
-  // One or more comma-separated staff addresses — every new-order alert, pre-order auth
+  // One or more comma-separated staff addresses - every new-order alert, pre-order auth
   // failure and contact-form submission is sent to all of them (Resend's `to` accepts an array).
   ADMIN_NOTIFICATION_EMAIL: z
     .string()
@@ -33,12 +33,12 @@ const serverEnvSchema = z.object({
   STAFF_PASSWORD: z.string().min(1),
   STAFF_SESSION_SECRET: z.string().min(1),
   CUSTOMER_SESSION_SECRET: z.string().min(1),
-  // Optional — /admin/products (sheet → site sync) checks for these itself and returns a clear
+  // Optional - /admin/products (sheet → site sync) checks for these itself and returns a clear
   // error if absent, rather than these being required for the whole app to boot.
   GOOGLE_SHEETS_SERVICE_ACCOUNT_EMAIL: z.string().min(1).optional(),
   GOOGLE_SHEETS_PRIVATE_KEY: z.string().min(1).optional(),
   GOOGLE_SHEETS_SPREADSHEET_ID: z.string().min(1).optional(),
-  // Optional — only needed for the write side of Christmas settings (/admin/guide's on/off +
+  // Optional - only needed for the write side of Christmas settings (/admin/guide's on/off +
   // premium controls). Reading those settings (isChristmasShopActive, getChristmasPremiumPercent)
   // uses the separate read-only EDGE_CONFIG connection string and works without these.
   VERCEL_API_TOKEN: z.string().min(1).optional(),

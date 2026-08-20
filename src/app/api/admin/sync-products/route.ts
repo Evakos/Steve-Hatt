@@ -117,7 +117,7 @@ export async function POST() {
     }
 
     // Manual per-product Christmas price override (same idea as previous years' separate
-    // Christmas price spreadsheet) — see computeUnitPriceForOrder for how this is applied at
+    // Christmas price spreadsheet) - see computeUnitPriceForOrder for how this is applied at
     // checkout. Blank means "no override, use the normal price even for Christmas orders".
     const christmasPriceRaw = row["Christmas price"];
     let christmasPrice: string | undefined;
@@ -184,7 +184,7 @@ export async function POST() {
   }
 
   // Weight/size-tiered products (variable products, e.g. Salmon Whole, Turbot) have no single
-  // price of their own — each size is a separate WooCommerce variation, priced independently.
+  // price of their own - each size is a separate WooCommerce variation, priced independently.
   // The "Variations" tab lets staff edit those prices the same way as the main Products tab.
   let variationRows: Record<string, string>[] = [];
   try {
@@ -231,7 +231,7 @@ export async function POST() {
     }
   }
 
-  // Product pages are ISR-cached under this tag (see woocommerce/products.ts) — without this,
+  // Product pages are ISR-cached under this tag (see woocommerce/products.ts) - without this,
   // the sheet edit wouldn't show up on the live site for up to 2 minutes. Next 16 requires a
   // stale-window profile as the second argument; "max" is the docs' recommended default.
   revalidateTag(PRODUCTS_TAG, "max");

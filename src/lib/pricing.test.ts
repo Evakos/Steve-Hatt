@@ -18,7 +18,7 @@ describe("computeUnitPrice", () => {
     expect(computeUnitPrice({ pricePerKg: 10, price: 5, sizeOptionPrice: 20 }, 1)).toBe(10);
   });
 
-  it("ignores christmasPrice entirely — never shown outside checkout", () => {
+  it("ignores christmasPrice entirely - never shown outside checkout", () => {
     expect(computeUnitPrice({ pricePerKg: 0, price: 3, sizeOptionPrice: undefined, christmasPrice: 99 }, 0)).toBe(3);
   });
 });

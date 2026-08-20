@@ -2,7 +2,7 @@ import "server-only";
 import { getServerEnv } from "@/lib/env";
 
 /**
- * Writes to Edge Config via the Vercel REST API — a completely separate credential from the
+ * Writes to Edge Config via the Vercel REST API - a completely separate credential from the
  * EDGE_CONFIG connection string used everywhere else (see feature-flags.ts), which is read-only
  * by design. Only used by the staff-authenticated /admin/guide controls; every other read in the
  * app never touches this.
@@ -10,7 +10,7 @@ import { getServerEnv } from "@/lib/env";
 export interface ChristmasSettings {
   active: boolean;
   premiumPercent: number;
-  /** Fixed deposit (£) captured at checkout on Christmas pre-orders — 0 disables it. */
+  /** Fixed deposit (£) captured at checkout on Christmas pre-orders - 0 disables it. */
   christmasDepositAmount: number;
 }
 
@@ -18,7 +18,7 @@ export async function updateChristmasSettings(input: ChristmasSettings): Promise
   const env = getServerEnv();
   if (!env.VERCEL_API_TOKEN || !env.EDGE_CONFIG_ID) {
     throw new Error(
-      "Christmas settings can't be saved — VERCEL_API_TOKEN and EDGE_CONFIG_ID aren't configured (see .env.example)."
+      "Christmas settings can't be saved - VERCEL_API_TOKEN and EDGE_CONFIG_ID aren't configured (see .env.example)."
     );
   }
 

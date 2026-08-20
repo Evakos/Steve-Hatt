@@ -22,13 +22,13 @@ export interface CartItem {
   quantity: number;
   weight: number;
   preparation: string;
-  /** True per-unit price (not a line total) — multiply by quantity for the line total, see `lineTotal()`. */
+  /** True per-unit price (not a line total) - multiply by quantity for the line total, see `lineTotal()`. */
   unitPrice: number;
-  /** WooCommerce variation id, if a size option was selected — needed to reprice/order this line at checkout. */
+  /** WooCommerce variation id, if a size option was selected - needed to reprice/order this line at checkout. */
   wooVariationId?: number;
 }
 
-/** Line total for a cart item — `unitPrice` is always per-unit, never pre-multiplied by quantity. */
+/** Line total for a cart item - `unitPrice` is always per-unit, never pre-multiplied by quantity. */
 export function lineTotal(item: CartItem): number {
   return item.unitPrice * item.quantity;
 }
@@ -49,7 +49,7 @@ const CartContext = createContext<CartContextValue | null>(null);
 
 export function CartProvider({ children }: { children: ReactNode }) {
   // Starts empty so server and first client render match (localStorage isn't available during
-  // SSR) — the real cart loads in immediately after mount, in the effect below.
+  // SSR) - the real cart loads in immediately after mount, in the effect below.
   const [items, setItems] = useState<CartItem[]>([]);
   const [hydrated, setHydrated] = useState(false);
   const [miniCartOpen, setMiniCartOpen] = useState(false);

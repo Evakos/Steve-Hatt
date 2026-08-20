@@ -22,11 +22,11 @@ export async function POST(request: Request) {
   const cardstream = getCardstreamClient();
 
   // Christmas pre-orders can be placed from 1st November for delivery on the 23rd/24th
-  // December — far longer than a Pay360 authorisation survives (7 days, see
+  // December - far longer than a Pay360 authorisation survives (7 days, see
   // src/lib/cardstream/real-client.ts). So instead of authorising now, verify the card (no hold
   // placed, no expiry clock started) and let src/app/api/cron/reauthorise-preorders/route.ts
   // place the real hold a few days before the delivery slot. Reports the same "authorised"
-  // status back to the client either way — the frontend only needs to know checkout succeeded,
+  // status back to the client either way - the frontend only needs to know checkout succeeded,
   // not which payment path produced that result.
   if (checkout.fulfilment.slot.isChristmas) {
     // Deposit model (Carole's flow): capture a fixed lump sum now so the shop isn't exposed to the
@@ -50,7 +50,7 @@ export async function POST(request: Request) {
         return NextResponse.json({ status: "declined", reason: depositAuth.reason }, { status: 402 });
       }
 
-      // 3DS on the deposit — complete via /api/checkout/confirm (which re-derives the deposit
+      // 3DS on the deposit - complete via /api/checkout/confirm (which re-derives the deposit
       // deterministically and continues the deposit-capture + balance-verify flow).
       if (depositAuth.status === "requires_action") {
         return NextResponse.json({
@@ -61,7 +61,7 @@ export async function POST(request: Request) {
         });
       }
 
-      // Deposit authorised — capture it immediately so funds move now. Pay360 captures the full
+      // Deposit authorised - capture it immediately so funds move now. Pay360 captures the full
       // authorised amount; the deposit is its own transaction of exactly `depositAmount`, so this
       // is a clean full capture rather than the capture-then-refund shape used on final weigh-in.
       const captureResult = await cardstream.captureSale({ transactionId: depositAuth.transactionId, orderRef });
@@ -111,7 +111,7 @@ export async function POST(request: Request) {
       });
     }
 
-    // No deposit configured — plain verify-only pre-order flow (no hold, no 7-day clock).
+    // No deposit configured - plain verify-only pre-order flow (no hold, no 7-day clock).
     const verifyResult = await cardstream.verifyCard({
       token: checkout.payment.token,
       orderRef,
@@ -149,7 +149,7 @@ export async function POST(request: Request) {
     });
   }
 
-  // Only authorises (places a hold) — fish is priced by weight, so the exact amount isn't known
+  // Only authorises (places a hold) - fish is priced by weight, so the exact amount isn't known
   // until the order is prepared. Staff capture the confirmed final amount later via /admin.
   const result = await cardstream.authoriseSale({
     token: checkout.payment.token,
@@ -164,7 +164,7 @@ export async function POST(request: Request) {
   }
 
   if (result.status === "requires_action") {
-    // No order is created yet — avoids an orphaned unpaid order if the shopper abandons the
+    // No order is created yet - avoids an orphaned unpaid order if the shopper abandons the
     // 3DS challenge. The client completes the challenge and calls /api/checkout/confirm.
     return NextResponse.json({
       status: "requires_action",
@@ -176,7 +176,7 @@ export async function POST(request: Request) {
 
   const { order } = await createOrderFromPayment(checkout, result.transactionId, orderRef, customerId);
 
-  // A failed email shouldn't fail the order — it's already authorised and created.
+  // A failed email shouldn't fail the order - it's already authorised and created.
   await sendOrderConfirmation({
     to: checkout.customer.email,
     customerName: checkout.customer.firstName,

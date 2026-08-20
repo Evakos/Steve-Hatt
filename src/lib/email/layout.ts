@@ -1,5 +1,5 @@
 /**
- * Shared visual layer for every transactional email — mirrors the site's actual brand palette
+ * Shared visual layer for every transactional email - mirrors the site's actual brand palette
  * (src/app/globals.css custom properties) and font choices, since email clients can't read the
  * site's CSS. Playfair Display/DM Sans (the site's actual fonts) aren't reliably available in
  * email clients, so headings/body use close web-safe equivalents instead of trying to load them.
@@ -25,7 +25,7 @@ const FONT_SERIF = "Georgia, 'Times New Roman', serif";
 export const SITE_URL = "https://steve-hatt-demo.vercel.app";
 const LOGO_URL = `${SITE_URL}/logo-email.png`;
 
-/** Wraps a block of body HTML in a full HTML document (explicit UTF-8 charset — without it,
+/** Wraps a block of body HTML in a full HTML document (explicit UTF-8 charset - without it,
  * literal non-ASCII characters in dynamic content, e.g. the "·" in a formatted slot label, get
  * misread as Latin-1 by some email clients and render as garbled "Â·") with the branded card:
  * logo header, lobster accent line, cream footer with the shop address. Every email function
@@ -62,7 +62,7 @@ export function emailHeading(text: string): string {
   return `<h1 style="margin:0 0 16px;font-family:${FONT_SERIF};font-size:22px;font-weight:700;color:${COLORS.navy};">${text}</h1>`;
 }
 
-/** A callout box for informational/reassuring notices (e.g. "not charged yet") — ocean, not
+/** A callout box for informational/reassuring notices (e.g. "not charged yet") - ocean, not
  * lobster, since lobster is reserved for primary actions/urgent notices, matching the site's own
  * use of ocean-light callouts for "fair pricing" style reassurance copy. */
 export function emailNotice(html: string): string {
@@ -100,7 +100,7 @@ export interface EmailLineItem {
   lineTotal: number;
 }
 
-/** Itemised line-item table shared by every order email — quantity, name, prep/weight detail,
+/** Itemised line-item table shared by every order email - quantity, name, prep/weight detail,
  * and price per line, not just a total. */
 export function emailLineItemsTable(items: EmailLineItem[]): string {
   const rows = items

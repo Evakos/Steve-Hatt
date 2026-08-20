@@ -25,7 +25,7 @@ const META_KEYS = {
 
 /**
  * The WooCommerce REST API runs `description` through `wpautop` on output, wrapping plain text
- * in `<p>` tags (and turning blank lines into separate paragraphs) — regardless of whether the
+ * in `<p>` tags (and turning blank lines into separate paragraphs) - regardless of whether the
  * content was written as HTML or plain text. This app always treats description as plain text
  * (rendered directly in JSX, and reused verbatim as the page's meta description), so strip that
  * formatting back out rather than rendering literal "<p>" characters or shipping HTML in a meta tag.
@@ -41,8 +41,8 @@ function stripHtml(html: string): string {
     .replace(/&#8216;|&lsquo;/g, "‘")
     .replace(/&#8220;|&ldquo;/g, "“")
     .replace(/&#8221;|&rdquo;/g, "”")
-    .replace(/&#8211;|&ndash;/g, "–")
-    .replace(/&#8212;|&mdash;/g, "—")
+    .replace(/&#8211;|&ndash;/g, "-")
+    .replace(/&#8212;|&mdash;/g, "-")
     .trim();
 }
 

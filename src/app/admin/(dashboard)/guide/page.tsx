@@ -18,9 +18,9 @@ export default function AdminGuidePage() {
         <h2 className="font-medium text-navy">Payment in two steps: hold, then take</h2>
         <div className="mt-3 space-y-3 text-base leading-relaxed text-text-light">
           <p>
-            <strong className="text-navy">Authorise</strong> = place a hold — the card is checked and the money is
+            <strong className="text-navy">Authorise</strong> = place a hold - the card is checked and the money is
             ring-fenced, but nothing is taken yet. <strong className="text-navy">Capture</strong> = actually take the
-            money for that hold. Fish is priced by weight, so the exact total isn&apos;t known until it&apos;s weighed —
+            money for that hold. Fish is priced by weight, so the exact total isn&apos;t known until it&apos;s weighed -
             so we hold an estimate at checkout, then take the real amount once staff confirm the weight.
           </p>
           <p>
@@ -28,7 +28,7 @@ export default function AdminGuidePage() {
             Christmas orders (placed weeks ahead) we therefore <strong className="text-navy">verify</strong> the card
             with no hold, then place the hold a few days before the slot. And with the optional{" "}
             <strong className="text-navy">deposit</strong>, we <strong className="text-navy">capture the deposit
-            immediately</strong> at checkout and only hold the remaining balance — so most of the money is already
+            immediately</strong> at checkout and only hold the remaining balance - so most of the money is already
             safely banked, and only that small balance is still exposed to expiry or a declined card.
           </p>
         </div>
@@ -79,7 +79,7 @@ export default function AdminGuidePage() {
         <h2 className="font-medium text-navy">3. Christmas pre-orders</h2>
         <div className="mt-3 space-y-3 text-base leading-relaxed text-text-light">
           <p>
-            Pre-orders can be placed as early as 1st November for delivery on 23rd–24th December, far beyond the
+            Pre-orders can be placed as early as 1st November for delivery on 23rd-24th December, far beyond the
             7-day hold window. So for these, the card is only <strong className="text-navy">verified</strong> at
             checkout, no hold yet. A daily automated job places the real authorisation{" "}
             <strong className="text-navy">5 days before</strong> the delivery slot, using a stored card token.
@@ -99,7 +99,7 @@ export default function AdminGuidePage() {
           <p>
             <strong className="text-navy">Optional deposit.</strong> You can take an up-front deposit on Christmas
             pre-orders instead of waiting to collect the whole amount on the day. Add a per-product deposit in the{" "}
-            <strong className="text-navy">Christmas deposit</strong> column of the spreadsheet — the customer pays the
+            <strong className="text-navy">Christmas deposit</strong> column of the spreadsheet - the customer pays the
             total of those deposits straight away at checkout, and only the remaining balance is authorised a few days
             before their slot and settled once weighed. If no product has a deposit set, the{" "}
             <strong className="text-navy">Default deposit (£)</strong> on the Products page applies instead. The shop

@@ -30,23 +30,23 @@ export type Product = {
   storage: string;
   /** Discrete size options with fixed prices, e.g. Small/Medium/Large lobster */
   sizeOptions?: SizeOption[];
-  /** "per-kg" | "per-piece" | "fixed" — controls the selector shown on the product page */
+  /** "per-kg" | "per-piece" | "fixed" - controls the selector shown on the product page */
   priceType?: "per-kg" | "per-piece" | "fixed";
-  /** Seasons/events this product is featured for, e.g. ["christmas"] — editorial promotion
+  /** Seasons/events this product is featured for, e.g. ["christmas"] - editorial promotion
    * (which items appear in the homepage's "Christmas Pre-Orders" teaser), separate from whether
    * the product can actually be pre-ordered for Christmas at all (see excludedFromChristmas). */
   featuredFor?: string[];
-  /** Almost every product can be pre-ordered for Christmas by default — this opts a specific
+  /** Almost every product can be pre-ordered for Christmas by default - this opts a specific
    * product OUT (e.g. something that can't be held that long, or won't be in stock). */
   excludedFromChristmas?: boolean;
   /** Manual per-product Christmas price override, set via the Products sheet's `christmas_price`
-   * column — same units as pricePerKg/price (a £/kg rate if priced by weight, a flat price
+   * column - same units as pricePerKg/price (a £/kg rate if priced by weight, a flat price
    * otherwise). Undefined means no Christmas-specific price is set for this product. Never shown
-   * anywhere in the catalogue (see computeUnitPriceForOrder) — only used to compute an accurate
+   * anywhere in the catalogue (see computeUnitPriceForOrder) - only used to compute an accurate
    * checkout-time estimate for a Christmas order, the real price is always recomputed server-side. */
   christmasPrice?: number;
   /** Per-product deposit required for a Christmas pre-order, set via the Products sheet's
-   * "Christmas deposit" column (£ per unit). Blank means no per-product deposit — the blanket
+   * "Christmas deposit" column (£ per unit). Blank means no per-product deposit - the blanket
    * default applies instead (see repriceCheckoutRequest). */
   christmasDeposit?: number;
   /** Optional date string for when pre-orders will be fulfilled/delivered */
@@ -55,7 +55,7 @@ export type Product = {
   wooId: number;
 };
 
-/** All products, fetched server-side from WooCommerce (ISR-cached — see src/lib/woocommerce/products.ts). */
+/** All products, fetched server-side from WooCommerce (ISR-cached - see src/lib/woocommerce/products.ts). */
 export async function getAllProducts(): Promise<Product[]> {
   return wooGetAllProducts();
 }

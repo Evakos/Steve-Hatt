@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { WooOrder } from "@/lib/woocommerce/types";
 
-// Pay360 authorisations expire 7 days after creation by default — after that, Capture (and
+// Pay360 authorisations expire 7 days after creation by default - after that, Capture (and
 // Cancel) both fail (docs.pay360.com/cards/authorisations). Order date_created is a reliable
 // proxy for "when the hold was placed" since the WooCommerce order is only ever created right
 // after a successful authoriseSale (see create-order-from-payment.ts).
@@ -33,7 +33,7 @@ export default function CaptureOrderCard({ order }: Props) {
   const [error, setError] = useState<string | null>(null);
 
   const finalTotal = Object.values(amounts).reduce((sum, v) => sum + (Number(v) || 0), 0);
-  // Deposit orders already collected a lump sum at checkout — only the balance needs capturing now.
+  // Deposit orders already collected a lump sum at checkout - only the balance needs capturing now.
   const balanceOwed = Math.max(0, finalTotal - depositAmount);
   const overAuthorised = balanceOwed > authorisedAmount + 0.001; // small epsilon for float rounding
   const depositOverpaid = depositAmount > 0 && finalTotal < depositAmount - 0.001;

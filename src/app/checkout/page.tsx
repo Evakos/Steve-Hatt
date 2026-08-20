@@ -69,7 +69,7 @@ function getAvailableDates(): Date[] {
     }
   }
 
-  // Christmas pre-order dates (Dec 20-24) come from the shared lib/christmas-dates.ts helper —
+  // Christmas pre-order dates (Dec 20-24) come from the shared lib/christmas-dates.ts helper -
   // whenever they're still ahead this December, they're bookable, de-duped against the 21-day
   // window above for the late-November/December overlap.
   for (const d of getUpcomingChristmasDates()) {
@@ -89,22 +89,22 @@ export default function CheckoutPage() {
   // Snapshot the slot/christmas-ness at the moment of payment, so the confirmation screen can
   // still show them after clearCart() empties `items`.
   const [confirmedOrder, setConfirmedOrder] = useState<{ itemCount: number; slot: Slot; isChristmas: boolean } | null>(null);
-  // The token that triggered the 3DS challenge — the confirm request resends the full checkout
+  // The token that triggered the 3DS challenge - the confirm request resends the full checkout
   // payload (schema requires a non-empty payment.token), so this needs to be threaded through.
   const pendingTokenRef = useRef<string | null>(null);
 
-  // Cart is cleared exactly once, right when payment succeeds — not during render (that would
+  // Cart is cleared exactly once, right when payment succeeds - not during render (that would
   // update CartProvider's state while this component renders, which React disallows).
   useEffect(() => {
     if (submitState.phase === "authorised") clearCart();
   }, [submitState.phase, clearCart]);
 
   const [contact, setContact] = useState<ContactAddressValue>(EMPTY_CONTACT_ADDRESS);
-  // Drives the "we'll save your details" notice below — only shown to guests, since a
+  // Drives the "we'll save your details" notice below - only shown to guests, since a
   // signed-in customer already knows they have an account.
   const [isSignedIn, setIsSignedIn] = useState(false);
 
-  // Prefill from a signed-in customer's saved details — silently does nothing for guests (401 is
+  // Prefill from a signed-in customer's saved details - silently does nothing for guests (401 is
   // the expected response, not an error worth surfacing) or if they've already started typing.
   useEffect(() => {
     fetch("/api/account/me")
@@ -121,17 +121,17 @@ export default function CheckoutPage() {
 
   // One order can only ever have one delivery slot, so it's either a normal next-day order or a
   // Christmas one, never both. That's asked as a *timing* question here rather than a "what kind
-  // of shop is this" mode chosen while browsing — the different payment treatment (verify now vs
+  // of shop is this" mode chosen while browsing - the different payment treatment (verify now vs
   // authorise now) falls out of how far away the date is, and isn't something a customer should
   // have to reason about upfront.
   const [orderType, setOrderType] = useState<"standard" | "christmas" | null>(null);
   const [christmasBlockedReason, setChristmasBlockedReason] = useState<string | null>(null);
 
-  // Whether Christmas pre-ordering is being offered at all right now (site-wide admin toggle —
+  // Whether Christmas pre-ordering is being offered at all right now (site-wide admin toggle -
   // see /admin/products). Fetched client-side since this page needs to stay a client component.
   // Outside the pre-order season there's no choice to make, so the question is skipped entirely.
-  // (The feature-flags endpoint also returns a premiumPercent — a dormant/experimental
-  // percentage mechanism, not the live one, see reprice.ts — deliberately ignored here.)
+  // (The feature-flags endpoint also returns a premiumPercent - a dormant/experimental
+  // percentage mechanism, not the live one, see reprice.ts - deliberately ignored here.)
   const [christmasShopActive, setChristmasShopActive] = useState(false);
   useEffect(() => {
     fetch("/api/feature-flags/christmas")
@@ -139,7 +139,7 @@ export default function CheckoutPage() {
       .then((data: { active: boolean } | null) => {
         // Christmas is only offered while fulfilment dates are actually bookable (Dec 20-24
         // still ahead). If the switch is on those dates exist year-round, so the flow works
-        // for testing/setup outside the November–December season too.
+        // for testing/setup outside the November-December season too.
         const active = (data?.active ?? false) && hasUpcomingChristmasDates();
         setChristmasShopActive(active);
         if (!active) setOrderType("standard");
@@ -149,7 +149,7 @@ export default function CheckoutPage() {
 
   const isChristmasOrder = orderType === "christmas";
   // The price shown at checkout must match what actually gets authorised/verified server-side
-  // (see repriceCheckoutRequest / computeUnitPriceForOrder) — each item's manual Christmas price
+  // (see repriceCheckoutRequest / computeUnitPriceForOrder) - each item's manual Christmas price
   // is applied here per-product, the same priority logic the server uses, never a blanket
   // percentage and never shown anywhere outside checkout.
   const displayUnitPrice = (item: (typeof items)[number]) =>
@@ -428,7 +428,7 @@ export default function CheckoutPage() {
             <div className="lg:col-span-2">
               {step === "delivery" ? (
                 <>
-                  {/* 1. When do you want it? Only asked while Christmas pre-ordering is running —
+                  {/* 1. When do you want it? Only asked while Christmas pre-ordering is running -
                       the rest of the year every order is a normal one, so there's nothing to ask. */}
                   {christmasShopActive && (
                     <>
@@ -533,7 +533,7 @@ export default function CheckoutPage() {
                     </div>
                   )}
 
-                  {/* 3. Delivery or collection (only if in zone — out of zone auto-sets collection) */}
+                  {/* 3. Delivery or collection (only if in zone - out of zone auto-sets collection) */}
                   {postcodeStatus === "valid" && (
                     <>
                       <h2 className="mt-8 font-serif text-2xl font-bold text-navy">
@@ -624,7 +624,7 @@ export default function CheckoutPage() {
                           </p>
                           <p className="mt-1 text-xs text-text-light">
                             {orderType === "christmas"
-                              ? "Christmas pre-orders run from 1st November for 20th–24th December. Please check back then."
+                              ? "Christmas pre-orders run from 1st November for 20th-24th December. Please check back then."
                               : "Please try again shortly, or contact the shop for help."}
                           </p>
                         </div>
@@ -772,7 +772,7 @@ export default function CheckoutPage() {
                   </div>
                   <div className="flex justify-between text-text-light">
                     <span>{slotType === "delivery" ? "Delivery" : slotType === "collection" ? "Collection" : "Fulfilment"}</span>
-                    <span>{!slotType ? "—" : slotType === "collection" ? "Free" : "£5.00"}</span>
+                    <span>{!slotType ? "-" : slotType === "collection" ? "Free" : "£5.00"}</span>
                   </div>
                   <div className="border-t border-border pt-2">
                     <div className="flex justify-between font-semibold text-navy">

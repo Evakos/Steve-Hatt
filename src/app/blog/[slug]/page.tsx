@@ -136,7 +136,7 @@ export default async function BlogPostPage({
               )}
             </div>
 
-            {/* Ingredients sidebar — stays in view as the method scrolls past */}
+            {/* Ingredients sidebar - stays in view as the method scrolls past */}
             <aside className="lg:sticky lg:top-24 lg:self-start">
               <div className="border border-border bg-sand/60 p-6" style={{ borderRadius: "8px" }}>
                 <h2 className="font-serif text-xl font-bold text-navy">Ingredients</h2>

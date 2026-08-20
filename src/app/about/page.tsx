@@ -23,7 +23,7 @@ export default function AboutPage() {
         subtitle="Serving the Local Community"
       />
 
-      {/* Story cards — pulled up over the hero, like the "About Alor" reference layout */}
+      {/* Story cards - pulled up over the hero, like the "About Alor" reference layout */}
       <section className="bg-white">
         <div className="relative z-10 mx-auto -mt-24 max-w-6xl px-6 pb-16 md:-mt-32">
           {(() => {

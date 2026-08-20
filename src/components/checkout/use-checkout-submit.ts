@@ -28,7 +28,7 @@ export function useCheckoutSubmit() {
 
   const submit = useCallback(async (checkout: CheckoutRequest) => {
     // Belt-and-suspenders against a duplicate submission racing in (the UI already removes the
-    // payment buttons once submitting, but don't rely on that alone — see the double-charge
+    // payment buttons once submitting, but don't rely on that alone - see the double-charge
     // incident this guarded against on another site's checkout).
     if (state.phase === "submitting" || state.phase === "confirming") return;
     setState({ phase: "submitting" });

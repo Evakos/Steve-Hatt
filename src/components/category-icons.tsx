@@ -1,6 +1,6 @@
 import type { SVGProps } from "react";
 
-/** Shared wrapper — most icons share the 74x74 viewBox from the fish-icons source set (override
+/** Shared wrapper - most icons share the 74x74 viewBox from the fish-icons source set (override
  * via viewBox for anything sourced elsewhere, e.g. the oyster icon's own 128x128 original). All
  * use fill="currentColor" (the source files rely on SVG's default black fill) so each icon picks
  * up the category pill's own text color (white when selected, navy otherwise) rather than being
@@ -17,7 +17,7 @@ function IconBase({
   );
 }
 
-/** "All" — 003-fish.svg */
+/** "All" - 003-fish.svg */
 export function AllCategoryIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <IconBase {...props}>
@@ -35,7 +35,7 @@ export function AllCategoryIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-/** "Fresh" — 001-fish.svg */
+/** "Fresh" - 001-fish.svg */
 export function FreshCategoryIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <IconBase {...props}>
@@ -53,7 +53,7 @@ export function FreshCategoryIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-/** "Cured" — 002-fish.svg */
+/** "Cured" - 002-fish.svg */
 export function CuredCategoryIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <IconBase {...props}>
@@ -70,7 +70,7 @@ export function CuredCategoryIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-/** "Smoked" — 023-swordfish.svg */
+/** "Smoked" - 023-swordfish.svg */
 export function SmokedCategoryIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <IconBase {...props}>
@@ -86,7 +86,7 @@ export function SmokedCategoryIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-/** "Shellfish" — 004-crab.svg */
+/** "Shellfish" - 004-crab.svg */
 export function ShellfishCategoryIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <IconBase {...props}>
@@ -110,7 +110,7 @@ export function ShellfishCategoryIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-/** "Oysters" — a real oyster shell + pearl icon (replaces the earlier starfish placeholder). */
+/** "Oysters" - a real oyster shell + pearl icon (replaces the earlier starfish placeholder). */
 export function OystersCategoryIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <IconBase viewBox="0 0 128 128" {...props}>
@@ -122,7 +122,7 @@ export function OystersCategoryIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-/** "Uncategorized" — 014-fish.svg */
+/** "Uncategorized" - 014-fish.svg */
 export function UncategorizedCategoryIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <IconBase {...props}>

@@ -4,10 +4,10 @@ import { cookies } from "next/headers";
 import { getServerEnv } from "@/lib/env";
 
 const COOKIE_NAME = "staff_session";
-const SESSION_TTL_MS = 24 * 60 * 60 * 1000; // 24h — staff re-authenticate daily, not a long-lived token
+const SESSION_TTL_MS = 24 * 60 * 60 * 1000; // 24h - staff re-authenticate daily, not a long-lived token
 
 /**
- * Minimal signed-cookie session for the /admin area — a single shared password
+ * Minimal signed-cookie session for the /admin area - a single shared password
  * (STAFF_PASSWORD), not per-user accounts, matching the scale of what a single-shop staff
  * team needs. The cookie is `expiryTimestamp.hmac`, verified server-side on every /admin
  * request via middleware; no database/session store involved.
@@ -38,7 +38,7 @@ export function isValidSessionCookieValue(value: string | undefined | null): boo
 export const STAFF_COOKIE_NAME = COOKIE_NAME;
 export const STAFF_SESSION_TTL_MS = SESSION_TTL_MS;
 
-/** Server Component / Route Handler helper — throws nothing, just reports auth state. */
+/** Server Component / Route Handler helper - throws nothing, just reports auth state. */
 export async function isStaffAuthenticated(): Promise<boolean> {
   const store = await cookies();
   return isValidSessionCookieValue(store.get(COOKIE_NAME)?.value);

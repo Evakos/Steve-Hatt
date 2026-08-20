@@ -9,7 +9,7 @@ interface Props {
 
 /**
  * Real integration: render Cardstream's 3-D Secure 2 challenge iframe and listen for its
- * postMessage completion event here — exact contract unconfirmed pending Pay360 developer
+ * postMessage completion event here - exact contract unconfirmed pending Pay360 developer
  * docs (see master plan, Phase D). In mock mode the only challenge ever issued is synthetic
  * (see src/lib/cardstream/mock-client.ts), so this auto-resolves after a short delay.
  */

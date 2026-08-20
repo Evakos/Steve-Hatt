@@ -43,7 +43,7 @@ export type CheckoutRequest = z.infer<typeof checkoutRequestSchema>;
 
 // The confirm step happens after a 3DS redirect/challenge round-trip. This project has no
 // database (see master plan, Phase C3 "known gap"), so there's nowhere server-side to stash
-// the original checkout details between the initial /api/checkout call and this confirmation —
+// the original checkout details between the initial /api/checkout call and this confirmation -
 // the client resends the full original request alongside the 3DS result.
 export const confirmRequestSchema = z.object({
   transactionId: z.string().min(1),

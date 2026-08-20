@@ -7,19 +7,19 @@ import type { CheckoutRequest } from "./schema";
 
 /**
  * Creates the WooCommerce order for a Christmas pre-order once Cardstream has *verified* (not
- * authorised) the card — see VerifyCardResult in src/lib/cardstream/types.ts. No hold is placed
+ * authorised) the card - see VerifyCardResult in src/lib/cardstream/types.ts. No hold is placed
  * and no 7-day authorisation clock starts here: Christmas pre-orders can be placed from 1st
  * November for delivery on 23rd/24th December, far longer than an authorisation would survive.
  *
- * The order is created as WooCommerce's "pending" status — its own built-in "order received, no
- * payment yet" meaning, which is exactly true here — with the reusable merchant card token
+ * The order is created as WooCommerce's "pending" status - its own built-in "order received, no
+ * payment yet" meaning, which is exactly true here - with the reusable merchant card token
  * stashed in meta. src/app/api/cron/reauthorise-preorders/route.ts spends that token a few days
  * before the delivery slot to place the real hold (status -> "on-hold", same as a normal order's
  * create-order-from-payment.ts outcome), at which point it joins the ordinary /admin/orders
  * capture queue with no special handling needed.
  *
  * Deliberately a separate function rather than sharing create-order-from-payment.ts with
- * branching — the status, payment meta, and what's known at creation time (a card token instead
+ * branching - the status, payment meta, and what's known at creation time (a card token instead
  * of a transaction id and authorised amount) differ throughout.
  */
 export async function createPreOrderFromVerification(
@@ -44,7 +44,7 @@ export async function createPreOrderFromVerification(
     country: "GB",
   };
 
-  // Same customer-association logic as create-order-from-payment.ts — see its comments for why
+  // Same customer-association logic as create-order-from-payment.ts - see its comments for why
   // this doesn't sign the browser in, why updateCustomer keeps the saved profile current, and why
   // findOrCreateCustomerByEmail can return undefined (email already belongs to a non-customer
   // WordPress user) in which case this just proceeds as a guest order.
@@ -63,8 +63,8 @@ export async function createPreOrderFromVerification(
     set_paid: false,
     payment_method: "cardstream",
     payment_method_title: deposit
-      ? "Card (Cardstream/Pay360) — deposit paid, balance authorised before collection"
-      : "Card (Cardstream/Pay360) — verified, auto-authorisation pending",
+      ? "Card (Cardstream/Pay360) - deposit paid, balance authorised before collection"
+      : "Card (Cardstream/Pay360) - verified, auto-authorisation pending",
     customer_id: customerId,
     billing,
     shipping: fulfilment.type === "delivery" ? billing : undefined,
@@ -75,7 +75,7 @@ export async function createPreOrderFromVerification(
       meta_data: [
         { key: "Preparation", value: item.preparation },
         ...(item.weight > 0 ? [{ key: "Weight (estimated)", value: `${item.weight}kg` }] : []),
-        // See create-order-from-payment.ts — same reasoning, this is the rate re-authorise-preorders
+        // See create-order-from-payment.ts - same reasoning, this is the rate re-authorise-preorders
         // priced the order at, so staff still see it applied when they capture after the real weigh-in.
         { key: "Unit price applied", value: `£${item.unitPrice.toFixed(2)}${fulfilment.slot.isChristmas ? " (Christmas)" : ""}` },
       ],
@@ -87,7 +87,7 @@ export async function createPreOrderFromVerification(
     meta_data: [
       { key: "_checkout_order_ref", value: orderRef },
       { key: "_checkout_slot_label", value: fulfilment.slot.label },
-      // ISO date string — lets the cron job compute "days until delivery" per order instead of
+      // ISO date string - lets the cron job compute "days until delivery" per order instead of
       // hardcoding the 23rd/24th, so it generalises to whatever slot dates the storefront offers.
       { key: "_checkout_slot_date", value: fulfilment.slot.date },
       { key: "_checkout_is_christmas", value: String(fulfilment.slot.isChristmas) },

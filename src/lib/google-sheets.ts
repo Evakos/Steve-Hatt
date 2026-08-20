@@ -17,7 +17,7 @@ let cachedToken: CachedToken | null = null;
 
 /**
  * Exchanges the Google service account's key for a short-lived Sheets API access token, using a
- * hand-rolled JWT Bearer Grant (RFC 7523) instead of the `googleapis` SDK — same "sign it
+ * hand-rolled JWT Bearer Grant (RFC 7523) instead of the `googleapis` SDK - same "sign it
  * ourselves with node:crypto" approach already used for staff session cookies, and avoids adding
  * a heavy dependency for what's effectively one HTTP round-trip.
  */
@@ -31,7 +31,7 @@ async function getAccessToken(): Promise<string> {
   const privateKey = env.GOOGLE_SHEETS_PRIVATE_KEY;
   if (!email || !privateKey) {
     throw new Error(
-      "Google Sheets sync isn't configured — set GOOGLE_SHEETS_SERVICE_ACCOUNT_EMAIL and GOOGLE_SHEETS_PRIVATE_KEY (see .env.example)."
+      "Google Sheets sync isn't configured - set GOOGLE_SHEETS_SERVICE_ACCOUNT_EMAIL and GOOGLE_SHEETS_PRIVATE_KEY (see .env.example)."
     );
   }
 
@@ -62,14 +62,14 @@ async function getAccessToken(): Promise<string> {
 }
 
 /**
- * Reads a whole sheet tab and returns it as row objects keyed by the header row (row 1) — so
+ * Reads a whole sheet tab and returns it as row objects keyed by the header row (row 1) - so
  * column order in the spreadsheet doesn't matter, only the header names do.
  */
 export async function readSheetAsRows(sheetName: string): Promise<Record<string, string>[]> {
   const env = getServerEnv();
   const spreadsheetId = env.GOOGLE_SHEETS_SPREADSHEET_ID;
   if (!spreadsheetId) {
-    throw new Error("Google Sheets sync isn't configured — set GOOGLE_SHEETS_SPREADSHEET_ID (see .env.example).");
+    throw new Error("Google Sheets sync isn't configured - set GOOGLE_SHEETS_SPREADSHEET_ID (see .env.example).");
   }
 
   const accessToken = await getAccessToken();

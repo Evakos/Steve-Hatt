@@ -15,7 +15,7 @@ const howItWorks = [
   { icon: <Truck className="h-5 w-5" />, step: "04", title: "Delivered Fresh", desc: "Next-day delivery to your door, or collect from Essex Road. Always fresh, never frozen." },
 ];
 
-/** The four products shown in the homepage Christmas pre-order grid — a fixed, curated festive
+/** The four products shown in the homepage Christmas pre-order grid - a fixed, curated festive
  * shortlist (smoked salmon, lobster, scallops, oysters) rather than every Christmas-tagged
  * product. Swap slugs here to change what's featured. */
 const CHRISTMAS_FEATURED_SLUGS = [
@@ -25,7 +25,7 @@ const CHRISTMAS_FEATURED_SLUGS = [
   "oysters-carlingford-2",
 ];
 
-/** Fisher-Yates shuffle, then take the first n — used to rotate "Today's Catch" rather than
+/** Fisher-Yates shuffle, then take the first n - used to rotate "Today's Catch" rather than
  * always showing the same fixed products. */
 function pickRandom<T>(items: T[], n: number): T[] {
   const shuffled = [...items];
@@ -42,13 +42,13 @@ export default async function Home() {
     isChristmasShopActive(),
   ]);
   const todaysCatch = pickRandom(products, 6);
-  // Curated festive picks for the Christmas section — only products whose slug is in the
+  // Curated festive picks for the Christmas section - only products whose slug is in the
   // shortlist above are shown (each still needs the christmas tag to be eligible to order).
   const christmasFeatured = CHRISTMAS_FEATURED_SLUGS.map((slug) => products.find((p) => p.slug === slug)).filter(
     (p): p is NonNullable<typeof p> => Boolean(p)
   );
   // Manual per-product Christmas pricing (set via the Products sheet's christmas_price column)
-  // is the live mechanism — see src/lib/checkout/reprice.ts. Only mention it here if it's
+  // is the live mechanism - see src/lib/checkout/reprice.ts. Only mention it here if it's
   // actually in effect for at least one of the featured products.
   const anyChristmasPricing = christmasFeatured.some((p) => !!p.christmasPrice);
 
@@ -57,7 +57,7 @@ export default async function Home() {
       {christmasActive && <AnnouncementBanner />}
       <Header />
 
-      {/* Hero — text overlaid on the photo, matching a traditional hero banner */}
+      {/* Hero - text overlaid on the photo, matching a traditional hero banner */}
       <section className="bg-white">
         <div className="relative bg-navy" style={{ height: "50vh" }}>
           <div
@@ -93,7 +93,7 @@ export default async function Home() {
           </div>
         </div>
 
-        {/* Trust strip — full width, directly attached with no gap */}
+        {/* Trust strip - full width, directly attached with no gap */}
         <div className="border-b border-border/50 bg-navy">
           <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-8 px-6 py-5 md:justify-between">
             {[
@@ -110,7 +110,7 @@ export default async function Home() {
           </div>
         </div>
 
-        {/* Postcode check — full width, directly attached with no gap */}
+        {/* Postcode check - full width, directly attached with no gap */}
         <div className="bg-ocean-light">
           <div className="mx-auto max-w-6xl px-6 py-12">
             <div className="flex flex-col items-center gap-4 text-center md:flex-row md:text-left">
@@ -234,7 +234,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Christmas pre-orders — only while Christmas ordering is active site-wide (see /admin/guide).
+      {/* Christmas pre-orders - only while Christmas ordering is active site-wide (see /admin/guide).
           Deliberately styled as a festive band distinct from every other section on the page: the
           announcement banner's festive red (#c94b4b), snowflake accents, and a curated four-product
           grid of classic Christmas picks (see CHRISTMAS_FEATURED_SLUGS above). */}
@@ -256,7 +256,7 @@ export default async function Home() {
               {anyChristmasPricing && (
                 <p className="mx-auto mt-3 max-w-lg text-sm text-white/70">
                   Some items have a different price for Christmas, reflecting higher market prices over the festive
-                  period. Prices shown here are unaffected — this only applies once you choose to order for
+                  period. Prices shown here are unaffected - this only applies once you choose to order for
                   Christmas at checkout.
                 </p>
               )}

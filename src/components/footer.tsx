@@ -16,7 +16,7 @@ const legalLinks = [
   { href: "/terms-conditions", label: "Terms & Conditions" },
 ];
 
-/** Shared bottom nav bar used across every page — the homepage additionally shows its own
+/** Shared bottom nav bar used across every page - the homepage additionally shows its own
  * "Opening hours / Visit us / Delivery zones" section directly above this, which isn't part of
  * this shared component since it's homepage-specific content, not site-wide chrome. */
 export default function Footer() {

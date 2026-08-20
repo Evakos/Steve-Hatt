@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 import { isValidSessionCookieValue, STAFF_COOKIE_NAME } from "@/lib/staff-auth";
 import { verifyCustomerSessionCookieValue, CUSTOMER_COOKIE_NAME } from "@/lib/customer-auth";
 
-// Paths inside /account and /api/account that must stay reachable without a session — the
+// Paths inside /account and /api/account that must stay reachable without a session - the
 // sign-in flow itself (request a link, click it, and clearing a cookie that may not exist).
 const CUSTOMER_PUBLIC_PATHS = new Set([
   "/account/login",

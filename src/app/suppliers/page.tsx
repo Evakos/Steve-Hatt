@@ -82,7 +82,7 @@ export default function SuppliersPage() {
         subtitle="From the British Coastline"
       />
 
-      {/* Story cards — pulled up over the hero, matching the About page layout */}
+      {/* Story cards - pulled up over the hero, matching the About page layout */}
       <section className="bg-white">
         <div className="relative z-10 mx-auto -mt-24 max-w-6xl px-6 pb-16 md:-mt-32">
           <div className="space-y-8">

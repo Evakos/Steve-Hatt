@@ -12,15 +12,15 @@ import type {
 } from "./types";
 
 /**
- * Dev/test double for the real Cardstream/Pay360 client — lets the checkout Route Handlers
+ * Dev/test double for the real Cardstream/Pay360 client - lets the checkout Route Handlers
  * (validation, server-side repricing, WooCommerce order creation, webhook flow) be built and
  * tested end-to-end before real Hosted Payment Fields API docs are available. Enabled via
  * CARDSTREAM_MOCK=true. See src/lib/cardstream/client.ts.
  *
- * authoriseSale only places a hold — no capture happens until captureSale is called, once staff
+ * authoriseSale only places a hold - no capture happens until captureSale is called, once staff
  * confirm the final weighed amount. captureSale always takes the full authorised amount (that's
  * all Pay360's real Capture endpoint accepts); refundSale hands back the difference. The mock
- * doesn't track authorised amounts anywhere, so both always succeed here — the real client will
+ * doesn't track authorised amounts anywhere, so both always succeed here - the real client will
  * need to actually enforce against Pay360's own records (e.g. refunding more than was captured).
  *
  * verifyCard/authoriseSaleWithToken are the Christmas pre-order path: verifyCard registers the

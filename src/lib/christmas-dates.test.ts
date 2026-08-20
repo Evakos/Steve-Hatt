@@ -19,7 +19,7 @@ describe("isTueToSat", () => {
 });
 
 describe("isChristmasFulfilmentDate", () => {
-  it("accepts 20th–24th December", () => {
+  it("accepts 20th-24th December", () => {
     expect(isChristmasFulfilmentDate(new Date(2026, 11, 20))).toBe(true);
     expect(isChristmasFulfilmentDate(new Date(2026, 11, 24))).toBe(true);
   });
@@ -32,7 +32,7 @@ describe("isChristmasFulfilmentDate", () => {
 });
 
 describe("getUpcomingChristmasDates", () => {
-  it("returns the current year's Tue–Sat fulfilment dates whenever they're still to come", () => {
+  it("returns the current year's Tue-Sat fulfilment dates whenever they're still to come", () => {
     // Aug 2026: Dec 20 = Sun, 21 = Mon, 22 = Tue, 23 = Wed, 24 = Thu.
     const summer = getUpcomingChristmasDates(new Date(2026, 7, 11));
     expect(summer.map((d) => d.getDate())).toEqual([22, 23, 24]);
@@ -46,7 +46,7 @@ describe("getUpcomingChristmasDates", () => {
   });
 
   it("excludes dates already passed mid-December", () => {
-    // 19th Dec 2026 is a Saturday — Dec 22/23/24 are still to come.
+    // 19th Dec 2026 is a Saturday - Dec 22/23/24 are still to come.
     const dates = getUpcomingChristmasDates(new Date(2026, 11, 19));
     expect(dates.map((d) => d.getDate())).toEqual([22, 23, 24]);
   });

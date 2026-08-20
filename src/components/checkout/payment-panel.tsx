@@ -9,7 +9,7 @@ interface Props {
   disabled?: boolean;
 }
 
-// Mirrors the server-only CARDSTREAM_MOCK flag (see src/lib/env.ts) — needed client-side too,
+// Mirrors the server-only CARDSTREAM_MOCK flag (see src/lib/env.ts) - needed client-side too,
 // since real Hosted Payment Fields tokenization only happens in the browser.
 const MOCK_MODE = process.env.NEXT_PUBLIC_CARDSTREAM_MOCK === "true";
 
@@ -17,12 +17,12 @@ const testButtonClass =
   "flex-1 min-w-[140px] border border-border bg-white px-4 py-2.5 text-sm font-medium text-navy transition-colors hover:border-navy disabled:cursor-not-allowed disabled:opacity-50";
 
 /**
- * Hosts Cardstream/Pay360's Hosted Payment Fields (iframe-based, tokenized card capture —
+ * Hosts Cardstream/Pay360's Hosted Payment Fields (iframe-based, tokenized card capture -
  * card data goes browser → Cardstream directly, never touching our server). The real SDK
  * integration is blocked on Pay360 developer portal access (see master plan, Phase D), so this
- * renders either a clearly-labelled mock (no real card fields — three buttons that request a
+ * renders either a clearly-labelled mock (no real card fields - three buttons that request a
  * fixed test token) or a pending-integration notice, never a plain unhosted card form. That
- * distinction is the entire point of this project — see the Context section of the plan.
+ * distinction is the entire point of this project - see the Context section of the plan.
  */
 export default function PaymentPanel({ amount, onToken, disabled }: Props) {
   const [tokenizing, setTokenizing] = useState(false);

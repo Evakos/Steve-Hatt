@@ -20,7 +20,7 @@ export interface WooAttribute {
 export interface WooProductInput {
   name?: string;
   regular_price?: string;
-  /** WooCommerce's publish state (draft/pending/private/publish) — not to be confused with
+  /** WooCommerce's publish state (draft/pending/private/publish) - not to be confused with
    * stock_status (in stock/out of stock/on backorder), which this app doesn't sync. */
   status?: "draft" | "pending" | "private" | "publish";
   description?: string;
@@ -58,12 +58,12 @@ export interface WooProductVariationInput {
 
 export interface WooOrderLineItemInput {
   /** Include when updating an existing line item (e.g. setting the final weighed price on
-   * capture) — omit when adding a new line item to an order. */
+   * capture) - omit when adding a new line item to an order. */
   id?: number;
   product_id: number;
   variation_id?: number;
   quantity: number;
-  /** Set together to override the line's price when capturing the final weighed amount —
+  /** Set together to override the line's price when capturing the final weighed amount -
    * WooCommerce recalculates the order total from these on save. */
   subtotal?: string;
   total?: string;
@@ -142,7 +142,7 @@ export interface WooCustomerInput {
   billing?: WooCustomerAddress;
   shipping?: WooCustomerAddress;
   /** WooCommerce requires *some* password on create even though this app never uses it for
-   * login (see src/lib/customer-auth.ts — auth is a passwordless magic link, not a WP password).
+   * login (see src/lib/customer-auth.ts - auth is a passwordless magic link, not a WP password).
    * Set once to a random value and never surfaced or checked again. */
   password?: string;
 }

@@ -84,7 +84,7 @@ export default function ChristmasSettingsPanel() {
             <p className="text-xs text-text-light">
               Fallback deposit captured at checkout on a Christmas pre-order, used only for products whose{" "}
               &quot;Christmas deposit&quot; cell is blank in the sheet. The per-product Christmas deposit column
-              takes priority — leave this £0 to rely on the sheet alone.
+              takes priority - leave this £0 to rely on the sheet alone.
             </p>
           </div>
           <input
