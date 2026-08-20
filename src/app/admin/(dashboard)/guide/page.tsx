@@ -68,6 +68,15 @@ export default function AdminGuidePage() {
             is blocked with a message telling them to remove it first, so the two can&apos;t get mixed into one
             order without us noticing.
           </p>
+          <p>
+            <strong className="text-navy">Optional deposit.</strong> You can take an up-front deposit on Christmas
+            pre-orders instead of waiting to collect the whole amount on the day. Set the{" "}
+            <strong className="text-navy">Christmas deposit (£)</strong> field on the Products page: the customer pays
+            that sum straight away at checkout, and only the remaining balance is authorised a few days before their
+            slot and settled once weighed. The shop holds guaranteed money even if a card expires or declines between
+            November and the delivery date, which otherwise risks the whole order. £0 leaves the previous behaviour
+            (the full amount is held and captured on the day).
+          </p>
         </div>
       </section>
 
