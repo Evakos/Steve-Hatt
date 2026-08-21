@@ -4,127 +4,102 @@ export default function AdminGuidePage() {
   return (
     <div className="max-w-3xl">
       <h1 className="font-serif text-2xl font-bold text-navy">Admin Guide</h1>
-      <p className="mt-1 text-base text-text-light">How payment capture and the product spreadsheet sync work.</p>
+      <p className="mt-1 text-base text-text-light">How orders, payments, and the product spreadsheet sync work.</p>
 
       <section className="mt-8 border border-border bg-white p-5" style={{ borderRadius: "5px" }}>
-        <h2 className="font-medium text-navy">Payment in two steps: hold, then take</h2>
-        <div className="mt-3 space-y-3 text-base leading-relaxed text-text-light">
-          <p>
-            <strong className="text-navy">Authorise</strong> = place a hold - the card is checked and the money is
-            ring-fenced, but nothing is taken yet. <strong className="text-navy">Capture</strong> = actually take the
-            money for that hold. Fish is priced by weight, so the exact total isn&apos;t known until it&apos;s weighed -
-            so we hold an estimate at checkout, then take the real amount once staff confirm the weight.
-          </p>
-          <p>
-            A hold only lasts <strong className="text-navy">7 days</strong>, and once it expires capture fails. For
-            Christmas orders (placed weeks ahead) we therefore <strong className="text-navy">verify</strong> the card
-            with no hold, then place the hold a few days before the slot. And with the optional{" "}
-            <strong className="text-navy">deposit</strong>, we <strong className="text-navy">capture the deposit
-            immediately</strong> at checkout and only hold the remaining balance - so most of the money is already
-            safely banked, and only that small balance is still exposed to expiry or a declined card.
-          </p>
-        </div>
-      </section>
-
-      <section className="mt-6 border border-border bg-white p-5" style={{ borderRadius: "5px" }}>
-        <h2 className="font-medium text-navy">1. Capturing payment</h2>
-        <div className="mt-3 space-y-3 text-base leading-relaxed text-text-light">
-          <p>
-            When a customer checks out, their card is only <strong className="text-navy">authorised</strong> (a
-            hold placed for the estimated, weight-based total), never charged. The order sits as{" "}
-            <strong className="text-navy">on-hold</strong> under Orders → Awaiting capture.
-          </p>
-          <ol className="list-decimal space-y-2 pl-5">
-            <li>Weigh and prepare the order as normal.</li>
-            <li>Open the order on the Orders page and enter the real final price for each line item.</li>
-            <li>
-              Click <strong className="text-navy">Capture payment</strong>. Pay360 doesn&apos;t support partial
-              capture, so this always captures the <strong className="text-navy">full authorised amount</strong>{" "}
-              first, then automatically refunds the difference down to the real weighed total.
-            </li>
-          </ol>
-          <p>
-            <strong className="text-navy">If the refund step fails</strong> after a successful full capture (rare,
-            but possible), the order is marked <code className="text-xs">captured_refund_failed</code>, the
-            difference needs to be refunded manually via the Pay360 Merchant Portal.
-          </p>
-          <p>
-            <strong className="text-navy">If the final weighed total is higher</strong> than the original
-            authorised amount, capture is blocked outright, that needs a brand new authorisation, which isn&apos;t
-            supported yet, so call the customer and take payment another way.
-          </p>
-        </div>
-      </section>
-
-      <section className="mt-6 border border-border bg-white p-5" style={{ borderRadius: "5px" }}>
-        <h2 className="font-medium text-navy">2. The 7-day clock</h2>
-        <div className="mt-3 space-y-3 text-base leading-relaxed text-text-light">
-          <p>
-            Pay360 authorisations expire <strong className="text-navy">7 days</strong> after they&apos;re placed,
-            after that, capture will likely fail outright. The order card shows an amber warning from day 5, and
-            a red one once it&apos;s past 7 days. Capture orders promptly, don&apos;t let them sit. A daily email to
-            the team also lists any orders that are at day 5 or more, so nothing quietly lapses.
-          </p>
-        </div>
-      </section>
-
-      <section className="mt-6 border border-border bg-white p-5" style={{ borderRadius: "5px" }}>
-        <h2 className="font-medium text-navy">3. Christmas pre-orders</h2>
+        <h2 className="font-medium text-navy">Christmas pre-orders</h2>
         <div className="mt-3 space-y-3 text-base leading-relaxed text-text-light">
           <p>
             By default, Christmas pre-orders are{" "}
             <strong className="text-navy">charged in full at checkout</strong> — the fixed
             Christmas prices make the total exact, so the order is authorised and captured
             immediately, just like a normal &quot;pay now&quot; order. No hold, no capture queue,
-            no refund — the order moves straight to processing.
+            no refund — the order moves straight to processing and appears under Orders → Processing.
           </p>
           <p>
             A <strong className="text-navy">legacy deposit/part-payment</strong> option is kept
-            behind a feature flag on the Products page if the shop ever wants to switch back:
-            the card is only verified at checkout (no hold), then a daily automated job places the
-            real authorisation <strong className="text-navy">5 days before</strong> the delivery
-            slot using a stored card token. An optional deposit can be captured upfront, with only
-            the remaining balance held for later. The flag is off by default.
+            behind a feature flag on the Products page if the shop ever wants to switch back. When
+            that flag is on, the card is only verified at checkout (no hold), a daily automated job
+            places the real hold 5 days before the slot, and staff capture it on the day. An optional
+            deposit can be taken upfront, with only the remaining balance held for later. The flag is
+            off by default — the full-upfront model above is what runs.
           </p>
           <p>
-            Almost every product can be pre-ordered for Christmas by default, a few can be marked
-            as excluded (see the spreadsheet sync below). Customers shop normally and choose
-            Standard or Christmas at checkout, same as before, but if their basket has an item
-            that&apos;s not Christmas-eligible, choosing Christmas is blocked with a message telling
-            them to remove it first.
+            Almost every product can be pre-ordered for Christmas by default. A few can be marked as
+            excluded (see the spreadsheet sync below). Customers choose Standard or Christmas at
+            checkout, same as before — if their basket has an excluded item, Christmas is blocked
+            with a message telling them to remove it.
+          </p>
+          <p>
+            The Christmas on/off switch and per-product Christmas prices are managed on the{" "}
+            <strong className="text-navy">Products</strong> page, alongside the spreadsheet sync.
+            Both take effect immediately, no redeploy needed.
+          </p>
+        </div>
+      </section>
+
+      {/* ── The capture queue (weight-based orders & legacy Christmas only) ── */}
+      <section className="mt-6 border border-border bg-white p-5" style={{ borderRadius: "5px" }}>
+        <h2 className="font-medium text-navy">The capture queue</h2>
+        <p className="mt-1 text-sm text-text-light">
+          Only relevant for <strong>weight-based orders</strong> (fish priced by weight) and{" "}
+          <strong>legacy Christmas orders</strong> when the deposit flag is on. Default Christmas
+          full-upfront skips all of this.
+        </p>
+
+        <h3 className="mt-4 font-medium text-navy">How it works: authorise → capture</h3>
+        <div className="mt-2 space-y-2 text-base leading-relaxed text-text-light">
+          <p>
+            <strong className="text-navy">Authorise</strong> = place a hold — the card is checked
+            and the money is ring-fenced, but nothing is taken yet.{" "}
+            <strong className="text-navy">Capture</strong> = actually take the money for that hold.
+          </p>
+          <p>
+            Fish is priced by weight, so the exact total isn&apos;t known at checkout. We hold an
+            estimate, then take the real amount once staff weigh the order.
+          </p>
+        </div>
+
+        <h3 className="mt-4 font-medium text-navy">Step by step</h3>
+        <div className="mt-2 space-y-2 text-base leading-relaxed text-text-light">
+          <p>
+            A new order lands as <strong className="text-navy">on-hold</strong> under Orders →
+            Awaiting capture — the card has been held but not charged.
+          </p>
+          <ol className="list-decimal space-y-2 pl-5">
+            <li>Weigh and prepare the order as normal.</li>
+            <li>Open the order on the Orders page and enter the real final price for each line.</li>
+            <li>
+              Click <strong className="text-navy">Capture payment</strong>. Pay360 doesn&apos;t
+              support partial capture, so it first captures the full authorised amount, then
+              automatically refunds the difference down to the real weighed total.
+            </li>
+          </ol>
+          <p>
+            <strong className="text-navy">If the final total is higher</strong> than the authorised
+            amount, capture is blocked — that needs a brand new authorisation, which isn&apos;t
+            supported yet. Call the customer and take payment another way.
+          </p>
+          <p>
+            <strong className="text-navy">If the refund step fails</strong> after a successful
+            capture (rare), the order is marked{" "}
+            <code className="text-xs">captured_refund_failed</code> — refund the difference
+            manually via the Pay360 Merchant Portal.
+          </p>
+        </div>
+
+        <h3 className="mt-4 font-medium text-navy">The 7-day clock</h3>
+        <div className="mt-2 text-base leading-relaxed text-text-light">
+          <p>
+            Pay360 holds expire <strong className="text-navy">7 days</strong> after they&apos;re
+            placed — after that, capture will likely fail. The order card shows an amber warning
+            from day 5, and a red one past 7 days. A daily email lists any expiring orders.
           </p>
         </div>
       </section>
 
       <section className="mt-6 border border-border bg-white p-5" style={{ borderRadius: "5px" }}>
-        <h2 className="font-medium text-navy">4. Christmas ordering &amp; pricing</h2>
-        <div className="mt-3 space-y-3 text-base leading-relaxed text-text-light">
-          <p>
-            Whether customers see the option to shop for Christmas at all is controlled by a single site-wide
-            switch, so it doesn&apos;t show up outside the pre-order season. Christmas items (turkey, whole
-            salmon, lobster etc.) typically cost more around the festive period too, rather than duplicating
-            every seasonal product into a separate &quot;Christmas version&quot; with its own price (two
-            catalogues to keep in sync, easy to get wrong), each product can have its own manual Christmas price
-            set via the spreadsheet, same idea as previous years&apos; separate Christmas price sheet, applied
-            automatically once a customer has chosen to order for Christmas at checkout.
-          </p>
-          <p>
-            <strong className="text-navy">The Christmas price never shows up as a second price anywhere in the shop.</strong>{" "}
-            Every product page and the shop grid always show one price, the same one, all year round. It&apos;s a
-            checkout-time calculation only, disclosed to the customer with a note next to the &quot;For
-            Christmas&quot; option before they commit, then reflected directly in each line&apos;s price in the
-            order summary.
-          </p>
-          <p>
-            The site-wide switch and the per-product Christmas prices are managed on the{" "}
-            <strong className="text-navy">Products</strong> page, alongside the spreadsheet sync. Both take effect
-            immediately, no redeploy needed.
-          </p>
-        </div>
-      </section>
-
-      <section className="mt-6 border border-border bg-white p-5" style={{ borderRadius: "5px" }}>
-        <h2 className="font-medium text-navy">5. Product spreadsheet sync</h2>
+        <h2 className="font-medium text-navy">Product spreadsheet sync</h2>
         <div className="mt-3 space-y-3 text-base leading-relaxed text-text-light">
           <p>
             Product details (title, price, stock, status, description, tag, preparation, origin, sustainability, storage,
