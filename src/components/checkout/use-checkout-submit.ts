@@ -8,7 +8,7 @@ export type CheckoutSubmitState =
   | { phase: "submitting" }
   | { phase: "requires_action"; transactionId: string; orderRef: string; challenge: unknown }
   | { phase: "confirming" }
-  | { phase: "authorised"; orderId: number; orderNumber: string; estimatedTotal: number; depositAmount?: number }
+  | { phase: "authorised"; orderId: number; orderNumber: string; estimatedTotal: number; depositAmount?: number; paidInFull?: boolean }
   | { phase: "declined"; reason: string }
   | { phase: "error"; message: string };
 
@@ -51,7 +51,7 @@ export function useCheckoutSubmit() {
         });
         return;
       }
-      setState({ phase: "authorised", orderId: data.orderId, orderNumber: data.orderNumber, estimatedTotal: data.estimatedTotal, depositAmount: data.depositAmount });
+      setState({ phase: "authorised", orderId: data.orderId, orderNumber: data.orderNumber, estimatedTotal: data.estimatedTotal, depositAmount: data.depositAmount, paidInFull: data.paidInFull });
     } catch {
       setState({ phase: "error", message: "Network error. Please try again." });
     }
@@ -77,7 +77,7 @@ export function useCheckoutSubmit() {
           setState({ phase: "error", message: "Something went wrong. Please try again." });
           return;
         }
-        setState({ phase: "authorised", orderId: data.orderId, orderNumber: data.orderNumber, estimatedTotal: data.estimatedTotal, depositAmount: data.depositAmount });
+        setState({ phase: "authorised", orderId: data.orderId, orderNumber: data.orderNumber, estimatedTotal: data.estimatedTotal, depositAmount: data.depositAmount, paidInFull: data.paidInFull });
       } catch {
         setState({ phase: "error", message: "Network error. Please try again." });
       }

@@ -22,6 +22,9 @@ export interface OrderConfirmationInput {
   /** Set when a deposit was captured at checkout (Christmas deposit model) - the confirmation then
    * says "deposit paid now, balance to settle on collection" instead of "you haven't been charged yet". */
   depositAmount?: number;
+  /** Set when the full amount was taken immediately at checkout (Christmas full-upfront model) -
+   * the confirmation says "paid in full" and skips any balance/estimate language. */
+  paidInFull?: boolean;
 }
 
 /**
@@ -32,12 +35,21 @@ export interface OrderConfirmationInput {
  * otherwise-successful order.
  */
 export async function sendOrderConfirmation(input: OrderConfirmationInput) {
-  const { to, customerName, orderNumber, repriced, slotLabel, fulfilmentType, depositAmount } = input;
+  const { to, customerName, orderNumber, repriced, slotLabel, fulfilmentType, depositAmount, paidInFull } = input;
+  const isPaidInFull = paidInFull === true;
   const deposit = depositAmount ?? 0;
-  const hasDeposit = deposit > 0;
+  const hasDeposit = !isPaidInFull && deposit > 0;
   const balance = hasDeposit ? repriced.total - deposit : repriced.total;
 
-  const totalsTable = hasDeposit
+  const totalsTable = isPaidInFull
+    ? `
+    <table style="width:100%;border-collapse:collapse;margin-top:8px;font-size:13px;">
+      <tr><td style="padding:4px 0;color:${COLORS.textLight};">Subtotal</td><td style="padding:4px 0;text-align:right;color:${COLORS.text};">&pound;${repriced.subtotal.toFixed(2)}</td></tr>
+      ${fulfilmentType === "delivery" ? `<tr><td style="padding:4px 0;color:${COLORS.textLight};">Delivery</td><td style="padding:4px 0;text-align:right;color:${COLORS.text};">&pound;${repriced.deliveryFee.toFixed(2)}</td></tr>` : ""}
+      <tr><td style="padding:8px 0 0;font-weight:700;color:${COLORS.navy};border-top:1px solid ${COLORS.border};">Paid in full</td><td style="padding:8px 0 0;text-align:right;font-weight:700;color:${COLORS.navy};border-top:1px solid ${COLORS.border};">&pound;${repriced.total.toFixed(2)}</td></tr>
+    </table>
+  `
+    : hasDeposit
     ? `
     <table style="width:100%;border-collapse:collapse;margin-top:8px;font-size:13px;">
       <tr><td style="padding:4px 0;color:${COLORS.textLight};">Estimated total</td><td style="padding:4px 0;text-align:right;color:${COLORS.text};">&pound;${repriced.total.toFixed(2)}</td></tr>
@@ -54,10 +66,12 @@ export async function sendOrderConfirmation(input: OrderConfirmationInput) {
   `;
 
   const html = emailShell(`
-    ${emailHeading(`Order #${orderNumber} received`)}
+    ${emailHeading(isPaidInFull ? `Order #${orderNumber} confirmed` : `Order #${orderNumber} received`)}
     <p>Hi ${customerName}, thanks for your order from Steve Hatt Fishmongers.</p>
     ${emailNotice(
-      hasDeposit
+      isPaidInFull
+        ? `<strong>Paid in full.</strong> Your card has been charged £${repriced.total.toFixed(2)} for this order. We'll be in touch if anything changes once your order is weighed.`
+        : hasDeposit
         ? `<strong>Your £${deposit.toFixed(2)} deposit has been paid.</strong> The remaining balance
         (estimated £${balance.toFixed(2)}) will be confirmed and settled on collection, once your order has
         been weighed and prepared.`
@@ -73,7 +87,7 @@ export async function sendOrderConfirmation(input: OrderConfirmationInput) {
     await resend().emails.send({
       from: `Steve Hatt Fishmongers <${FROM_ADDRESS}>`,
       to,
-      subject: `Order #${orderNumber} received, estimated total £${repriced.total.toFixed(2)}`,
+      subject: isPaidInFull ? `Order #${orderNumber} confirmed, £${repriced.total.toFixed(2)} paid` : `Order #${orderNumber} received, estimated total £${repriced.total.toFixed(2)}`,
       html,
     });
   } catch (err) {
@@ -172,6 +186,9 @@ export interface AdminNewOrderNotificationInput {
   fulfilmentType: "delivery" | "collection";
   /** Set when a deposit was captured at checkout - flags the order as deposit+balance rather than full-hold. */
   depositAmount?: number;
+  /** Set when the full amount was taken immediately at checkout (Christmas full-upfront) - the alert
+   * says "paid in full" and notes that no capture is needed. */
+  paidInFull?: boolean;
 }
 
 /**
@@ -181,10 +198,11 @@ export interface AdminNewOrderNotificationInput {
  * doesn't fail the order.
  */
 export async function sendAdminNewOrderNotification(input: AdminNewOrderNotificationInput) {
-  const { orderNumber, customerName, customerEmail, repriced, slotLabel, fulfilmentType, depositAmount } = input;
+  const { orderNumber, customerName, customerEmail, repriced, slotLabel, fulfilmentType, depositAmount, paidInFull } = input;
   const to = getServerEnv().ADMIN_NOTIFICATION_EMAIL;
+  const isPaidInFull = paidInFull === true;
   const deposit = depositAmount ?? 0;
-  const hasDeposit = deposit > 0;
+  const hasDeposit = !isPaidInFull && deposit > 0;
   const balance = hasDeposit ? repriced.total - deposit : repriced.total;
 
   const html = emailShell(`
@@ -192,10 +210,14 @@ export async function sendAdminNewOrderNotification(input: AdminNewOrderNotifica
     <p>${customerName} (${customerEmail}) - ${fulfilmentType === "delivery" ? "Delivery" : "Collection"}: ${slotLabel}</p>
     ${emailLineItemsTable(repriced.lineItems)}
     <table style="width:100%;border-collapse:collapse;">
-      ${hasDeposit ? `<tr><td style="padding:4px 0;color:${COLORS.textLight};">Deposit captured at checkout</td><td style="padding:4px 0;text-align:right;color:${COLORS.text};">&pound;${deposit.toFixed(2)}</td></tr>` : ""}
-      <tr><td style="padding:8px 0 0;font-weight:700;color:${COLORS.navy};border-top:1px solid ${COLORS.border};">${hasDeposit ? "Balance to capture on collection (estimate)" : "Estimated total (held, not yet charged)"}</td><td style="padding:8px 0 0;text-align:right;font-weight:700;color:${COLORS.navy};border-top:1px solid ${COLORS.border};">&pound;${(hasDeposit ? balance : repriced.total).toFixed(2)}</td></tr>
+      ${isPaidInFull
+        ? `<tr><td style="padding:4px 0;font-weight:700;color:${COLORS.navy};">Paid in full at checkout</td><td style="padding:4px 0;text-align:right;font-weight:700;color:${COLORS.navy};">&pound;${repriced.total.toFixed(2)}</td></tr>`
+        : `${hasDeposit ? `<tr><td style="padding:4px 0;color:${COLORS.textLight};">Deposit captured at checkout</td><td style="padding:4px 0;text-align:right;color:${COLORS.text};">&pound;${deposit.toFixed(2)}</td></tr>` : ""}
+      <tr><td style="padding:8px 0 0;font-weight:700;color:${COLORS.navy};border-top:1px solid ${COLORS.border};">${hasDeposit ? "Balance to capture on collection (estimate)" : "Estimated total (held, not yet charged)"}</td><td style="padding:8px 0 0;text-align:right;font-weight:700;color:${COLORS.navy};border-top:1px solid ${COLORS.border};">&pound;${(hasDeposit ? balance : repriced.total).toFixed(2)}</td></tr>`}
     </table>
-    <p style="margin-top:16px;font-size:13px;color:${COLORS.textLight};">Once weighed and prepared, capture the final price on the orders page.</p>
+    ${isPaidInFull
+      ? `<p style="margin-top:16px;font-size:13px;color:${COLORS.textLight};">This order is already paid - no capture needed.</p>`
+      : `<p style="margin-top:16px;font-size:13px;color:${COLORS.textLight};">Once weighed and prepared, capture the final price on the orders page.</p>`}
     ${emailButton(`${SITE_URL}/admin/orders`, "Go to admin orders")}
   `);
 
@@ -203,7 +225,9 @@ export async function sendAdminNewOrderNotification(input: AdminNewOrderNotifica
     await resend().emails.send({
       from: `Steve Hatt Fishmongers <${FROM_ADDRESS}>`,
       to,
-      subject: `New order #${orderNumber} - £${repriced.total.toFixed(2)} est.`,
+      subject: isPaidInFull
+        ? `New order #${orderNumber} - £${repriced.total.toFixed(2)} paid`
+        : `New order #${orderNumber} - £${repriced.total.toFixed(2)} est.`,
       html,
     });
   } catch (err) {

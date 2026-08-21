@@ -72,33 +72,26 @@ export default function AdminGuidePage() {
         <h2 className="font-medium text-navy">3. Christmas pre-orders</h2>
         <div className="mt-3 space-y-3 text-base leading-relaxed text-text-light">
           <p>
-            Pre-orders can be placed as early as 1st November for delivery on 23rd-24th December, far beyond the
-            7-day hold window. So for these, the card is only <strong className="text-navy">verified</strong> at
-            checkout, no hold yet. A daily automated job places the real authorisation{" "}
-            <strong className="text-navy">5 days before</strong> the delivery slot, using a stored card token.
+            By default, Christmas pre-orders are{" "}
+            <strong className="text-navy">charged in full at checkout</strong> — the fixed
+            Christmas prices make the total exact, so the order is authorised and captured
+            immediately, just like a normal &quot;pay now&quot; order. No hold, no capture queue,
+            no refund — the order moves straight to processing.
           </p>
           <p>
-            From that point the order behaves exactly like a normal one and appears in the usual capture queue
-            above. If the re-authorisation is declined (expired card, insufficient funds, etc.), both the customer
-            and staff get an email so it can be sorted out before the delivery date.
+            A <strong className="text-navy">legacy deposit/part-payment</strong> option is kept
+            behind a feature flag on the Products page if the shop ever wants to switch back:
+            the card is only verified at checkout (no hold), then a daily automated job places the
+            real authorisation <strong className="text-navy">5 days before</strong> the delivery
+            slot using a stored card token. An optional deposit can be captured upfront, with only
+            the remaining balance held for later. The flag is off by default.
           </p>
           <p>
-            Almost every product can be pre-ordered for Christmas by default, a few can be marked as excluded (see
-            the spreadsheet sync below). Customers shop normally and choose Standard or Christmas at checkout,
-            same as before, but if their basket has an item that&apos;s not Christmas-eligible, choosing Christmas
-            is blocked with a message telling them to remove it first, so the two can&apos;t get mixed into one
-            order without us noticing.
-          </p>
-          <p>
-            <strong className="text-navy">Optional deposit.</strong> You can take an up-front deposit on Christmas
-            pre-orders instead of waiting to collect the whole amount on the day. Add a per-product deposit in the{" "}
-            <strong className="text-navy">Christmas deposit</strong> column of the spreadsheet - the customer pays the
-            total of those deposits straight away at checkout, and only the remaining balance is authorised a few days
-            before their slot and settled once weighed. If no product has a deposit set, the{" "}
-            <strong className="text-navy">Default deposit (£)</strong> on the Products page applies instead. The shop
-            holds guaranteed money even if a card expires or declines between November and the delivery date, which
-            otherwise risks the whole order. £0 everywhere leaves the previous behaviour (the full amount is held and
-            captured on the day).
+            Almost every product can be pre-ordered for Christmas by default, a few can be marked
+            as excluded (see the spreadsheet sync below). Customers shop normally and choose
+            Standard or Christmas at checkout, same as before, but if their basket has an item
+            that&apos;s not Christmas-eligible, choosing Christmas is blocked with a message telling
+            them to remove it first.
           </p>
         </div>
       </section>

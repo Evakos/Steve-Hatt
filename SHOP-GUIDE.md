@@ -26,9 +26,7 @@ Two rules that matter:
 - **Holds expire after 7 days.** Capture within 7 days or it fails.
 - **Capture always takes the full held amount** - if the real total is less, we refund the difference.
 
-**Christmas** - orders sit for weeks, so holding at checkout would just expire. Instead the card is **verified** (no hold), then automatically **held a few days before** the slot, then captured on the day.
-
-**Deposit** - removes most of the worry: the **deposit is captured immediately** (real money, no expiry risk), and only the small **balance** is held and settled on the day. An expired or declined card in December then only threatens the balance, not the whole order.
+**Christmas orders are charged in full at checkout by default** - fixed Christmas prices make the total exact, so the order is authorised and captured immediately, just like a normal order. The old "verify now, pay later" model with an optional deposit is kept as a legacy option behind a feature flag in case the shop ever wants it, but it's off by default. With the legacy model off, Christmas orders skip the capture queue entirely — they arrive as "processing", already paid.
 
 ## Updating on the admin side
 

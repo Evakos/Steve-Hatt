@@ -12,6 +12,13 @@ export interface ChristmasSettings {
   premiumPercent: number;
   /** Fixed deposit (£) captured at checkout on Christmas pre-orders - 0 disables it. */
   christmasDepositAmount: number;
+  /**
+   * When true, switches Christmas orders onto the legacy deposit/part-payment flow
+   * (deposit captured at checkout, card verified, balance re-authorised + captured later).
+   * False (the default) keeps the simple full-payment-upfront model - the whole legacy flow is
+   * gated on this being on. See src/lib/feature-flags.ts.
+   */
+  christmasUseDepositFlow: boolean;
 }
 
 export async function updateChristmasSettings(input: ChristmasSettings): Promise<void> {
@@ -31,11 +38,13 @@ export async function updateChristmasSettings(input: ChristmasSettings): Promise
       Authorization: `Bearer ${env.VERCEL_API_TOKEN}`,
       "Content-Type": "application/json",
     },
+
     body: JSON.stringify({
       items: [
         { operation: "upsert", key: "christmasShopActive", value: input.active },
         { operation: "upsert", key: "christmasPremiumPercent", value: input.premiumPercent },
         { operation: "upsert", key: "christmasDepositAmount", value: input.christmasDepositAmount },
+        { operation: "upsert", key: "christmasUseDepositFlow", value: input.christmasUseDepositFlow },
       ],
     }),
   });

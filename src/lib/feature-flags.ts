@@ -64,3 +64,20 @@ export async function getChristmasDepositAmount(): Promise<number> {
     return 0;
   }
 }
+
+/**
+ * Whether the legacy Christmas *deposit/part-payment* flow is in use, as opposed to the default
+ * full-payment-upfront flow. Christmas pre-orders placed in full-upfront mode are charged in full
+ * at checkout (see src/app/api/checkout/route.ts) - no hold, no later capture, no balance, no
+ * refund - so they skip the scheduled hold (src/app/api/cron/reauthorise-preorders), the /admin
+ * orders capture queue, and the balance/refund maths in /api/admin/capture entirely. Staff only
+ * flip this on via /admin/products if they specifically want the older "deposit now, settle the
+ * balance later" model for a season - it's an escape hatch, never the default. Defaults to false.
+ */
+export async function getChristmasUseDepositFlow(): Promise<boolean> {
+  try {
+    return (await get("christmasUseDepositFlow")) === true;
+  } catch {
+    return false;
+  }
+}

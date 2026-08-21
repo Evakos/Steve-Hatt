@@ -6,7 +6,7 @@ import { repriceCheckoutRequest } from "@/lib/checkout/reprice";
 import { checkoutRequestSchema } from "@/lib/checkout/schema";
 import { sendOrderConfirmation, sendAdminNewOrderNotification } from "@/lib/email/send-order-confirmation";
 import { getCustomerSession } from "@/lib/customer-auth";
-import { getChristmasDepositAmount } from "@/lib/feature-flags";
+import { getChristmasDepositAmount, getChristmasUseDepositFlow } from "@/lib/feature-flags";
 
 export async function POST(request: Request) {
   const json = await request.json().catch(() => null);
@@ -21,16 +21,13 @@ export async function POST(request: Request) {
   const orderRef = crypto.randomUUID();
   const cardstream = getCardstreamClient();
 
-  // Christmas pre-orders can be placed from 1st November for delivery on the 23rd/24th
-  // December - far longer than a Pay360 authorisation survives (7 days, see
-  // src/lib/cardstream/real-client.ts). So instead of authorising now, verify the card (no hold
-  // placed, no expiry clock started) and let src/app/api/cron/reauthorise-preorders/route.ts
-  // place the real hold a few days before the delivery slot. Reports the same "authorised"
-  // status back to the client either way - the frontend only needs to know checkout succeeded,
-  // not which payment path produced that result.
+  // Christmas pre-orders: by default charged in full upfront (fixed prices make this exact).
+  // The legacy deposit/part-payment flow is gated behind getChristmasUseDepositFlow()
+  // (see /admin/products); with that flag off, the full total is authorised and captured
+  // immediately, same as checking "pay now" on any other checkout.
   if (checkout.fulfilment.slot.isChristmas) {
-    // Deposit model (Carole's flow): capture a fixed lump sum now so the shop isn't exposed to the
-    // November→December card-expiry risk on the whole order, then verify the card for the balance.
+    const useDepositFlow = await getChristmasUseDepositFlow();
+    if (useDepositFlow) {
     const depositConfig = await getChristmasDepositAmount();
     // Per-product "Christmas deposit" in the spreadsheet takes priority (matches how the shop has
     // always worked); the blanket default applies only when no product has a deposit set.
@@ -147,6 +144,69 @@ export async function POST(request: Request) {
       orderNumber: order.number,
       estimatedTotal: repriced.total,
     });
+    }
+    // Full payment upfront (the default): fixed Christmas prices make the total exact -
+    // authorise it all, capture immediately, mark the order as paid. No hold, no
+    // capture queue, no refund - just a normal "pay now" checkout.
+    const auth = await cardstream.authoriseSale({
+      token: checkout.payment.token,
+      amount: repriced.total,
+      currency: "GBP",
+      orderRef,
+      customerEmail: checkout.customer.email,
+    });
+
+    if (auth.status === "declined") {
+      return NextResponse.json({ status: "declined", reason: auth.reason }, { status: 402 });
+    }
+
+    if (auth.status === "requires_action") {
+      return NextResponse.json({
+        status: "requires_action",
+        transactionId: auth.transactionId,
+        challenge: auth.challenge,
+        orderRef,
+      });
+    }
+
+    const captureResult = await cardstream.captureSale({
+      transactionId: auth.transactionId,
+      orderRef,
+    });
+    if (captureResult.status === "failed") {
+      return NextResponse.json({ error: `Capture failed: ${captureResult.reason}` }, { status: 502 });
+    }
+
+    const { order } = await createOrderFromPayment(checkout, auth.transactionId, orderRef, customerId, { paid: true });
+
+    // A failed email shouldn't fail the order - payment has already moved.
+    await sendOrderConfirmation({
+      to: checkout.customer.email,
+      customerName: checkout.customer.firstName,
+      orderNumber: order.number,
+      repriced,
+      slotLabel: checkout.fulfilment.slot.label,
+      fulfilmentType: checkout.fulfilment.type,
+      paidInFull: true,
+    });
+    await sendAdminNewOrderNotification({
+      orderNumber: order.number,
+      customerName: `${checkout.customer.firstName} ${checkout.customer.lastName}`,
+      customerEmail: checkout.customer.email,
+      repriced,
+      slotLabel: checkout.fulfilment.slot.label,
+      fulfilmentType: checkout.fulfilment.type,
+      paidInFull: true,
+    });
+
+    return NextResponse.json({
+      status: "authorised",
+      orderId: order.id,
+      orderNumber: order.number,
+      estimatedTotal: repriced.total,
+      paidInFull: true,
+    });
+
   }
 
   // Only authorises (places a hold) - fish is priced by weight, so the exact amount isn't known

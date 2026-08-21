@@ -133,15 +133,17 @@ export default function CheckoutPage() {
   // (The feature-flags endpoint also returns a premiumPercent - a dormant/experimental
   // percentage mechanism, not the live one, see reprice.ts - deliberately ignored here.)
   const [christmasShopActive, setChristmasShopActive] = useState(false);
+  const [christmasUseDepositFlow, setChristmasUseDepositFlow] = useState(false);
   useEffect(() => {
     fetch("/api/feature-flags/christmas")
       .then((res) => (res.ok ? res.json() : null))
-      .then((data: { active: boolean } | null) => {
+      .then((data: { active: boolean; useDepositFlow?: boolean } | null) => {
         // Christmas is only offered while fulfilment dates are actually bookable (Dec 20-24
         // still ahead). If the switch is on those dates exist year-round, so the flow works
         // for testing/setup outside the November-December season too.
         const active = (data?.active ?? false) && hasUpcomingChristmasDates();
         setChristmasShopActive(active);
+        setChristmasUseDepositFlow(data?.useDepositFlow ?? false);
         if (!active) setOrderType("standard");
       })
       .catch(() => setOrderType("standard"));
@@ -338,9 +340,12 @@ export default function CheckoutPage() {
             <p className="mt-2 text-xs text-text-light">Order #{submitState.orderNumber}</p>
             <p className="mt-3 text-sm text-text-light">
               {confirmedOrder.itemCount} item{confirmedOrder.itemCount > 1 ? "s" : ""} ·{" "}
-              {confirmedOrder.slot.type === "delivery" ? "Delivery" : "Collection"} · £{submitState.estimatedTotal.toFixed(2)} (estimated)
+              {confirmedOrder.slot.type === "delivery" ? "Delivery" : "Collection"} ·{" "}
+              {submitState.paidInFull
+                ? "Paid in full"
+                : `£${submitState.estimatedTotal.toFixed(2)} (estimated)`}
             </p>
-            {submitState.depositAmount ? (
+            {submitState.depositAmount && !submitState.paidInFull ? (
               <p className="mt-1 text-sm font-medium text-navy">
                 £{submitState.depositAmount.toFixed(2)} deposit paid · balance to settle on collection
               </p>
@@ -354,7 +359,9 @@ export default function CheckoutPage() {
                 <Gift className={`mt-0.5 h-4 w-4 shrink-0 ${confirmedOrder.isChristmas ? "text-[#1a3a2a]" : "text-teal"}`} />
                 <p className={`text-xs ${confirmedOrder.isChristmas ? "text-[#1a3a2a]/70" : "text-text-light"}`}>
                   {confirmedOrder.isChristmas
-                    ? submitState.depositAmount
+                    ? submitState.paidInFull
+                      ? `Your payment of £${submitState.estimatedTotal.toFixed(2)} has been taken in full. We'll be in touch if anything changes once your order is weighed and prepared.`
+                      : submitState.depositAmount
                       ? `Your £${submitState.depositAmount.toFixed(2)} deposit is paid. The remaining balance will be confirmed and settled once your order is weighed and prepared, a few days before your ${confirmedOrder.slot.type === "delivery" ? "delivery" : "collection"} date.`
                       : "You haven't been charged yet. We've verified your card and will take payment automatically a few days before your delivery or collection date, once your order is weighed, no action needed from you."
                     : "You haven't been charged yet. Since fish is priced by weight, we'll confirm the exact final amount once your order is prepared, then take payment for that amount only."}
@@ -637,9 +644,9 @@ export default function CheckoutPage() {
                             <div>
                               <p className="text-sm font-medium text-[#1a3a2a]">Christmas Pre-Order</p>
                               <p className="mt-1 text-xs leading-relaxed text-[#1a3a2a]/70">
-                                We&apos;ll verify your card now, you won&apos;t be charged today. Payment is taken
-                                automatically a few days before your delivery or collection date, once your order
-                                is weighed, with no action needed from you.
+                                {christmasUseDepositFlow
+                                  ? "We'll verify your card now, you won't be charged today. Payment is taken automatically a few days before your delivery or collection date, once your order is weighed, with no action needed from you."
+                                  : "Your card will be charged in full today at the fixed Christmas price, no later adjustments, just like any other order."}
                               </p>
                             </div>
                           </div>
