@@ -76,6 +76,9 @@ export default function ChristmasSettingsPanel() {
             className="absolute top-1 left-1 h-5 w-5 bg-white transition-transform"
             style={{ borderRadius: "999px", transform: active ? "translateX(20px)" : "translateX(0)" }}
           />
+          </button>
+      </div>
+
       <div className="mt-3 border border-border bg-cream p-4" style={{ borderRadius: "5px" }}>
         <div className="flex items-center justify-between">
           <div>
