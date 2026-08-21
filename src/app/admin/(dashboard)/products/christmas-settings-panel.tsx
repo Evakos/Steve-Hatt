@@ -107,10 +107,6 @@ export default function ChristmasSettingsPanel() {
         </p>
       </div>
 
-
-        </button>
-      </div>
-
       {useDepositFlow && (
       <div className="mt-3 border border-border bg-cream p-4" style={{ borderRadius: "5px" }}>
         <div className="flex items-center justify-between gap-3">
