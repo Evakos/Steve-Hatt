@@ -15,30 +15,30 @@ export default function AdminGuidePage() {
       <p className="mt-2 text-sm text-text-light">How orders, payments, and the product sync work.</p>
 
       <section
-        className="mt-6 border border-lobster/40 border-l-4 border-l-lobster bg-lobster-light p-6"
+        className="mt-6 bg-[#1a3a2a] p-6"
         style={{ borderRadius: "5px" }}
       >
-        <p className="text-xs font-medium tracking-widest text-lobster uppercase">The aim of this rebuild</p>
-        <h2 className="mt-2 font-serif text-xl font-bold text-navy">
+        <p className="text-xs font-medium tracking-widest text-teal uppercase">The aim of this rebuild</p>
+        <h2 className="mt-2 font-serif text-xl font-bold text-white">
           A fast, modern shop that the Steve Hatt team can run themselves.
         </h2>
-        <p className="mt-3 text-sm leading-relaxed text-text-light">
+        <p className="mt-3 text-sm leading-relaxed text-white/80">
           WordPress and WooCommerce stay as the back shop, where products and orders live. Customers use a quicker
           shopfront on top of it, and the team manages products from Airtable and orders from this admin, with
           straightforward payments.
         </p>
-        <div className="mt-5 grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-5 grid w-full gap-4 sm:grid-cols-2">
           {pillars.map((p) => (
-            <div key={p.title} className="w-full bg-white p-5" style={{ borderRadius: "5px" }}>
-              <p className="text-sm font-medium text-navy">{p.title}</p>
-              <p className="mt-1 text-sm leading-relaxed text-text-light">{p.text}</p>
+            <div key={p.title} className="w-full bg-white/10 p-5" style={{ borderRadius: "5px" }}>
+              <p className="text-sm font-medium text-white">{p.title}</p>
+              <p className="mt-1 text-sm leading-relaxed text-white/75">{p.text}</p>
             </div>
           ))}
         </div>
       </section>
 
       <div className="mt-6 grid gap-6 md:grid-cols-2">
-      <section className="md:col-span-2 border border-border bg-white p-6" style={{ borderRadius: "5px" }}>
+      <section className="border border-border bg-white p-6" style={{ borderRadius: "5px" }}>
         <h2 className="font-medium text-navy">Switching Christmas on, step by step</h2>
         <div className="mt-3 space-y-3 text-sm leading-relaxed text-text-light">
           <h3 className="font-medium text-navy">1. Before you switch it on</h3>
@@ -171,7 +171,7 @@ export default function AdminGuidePage() {
       </section>
 
       {/* ── The capture queue (weight-based orders & legacy Christmas only) ── */}
-      <section className="md:col-span-2 border border-border bg-white p-6" style={{ borderRadius: "5px" }}>
+      <section className="border border-border bg-white p-6" style={{ borderRadius: "5px" }}>
         <h2 className="font-medium text-navy">The capture queue</h2>
         <p className="mt-1 text-sm text-text-light">
           Only relevant for <strong>weight-based orders</strong> (fish priced by weight) and{" "}
