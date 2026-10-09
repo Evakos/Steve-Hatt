@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { WooOrder } from "@/lib/woocommerce/types";
+import OrderBadges from "./order-badges";
 
 interface Props {
   order: WooOrder;
@@ -11,7 +12,6 @@ interface Props {
 export default function CompleteOrderCard({ order }: Props) {
   const router = useRouter();
   const slotLabel = order.meta_data.find((m) => m.key === "_checkout_slot_label")?.value as string | undefined;
-  const isChristmas = order.meta_data.find((m) => m.key === "_checkout_is_christmas")?.value === "true";
 
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -43,13 +43,9 @@ export default function CompleteOrderCard({ order }: Props) {
       <div>
         <p className="text-sm font-medium text-navy">
           Order #{order.number}, {order.billing.first_name} {order.billing.last_name}
-          {isChristmas && (
-            <span className="ml-2 inline-flex items-center gap-1 rounded bg-[#e8f5ed] px-2 py-0.5 text-xs font-medium text-[#1a3a2a]">
-              🎄 Christmas
-            </span>
-          )}
         </p>
-        {slotLabel && <p className="mt-0.5 text-sm text-text-light">{slotLabel}</p>}
+        <OrderBadges order={order} />
+        {slotLabel && <p className="mt-2 text-sm font-medium text-navy">{slotLabel}</p>}
         <p className="mt-0.5 text-sm text-text-light">£{order.total} charged</p>
       </div>
       <div className="flex items-center gap-3">

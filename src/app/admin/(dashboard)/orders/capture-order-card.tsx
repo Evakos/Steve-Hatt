@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { WooOrder } from "@/lib/woocommerce/types";
+import OrderBadges from "./order-badges";
 
 // Pay360 authorisations expire 7 days after creation by default - after that, Capture (and
 // Cancel) both fail (docs.pay360.com/cards/authorisations). Order date_created is a reliable
@@ -20,7 +21,6 @@ export default function CaptureOrderCard({ order }: Props) {
   const authorisedAmount = Number(order.meta_data.find((m) => m.key === "_cardstream_authorised_amount")?.value ?? order.total);
   const depositAmount = Number(order.meta_data.find((m) => m.key === "_cardstream_deposit_amount")?.value ?? 0);
   const slotLabel = order.meta_data.find((m) => m.key === "_checkout_slot_label")?.value as string | undefined;
-  const isChristmasOrder = order.meta_data.find((m) => m.key === "_checkout_is_christmas")?.value === "true";
 
   const daysSinceAuth = Math.floor((new Date().getTime() - new Date(order.date_created).getTime()) / 86_400_000);
   const authExpired = daysSinceAuth >= AUTH_EXPIRY_DAYS;
@@ -68,11 +68,6 @@ export default function CaptureOrderCard({ order }: Props) {
       <div className="flex items-baseline justify-between">
         <h2 className="font-medium text-navy">
           Order #{order.number}, {order.billing.first_name} {order.billing.last_name}
-          {isChristmasOrder && (
-            <span className="ml-2 bg-[#c94b4b] px-2 py-0.5 align-middle text-xs font-medium text-white" style={{ borderRadius: "999px" }}>
-              Christmas
-            </span>
-          )}
         </h2>
         <span className="text-sm text-text-light">
           {depositAmount > 0
@@ -80,7 +75,8 @@ export default function CaptureOrderCard({ order }: Props) {
             : `Authorised: £${authorisedAmount.toFixed(2)}`}
         </span>
       </div>
-      {slotLabel && <p className="mt-0.5 text-sm text-text-light">{slotLabel}</p>}
+      <OrderBadges order={order} />
+      {slotLabel && <p className="mt-2 text-sm font-medium text-navy">{slotLabel}</p>}
       <p className={`mt-0.5 text-sm ${authExpired ? "font-medium text-red-600" : authExpiringSoon ? "font-medium text-amber-600" : "text-text-light"}`}>
         {daysSinceAuth <= 0
           ? "Authorised today"

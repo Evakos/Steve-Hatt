@@ -2,7 +2,7 @@ import "server-only";
 import { sendEmail } from "./send";
 import { getServerEnv } from "@/lib/env";
 import type { RepricedOrder } from "@/lib/checkout/reprice";
-import { COLORS, SITE_URL, emailShell, emailHeading, emailNotice, emailAlert, emailButton, emailLineItemsTable } from "./layout";
+import { COLORS, SITE_URL, emailOrderBadges, emailShell, emailHeading, emailNotice, emailAlert, emailButton, emailLineItemsTable } from "./layout";
 
 const FROM_ADDRESS = "orders@stevehattfishmongers.co.uk";
 
@@ -62,6 +62,7 @@ export async function sendOrderConfirmation(input: OrderConfirmationInput) {
 
   const html = emailShell(`
     ${emailHeading(isPaidInFull ? `Order #${orderNumber} confirmed` : `Order #${orderNumber} received`)}
+    ${emailOrderBadges({ fulfilmentType, isChristmas: repriced.isChristmas })}
     <p>Hi ${customerName}, thanks for your order from Steve Hatt Fishmongers.</p>
     ${emailNotice(
       isPaidInFull
@@ -75,7 +76,7 @@ export async function sendOrderConfirmation(input: OrderConfirmationInput) {
     )}
     ${emailLineItemsTable(repriced.lineItems)}
     ${totalsTable}
-    <p style="margin-top:20px;"><strong>${fulfilmentType === "delivery" ? "Delivery" : "Collection"}:</strong> ${slotLabel}</p>
+    <p style="margin-top:20px;font-size:15px;"><strong>${fulfilmentType === "delivery" ? "Delivery" : "Collection"}:</strong> ${slotLabel}</p>
   `);
 
   try {
@@ -202,7 +203,9 @@ export async function sendAdminNewOrderNotification(input: AdminNewOrderNotifica
 
   const html = emailShell(`
     ${emailHeading(`New order #${orderNumber} - needs preparing`)}
-    <p>${customerName} (${customerEmail}) - ${fulfilmentType === "delivery" ? "Delivery" : "Collection"}: ${slotLabel}</p>
+    ${emailOrderBadges({ fulfilmentType, isChristmas: repriced.isChristmas })}
+    <p style="margin:0 0 4px;font-size:16px;font-weight:700;color:${COLORS.navy};">${fulfilmentType === "delivery" ? "Delivery" : "Collection"}: ${slotLabel}</p>
+    <p style="margin:0 0 4px;">${customerName} (${customerEmail})</p>
     ${emailLineItemsTable(repriced.lineItems)}
     <table style="width:100%;border-collapse:collapse;">
       ${isPaidInFull

@@ -146,3 +146,16 @@ export function emailTotalRow(label: string, amount: number, opts?: { bold?: boo
     </tr>
   `;
 }
+
+/** Two clear pills for an order: Collection or Delivery, and Christmas or Standard. Used at the
+ * top of order emails so the type of order is obvious at a glance. */
+export function emailOrderBadges(opts: { fulfilmentType: "delivery" | "collection"; isChristmas: boolean }): string {
+  const pill = (bg: string, fg: string, text: string) =>
+    `<span style="display:inline-block;background:${bg};color:${fg};font-size:12px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;padding:5px 12px;border-radius:999px;margin:0 6px 6px 0;">${text}</span>`;
+  const fulfilment =
+    opts.fulfilmentType === "delivery"
+      ? pill(COLORS.lobsterLight, COLORS.lobster, "Delivery")
+      : pill(COLORS.oceanLight, COLORS.ocean, "Collection");
+  const occasion = opts.isChristmas ? pill("#1a3a2a", "#ffffff", "Christmas order") : pill(COLORS.sand, COLORS.textLight, "Standard order");
+  return `<p style="margin:0 0 14px;">${fulfilment}${occasion}</p>`;
+}

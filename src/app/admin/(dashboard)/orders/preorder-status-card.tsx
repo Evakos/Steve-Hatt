@@ -1,4 +1,5 @@
 import type { WooOrder } from "@/lib/woocommerce/types";
+import OrderBadges from "./order-badges";
 
 // Mirrors AUTH_LEAD_DAYS in src/app/api/cron/reauthorise-preorders/route.ts - used here only to
 // describe the schedule to staff, not to make any decision.
@@ -41,7 +42,8 @@ export default function PreOrderStatusCard({ order }: Props) {
         </span>
         <span className="text-sm text-text-light">Estimated: £{Number(estimatedAmount ?? order.total).toFixed(2)}</span>
       </div>
-      {slotLabel && <p className="mt-0.5 text-sm text-text-light">{slotLabel}</p>}
+      <OrderBadges order={order} />
+      {slotLabel && <p className="mt-2 text-sm font-medium text-navy">{slotLabel}</p>}
       {failed ? (
         <p className="mt-1 text-sm font-medium text-red-600">
           Card declined on scheduled charge{failureReason ? `, ${failureReason}` : ""}. Customer has been emailed
