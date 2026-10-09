@@ -1,3 +1,4 @@
+import { ChevronDown } from "lucide-react";
 import { getProductSourceInfo } from "@/lib/product-source";
 
 const pillars = [
@@ -5,6 +6,15 @@ const pillars = [
   { title: "Run it yourselves", text: "Edit products in Airtable, press Sync now, and the shop updates. No WordPress login needed." },
   { title: "Paid at checkout", text: "Every order is paid in full at checkout and lands on the Orders page ready to prepare." },
   { title: "Christmas made simple", text: "One switch turns Christmas ordering on, with dated slots for the 20th to the 24th." },
+];
+
+const steps = [
+  { title: "Update products", text: "Edit prices, stock and Christmas prices in Airtable, then press Sync now." },
+  { title: "Switch Christmas on", text: "Use the switch on the Products page, on the day you choose." },
+  { title: "Customer orders", text: "They pay in full at checkout and get a confirmation email." },
+  { title: "Prepare the order", text: "It appears under Orders being prepared, already paid." },
+  { title: "Mark complete", text: "Press Mark complete once it is collected or delivered." },
+  { title: "Refund if needed", text: "Refund in the Pay360 portal, then update the order." },
 ];
 
 export default function AdminGuidePage() {
@@ -37,9 +47,39 @@ export default function AdminGuidePage() {
         </div>
       </section>
 
-      <div className="mt-6 grid gap-6 md:grid-cols-2">
-      <section className="border border-border bg-white p-6" style={{ borderRadius: "5px" }}>
-        <h2 className="font-medium text-navy">Switching Christmas on, step by step</h2>
+      <section className="mt-6 border border-border bg-white p-6" style={{ borderRadius: "5px" }}>
+        <h2 className="font-medium text-navy">How it works, at a glance</h2>
+        <ol className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-6 lg:gap-0">
+          {steps.map((step, i) => (
+            <li key={step.title} className="relative lg:px-3 lg:text-center">
+              {i < steps.length - 1 && (
+                <span
+                  aria-hidden
+                  className="absolute top-5 left-1/2 hidden h-px w-full bg-border lg:block"
+                />
+              )}
+              <span
+                className="relative z-10 flex h-10 w-10 items-center justify-center bg-[#1a3a2a] text-sm font-medium text-white lg:mx-auto"
+                style={{ borderRadius: "999px" }}
+              >
+                {i + 1}
+              </span>
+              <p className="mt-3 text-sm font-medium text-navy">{step.title}</p>
+              <p className="mt-1 text-sm leading-relaxed text-text-light">{step.text}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <p className="mt-8 text-sm font-medium text-navy">Detailed reference</p>
+      <p className="mt-1 text-sm text-text-light">Open any section below for the full detail.</p>
+
+      <div className="mt-4 grid items-start gap-6 md:grid-cols-2">
+      <details className="group border border-border bg-white p-6" style={{ borderRadius: "5px" }}>
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-3 font-medium text-navy [&::-webkit-details-marker]:hidden">
+          {"Switching Christmas on, step by step"}
+          <ChevronDown className="h-4 w-4 shrink-0 text-text-light transition-transform group-open:rotate-180" />
+        </summary>
         <div className="mt-3 space-y-3 text-sm leading-relaxed text-text-light">
           <h3 className="font-medium text-navy">1. Before you switch it on</h3>
           <ol className="list-decimal space-y-2 pl-5">
@@ -106,10 +146,13 @@ export default function AdminGuidePage() {
             date has passed.
           </p>
         </div>
-      </section>
+      </details>
 
-      <section className="border border-border bg-white p-6" style={{ borderRadius: "5px" }}>
-        <h2 className="font-medium text-navy">Christmas pre-orders</h2>
+      <details className="group border border-border bg-white p-6" style={{ borderRadius: "5px" }}>
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-3 font-medium text-navy [&::-webkit-details-marker]:hidden">
+          {"Christmas pre-orders"}
+          <ChevronDown className="h-4 w-4 shrink-0 text-text-light transition-transform group-open:rotate-180" />
+        </summary>
         <div className="mt-3 space-y-3 text-sm leading-relaxed text-text-light">
           <p>
             By default, Christmas pre-orders are{" "}
@@ -138,10 +181,13 @@ export default function AdminGuidePage() {
             Both take effect immediately, no redeploy needed.
           </p>
         </div>
-      </section>
+      </details>
 
-      <section className="border border-border bg-white p-6" style={{ borderRadius: "5px" }}>
-        <h2 className="font-medium text-navy">Product sync</h2>
+      <details className="group border border-border bg-white p-6" style={{ borderRadius: "5px" }}>
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-3 font-medium text-navy [&::-webkit-details-marker]:hidden">
+          {"Product sync"}
+          <ChevronDown className="h-4 w-4 shrink-0 text-text-light transition-transform group-open:rotate-180" />
+        </summary>
         <div className="mt-3 space-y-3 text-sm leading-relaxed text-text-light">
           <p>
             Product details (title, price, stock, status, description, tag, preparation, origin, sustainability, storage,
@@ -168,10 +214,13 @@ export default function AdminGuidePage() {
             Sync now pulls both tables in one go.
           </p>
         </div>
-      </section>
+      </details>
 
-      <section className="border border-border bg-white p-6" style={{ borderRadius: "5px" }}>
-        <h2 className="font-medium text-navy">Payments and orders</h2>
+      <details className="group border border-border bg-white p-6" style={{ borderRadius: "5px" }}>
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-3 font-medium text-navy [&::-webkit-details-marker]:hidden">
+          {"Payments and orders"}
+          <ChevronDown className="h-4 w-4 shrink-0 text-text-light transition-transform group-open:rotate-180" />
+        </summary>
         <div className="mt-3 space-y-3 text-sm leading-relaxed text-text-light">
           <p>
             <strong className="text-navy">Every order is paid in full at checkout</strong>, Christmas or not. The
@@ -201,7 +250,7 @@ export default function AdminGuidePage() {
             orders no longer go there.
           </p>
         </div>
-      </section>
+      </details>
       </div>
     </div>
   );
