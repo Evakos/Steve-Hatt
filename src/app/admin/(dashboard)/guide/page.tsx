@@ -8,14 +8,84 @@ export default function AdminGuidePage() {
       <p className="mt-1 text-sm text-text-light">How orders, payments, and the product sync work.</p>
 
       <section className="mt-8 border border-border bg-white p-5" style={{ borderRadius: "5px" }}>
+        <h2 className="font-medium text-navy">Switching Christmas on, step by step</h2>
+        <div className="mt-3 space-y-3 text-sm leading-relaxed text-text-light">
+          <h3 className="font-medium text-navy">1. Before you switch it on</h3>
+          <ol className="list-decimal space-y-2 pl-5">
+            <li>
+              In {source.name}, open <strong className="text-navy">{source.productsTable}</strong> and fill in{" "}
+              <code className="text-[0.9em]">Christmas price</code> for every product that costs more at Christmas.
+              A blank cell means the normal price is charged.
+            </li>
+            <li>
+              Set <code className="text-[0.9em]">Excluded from Christmas?</code> to{" "}
+              <code className="text-[0.9em]">Excluded</code> on anything that can&apos;t be held until December.
+            </li>
+            <li>
+              Check <code className="text-[0.9em]">Stock</code> and <code className="text-[0.9em]">status</code> are
+              right (<code className="text-[0.9em]">publish</code> is live, <code className="text-[0.9em]">draft</code> is hidden).
+            </li>
+            <li>
+              Go to the <strong className="text-navy">Products</strong> page and click{" "}
+              <strong className="text-navy">Sync now</strong>. It should report no errors.
+            </li>
+            <li>
+              Size products (whole salmon, lobsters, halibut, turbot, dressed crab) always use their normal size
+              prices at Christmas. A Christmas price isn&apos;t supported for sizes yet.
+            </li>
+            <li>
+              Place one test order and check the confirmation email arrives and the order shows in Orders.
+            </li>
+          </ol>
+
+          <h3 className="pt-1 font-medium text-navy">2. Switching it on</h3>
+          <p>
+            On the <strong className="text-navy">Products</strong> page, under Christmas ordering, turn the switch on
+            and click <strong className="text-navy">Save changes</strong>. It takes effect straight away on the live
+            site, with no redeploy. The switch is not tied to a date, so it goes on the day you flip it (for example
+            1 November).
+          </p>
+          <p>
+            Customers can then choose a Christmas order at checkout. The slots are{" "}
+            <strong className="text-navy">Tuesday to Saturday between 20 and 24 December</strong>, because the shop is
+            closed on Sunday and Monday. A basket containing an excluded product can&apos;t be booked for Christmas, and
+            the customer is told which item to remove.
+          </p>
+
+          <h3 className="pt-1 font-medium text-navy">3. What happens to a Christmas order</h3>
+          <ol className="list-decimal space-y-2 pl-5">
+            <li>The customer pays the full total at checkout and gets a confirmation email.</li>
+            <li>You get a new-order email.</li>
+            <li>
+              The order appears under <strong className="text-navy">Orders</strong> as already paid, with a Christmas
+              badge. There is nothing to capture.
+            </li>
+            <li>Prepare it for the chosen slot, then mark it complete.</li>
+          </ol>
+
+          <h3 className="pt-1 font-medium text-navy">4. Cancellations and refunds</h3>
+          <p>
+            There is no refund button in this admin. To refund a Christmas order, use the Pay360 Merchant Portal, then
+            update the order in WordPress.
+          </p>
+
+          <h3 className="pt-1 font-medium text-navy">5. Switching it off</h3>
+          <p>
+            Turn the switch off on the Products page at any time. It also switches itself off once the last Christmas
+            date has passed.
+          </p>
+        </div>
+      </section>
+
+      <section className="mt-8 border border-border bg-white p-5" style={{ borderRadius: "5px" }}>
         <h2 className="font-medium text-navy">Christmas pre-orders</h2>
         <div className="mt-3 space-y-3 text-sm leading-relaxed text-text-light">
           <p>
             By default, Christmas pre-orders are{" "}
-            <strong className="text-navy">charged in full at checkout</strong> — the fixed
+            <strong className="text-navy">charged in full at checkout</strong>, the fixed
             Christmas prices make the total exact, so the order is authorised and captured
             immediately, just like a normal &quot;pay now&quot; order. No hold, no capture queue,
-            no refund — the order moves straight to processing and appears under Orders → Processing.
+            no refund, the order moves straight to processing and appears under Orders to Processing.
           </p>
           <p>
             A <strong className="text-navy">legacy deposit/part-payment</strong> option is kept
@@ -23,12 +93,12 @@ export default function AdminGuidePage() {
             that flag is on, the card is only verified at checkout (no hold), a daily automated job
             places the real hold 5 days before the slot, and staff capture it on the day. An optional
             deposit can be taken upfront, with only the remaining balance held for later. The flag is
-            off by default — the full-upfront model above is what runs.
+            off by default, the full-upfront model above is what runs.
           </p>
           <p>
             Almost every product can be pre-ordered for Christmas by default. A few can be marked as
             excluded (see the product sync below). Customers choose Standard or Christmas at
-            checkout, same as before — if their basket has an excluded item, Christmas is blocked
+            checkout, same as before, if their basket has an excluded item, Christmas is blocked
             with a message telling them to remove it.
           </p>
           <p>
@@ -48,10 +118,10 @@ export default function AdminGuidePage() {
           full-upfront skips all of this.
         </p>
 
-        <h3 className="mt-4 font-medium text-navy">How it works: authorise → capture</h3>
+        <h3 className="mt-4 font-medium text-navy">How it works: authorise to capture</h3>
         <div className="mt-2 space-y-2 text-sm leading-relaxed text-text-light">
           <p>
-            <strong className="text-navy">Authorise</strong> = place a hold — the card is checked
+            <strong className="text-navy">Authorise</strong> = place a hold, the card is checked
             and the money is ring-fenced, but nothing is taken yet.{" "}
             <strong className="text-navy">Capture</strong> = actually take the money for that hold.
           </p>
@@ -64,8 +134,8 @@ export default function AdminGuidePage() {
         <h3 className="mt-4 font-medium text-navy">Step by step</h3>
         <div className="mt-2 space-y-2 text-sm leading-relaxed text-text-light">
           <p>
-            A new order lands as <strong className="text-navy">on-hold</strong> under Orders →
-            Awaiting capture — the card has been held but not charged.
+            A new order lands as <strong className="text-navy">on-hold</strong> under Orders, then
+            Awaiting capture, the card has been held but not charged.
           </p>
           <ol className="list-decimal space-y-2 pl-5">
             <li>Weigh and prepare the order as normal.</li>
@@ -78,13 +148,13 @@ export default function AdminGuidePage() {
           </ol>
           <p>
             <strong className="text-navy">If the final total is higher</strong> than the authorised
-            amount, capture is blocked — that needs a brand new authorisation, which isn&apos;t
+            amount, capture is blocked, that needs a brand new authorisation, which isn&apos;t
             supported yet. Call the customer and take payment another way.
           </p>
           <p>
             <strong className="text-navy">If the refund step fails</strong> after a successful
             capture (rare), the order is marked{" "}
-            <code className="text-[0.9em]">captured_refund_failed</code> — refund the difference
+            <code className="text-[0.9em]">captured_refund_failed</code>, refund the difference
             manually via the Pay360 Merchant Portal.
           </p>
         </div>
@@ -93,7 +163,7 @@ export default function AdminGuidePage() {
         <div className="mt-2 text-sm leading-relaxed text-text-light">
           <p>
             Pay360 holds expire <strong className="text-navy">7 days</strong> after they&apos;re
-            placed — after that, capture will likely fail. The order card shows an amber warning
+            placed, after that, capture will likely fail. The order card shows an amber warning
             from day 5, and a red one past 7 days. A daily email lists any expiring orders.
           </p>
         </div>

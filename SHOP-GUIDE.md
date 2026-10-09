@@ -68,3 +68,26 @@ Everything happens in **`/admin`** (one shared staff login).
 |---|---|
 | `price` | price for that size |
 | `variation_id`, `parent_product_id`, `Product` | link each size to its product, do not edit |
+
+## Switching Christmas on (step by step)
+
+**Before**
+1. In Airtable (**Website Products**), fill in `Christmas price` for products that cost more at Christmas. Blank means the normal price.
+2. Set `Excluded from Christmas?` to `Excluded` for anything that can't be held until December.
+3. Check `Stock` and `status`, then press **Sync now** on the Products page. It should report no errors.
+4. Size products (whole salmon, lobsters, halibut, turbot, dressed crab) use their normal size prices at Christmas for now.
+5. Place one test order and check the emails and the Orders page.
+
+**Switching on**
+- Products page, **Christmas ordering** switch on, **Save changes**. It is instant and not tied to a date, so it goes on the day you flip it.
+- Slots are Tuesday to Saturday between 20 and 24 December (the shop is closed Sunday and Monday).
+
+**What happens to an order**
+1. The customer pays in full at checkout and gets a confirmation email.
+2. You get a new-order email.
+3. The order appears under Orders as already paid, with a Christmas badge. Nothing to capture.
+4. Prepare it for the slot, then mark it complete.
+
+**Refunds and cancellations:** there is no refund button. Refund in the Pay360 Merchant Portal, then update the order in WordPress.
+
+**Switching off:** turn the switch off any time. It also switches itself off after the last Christmas date.
