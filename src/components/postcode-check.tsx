@@ -56,7 +56,7 @@ export default function PostcodeCheck() {
           onClick={handleCheck}
           disabled={state === "checking"}
           className="bg-teal px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-teal/90 disabled:cursor-wait disabled:opacity-70"
-          style={{ borderRadius: "3px" }}
+          style={{ borderRadius: "6px" }}
         >
           {state === "checking" ? (
             <Loader2 className="h-4 w-4 animate-spin" />

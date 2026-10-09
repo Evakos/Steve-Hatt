@@ -33,7 +33,7 @@ export default function CartPage() {
               <Link
                 href="/#shop"
                 className="bg-lobster px-6 py-3 text-base font-medium text-white transition-colors hover:bg-lobster/90"
-                style={{ borderRadius: "3px" }}
+                style={{ borderRadius: "6px" }}
               >
                 Shop Today&apos;s Catch
               </Link>
@@ -136,26 +136,17 @@ export default function CartPage() {
                     </div>
                     <div className="border-t border-border pt-3">
                       <div className="flex justify-between font-semibold text-navy">
-                        <span>Estimated total</span>
+                        <span>Total</span>
                         <span>£{estimatedTotal.toFixed(2)}</span>
                       </div>
                     </div>
                   </div>
 
-                  <div
-                    className="mt-4 border border-ocean/20 bg-ocean-light p-3"
-                    style={{ borderRadius: "3px" }}
-                  >
-                    <p className="text-sm leading-relaxed text-navy">
-                      <strong>Fair pricing.</strong> Final amount may differ
-                      slightly once your order is weighed and prepared.
-                    </p>
-                  </div>
 
                   <Link
                     href="/checkout"
                     className="mt-6 block w-full bg-lobster px-6 py-3.5 text-center text-base font-medium tracking-wide text-white transition-colors hover:bg-lobster/90"
-                    style={{ borderRadius: "3px" }}
+                    style={{ borderRadius: "6px" }}
                   >
                     Proceed to Checkout
                   </Link>

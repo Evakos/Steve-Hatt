@@ -44,7 +44,7 @@ export default function Header() {
           <Link
             href="/shop"
             className="bg-lobster px-5 py-2.5 text-base font-medium text-white transition-colors hover:bg-lobster/90"
-            style={{ borderRadius: "3px" }}
+            style={{ borderRadius: "6px" }}
           >
             Order Online
           </Link>
@@ -83,7 +83,7 @@ export default function Header() {
             <Link
               href="/shop"
               className="inline-block bg-lobster px-5 py-2.5 text-center text-base font-medium text-white hover:bg-lobster/90"
-              style={{ borderRadius: "3px" }}
+              style={{ borderRadius: "6px" }}
               onClick={() => setMobileOpen(false)}
             >
               Order Online

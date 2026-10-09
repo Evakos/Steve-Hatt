@@ -87,7 +87,7 @@ export default function AboutPage() {
                     <Link
                       href={card.href}
                       className="mt-4 inline-block self-start border border-navy/30 px-4 py-2 text-xs font-medium tracking-widest text-navy uppercase transition-colors hover:bg-navy/5"
-                      style={{ borderRadius: "3px" }}
+                      style={{ borderRadius: "6px" }}
                     >
                       {card.tag}
                     </Link>

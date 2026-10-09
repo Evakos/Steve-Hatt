@@ -81,10 +81,10 @@ export default async function Home() {
                   The freshest fish from the British coastline, prepared by hand and delivered to your door. Order online for next-day local delivery or click & collect.
                 </p>
                 <div className="mt-10 flex items-center gap-4">
-                  <a href="#shop" className="bg-lobster px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-lobster/90" style={{ borderRadius: '3px' }}>
+                  <a href="#shop" className="bg-lobster px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-lobster/90" style={{ borderRadius: '6px' }}>
                     Shop Today&apos;s Catch
                   </a>
-                  <a href="#how" className="border border-white/40 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-white/10" style={{ borderRadius: '3px' }}>
+                  <a href="#how" className="border border-white/40 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-white/10" style={{ borderRadius: '6px' }}>
                     How It Works
                   </a>
                 </div>
@@ -174,11 +174,6 @@ export default async function Home() {
                 <p className="mt-2 text-sm leading-relaxed text-text-light">{item.desc}</p>
               </div>
             ))}
-          </div>
-          <div className="mt-8 border border-ocean/20 bg-ocean-light p-6" style={{ borderRadius: '5px' }}>
-            <p className="text-lg leading-relaxed text-navy">
-              <strong>Fair pricing, always.</strong> We estimate the price at checkout based on your selected weight, you&apos;re not charged until your order is prepared and weighed, so you only ever pay for exactly what you receive. No overcharging, no surprises.
-            </p>
           </div>
         </div>
       </section>

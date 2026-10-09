@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getAllProducts, getProductBySlug } from "@/lib/products";
-import { Gift, Scale, MapPin, Thermometer, Leaf } from "lucide-react";
+import { Gift, MapPin, Thermometer, Leaf } from "lucide-react";
 import Header from "@/components/header";
 import AnnouncementBanner from "@/components/announcement-banner";
 import AddToCart from "@/components/add-to-cart";
@@ -97,13 +97,6 @@ export default async function ProductPage({
                 </div>
               )}
 
-              {/* Fair pricing notice */}
-              <div className="mt-4 flex items-start gap-3 border border-ocean/20 bg-ocean-light p-4" style={{ borderRadius: '5px' }}>
-                <Scale className="mt-0.5 h-4 w-4 shrink-0 text-navy/60" />
-                <p className="text-sm leading-relaxed text-navy">
-                  <strong>Fair pricing.</strong> We estimate the price at checkout. You&apos;re not charged until your order is prepared and weighed, so you only pay for exactly what you receive.
-                </p>
-              </div>
 
               {/* Info grid */}
               <div className="mt-4 grid grid-cols-2 gap-2">

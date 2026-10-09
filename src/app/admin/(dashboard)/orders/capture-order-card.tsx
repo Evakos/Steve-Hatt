@@ -139,7 +139,7 @@ export default function CaptureOrderCard({ order }: Props) {
           onClick={handleCapture}
           disabled={submitting || overAuthorised || finalTotal <= 0}
           className="bg-lobster px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-lobster/90 disabled:cursor-not-allowed disabled:opacity-50"
-          style={{ borderRadius: "10px" }}
+          style={{ borderRadius: "6px" }}
         >
           {submitting ? "Capturing…" : "Capture payment"}
         </button>

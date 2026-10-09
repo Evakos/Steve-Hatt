@@ -51,7 +51,7 @@ export default function StaffLoginPage() {
           type="submit"
           disabled={submitting || !password}
           className="mt-4 w-full bg-lobster px-4 py-2.5 text-base font-medium text-white transition-colors hover:bg-lobster/90 disabled:cursor-not-allowed disabled:opacity-50"
-          style={{ borderRadius: "10px" }}
+          style={{ borderRadius: "6px" }}
         >
           {submitting ? "Signing in…" : "Sign in"}
         </button>

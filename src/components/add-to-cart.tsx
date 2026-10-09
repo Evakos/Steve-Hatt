@@ -67,7 +67,7 @@ export default function AddToCart({ product }: Props) {
                     ? "border-navy bg-navy text-white"
                     : "border-border bg-white text-navy hover:border-navy"
                 }`}
-                style={{ borderRadius: "3px" }}
+                style={{ borderRadius: "6px" }}
               >
                 {opt}
                 {prepTooltips[opt] && (
@@ -101,7 +101,7 @@ export default function AddToCart({ product }: Props) {
                     ? "border-navy bg-navy text-white"
                     : "border-border bg-white text-navy hover:border-navy"
                 }`}
-                style={{ borderRadius: "3px" }}
+                style={{ borderRadius: "6px" }}
               >
                 {opt.label} · £{opt.price.toFixed(2)}
               </button>
@@ -166,7 +166,7 @@ export default function AddToCart({ product }: Props) {
                 ? "bg-teal text-white"
                 : "bg-lobster text-white hover:bg-lobster/90"
           }`}
-          style={{ borderRadius: "3px" }}
+          style={{ borderRadius: "6px" }}
         >
         {outOfStock ? (
           "Out of stock"

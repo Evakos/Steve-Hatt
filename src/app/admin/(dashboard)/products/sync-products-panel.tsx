@@ -50,7 +50,7 @@ export default function SyncProductsPanel() {
         onClick={handleSync}
         disabled={syncing}
         className="bg-lobster px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-lobster/90 disabled:cursor-not-allowed disabled:opacity-50"
-        style={{ borderRadius: "10px" }}
+        style={{ borderRadius: "6px" }}
       >
         {syncing ? "Syncing…" : "Sync now"}
       </button>

@@ -52,14 +52,14 @@ export default function MiniCart() {
 
             <div className="border-t border-border px-4 py-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-text-light">Estimated total</span>
+                <span className="text-sm text-text-light">Total</span>
                 <span className="text-sm font-bold text-navy">£{estimatedTotal.toFixed(2)}</span>
               </div>
               <Link
                 href="/cart"
                 onClick={() => setMiniCartOpen(false)}
                 className="mt-3 block w-full bg-lobster px-4 py-2.5 text-center text-sm font-medium text-white transition-colors hover:bg-lobster/90"
-                style={{ borderRadius: "3px" }}
+                style={{ borderRadius: "6px" }}
               >
                 View Basket
               </Link>
@@ -67,7 +67,7 @@ export default function MiniCart() {
                 href="/checkout"
                 onClick={() => setMiniCartOpen(false)}
                 className="mt-2 block w-full border border-navy bg-white px-4 py-2.5 text-center text-sm font-medium text-navy transition-colors hover:bg-navy hover:text-white"
-                style={{ borderRadius: "3px" }}
+                style={{ borderRadius: "6px" }}
               >
                 Checkout
               </Link>

@@ -37,7 +37,7 @@ export default function CookieBanner() {
           <button
             onClick={dismiss}
             className="mt-2.5 bg-navy px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-navy/90"
-            style={{ borderRadius: "4px" }}
+            style={{ borderRadius: "6px" }}
           >
             Got it
           </button>

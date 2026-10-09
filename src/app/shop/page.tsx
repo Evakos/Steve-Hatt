@@ -16,8 +16,7 @@ export default async function ShopPage() {
           <p className="text-xs tracking-widest text-text-light uppercase">Fresh today</p>
           <h1 className="mt-2 font-serif text-4xl font-bold text-navy">Shop All Fish</h1>
           <p className="mt-3 max-w-xl text-lg leading-relaxed text-text-light">
-            {products.length} products, priced by weight where noted, the amount shown at checkout is an estimate;
-            we confirm the exact final price once your order is prepared.
+            {products.length} products, priced by weight where noted. The price shown is the price you pay.
           </p>
 
           <ShopGrid products={products} />

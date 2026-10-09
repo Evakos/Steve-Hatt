@@ -79,7 +79,7 @@ export default function LoginForm() {
         type="submit"
         disabled={submitting || !email}
         className="mt-4 w-full bg-lobster px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-lobster/90 disabled:cursor-not-allowed disabled:opacity-50"
-        style={{ borderRadius: "5px" }}
+        style={{ borderRadius: "6px" }}
       >
         {submitting ? "Sending…" : "Send sign-in link"}
       </button>

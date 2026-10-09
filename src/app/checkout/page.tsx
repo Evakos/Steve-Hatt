@@ -302,7 +302,7 @@ export default function CheckoutPage() {
             <Link
               href="/#shop"
               className="mt-6 inline-block bg-lobster px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-lobster/90"
-              style={{ borderRadius: "3px" }}
+              style={{ borderRadius: "6px" }}
             >
               Shop Today&apos;s Catch
             </Link>
@@ -371,7 +371,7 @@ export default function CheckoutPage() {
               <Link
                 href="/#shop"
                 className="inline-block bg-lobster px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-lobster/90"
-                style={{ borderRadius: "3px" }}
+                style={{ borderRadius: "6px" }}
               >
                 Place Another Order
               </Link>
@@ -449,7 +449,7 @@ export default function CheckoutPage() {
                         <button
                           onClick={() => chooseOrderType("standard")}
                           className={`flex items-center gap-3 border p-5 text-left transition-colors ${orderType === "standard" ? "border-navy bg-navy/5" : "border-border bg-white hover:border-navy/30"}`}
-                          style={{ borderRadius: "5px" }}
+                          style={{ borderRadius: "6px" }}
                         >
                           <Truck className={`h-5 w-5 ${orderType === "standard" ? "text-navy" : "text-text-light"}`} />
                           <div>
@@ -461,7 +461,7 @@ export default function CheckoutPage() {
                         <button
                           onClick={() => chooseOrderType("christmas")}
                           className={`flex items-center gap-3 border p-5 text-left transition-colors ${orderType === "christmas" ? "border-[#1a3a2a] bg-[#e8f5ed]" : "border-[#1a3a2a]/20 bg-[#e8f5ed]/30 hover:border-[#1a3a2a]/40"}`}
-                          style={{ borderRadius: "5px" }}
+                          style={{ borderRadius: "6px" }}
                         >
                           <Gift className={`h-5 w-5 ${orderType === "christmas" ? "text-[#1a3a2a]" : "text-[#1a3a2a]/50"}`} />
                           <div>
@@ -509,7 +509,7 @@ export default function CheckoutPage() {
                         <button
                           onClick={handlePostcodeCheck}
                           className="shrink-0 bg-teal px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-teal/90"
-                          style={{ borderRadius: "3px" }}
+                          style={{ borderRadius: "6px" }}
                         >
                           Check
                         </button>
@@ -549,7 +549,7 @@ export default function CheckoutPage() {
                         <button
                           onClick={() => { setSlotType("delivery"); setSelectedSlot(null); }}
                           className={`flex items-center gap-3 border p-4 text-left transition-colors ${slotType === "delivery" ? "border-navy bg-navy/5" : "border-border bg-white hover:border-navy/30"}`}
-                          style={{ borderRadius: "5px" }}
+                          style={{ borderRadius: "6px" }}
                         >
                           <Truck className={`h-5 w-5 ${slotType === "delivery" ? "text-navy" : "text-text-light"}`} />
                           <div>
@@ -561,7 +561,7 @@ export default function CheckoutPage() {
                         <button
                           onClick={() => { setSlotType("collection"); setSelectedSlot(null); }}
                           className={`flex items-center gap-3 border p-4 text-left transition-colors ${slotType === "collection" ? "border-navy bg-navy/5" : "border-border bg-white hover:border-navy/30"}`}
-                          style={{ borderRadius: "5px" }}
+                          style={{ borderRadius: "6px" }}
                         >
                           <Store className={`h-5 w-5 ${slotType === "collection" ? "text-navy" : "text-text-light"}`} />
                           <div>
@@ -605,7 +605,7 @@ export default function CheckoutPage() {
                                     ? isXmas ? "border-[#1a3a2a] bg-[#e8f5ed]" : "border-navy bg-navy/5"
                                     : isXmas ? "border-[#1a3a2a]/20 bg-[#e8f5ed]/30 hover:border-[#1a3a2a]/40" : "border-border bg-white hover:border-navy/30"
                                 }`}
-                                style={{ borderRadius: "3px" }}
+                                style={{ borderRadius: "6px" }}
                               >
                                 <div className="flex items-center gap-3">
                                   {slot.type === "delivery" ? (
@@ -658,7 +658,7 @@ export default function CheckoutPage() {
                     onClick={() => canProceedToPayment && setStep("payment")}
                     disabled={!canProceedToPayment}
                     className={`mt-8 w-full px-6 py-3.5 text-sm font-medium tracking-wide text-white transition-colors md:w-auto ${canProceedToPayment ? "bg-lobster hover:bg-lobster/90" : "cursor-not-allowed bg-gray-300"}`}
-                    style={{ borderRadius: "3px" }}
+                    style={{ borderRadius: "6px" }}
                   >
                     Continue to Payment
                   </button>
@@ -781,17 +781,12 @@ export default function CheckoutPage() {
                   </div>
                   <div className="border-t border-border pt-2">
                     <div className="flex justify-between font-semibold text-navy">
-                      <span>Estimated total</span>
+                      <span>Total</span>
                       <span>£{(displayEstimatedTotal + deliveryCost).toFixed(2)}</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="mt-4 border border-ocean/20 bg-ocean-light p-3" style={{ borderRadius: "3px" }}>
-                  <p className="text-[11px] leading-relaxed text-navy">
-                    <strong>Fair pricing.</strong> Final amount may differ slightly once your order is weighed and prepared.
-                  </p>
-                </div>
 
                 <Link href="/cart" className="mt-4 block text-center text-xs text-text-light hover:text-navy">
                   ← Back to basket
