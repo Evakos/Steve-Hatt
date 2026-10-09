@@ -23,12 +23,13 @@ export default function Testimonials() {
           )}
         </div>
         <div className="relative">
-          {/* Full-bleed navy band that starts partway down the first row of cards (so the cards poke
-              above it) and fades out to the page colour. */}
+          {/* Full-bleed navy band rising from the footer: solid navy at the bottom (so it runs straight
+              into the navy footer), fading to nothing towards the top. It starts partway down the cards,
+              so the cards poke above it. */}
           <div
             aria-hidden
             className="pointer-events-none absolute -right-[50vw] -bottom-20 -left-[50vw] top-24"
-            style={{ background: "linear-gradient(to bottom, #242E67 0%, rgba(36,46,103,0.55) 40%, rgba(36,46,103,0) 100%)" }}
+            style={{ background: "linear-gradient(to top, #242E67 0%, #242E67 18%, rgba(36,46,103,0.6) 55%, rgba(36,46,103,0) 100%)" }}
           />
         <div className="relative grid gap-6 md:grid-cols-3">
           {testimonials.map((t, i) => (

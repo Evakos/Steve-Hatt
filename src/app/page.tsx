@@ -199,10 +199,10 @@ export default async function Home() {
               </div>
               <Link
                 href="/about"
-                className="mt-8 inline-block bg-navy px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-navy/90"
+                className="mt-8 inline-block bg-lobster px-6 py-3 text-sm font-medium text-white transition-all hover:-translate-y-px hover:bg-[#e2573b] hover:shadow-md active:translate-y-0"
                 style={{ borderRadius: "6px" }}
               >
-                Learn more about our story →
+                Learn more about our story
               </Link>
             </div>
             <div
