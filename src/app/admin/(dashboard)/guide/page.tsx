@@ -1,13 +1,44 @@
 import { getProductSourceInfo } from "@/lib/product-source";
 
+const pillars = [
+  { title: "A fast shop", text: "The shopfront runs on a modern, quick front end, so customers browse and order without waiting." },
+  { title: "Run it yourselves", text: "Edit products in Airtable, press Sync now, and the shop updates. No WordPress login needed." },
+  { title: "Fair pricing by weight", text: "A card is held at checkout, the order is weighed, and only the real total is taken." },
+  { title: "Christmas made simple", text: "One switch turns Christmas ordering on. Customers pay in full up front, nothing to capture." },
+];
+
 export default function AdminGuidePage() {
   const source = getProductSourceInfo();
   return (
-    <div className="max-w-3xl">
+    <div>
       <h1 className="font-serif text-2xl font-bold text-navy">Admin Guide</h1>
-      <p className="mt-1 text-sm text-text-light">How orders, payments, and the product sync work.</p>
+      <p className="mt-2 text-sm text-text-light">How orders, payments, and the product sync work.</p>
 
-      <section className="mt-8 border border-border bg-white p-5" style={{ borderRadius: "5px" }}>
+      <section
+        className="mt-6 border border-lobster/40 border-l-4 border-l-lobster bg-lobster-light p-6"
+        style={{ borderRadius: "5px" }}
+      >
+        <p className="text-xs font-medium tracking-widest text-lobster uppercase">The aim of this rebuild</p>
+        <h2 className="mt-2 font-serif text-xl font-bold text-navy">
+          A fast, modern shop that the Steve Hatt team can run themselves.
+        </h2>
+        <p className="mt-3 max-w-3xl text-sm leading-relaxed text-text-light">
+          WordPress and WooCommerce stay as the back shop, where products and orders live. Customers use a quicker
+          shopfront on top of it, and the team manages products from Airtable and orders from this admin, with
+          payments that suit fish sold by weight.
+        </p>
+        <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {pillars.map((p) => (
+            <div key={p.title} className="bg-white p-4" style={{ borderRadius: "5px" }}>
+              <p className="text-sm font-medium text-navy">{p.title}</p>
+              <p className="mt-1 text-sm leading-relaxed text-text-light">{p.text}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <div className="mt-6 grid gap-6 md:grid-cols-2">
+      <section className="md:col-span-2 border border-border bg-white p-6" style={{ borderRadius: "5px" }}>
         <h2 className="font-medium text-navy">Switching Christmas on, step by step</h2>
         <div className="mt-3 space-y-3 text-sm leading-relaxed text-text-light">
           <h3 className="font-medium text-navy">1. Before you switch it on</h3>
@@ -77,7 +108,7 @@ export default function AdminGuidePage() {
         </div>
       </section>
 
-      <section className="mt-8 border border-border bg-white p-5" style={{ borderRadius: "5px" }}>
+      <section className="border border-border bg-white p-6" style={{ borderRadius: "5px" }}>
         <h2 className="font-medium text-navy">Christmas pre-orders</h2>
         <div className="mt-3 space-y-3 text-sm leading-relaxed text-text-light">
           <p>
@@ -109,8 +140,38 @@ export default function AdminGuidePage() {
         </div>
       </section>
 
+      <section className="border border-border bg-white p-6" style={{ borderRadius: "5px" }}>
+        <h2 className="font-medium text-navy">Product sync</h2>
+        <div className="mt-3 space-y-3 text-sm leading-relaxed text-text-light">
+          <p>
+            Product details (title, price, stock, status, description, tag, preparation, origin, sustainability, storage,
+            Christmas price, Christmas deposit) can be edited in the{" "}
+            <a href={source.url} target="_blank" rel="noopener noreferrer" className="text-navy underline hover:text-lobster">
+              {source.name}
+            </a>{" "}
+            rather than logging into WordPress. On the <strong className="text-navy">Products</strong> page, click{" "}
+            <strong className="text-navy">Sync now</strong> to pull the &quot;{source.productsTable}&quot; table and
+            push any changes to the shop.
+          </p>
+          <p>
+            Each row needs a <code className="text-[0.9em]">product_id</code> to match against, rows without one, or
+            with malformed data (e.g. a non-numeric price, an invalid status), are skipped and listed as errors
+            rather than silently applied. The sync also refreshes the site&apos;s product cache automatically, so
+            changes show up on the shop straight away rather than waiting for the normal cache window.
+          </p>
+          <p>
+            <strong className="text-navy">Weight/size-tiered products</strong> (Salmon Whole, Lobster Cooked,
+            Lobster Live, Halibut Steaks, Turbot, Crab | Dressed) don&apos;t have a single price, each size is a
+            separate WooCommerce variation. These live in the{" "}
+            <strong className="text-navy">&quot;{source.variationsTable}&quot;</strong> table instead, matched by{" "}
+            <code className="text-[0.9em]">variation_id</code> (not <code className="text-[0.9em]">product_id</code>).
+            Sync now pulls both tables in one go.
+          </p>
+        </div>
+      </section>
+
       {/* ── The capture queue (weight-based orders & legacy Christmas only) ── */}
-      <section className="mt-6 border border-border bg-white p-5" style={{ borderRadius: "5px" }}>
+      <section className="md:col-span-2 border border-border bg-white p-6" style={{ borderRadius: "5px" }}>
         <h2 className="font-medium text-navy">The capture queue</h2>
         <p className="mt-1 text-sm text-text-light">
           Only relevant for <strong>weight-based orders</strong> (fish priced by weight) and{" "}
@@ -168,36 +229,7 @@ export default function AdminGuidePage() {
           </p>
         </div>
       </section>
-
-      <section className="mt-6 border border-border bg-white p-5" style={{ borderRadius: "5px" }}>
-        <h2 className="font-medium text-navy">Product sync</h2>
-        <div className="mt-3 space-y-3 text-sm leading-relaxed text-text-light">
-          <p>
-            Product details (title, price, stock, status, description, tag, preparation, origin, sustainability, storage,
-            Christmas price, Christmas deposit) can be edited in the{" "}
-            <a href={source.url} target="_blank" rel="noopener noreferrer" className="text-navy underline hover:text-lobster">
-              {source.name}
-            </a>{" "}
-            rather than logging into WordPress. On the <strong className="text-navy">Products</strong> page, click{" "}
-            <strong className="text-navy">Sync now</strong> to pull the &quot;{source.productsTable}&quot; table and
-            push any changes to the shop.
-          </p>
-          <p>
-            Each row needs a <code className="text-[0.9em]">product_id</code> to match against, rows without one, or
-            with malformed data (e.g. a non-numeric price, an invalid status), are skipped and listed as errors
-            rather than silently applied. The sync also refreshes the site&apos;s product cache automatically, so
-            changes show up on the shop straight away rather than waiting for the normal cache window.
-          </p>
-          <p>
-            <strong className="text-navy">Weight/size-tiered products</strong> (Salmon Whole, Lobster Cooked,
-            Lobster Live, Halibut Steaks, Turbot, Crab | Dressed) don&apos;t have a single price, each size is a
-            separate WooCommerce variation. These live in the{" "}
-            <strong className="text-navy">&quot;{source.variationsTable}&quot;</strong> table instead, matched by{" "}
-            <code className="text-[0.9em]">variation_id</code> (not <code className="text-[0.9em]">product_id</code>).
-            Sync now pulls both tables in one go.
-          </p>
-        </div>
-      </section>
+      </div>
     </div>
   );
 }
