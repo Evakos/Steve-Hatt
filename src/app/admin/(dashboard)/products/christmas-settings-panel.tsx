@@ -54,15 +54,15 @@ export default function ChristmasSettingsPanel() {
   }
 
   if (loading) {
-    return <p className="mt-3 text-base text-text-light">Loading current settings…</p>;
+    return <p className="mt-3 text-sm text-text-light">Loading current settings…</p>;
   }
 
   return (
-    <div className="mt-3">
-      <div className="flex items-center justify-between border border-border bg-cream p-4" style={{ borderRadius: "5px" }}>
+    <div className="mt-5">
+      <div className="flex items-center justify-between border border-border bg-cream p-5" style={{ borderRadius: "5px" }}>
         <div>
-          <p className="text-base font-medium text-navy">Christmas ordering</p>
-          <p className="text-base text-text-light">Shows the Christmas option to customers site-wide when on.</p>
+          <p className="text-sm font-medium text-navy">Christmas ordering</p>
+          <p className="mt-1 text-sm text-text-light">Shows the Christmas option to customers site-wide when on.</p>
         </div>
         <button
           type="button"
@@ -79,11 +79,11 @@ export default function ChristmasSettingsPanel() {
           </button>
       </div>
 
-      <div className="mt-3 border border-border bg-cream p-4" style={{ borderRadius: "5px" }}>
+      <div className="mt-4 border border-border bg-cream p-5" style={{ borderRadius: "5px" }}>
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-base font-medium text-navy">Payment model</p>
-            <p className="text-base text-text-light">
+            <p className="text-sm font-medium text-navy">Payment model</p>
+            <p className="mt-1 text-sm text-text-light">
               {useDepositFlow
                 ? "Legacy deposit/part-payment: deposit now, balance settled later."
                 : "Full payment upfront (default): charged in full at checkout."}
@@ -103,22 +103,22 @@ export default function ChristmasSettingsPanel() {
             />
           </button>
         </div>
-        <p className="mt-2 text-base text-text-light">
+        <p className="mt-2 text-sm text-text-light">
           The deposit/part-payment model is kept as an escape hatch if the shop ever needs it again.
           The default (full payment upfront) takes the entire total immediately, same as a normal
-          order — no later capture, no refund, no balance calculation.
+          order, with no later capture, no refund, no balance calculation.
         </p>
       </div>
 
       {useDepositFlow && (
-      <div className="mt-3 border border-border bg-cream p-4" style={{ borderRadius: "5px" }}>
+      <div className="mt-4 border border-border bg-cream p-5" style={{ borderRadius: "5px" }}>
         <div className="flex items-center justify-between gap-3">
           <div>
-            <p className="text-base font-medium text-navy">Default deposit (£)</p>
-            <p className="text-base text-text-light">
+            <p className="text-sm font-medium text-navy">Default deposit (£)</p>
+            <p className="mt-1 text-sm text-text-light">
               Fallback deposit captured at checkout on a Christmas pre-order, used only for products whose{" "}
-              &quot;Christmas deposit&quot; cell is blank in the sheet. The per-product Christmas deposit column
-              takes priority - leave this £0 to rely on the sheet alone.
+              &quot;Christmas deposit&quot; cell is blank in the product table. The per-product Christmas deposit column
+              takes priority, leave this £0 to rely on the table alone.
             </p>
           </div>
           <input
@@ -127,21 +127,21 @@ export default function ChristmasSettingsPanel() {
             step={1}
             value={depositAmount}
             onChange={(e) => setDepositAmount(Number(e.target.value))}
-            className="w-24 shrink-0 border border-border px-2 py-1 text-right text-base"
+            className="w-24 shrink-0 border border-border px-2 py-1 text-right text-sm"
             style={{ borderRadius: "4px" }}
           />
         </div>
       </div>
       )}
 
-      <div className="mt-3 border border-dashed border-border bg-cream/60 p-4 opacity-70" style={{ borderRadius: "5px" }}>
+      <div className="mt-4 border border-dashed border-border bg-cream/60 p-5 opacity-70" style={{ borderRadius: "5px" }}>
         <div className="flex items-center justify-between">
-          <p className="text-base font-medium text-navy">Seasonal price premium (experimental, not active)</p>
-          <p className="text-base font-semibold text-navy">{premiumPercent}%</p>
+          <p className="text-sm font-medium text-navy">Seasonal price premium (experimental, not active)</p>
+          <p className="text-sm font-semibold text-navy">{premiumPercent}%</p>
         </div>
-        <p className="text-base text-text-light">
-          Not currently used. Christmas prices are set per-product instead, in the &quot;christmas_price&quot;
-          column of the Products sheet below. This blanket-percentage option is kept here in case it&apos;s
+        <p className="mt-1 text-sm text-text-light">
+          Not currently used. Christmas prices are set per-product instead, in the &quot;Christmas price&quot;
+          column of the product table above. This blanket-percentage option is kept here in case it&apos;s
           ever wanted again, but changing it has no effect on checkout right now.
         </p>
         <input
@@ -160,15 +160,15 @@ export default function ChristmasSettingsPanel() {
           type="button"
           onClick={handleSave}
           disabled={!dirty || saving}
-          className="bg-lobster px-5 py-2.5 text-base font-medium text-white transition-colors hover:bg-lobster/90 disabled:cursor-not-allowed disabled:opacity-50"
+          className="bg-lobster px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-lobster/90 disabled:cursor-not-allowed disabled:opacity-50"
           style={{ borderRadius: "5px" }}
         >
           {saving ? "Saving…" : "Save changes"}
         </button>
-        {!dirty && saved && <span className="text-base text-teal">Up to date</span>}
+        {!dirty && saved && <span className="text-sm text-teal">Up to date</span>}
       </div>
 
-      {error && <p className="mt-2 text-base text-red-600">{error}</p>}
+      {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
     </div>
   );
 }

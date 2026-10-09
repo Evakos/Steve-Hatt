@@ -5,11 +5,11 @@ export default function AdminGuidePage() {
   return (
     <div className="max-w-3xl">
       <h1 className="font-serif text-2xl font-bold text-navy">Admin Guide</h1>
-      <p className="mt-1 text-base text-text-light">How orders, payments, and the product sync work.</p>
+      <p className="mt-1 text-sm text-text-light">How orders, payments, and the product sync work.</p>
 
       <section className="mt-8 border border-border bg-white p-5" style={{ borderRadius: "5px" }}>
         <h2 className="font-medium text-navy">Christmas pre-orders</h2>
-        <div className="mt-3 space-y-3 text-base leading-relaxed text-text-light">
+        <div className="mt-3 space-y-3 text-sm leading-relaxed text-text-light">
           <p>
             By default, Christmas pre-orders are{" "}
             <strong className="text-navy">charged in full at checkout</strong> — the fixed
@@ -42,14 +42,14 @@ export default function AdminGuidePage() {
       {/* ── The capture queue (weight-based orders & legacy Christmas only) ── */}
       <section className="mt-6 border border-border bg-white p-5" style={{ borderRadius: "5px" }}>
         <h2 className="font-medium text-navy">The capture queue</h2>
-        <p className="mt-1 text-base text-text-light">
+        <p className="mt-1 text-sm text-text-light">
           Only relevant for <strong>weight-based orders</strong> (fish priced by weight) and{" "}
           <strong>legacy Christmas orders</strong> when the deposit flag is on. Default Christmas
           full-upfront skips all of this.
         </p>
 
         <h3 className="mt-4 font-medium text-navy">How it works: authorise → capture</h3>
-        <div className="mt-2 space-y-2 text-base leading-relaxed text-text-light">
+        <div className="mt-2 space-y-2 text-sm leading-relaxed text-text-light">
           <p>
             <strong className="text-navy">Authorise</strong> = place a hold — the card is checked
             and the money is ring-fenced, but nothing is taken yet.{" "}
@@ -62,7 +62,7 @@ export default function AdminGuidePage() {
         </div>
 
         <h3 className="mt-4 font-medium text-navy">Step by step</h3>
-        <div className="mt-2 space-y-2 text-base leading-relaxed text-text-light">
+        <div className="mt-2 space-y-2 text-sm leading-relaxed text-text-light">
           <p>
             A new order lands as <strong className="text-navy">on-hold</strong> under Orders →
             Awaiting capture — the card has been held but not charged.
@@ -90,7 +90,7 @@ export default function AdminGuidePage() {
         </div>
 
         <h3 className="mt-4 font-medium text-navy">The 7-day clock</h3>
-        <div className="mt-2 text-base leading-relaxed text-text-light">
+        <div className="mt-2 text-sm leading-relaxed text-text-light">
           <p>
             Pay360 holds expire <strong className="text-navy">7 days</strong> after they&apos;re
             placed — after that, capture will likely fail. The order card shows an amber warning
@@ -101,7 +101,7 @@ export default function AdminGuidePage() {
 
       <section className="mt-6 border border-border bg-white p-5" style={{ borderRadius: "5px" }}>
         <h2 className="font-medium text-navy">Product sync</h2>
-        <div className="mt-3 space-y-3 text-base leading-relaxed text-text-light">
+        <div className="mt-3 space-y-3 text-sm leading-relaxed text-text-light">
           <p>
             Product details (title, price, stock, status, description, tag, preparation, origin, sustainability, storage,
             Christmas price, Christmas deposit) can be edited in the{" "}
