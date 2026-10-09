@@ -48,11 +48,15 @@ export default function TermsConditionsPage() {
             </p>
             <p>
               Due to the nature of our business, our prices will vary according to weather, seasonality, and
-              supply. You are advised to check the prices of our fish on this website before placing an order. If
-              you are ordering fish in advance please call us on{" "}
-              <a href="tel:+442072263963" className="text-navy underline hover:text-lobster">020 7226 3963</a>{" "}
-              for a specific quotation and you can decide whether the new price is acceptable; otherwise we will
-              apply the day&apos;s price on the day of dispatch.
+              supply, so please check the prices on this website before placing an order. The price you see when
+              you check out is the price you pay. If you would like a quotation for a larger or special order,
+              please call us on{" "}
+              <a href="tel:+442072263963" className="text-navy underline hover:text-lobster">020 7226 3963</a>.
+            </p>
+            <p>
+              Where fish is sold by weight, you pay the price shown for the weight you choose. Weights are
+              approximate, as every fish is different, and the weight you receive may vary slightly. If you are
+              not happy with what you receive, please see Refunds below.
             </p>
             <p>
               The total price of any order you place through stevehattfishmongers.co.uk is inclusive of value
@@ -80,17 +84,17 @@ export default function TermsConditionsPage() {
             <p>
               We process all the usual credit or debit cards online. When you place an order using a debit or
               credit card, you confirm that all the information contained within the order is true and that you
-              authorise us to deduct the confirmed amount from your chosen payment card.
+              authorise us to charge the full order total shown at checkout, including any delivery fee, to your
+              chosen payment card.
             </p>
             <p>
-              Once your order has been packaged and is ready for delivery, we will debit your credit/debit card on
-              the same day we dispatch the order. We will require the postal code of where the credit/debit card
-              is registered to.
+              Payment is taken in full when you place your order, and we will email you to confirm it. We will
+              require the postal code of where the credit/debit card is registered to.
             </p>
             <p>
-              Should we not be able to collect payment for reasons outside of our control, we will not dispatch
-              your order. Should this happen we will make every effort to contact you and advise you, however we
-              accept no liability for any loss incurred due to the delay in dispatching your order.
+              Should we not be able to collect payment for reasons outside of our control, we will not accept or
+              dispatch your order. Should this happen we will make every effort to contact you and advise you,
+              however we accept no liability for any loss incurred due to the delay in dispatching your order.
             </p>
             <p>
               Where goods have been returned by you and a fair settlement has been agreed, we will credit the same
@@ -120,7 +124,7 @@ export default function TermsConditionsPage() {
               driver cannot obtain a signature to confirm the delivery of your order, it will be left at your own
               risk; we accept no liability for its loss or damage.
             </p>
-            <p>Our minimum order cost is £20, for which there is no delivery fee.</p>
+            <p>Our minimum order for delivery is £20. Delivery costs £5.00. Collecting your order from the shop is free.</p>
             <p>
               Orders are packed per species, wrapped in greaseproof paper, chilled and iced before being dispatched
               for &ldquo;next day delivery&rdquo;. Normally your order will reach you before midday on the day
@@ -158,7 +162,10 @@ export default function TermsConditionsPage() {
             </p>
 
             <h2 className="pt-2 font-serif text-lg font-semibold text-navy">Cancellation of Orders</h2>
-            <p>You may cancel your order at any time up to 9am on the day of dispatch.</p>
+            <p>
+              You may cancel your order at any time up to 9am on the day of dispatch. If you cancel in time, we will
+              refund the amount you paid to the same card.
+            </p>
             <p>
               Any fish that has been sourced specially for you (by prior agreement) will be charged for in full.
               If we are subsequently able to sell all or part of those items sourced specially, we undertake to
@@ -235,17 +242,13 @@ export default function TermsConditionsPage() {
             </p>
             <p>
               <strong className="text-navy">Ordering</strong>, when you have confirmed all the products you wish
-              to order, you will be given an estimated total order price, which will also set out the deposit sum
-              you are required to pay upon completion of placing your order. The deposit sum will be taken
-              following authorisation of your payment details and is non-refundable. Our acceptance of your order
-              takes place upon payment of the deposit sum. All card payments are subject to authorisation by your
-              card issuer.
+              to order, you will be shown your order total, and payment of the full amount is taken when you
+              place your order. All card payments are subject to authorisation by your card issuer. Our
+              acceptance of your order takes place when we confirm it by email.
             </p>
             <p>
-              Please note that any outstanding sums owed, as set out in your estimated order price, will need to
-              be paid upon collection of your Christmas food order. You will also receive a confirmation email
-              containing details of your order, please keep this safe and bring it with you (printed, or on a
-              device) when collecting your order.
+              You will receive a confirmation email containing details of your order. Please keep this safe and
+              bring it with you (printed, or on a device) when collecting your order.
             </p>
           </div>
         </div>
