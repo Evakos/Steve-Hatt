@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { getAllProducts } from "@/lib/products";
 import { isChristmasShopActive } from "@/lib/feature-flags";
-import { Truck, Fish, Scaling, Leaf, Anchor, Recycle, ShoppingBag, Search, Gift, Snowflake } from "lucide-react";
+import { Truck, Fish, Scaling, Leaf, Anchor, Recycle, ShoppingBag, Search, Gift, Snowflake, UserPlus, Check } from "lucide-react";
 import Header from "@/components/header";
 import PostcodeCheck from "@/components/postcode-check";
 import AnnouncementBanner from "@/components/announcement-banner";
@@ -60,7 +60,7 @@ export default async function Home() {
 
       {/* Hero - text overlaid on the photo, matching a traditional hero banner */}
       <section className="bg-white">
-        <div className="relative bg-navy" style={{ height: "50vh" }}>
+        <div className="relative bg-navy" style={{ minHeight: "60vh" }}>
           <div
             className="absolute inset-y-0 right-0 w-full sm:w-[80%]"
             style={{
@@ -69,25 +69,63 @@ export default async function Home() {
             }}
           >
             <Image src="/hero-shop-floor.jpg" alt="A Steve Hatt fishmonger setting out fresh fish on ice" fill sizes="100vw" className="object-cover object-[65%_center]" priority />
-            <div className="absolute inset-0 bg-gradient-to-t from-navy/70 via-transparent to-transparent" />
+            <div className="absolute inset-0 bg-navy/55" />
+            <div className="absolute inset-0 bg-gradient-to-t from-navy/80 via-navy/20 to-transparent" />
           </div>
-          <div className="absolute inset-0 flex items-end sm:items-center">
-            <div className="mx-auto w-full max-w-6xl px-6 pb-10 sm:pb-0">
+          <div className="relative flex min-h-[60vh] items-center">
+            <div className="mx-auto grid w-full max-w-6xl items-center gap-10 px-6 py-12 lg:grid-cols-[1.15fr_1fr] lg:gap-14">
               <div className="max-w-2xl">
                 <p className="mb-4 text-sm tracking-widest text-white/80 uppercase">Est. 1895 · Essex Road, London</p>
-                <h1 className="font-serif text-5xl font-bold leading-[1.1] text-white md:text-6xl lg:text-7xl">
+                <h1 className="font-serif text-5xl font-bold leading-[1.1] text-white md:text-6xl">
                   From Sea, to Shop, to You.
                 </h1>
                 <p className="mt-6 max-w-lg text-lg leading-relaxed text-white/90">
                   The freshest fish from the British coastline, prepared by hand and delivered to your door. Order online for next-day local delivery or click & collect.
                 </p>
-                <div className="mt-10 flex items-center gap-4">
-                  <a href="#shop" className="bg-lobster px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-lobster/90" style={{ borderRadius: '6px' }}>
+                <div className="mt-10 flex flex-wrap items-center gap-4">
+                  <a href="#shop" className="bg-lobster px-6 py-3 text-sm font-medium text-white transition-all hover:-translate-y-px hover:bg-[#e2573b] hover:shadow-md" style={{ borderRadius: '6px' }}>
                     Shop Today&apos;s Catch
                   </a>
                   <a href="#how" className="border border-white/40 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-white/10" style={{ borderRadius: '6px' }}>
                     How It Works
                   </a>
+                </div>
+              </div>
+
+              {/* Right column: delivery check, plus a featured prompt to create an account */}
+              <div className="w-full max-w-md justify-self-center bg-white p-6 shadow-2xl lg:justify-self-end" style={{ borderRadius: "16px" }}>
+                <h2 className="font-serif text-xl font-semibold text-navy">Check if we deliver to you</h2>
+                <p className="mt-1 text-sm leading-relaxed text-text-light">
+                  Enter your postcode to see delivery options. Not in our zone? Click &amp; collect is always available.
+                </p>
+                <div className="mt-4">
+                  <PostcodeCheck />
+                </div>
+
+                <div className="mt-6 bg-lobster-light p-5" style={{ borderRadius: "12px" }}>
+                  <div className="flex items-center gap-2 text-navy">
+                    <UserPlus className="h-5 w-5 text-lobster" aria-hidden />
+                    <p className="font-serif text-lg font-semibold">Create your free account</p>
+                  </div>
+                  <ul className="mt-3 space-y-1.5 text-sm text-navy">
+                    {[
+                      "Your details saved for faster checkout",
+                      "Your order history in one place",
+                      "No password, we email you a secure sign-in link",
+                    ].map((perk) => (
+                      <li key={perk} className="flex items-start gap-2">
+                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-lobster" aria-hidden />
+                        {perk}
+                      </li>
+                    ))}
+                  </ul>
+                  <Link
+                    href="/account"
+                    className="mt-4 block bg-lobster px-5 py-3 text-center text-sm font-medium text-white transition-all hover:-translate-y-px hover:bg-[#e2573b] hover:shadow-md active:translate-y-0"
+                    style={{ borderRadius: "6px" }}
+                  >
+                    Create account or sign in
+                  </Link>
                 </div>
               </div>
             </div>
@@ -108,25 +146,6 @@ export default async function Home() {
                 {item.text}
               </div>
             ))}
-          </div>
-        </div>
-
-        {/* Postcode check - full width, directly attached with no gap */}
-        <div className="bg-ocean-light">
-          <div className="mx-auto max-w-6xl px-6 py-12">
-            <div className="flex flex-col items-center gap-4 text-center md:flex-row md:text-left">
-              <div className="flex-1">
-                <h2 className="font-serif text-xl font-semibold text-navy">Check if we deliver to you</h2>
-                <p className="mt-1 text-base text-text-light">
-                  Enter your postcode to see delivery options. Not in our zone? Click &amp; collect is always available.
-                  <br />
-                  <Link href="/account" className="font-medium text-navy underline">Sign In/Register</Link> for faster checkout.
-                </p>
-              </div>
-              <div className="w-full max-w-xs md:w-auto">
-                <PostcodeCheck />
-              </div>
-            </div>
           </div>
         </div>
       </section>
