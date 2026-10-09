@@ -304,7 +304,7 @@ export default function CheckoutPage() {
               className="mt-6 inline-block bg-lobster px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-lobster/90"
               style={{ borderRadius: "6px" }}
             >
-              Shop Today&apos;s Catch
+              Shop Fishmonger Recommended
             </Link>
           </div>
         </section>

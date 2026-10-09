@@ -26,7 +26,7 @@ const CHRISTMAS_FEATURED_SLUGS = [
   "oysters-carlingford-2",
 ];
 
-/** Fisher-Yates shuffle, then take the first n - used to rotate "Today's Catch" rather than
+/** Fisher-Yates shuffle, then take the first n - used to rotate "Fishmonger Recommended" rather than
  * always showing the same fixed products. */
 function pickRandom<T>(items: T[], n: number): T[] {
   const shuffled = [...items];
@@ -84,7 +84,7 @@ export default async function Home() {
                 </p>
                 <div className="mt-10 flex flex-wrap items-center gap-4">
                   <a href="#shop" className="bg-lobster px-6 py-3 text-sm font-medium text-white transition-all hover:-translate-y-px hover:bg-[#e2573b] hover:shadow-md" style={{ borderRadius: '6px' }}>
-                    Shop Today&apos;s Catch
+                    Shop Fishmonger Recommended
                   </a>
                   <a href="#how" className="border border-white/40 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-white/10" style={{ borderRadius: '6px' }}>
                     How It Works
@@ -156,7 +156,7 @@ export default async function Home() {
           <div className="mb-10 flex items-end justify-between">
             <div>
               <p className="text-xs tracking-widest text-text-light uppercase">Fresh today</p>
-              <h2 className="mt-2 font-serif text-3xl font-bold text-navy">Today&apos;s Catch</h2>
+              <h2 className="mt-2 font-serif text-3xl font-bold text-navy">Fishmonger Recommended</h2>
             </div>
             <Link href="/shop" className="text-sm text-navy hover:underline">View all →</Link>
           </div>
