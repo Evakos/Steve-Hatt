@@ -1,5 +1,8 @@
 import { Quote } from "lucide-react";
-import { testimonials } from "@/content/testimonials";
+import { testimonials as allTestimonials } from "@/content/testimonials";
+
+/** The homepage shows the first three entries, one tidy row. */
+const testimonials = allTestimonials.slice(0, 3);
 
 /** Homepage customer-review grid. Hidden when there are no testimonials; labelled as sample content
  * while any entry is still a placeholder (see content/testimonials.ts). */
@@ -27,7 +30,7 @@ export default function Testimonials() {
             className="pointer-events-none absolute -right-[50vw] -bottom-20 -left-[50vw] top-24"
             style={{ background: "linear-gradient(to bottom, #242E67 0%, rgba(36,46,103,0.55) 40%, rgba(36,46,103,0) 100%)" }}
           />
-        <div className="relative grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="relative grid gap-6 md:grid-cols-3">
           {testimonials.map((t, i) => (
             <figure
               key={i}
