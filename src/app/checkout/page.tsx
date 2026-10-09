@@ -358,13 +358,11 @@ export default function CheckoutPage() {
               <div className="mt-3 flex items-start gap-2 border-t border-border pt-3">
                 <Gift className={`mt-0.5 h-4 w-4 shrink-0 ${confirmedOrder.isChristmas ? "text-[#1a3a2a]" : "text-teal"}`} />
                 <p className={`text-xs ${confirmedOrder.isChristmas ? "text-[#1a3a2a]/70" : "text-text-light"}`}>
-                  {confirmedOrder.isChristmas
-                    ? submitState.paidInFull
-                      ? `Your payment of £${submitState.estimatedTotal.toFixed(2)} has been taken in full. We'll be in touch if anything changes once your order is weighed and prepared.`
-                      : submitState.depositAmount
-                      ? `Your £${submitState.depositAmount.toFixed(2)} deposit is paid. The remaining balance will be confirmed and settled once your order is weighed and prepared, a few days before your ${confirmedOrder.slot.type === "delivery" ? "delivery" : "collection"} date.`
-                      : "You haven't been charged yet. We've verified your card and will take payment automatically a few days before your delivery or collection date, once your order is weighed, no action needed from you."
-                    : "You haven't been charged yet. Since fish is priced by weight, we'll confirm the exact final amount once your order is prepared, then take payment for that amount only."}
+                  {submitState.paidInFull
+                    ? `Your payment of £${submitState.estimatedTotal.toFixed(2)} has been taken in full. We'll be in touch if anything changes once your order is prepared.`
+                    : submitState.depositAmount
+                    ? `Your £${submitState.depositAmount.toFixed(2)} deposit is paid. The remaining balance will be confirmed and settled once your order is weighed and prepared, a few days before your ${confirmedOrder.slot.type === "delivery" ? "delivery" : "collection"} date.`
+                    : "You haven't been charged yet. We've verified your card and will take payment automatically a few days before your delivery or collection date, once your order is weighed, no action needed from you."}
                 </p>
               </div>
             </div>

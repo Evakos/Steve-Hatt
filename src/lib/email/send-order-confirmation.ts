@@ -70,7 +70,7 @@ export async function sendOrderConfirmation(input: OrderConfirmationInput) {
     <p>Hi ${customerName}, thanks for your order from Steve Hatt Fishmongers.</p>
     ${emailNotice(
       isPaidInFull
-        ? `<strong>Paid in full.</strong> Your card has been charged £${repriced.total.toFixed(2)} for this order. We'll be in touch if anything changes once your order is weighed.`
+        ? `<strong>Paid in full.</strong> Your card has been charged £${repriced.total.toFixed(2)} for this order. We'll be in touch if anything changes once your order is prepared.`
         : hasDeposit
         ? `<strong>Your £${deposit.toFixed(2)} deposit has been paid.</strong> The remaining balance
         (estimated £${balance.toFixed(2)}) will be confirmed and settled on collection, once your order has

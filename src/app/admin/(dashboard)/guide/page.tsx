@@ -3,8 +3,8 @@ import { getProductSourceInfo } from "@/lib/product-source";
 const pillars = [
   { title: "A fast shop", text: "The shopfront runs on a modern, quick front end, so customers browse and order without waiting." },
   { title: "Run it yourselves", text: "Edit products in Airtable, press Sync now, and the shop updates. No WordPress login needed." },
-  { title: "Every order, by stage", text: "The Orders page lists new orders awaiting payment capture, paid orders being prepared, and any Christmas pre-orders still pending." },
-  { title: "Christmas made simple", text: "One switch turns Christmas ordering on. Customers pay in full up front, nothing to capture." },
+  { title: "Paid at checkout", text: "Every order is paid in full at checkout and lands on the Orders page ready to prepare." },
+  { title: "Christmas made simple", text: "One switch turns Christmas ordering on, with dated slots for the 20th to the 24th." },
 ];
 
 export default function AdminGuidePage() {
@@ -170,62 +170,35 @@ export default function AdminGuidePage() {
         </div>
       </section>
 
-      {/* ── The capture queue (weight-based orders & legacy Christmas only) ── */}
       <section className="border border-border bg-white p-6" style={{ borderRadius: "5px" }}>
-        <h2 className="font-medium text-navy">The capture queue</h2>
-        <p className="mt-1 text-sm text-text-light">
-          Only relevant for <strong>weight-based orders</strong> (fish priced by weight) and{" "}
-          <strong>legacy Christmas orders</strong> when the deposit flag is on. Default Christmas
-          full-upfront skips all of this.
-        </p>
-
-        <h3 className="mt-4 font-medium text-navy">How it works: authorise to capture</h3>
-        <div className="mt-2 space-y-2 text-sm leading-relaxed text-text-light">
+        <h2 className="font-medium text-navy">Payments and orders</h2>
+        <div className="mt-3 space-y-3 text-sm leading-relaxed text-text-light">
           <p>
-            <strong className="text-navy">Authorise</strong> = place a hold, the card is checked
-            and the money is ring-fenced, but nothing is taken yet.{" "}
-            <strong className="text-navy">Capture</strong> = actually take the money for that hold.
-          </p>
-          <p>
-            Fish is priced by weight, so the exact total isn&apos;t known at checkout. We hold an
-            estimate, then take the real amount once staff weigh the order.
-          </p>
-        </div>
-
-        <h3 className="mt-4 font-medium text-navy">Step by step</h3>
-        <div className="mt-2 space-y-2 text-sm leading-relaxed text-text-light">
-          <p>
-            A new order lands as <strong className="text-navy">on-hold</strong> under Orders, then
-            Awaiting capture, the card has been held but not charged.
+            <strong className="text-navy">Every order is paid in full at checkout</strong>, Christmas or not. The
+            customer&apos;s card is charged the full total straight away and they get a confirmation email.
           </p>
           <ol className="list-decimal space-y-2 pl-5">
-            <li>Weigh and prepare the order as normal.</li>
-            <li>Open the order on the Orders page and enter the real final price for each line.</li>
             <li>
-              Click <strong className="text-navy">Capture payment</strong>. Pay360 doesn&apos;t
-              support partial capture, so it first captures the full authorised amount, then
-              automatically refunds the difference down to the real weighed total.
+              The order arrives on the <strong className="text-navy">Orders</strong> page under{" "}
+              <strong className="text-navy">Orders being prepared</strong>, already paid.
+            </li>
+            <li>Prepare it for the chosen delivery or collection slot.</li>
+            <li>
+              Click <strong className="text-navy">Mark complete</strong> once it has been collected or delivered.
             </li>
           </ol>
           <p>
-            <strong className="text-navy">If the final total is higher</strong> than the authorised
-            amount, capture is blocked, that needs a brand new authorisation, which isn&apos;t
-            supported yet. Call the customer and take payment another way.
+            <strong className="text-navy">Weights and prices.</strong> For now, the customer pays the price shown for
+            the weight they chose. Any small difference after weighing is ignored.
           </p>
           <p>
-            <strong className="text-navy">If the refund step fails</strong> after a successful
-            capture (rare), the order is marked{" "}
-            <code className="text-[0.9em]">captured_refund_failed</code>, refund the difference
-            manually via the Pay360 Merchant Portal.
+            <strong className="text-navy">Refunds and cancellations.</strong> There is no refund button in this admin.
+            Refund in the Pay360 Merchant Portal, then update the order in WordPress.
           </p>
-        </div>
-
-        <h3 className="mt-4 font-medium text-navy">The 7-day clock</h3>
-        <div className="mt-2 text-sm leading-relaxed text-text-light">
           <p>
-            Pay360 holds expire <strong className="text-navy">7 days</strong> after they&apos;re
-            placed, after that, capture will likely fail. The order card shows an amber warning
-            from day 5, and a red one past 7 days. A daily email lists any expiring orders.
+            Older orders that were only held (not charged) would still appear under{" "}
+            <strong className="text-navy">Awaiting capture</strong> on the Orders page, with a 7 day expiry warning. New
+            orders no longer go there.
           </p>
         </div>
       </section>

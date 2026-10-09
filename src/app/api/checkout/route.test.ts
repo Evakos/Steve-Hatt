@@ -152,8 +152,9 @@ describe("POST /api/checkout", () => {
     expect(email.sendOrderConfirmation).toHaveBeenCalledWith(expect.objectContaining({ depositAmount: 60 }));
   });
 
-  it("leaves normal (non-Christmas) orders unchanged", async () => {
+  it("charges a normal (non-Christmas) order in full at checkout too", async () => {
     cardstream.authoriseSale.mockResolvedValue({ status: "authorised", transactionId: "txn_normal" });
+    cardstream.captureSale.mockResolvedValue({ status: "captured" });
 
     const { POST } = await import("./route");
     const res = await POST(new Request("https://example.test/api/checkout", {
@@ -163,10 +164,12 @@ describe("POST /api/checkout", () => {
 
     expect(res.status).toBe(200);
     const json = await res.json();
-    expect(json).toMatchObject({ status: "authorised", orderNumber: "1001" });
-    expect(json.paidInFull).toBeUndefined();
+    expect(json).toMatchObject({ status: "authorised", orderNumber: "1001", paidInFull: true });
     expect(json.depositAmount).toBeUndefined();
-    expect(cardstream.captureSale).not.toHaveBeenCalled();
-    expect(createFromPayment.createOrderFromPayment).toHaveBeenCalledWith(expect.anything(), "txn_normal", expect.any(String), null);
+    expect(cardstream.captureSale).toHaveBeenCalledWith(expect.objectContaining({ transactionId: "txn_normal" }));
+    expect(createFromPayment.createOrderFromPayment).toHaveBeenCalledWith(
+      expect.anything(), "txn_normal", expect.any(String), null, { paid: true }
+    );
+    expect(email.sendOrderConfirmation).toHaveBeenCalledWith(expect.objectContaining({ paidInFull: true }));
   });
 });

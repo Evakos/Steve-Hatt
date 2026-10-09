@@ -17,7 +17,7 @@ export default async function AdminOrdersPage() {
     <div>
       <h1 className="font-serif text-2xl font-bold text-navy">Orders</h1>
       <p className="mt-2 text-sm text-text-light">
-        Orders being prepared, plus anything awaiting payment capture or any Christmas pre-orders still pending.
+        Paid orders ready to prepare. Older held orders or pending Christmas pre-orders show here only if there are any.
       </p>
 
       <div className="mt-6 grid items-start gap-6 md:grid-cols-2">

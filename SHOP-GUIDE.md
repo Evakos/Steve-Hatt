@@ -10,23 +10,17 @@ Plain-terms guide for the shop team.
 
 So the loop is: **edit in Airtable → Sync → WordPress → the website shows it.** One direction, one button.
 
-## How a payment works (authorise → capture)
+## How a payment works
 
-- **Authorise = a hold.** The card is checked and the money is *ring-fenced* - but nothing is taken yet.
-- **Capture = actually taking the money** for a previously-held amount.
+**Every order is paid in full at checkout.** The card is charged the full total straight away, the customer gets a confirmation email, and the order lands on the Orders page already paid.
 
-Fish is priced by weight, so the final price isn't known at checkout. So we **hold an estimate now, weigh it, then take the real amount**:
+1. Customer checks out and pays in full.
+2. The order appears under **Orders being prepared**.
+3. Staff prepare it, then press **Mark complete** once collected or delivered.
 
-1. Checkout → **hold** the estimated total.
-2. Staff weigh the fish → the **real price** is now known.
-3. Staff press **Capture** → the money is taken.
-
-Two rules that matter:
-
-- **Holds expire after 7 days.** Capture within 7 days or it fails.
-- **Capture always takes the full held amount** - if the real total is less, we refund the difference.
-
-**Christmas orders are charged in full at checkout by default** - fixed Christmas prices make the total exact, so the order is authorised and captured immediately, just like a normal order. The old "verify now, pay later" model with an optional deposit is kept as a legacy option behind a feature flag in case the shop ever wants it, but it's off by default. With the legacy model off, Christmas orders skip the capture queue entirely, they arrive as "processing", already paid.
+- **Weights and prices:** the customer pays the price shown for the weight they chose. Any small difference after weighing is ignored for now.
+- **Refunds:** there is no refund button. Refund in the Pay360 Merchant Portal, then update the order in WordPress.
+- The Christmas deposit option still exists in the code behind a switch, but is off. Any old orders that were only held (not charged) would still show under **Awaiting capture**.
 
 ## Updating on the admin side
 
@@ -60,8 +54,8 @@ Everything happens in **`/admin`** (one shared staff login).
 | `Christmas deposit` | up-front deposit (blank = falls back to the Default) |
 
 **Orders page**
-- **Awaiting capture** queue: weigh the fish → enter the real weights/prices → **Capture payment**.
-- Watch the **7-day clock**.
+- **Orders being prepared**: paid orders to prepare, then **Mark complete**.
+- **Awaiting capture** only appears for old held orders.
 
 **Sizes (Website Variations)**
 | Column | What it does |
