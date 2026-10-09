@@ -3,7 +3,7 @@ import { getProductSourceInfo } from "@/lib/product-source";
 const pillars = [
   { title: "A fast shop", text: "The shopfront runs on a modern, quick front end, so customers browse and order without waiting." },
   { title: "Run it yourselves", text: "Edit products in Airtable, press Sync now, and the shop updates. No WordPress login needed." },
-  { title: "Fair pricing by weight", text: "A card is held at checkout, the order is weighed, and only the real total is taken." },
+  { title: "Orders in one place", text: "New orders, preparation and completion are all handled on the Orders page of this admin." },
   { title: "Christmas made simple", text: "One switch turns Christmas ordering on. Customers pay in full up front, nothing to capture." },
 ];
 
@@ -25,7 +25,7 @@ export default function AdminGuidePage() {
         <p className="mt-3 max-w-3xl text-sm leading-relaxed text-text-light">
           WordPress and WooCommerce stay as the back shop, where products and orders live. Customers use a quicker
           shopfront on top of it, and the team manages products from Airtable and orders from this admin, with
-          payments that suit fish sold by weight.
+          straightforward payments.
         </p>
         <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {pillars.map((p) => (
