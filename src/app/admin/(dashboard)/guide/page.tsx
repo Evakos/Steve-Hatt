@@ -3,7 +3,7 @@ import { getProductSourceInfo } from "@/lib/product-source";
 const pillars = [
   { title: "A fast shop", text: "The shopfront runs on a modern, quick front end, so customers browse and order without waiting." },
   { title: "Run it yourselves", text: "Edit products in Airtable, press Sync now, and the shop updates. No WordPress login needed." },
-  { title: "Orders in one place", text: "New orders, preparation and completion are all handled on the Orders page of this admin." },
+  { title: "Every order, by stage", text: "The Orders page lists new orders awaiting payment capture, paid orders being prepared, and any Christmas pre-orders still pending." },
   { title: "Christmas made simple", text: "One switch turns Christmas ordering on. Customers pay in full up front, nothing to capture." },
 ];
 
