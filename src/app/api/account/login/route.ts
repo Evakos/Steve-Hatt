@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createMagicLinkToken } from "@/lib/customer-auth";
+import { formatFullPostcode } from "@/lib/delivery-zones";
 import { sendMagicLinkEmail } from "@/lib/email/send-magic-link";
 
-const requestSchema = z.object({ email: z.email() });
+const requestSchema = z.object({ email: z.email(), postcode: z.string().max(12).optional() });
 
 // Matches the hardcoded domain already used elsewhere (e.g. send-order-confirmation.ts's
 // /admin/orders link) rather than introducing a new env var for it.
@@ -16,7 +17,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Enter a valid email address" }, { status: 400 });
   }
 
-  const token = createMagicLinkToken(parsed.data.email);
+  // A postcode typed into the homepage delivery check rides along in the link, and is saved to the new
+  // account when it is clicked. Anything that is not a complete UK postcode is simply dropped.
+  const postcode = parsed.data.postcode ? formatFullPostcode(parsed.data.postcode) ?? undefined : undefined;
+  const token = createMagicLinkToken(parsed.data.email, postcode);
   const verifyUrl = `${SITE_URL}/api/account/verify?token=${encodeURIComponent(token)}`;
 
   try {

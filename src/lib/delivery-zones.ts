@@ -17,3 +17,13 @@ export function isInDeliveryZone(postcode: string): boolean {
   if (!outcode) return false;
   return DELIVERY_ZONES.some((zone) => outcode.startsWith(zone));
 }
+
+const FULL_POSTCODE = /^[A-Z]{1,2}\d{1,2}[A-Z]?\d[A-Z]{2}$/;
+
+/** Returns a tidy "N1 8LU" style postcode if the input is a complete UK postcode, otherwise null
+ * (an outcode on its own, like "N1", is deliberately not enough to save). */
+export function formatFullPostcode(raw: string): string | null {
+  const normalised = normalisePostcode(raw);
+  if (!FULL_POSTCODE.test(normalised)) return null;
+  return `${normalised.slice(0, -3)} ${normalised.slice(-3)}`;
+}

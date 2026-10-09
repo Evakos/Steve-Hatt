@@ -27,14 +27,16 @@ function timingSafeEqualStrings(a: string, b: string): boolean {
   return aBuf.length === bBuf.length && timingSafeEqual(aBuf, bBuf);
 }
 
-export function createMagicLinkToken(email: string): string {
+export function createMagicLinkToken(email: string, postcode?: string): string {
   const expiry = Date.now() + MAGIC_LINK_TTL_MS;
-  const payload = Buffer.from(email).toString("base64url");
+  // The optional postcode rides inside the signed payload (email, newline, postcode) so it can't be
+  // altered; emails can't contain a newline, so the split is unambiguous.
+  const payload = Buffer.from(postcode ? `${email}\n${postcode}` : email).toString("base64url");
   return `${payload}.${expiry}.${sign("link", payload, expiry)}`;
 }
 
-/** Returns the email if the token is valid and unexpired, otherwise null. */
-export function verifyMagicLinkToken(token: string): string | null {
+/** Returns the email and optional postcode if the token is valid and unexpired, otherwise null. */
+export function readMagicLinkToken(token: string): { email: string; postcode?: string } | null {
   const [payload, expiryStr, signature] = token.split(".");
   if (!payload || !expiryStr || !signature) return null;
   const expiry = Number(expiryStr);
@@ -42,10 +44,16 @@ export function verifyMagicLinkToken(token: string): string | null {
   if (!timingSafeEqualStrings(sign("link", payload, expiry), signature)) return null;
 
   try {
-    return Buffer.from(payload, "base64url").toString("utf-8");
+    const [email, postcode] = Buffer.from(payload, "base64url").toString("utf-8").split("\n");
+    return email ? { email, postcode: postcode || undefined } : null;
   } catch {
     return null;
   }
+}
+
+/** Returns the email if the token is valid and unexpired, otherwise null. */
+export function verifyMagicLinkToken(token: string): string | null {
+  return readMagicLinkToken(token)?.email ?? null;
 }
 
 export function createCustomerSessionCookieValue(customerId: number): string {
