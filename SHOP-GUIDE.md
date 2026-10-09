@@ -5,10 +5,10 @@ Plain-terms guide for the shop team.
 ## The three parts (one-way flow)
 
 1. **WordPress + WooCommerce** - the real "back shop". Products, prices and orders actually live here. It's the source of truth.
-2. **The Google Sheet** - a friendly front window over WordPress. Edit products here, press **Sync now**, and it writes into WordPress. It's an *addition* to WordPress, not a replacement - nothing in WordPress becomes obsolete.
+2. **Airtable** - a friendly front window over WordPress. Edit products in the **Steve Hatt Website** base, press **Sync now** in the admin, and it writes into WordPress. It's an *addition* to WordPress, not a replacement - nothing in WordPress becomes obsolete.
 3. **The website** - the shopfront customers see. It *reads* from WordPress and displays the shop. This fast front end is simply **hosted on Vercel** - not a separate system you ever log into or manage.
 
-So the loop is: **edit in the sheet → Sync → WordPress → the website shows it.** One direction, one button.
+So the loop is: **edit in Airtable → Sync → WordPress → the website shows it.** One direction, one button.
 
 ## How a payment works (authorise → capture)
 
@@ -26,24 +26,34 @@ Two rules that matter:
 - **Holds expire after 7 days.** Capture within 7 days or it fails.
 - **Capture always takes the full held amount** - if the real total is less, we refund the difference.
 
-**Christmas orders are charged in full at checkout by default** - fixed Christmas prices make the total exact, so the order is authorised and captured immediately, just like a normal order. The old "verify now, pay later" model with an optional deposit is kept as a legacy option behind a feature flag in case the shop ever wants it, but it's off by default. With the legacy model off, Christmas orders skip the capture queue entirely — they arrive as "processing", already paid.
+**Christmas orders are charged in full at checkout by default** - fixed Christmas prices make the total exact, so the order is authorised and captured immediately, just like a normal order. The old "verify now, pay later" model with an optional deposit is kept as a legacy option behind a feature flag in case the shop ever wants it, but it's off by default. With the legacy model off, Christmas orders skip the capture queue entirely, they arrive as "processing", already paid.
 
 ## Updating on the admin side
 
 Everything happens in **`/admin`** (one shared staff login).
 
 **Products page → "Sync now"**
-- Change names, prices, descriptions, prep, origin, sustainability, storage → edit the sheet → **Sync now**.
-- Weight/size products (whole salmon, lobster, halibut, turbot, crab) → edit the **"Variations"** tab → **Sync now**.
+- Change names, prices, descriptions, prep, origin, sustainability, storage → edit the **Website Products** table in Airtable → **Sync now**.
+- Weight/size products (whole salmon, lobster, halibut, turbot, crab) → edit the **Website Variations** table. Each size is linked to its product, so you can also open a product and edit its sizes from inside it. Then **Sync now**.
+- Sync only changes what you filled in. A blank cell leaves that field on the shop untouched.
+- Rows or sizes with a problem (for example a price that isn't a number) are skipped and listed as errors after the sync, so nothing half-applied reaches the shop.
+
+**Airtable tips**
+- Open a record (the small expand arrow on a row) to see every field, including the long text like description, in one place.
+- **Never edit** `product_id`, `variation_id` or `slug`. They link each row to the right product on the shop.
+- Price, stock and Christmas fields can be edited freely. Status controls whether a product is visible: `publish` is live, `draft` is hidden.
+- To hide a product without deleting it, set its `status` to `draft` and sync.
+- New products: for now they are created in WordPress first, and their `product_id` is then added to Airtable. Creating them straight from Airtable is planned.
 
 **Products page → Christmas controls**
 - **Christmas ordering** - a switch you flip on/off when you choose; the 20-24 December slots appear automatically (closed Sun/Mon).
 - **Default deposit (£)** - a blanket deposit, used only for products with no deposit of their own.
 
-**Sheet columns**
+**Airtable columns (Website Products)**
 | Column | What it does |
 |---|---|
 | `price`, `title`, `description`, `status`, `tag`, `preparation`, `origin`, `sustainability`, `storage` | day-to-day product content |
+| `product_id`, `slug`, `category` | identifiers and reference only, do not edit |
 | `Stock` | `In stock` / `Out of stock` (drives the Sold out badge) |
 | `Excluded from Christmas?` | `Excluded` / `Included` |
 | `Christmas price` | festive price (blank = normal price) |
@@ -52,3 +62,9 @@ Everything happens in **`/admin`** (one shared staff login).
 **Orders page**
 - **Awaiting capture** queue: weigh the fish → enter the real weights/prices → **Capture payment**.
 - Watch the **7-day clock**.
+
+**Sizes (Website Variations)**
+| Column | What it does |
+|---|---|
+| `price` | price for that size |
+| `variation_id`, `parent_product_id`, `Product` | link each size to its product, do not edit |
