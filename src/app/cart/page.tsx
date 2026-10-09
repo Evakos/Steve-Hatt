@@ -35,7 +35,7 @@ export default function CartPage() {
                 className="bg-lobster px-6 py-3 text-base font-medium text-white transition-colors hover:bg-lobster/90"
                 style={{ borderRadius: "6px" }}
               >
-                Shop Fishmonger Recommended
+                Shop Today&apos;s Catch
               </Link>
             </div>
           ) : (
