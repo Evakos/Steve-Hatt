@@ -42,7 +42,7 @@ export default function AdminGuidePage() {
       {/* ── The capture queue (weight-based orders & legacy Christmas only) ── */}
       <section className="mt-6 border border-border bg-white p-5" style={{ borderRadius: "5px" }}>
         <h2 className="font-medium text-navy">The capture queue</h2>
-        <p className="mt-1 text-sm text-text-light">
+        <p className="mt-1 text-base text-text-light">
           Only relevant for <strong>weight-based orders</strong> (fish priced by weight) and{" "}
           <strong>legacy Christmas orders</strong> when the deposit flag is on. Default Christmas
           full-upfront skips all of this.
@@ -84,7 +84,7 @@ export default function AdminGuidePage() {
           <p>
             <strong className="text-navy">If the refund step fails</strong> after a successful
             capture (rare), the order is marked{" "}
-            <code className="text-xs">captured_refund_failed</code> — refund the difference
+            <code className="text-[0.9em]">captured_refund_failed</code> — refund the difference
             manually via the Pay360 Merchant Portal.
           </p>
         </div>
@@ -113,7 +113,7 @@ export default function AdminGuidePage() {
             push any changes to the shop.
           </p>
           <p>
-            Each row needs a <code className="text-xs">product_id</code> to match against, rows without one, or
+            Each row needs a <code className="text-[0.9em]">product_id</code> to match against, rows without one, or
             with malformed data (e.g. a non-numeric price, an invalid status), are skipped and listed as errors
             rather than silently applied. The sync also refreshes the site&apos;s product cache automatically, so
             changes show up on the shop straight away rather than waiting for the normal cache window.
@@ -123,7 +123,7 @@ export default function AdminGuidePage() {
             Lobster Live, Halibut Steaks, Turbot, Crab | Dressed) don&apos;t have a single price, each size is a
             separate WooCommerce variation. These live in the{" "}
             <strong className="text-navy">&quot;{source.variationsTable}&quot;</strong> table instead, matched by{" "}
-            <code className="text-xs">variation_id</code> (not <code className="text-xs">product_id</code>).
+            <code className="text-[0.9em]">variation_id</code> (not <code className="text-[0.9em]">product_id</code>).
             Sync now pulls both tables in one go.
           </p>
         </div>

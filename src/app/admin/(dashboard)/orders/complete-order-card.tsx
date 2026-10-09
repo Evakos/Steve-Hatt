@@ -49,11 +49,11 @@ export default function CompleteOrderCard({ order }: Props) {
             </span>
           )}
         </p>
-        {slotLabel && <p className="mt-0.5 text-sm text-text-light">{slotLabel}</p>}
-        <p className="mt-0.5 text-sm text-text-light">£{order.total} charged</p>
+        {slotLabel && <p className="mt-0.5 text-base text-text-light">{slotLabel}</p>}
+        <p className="mt-0.5 text-base text-text-light">£{order.total} charged</p>
       </div>
       <div className="flex items-center gap-3">
-        {error && <p className="text-sm text-red-600">{error}</p>}
+        {error && <p className="text-base text-red-600">{error}</p>}
         <button
           type="button"
           onClick={handleComplete}

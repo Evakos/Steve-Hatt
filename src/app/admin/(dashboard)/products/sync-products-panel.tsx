@@ -63,7 +63,7 @@ export default function SyncProductsPanel() {
             {result.updated} updated, {result.errors} error{result.errors === 1 ? "" : "s"}, {result.total} rows read
           </p>
           {problems.length > 0 && (
-            <ul className="mt-3 space-y-1 text-sm">
+            <ul className="mt-3 space-y-1 text-base">
               {problems.map((r, i) => (
                 <li key={i} className={r.status === "error" ? "text-red-600" : "text-text-light"}>
                   {r.kind === "variation" ? "Variation" : "Product"} {r.title || r.productId}: {r.message}

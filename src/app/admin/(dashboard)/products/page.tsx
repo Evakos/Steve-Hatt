@@ -12,28 +12,28 @@ export default function AdminProductsPage() {
         publish status, stock, description, preparation options, origin, sustainability, storage text and Christmas
         pre-order eligibility on the live site.
       </p>
-      <p className="mt-2 text-sm text-text-light">
-        Set a {source.rowWord}&apos;s <code className="text-xs">Stock</code> column to <code className="text-xs">In stock</code> or{" "}
-        <code className="text-xs">Out of stock</code> to switch a product between available and sold out. Out-of-stock
+      <p className="mt-2 text-base text-text-light">
+        Set a {source.rowWord}&apos;s <code className="text-[0.9em]">Stock</code> column to <code className="text-[0.9em]">In stock</code> or{" "}
+        <code className="text-[0.9em]">Out of stock</code> to switch a product between available and sold out. Out-of-stock
         products still show in the shop but are marked &quot;Sold out&quot; and can&apos;t be added to an order.
       </p>
-      <p className="mt-2 text-sm text-text-light">
+      <p className="mt-2 text-base text-text-light">
         Almost every product can be pre-ordered for Christmas by default. Set a {source.rowWord}&apos;s{" "}
-        <code className="text-xs">Excluded from Christmas?</code> column to <code className="text-xs">Excluded</code> to
-        opt a specific product out (<code className="text-xs">Included</code> or blank leaves it eligible).
+        <code className="text-[0.9em]">Excluded from Christmas?</code> column to <code className="text-[0.9em]">Excluded</code> to
+        opt a specific product out (<code className="text-[0.9em]">Included</code> or blank leaves it eligible).
       </p>
-      <p className="mt-2 text-sm text-text-light">
+      <p className="mt-2 text-base text-text-light">
         Christmas items typically cost more around the festive period. Set a {source.rowWord}&apos;s{" "}
-        <code className="text-xs">Christmas price</code> column to override that product&apos;s price, only for
+        <code className="text-[0.9em]">Christmas price</code> column to override that product&apos;s price, only for
         Christmas orders, same as previous years&apos; separate Christmas price list. Leave it blank to charge the
         normal price even at Christmas. It never shows up as a second price anywhere in the shop, it&apos;s applied
         once a customer has chosen to order for Christmas at checkout.
       </p>
-      <p className="mt-2 text-sm text-text-light">
+      <p className="mt-2 text-base text-text-light">
         Weight/size-tiered products (Salmon Whole, Lobster, Halibut Steaks, Turbot, Crab | Dressed) have no single
         price of their own, each size is its own WooCommerce variation. Sync now also reads the{" "}
-        <code className="text-xs">&quot;{source.variationsTable}&quot;</code> table and updates each size&apos;s price from its{" "}
-        <code className="text-xs">price</code> column, matched by <code className="text-xs">variation_id</code>.
+        <code className="text-[0.9em]">&quot;{source.variationsTable}&quot;</code> table and updates each size&apos;s price from its{" "}
+        <code className="text-[0.9em]">price</code> column, matched by <code className="text-[0.9em]">variation_id</code>.
         Christmas pricing isn&apos;t supported for these yet.
       </p>
       <a

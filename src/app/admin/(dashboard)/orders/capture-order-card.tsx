@@ -74,14 +74,14 @@ export default function CaptureOrderCard({ order }: Props) {
             </span>
           )}
         </h2>
-        <span className="text-sm text-text-light">
+        <span className="text-base text-text-light">
           {depositAmount > 0
             ? `Deposit paid: £${depositAmount.toFixed(2)} · Balance held: £${authorisedAmount.toFixed(2)}`
             : `Authorised: £${authorisedAmount.toFixed(2)}`}
         </span>
       </div>
-      {slotLabel && <p className="mt-0.5 text-sm text-text-light">{slotLabel}</p>}
-      <p className={`mt-0.5 text-sm ${authExpired ? "font-medium text-red-600" : authExpiringSoon ? "font-medium text-amber-600" : "text-text-light"}`}>
+      {slotLabel && <p className="mt-0.5 text-base text-text-light">{slotLabel}</p>}
+      <p className={`mt-0.5 text-base ${authExpired ? "font-medium text-red-600" : authExpiringSoon ? "font-medium text-amber-600" : "text-text-light"}`}>
         {daysSinceAuth <= 0
           ? "Authorised today"
           : `Authorised ${daysSinceAuth} day${daysSinceAuth === 1 ? "" : "s"} ago`}
@@ -105,7 +105,7 @@ export default function CaptureOrderCard({ order }: Props) {
               <span className="text-navy">
                 {li.name}
                 {(unitPriceApplied || weightEstimated) && (
-                  <span className="ml-2 text-xs text-text-light">
+                  <span className="ml-2 text-base text-text-light">
                     {[unitPriceApplied && `${unitPriceApplied} applied`, weightEstimated && `est. ${weightEstimated}`]
                       .filter(Boolean)
                       .join(" · ")}
@@ -120,7 +120,7 @@ export default function CaptureOrderCard({ order }: Props) {
                   min="0"
                   value={amounts[li.id]}
                   onChange={(e) => setAmounts((prev) => ({ ...prev, [li.id]: e.target.value }))}
-                  className="w-24 border border-border px-2 py-1 text-right text-sm"
+                  className="w-24 border border-border px-2 py-1 text-right text-base"
                   style={{ borderRadius: "4px" }}
                 />
               </div>
@@ -132,9 +132,9 @@ export default function CaptureOrderCard({ order }: Props) {
       <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
         <span className="text-base font-medium text-navy">
           Final total: £{finalTotal.toFixed(2)}
-          {overAuthorised && <span className="ml-2 text-xs font-normal text-red-600">exceeds balance held</span>}
+          {overAuthorised && <span className="ml-2 text-base font-normal text-red-600">exceeds balance held</span>}
           {!overAuthorised && depositOverpaid && (
-            <span className="ml-2 text-xs font-normal text-amber-600">deposit overpayment will be refunded</span>
+            <span className="ml-2 text-base font-normal text-amber-600">deposit overpayment will be refunded</span>
           )}
         </span>
         <button

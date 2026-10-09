@@ -39,16 +39,16 @@ export default function PreOrderStatusCard({ order }: Props) {
         <span className="font-medium text-navy">
           Order #{order.number}, {order.billing.first_name} {order.billing.last_name}
         </span>
-        <span className="text-sm text-text-light">Estimated: £{Number(estimatedAmount ?? order.total).toFixed(2)}</span>
+        <span className="text-base text-text-light">Estimated: £{Number(estimatedAmount ?? order.total).toFixed(2)}</span>
       </div>
-      {slotLabel && <p className="mt-0.5 text-sm text-text-light">{slotLabel}</p>}
+      {slotLabel && <p className="mt-0.5 text-base text-text-light">{slotLabel}</p>}
       {failed ? (
-        <p className="mt-1 text-sm font-medium text-red-600">
+        <p className="mt-1 text-base font-medium text-red-600">
           Card declined on scheduled charge{failureReason ? `, ${failureReason}` : ""}. Customer has been emailed
           to get in touch; needs follow-up.
         </p>
       ) : (
-        <p className="mt-1 text-sm text-text-light">
+        <p className="mt-1 text-base text-text-light">
           Card verified, will be charged automatically{" "}
           {daysUntilAuth !== null
             ? daysUntilAuth > 0
