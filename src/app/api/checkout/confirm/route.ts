@@ -83,16 +83,8 @@ export async function POST(request: Request) {
       });
     }
     }
-  // Full payment upfront (the default, for every order) - 3DS has confirmed the card, now capture
-  // in full and create the order as paid.
-  const recapture = await cardstream.captureSale({
-    transactionId: result.transactionId,
-    orderRef,
-  });
-  if (recapture.status === "failed") {
-    return NextResponse.json({ error: `Capture failed: ${recapture.reason}` }, { status: 502 });
-  }
-
+  // Full payment upfront (the default, for every order): the single-step charge settles once 3DS
+  // succeeds, so there is nothing to capture. Create the order as paid.
   const { order, repriced: rp } = await createOrderFromPayment(checkout, result.transactionId, orderRef, customerId, { paid: true });
 
   await sendOrderConfirmation({

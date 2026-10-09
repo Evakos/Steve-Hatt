@@ -143,9 +143,9 @@ export async function POST(request: Request) {
       estimatedTotal: repriced.total,
     });
     }
-  // Full payment upfront (the default, for every order): authorise it all, capture
-  // immediately, mark the order as paid. No hold, no capture queue.
-  const auth = await cardstream.authoriseSale({
+  // Full payment upfront (the default, for every order): charge it all in one
+  // step, mark the order as paid. No hold, no capture queue.
+  const charge = await cardstream.chargeSale({
     token: checkout.payment.token,
     amount: repriced.total,
     currency: "GBP",
@@ -153,28 +153,20 @@ export async function POST(request: Request) {
     customerEmail: checkout.customer.email,
   });
 
-  if (auth.status === "declined") {
-    return NextResponse.json({ status: "declined", reason: auth.reason }, { status: 402 });
+  if (charge.status === "declined") {
+    return NextResponse.json({ status: "declined", reason: charge.reason }, { status: 402 });
   }
 
-  if (auth.status === "requires_action") {
+  if (charge.status === "requires_action") {
     return NextResponse.json({
       status: "requires_action",
-      transactionId: auth.transactionId,
-      challenge: auth.challenge,
+      transactionId: charge.transactionId,
+      challenge: charge.challenge,
       orderRef,
     });
   }
 
-  const captureResult = await cardstream.captureSale({
-    transactionId: auth.transactionId,
-    orderRef,
-  });
-  if (captureResult.status === "failed") {
-    return NextResponse.json({ error: `Capture failed: ${captureResult.reason}` }, { status: 502 });
-  }
-
-  const { order } = await createOrderFromPayment(checkout, auth.transactionId, orderRef, customerId, { paid: true });
+  const { order } = await createOrderFromPayment(checkout, charge.transactionId, orderRef, customerId, { paid: true });
 
   // A failed email shouldn't fail the order - payment has already moved.
   await sendOrderConfirmation({

@@ -6,6 +6,8 @@ import type { CardstreamClient } from "./types";
 
 export type {
   CardstreamClient,
+  ChargeSaleInput,
+  ChargeSaleResult,
   AuthoriseSaleInput,
   AuthoriseSaleResult,
   ConfirmThreeDSInput,

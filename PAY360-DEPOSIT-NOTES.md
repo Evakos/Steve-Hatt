@@ -49,9 +49,10 @@ sequenceDiagram
    the tokenised card-capture flow (needed for every operation, the deposit included).
 2. **Does Account Verification trigger 3DS?** `verifyCard` currently assumes no challenge. If it can challenge,
    we need a `requires_action` variant plus a confirm step.
-3. **Combined "sale" call?** Can we authorise + settle the deposit in one call, or must it be `authorise` then
-   `capture` (two calls)? Partial capture is already confirmed unsupported, so the deposit is its own
-   transaction of exactly the deposit amount.
+3. **Combined "sale" call?** ANSWERED from docs.pay360.com/cards/authorisations: yes. A normal payment
+   authorises and settles in one request, and only a request with `"deferred": "true"` becomes a hold that needs a
+   later capture. Every order is now paid in full at checkout through a single `chargeSale` call (mock built, real
+   client still to do). Still to confirm: how 3DS behaves on a non-deferred payment, and refund timing and fees.
 4. **Webhook authentication** - the current HMAC-signature assumption is wrong. Pay360 authenticates inbound
    notifications by **source IP (185.161.164.0/22)**. Confirm this before wiring live webhooks.
 
@@ -61,3 +62,8 @@ sequenceDiagram
 - Replace `verifyWebhookSignature` with a source-IP allowlist check.
 - Confirm whether the reusable token from `verifyCard` can be spent unattended (merchant-initiated, no 3DS) -
   this is the mechanism the scheduled balance re-authorisation relies on.
+
+## Update: every order is paid in full at checkout
+
+The shop no longer holds and captures normal orders. `chargeSale` (single-step payment, `deferred` omitted) takes the
+full total at checkout for every order. The deposit model above remains in the code behind a flag, off by default.

@@ -3,6 +3,7 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 import { getServerEnv } from "@/lib/env";
 import type {
   CardstreamClient,
+  ChargeSaleInput,
   AuthoriseSaleInput,
   CaptureSaleInput,
   ConfirmThreeDSInput,
@@ -49,6 +50,15 @@ import type {
  * capture/refund fix); replace with an IP-range check before this goes live against real webhooks.
  */
 export const realCardstreamClient: CardstreamClient = {
+  async chargeSale(input: ChargeSaleInput) {
+    void input;
+    throw new Error(
+      "Cardstream single-step payment not implemented - requires Pay360 developer portal access for the Hosted " +
+        "Payment Fields token flow. Pay360 settles immediately when the request omits the deferred flag " +
+        "(docs.pay360.com/cards/authorisations). See plan Phase D. Set CARDSTREAM_MOCK=true for dev."
+    );
+  },
+
   async authoriseSale(input: AuthoriseSaleInput) {
     void input;
     throw new Error(

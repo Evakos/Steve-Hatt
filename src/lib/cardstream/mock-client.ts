@@ -2,6 +2,7 @@ import "server-only";
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { getServerEnv } from "@/lib/env";
 import type {
+  ChargeSaleInput,
   AuthoriseSaleInput,
   CaptureSaleInput,
   ConfirmThreeDSInput,
@@ -30,6 +31,16 @@ import type {
  * "mock_mt_decline" on authoriseSaleWithToken.
  */
 export const mockCardstreamClient: CardstreamClient = {
+  async chargeSale(input: ChargeSaleInput) {
+    if (input.token === "tok_decline") {
+      return { status: "declined", reason: "Card declined (mock)" };
+    }
+    if (input.token === "tok_3ds") {
+      return { status: "requires_action", transactionId: `mock_${Date.now()}`, challenge: { mock: true } };
+    }
+    return { status: "paid", transactionId: `mock_${Date.now()}` };
+  },
+
   async authoriseSale(input: AuthoriseSaleInput) {
     if (input.token === "tok_decline") {
       return { status: "declined", reason: "Card declined (mock)" };

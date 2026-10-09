@@ -59,6 +59,7 @@ const createFromVerification = { createPreOrderFromVerification: vi.fn().mockRes
 vi.mock("@/lib/checkout/create-preorder-from-verification", () => createFromVerification);
 
 const cardstream = {
+  chargeSale: vi.fn(),
   authoriseSale: vi.fn(),
   captureSale: vi.fn(),
   verifyCard: vi.fn(),
@@ -89,8 +90,7 @@ function normalBody() {
 describe("POST /api/checkout", () => {
   it("charges a Christmas order in full upfront when the deposit flow is off (default)", async () => {
     flags.getChristmasUseDepositFlow.mockResolvedValue(false);
-    cardstream.authoriseSale.mockResolvedValue({ status: "authorised", transactionId: "txn_full" });
-    cardstream.captureSale.mockResolvedValue({ status: "captured", transactionId: "txn_full" });
+    cardstream.chargeSale.mockResolvedValue({ status: "paid", transactionId: "txn_full" });
 
     const { POST } = await import("./route");
     const res = await POST(new Request("https://example.test/api/checkout", {
@@ -101,8 +101,9 @@ describe("POST /api/checkout", () => {
     expect(res.status).toBe(200);
     const json = await res.json();
     expect(json).toMatchObject({ status: "authorised", paidInFull: true, orderNumber: "1001" });
-    expect(cardstream.authoriseSale).toHaveBeenCalledWith(expect.objectContaining({ amount: 42 }));
-    expect(cardstream.captureSale).toHaveBeenCalledWith(expect.objectContaining({ transactionId: "txn_full" }));
+    expect(cardstream.chargeSale).toHaveBeenCalledWith(expect.objectContaining({ amount: 42 }));
+    expect(cardstream.authoriseSale).not.toHaveBeenCalled();
+    expect(cardstream.captureSale).not.toHaveBeenCalled();
     expect(createFromPayment.createOrderFromPayment).toHaveBeenCalledWith(expect.anything(), "txn_full", expect.any(String), null, { paid: true });
     expect(email.sendOrderConfirmation).toHaveBeenCalledWith(expect.objectContaining({ paidInFull: true }));
     expect(createFromVerification.createPreOrderFromVerification).not.toHaveBeenCalled();
@@ -110,7 +111,7 @@ describe("POST /api/checkout", () => {
 
   it("handles 3DS on a full-upfront Christmas order", async () => {
     flags.getChristmasUseDepositFlow.mockResolvedValue(false);
-    cardstream.authoriseSale.mockResolvedValue({ status: "requires_action", transactionId: "txn_3ds", challenge: { mock: true } });
+    cardstream.chargeSale.mockResolvedValue({ status: "requires_action", transactionId: "txn_3ds", challenge: { mock: true } });
 
     const { POST } = await import("./route");
     const res = await POST(new Request("https://example.test/api/checkout", {
@@ -153,8 +154,7 @@ describe("POST /api/checkout", () => {
   });
 
   it("charges a normal (non-Christmas) order in full at checkout too", async () => {
-    cardstream.authoriseSale.mockResolvedValue({ status: "authorised", transactionId: "txn_normal" });
-    cardstream.captureSale.mockResolvedValue({ status: "captured" });
+    cardstream.chargeSale.mockResolvedValue({ status: "paid", transactionId: "txn_normal" });
 
     const { POST } = await import("./route");
     const res = await POST(new Request("https://example.test/api/checkout", {
@@ -166,10 +166,27 @@ describe("POST /api/checkout", () => {
     const json = await res.json();
     expect(json).toMatchObject({ status: "authorised", orderNumber: "1001", paidInFull: true });
     expect(json.depositAmount).toBeUndefined();
-    expect(cardstream.captureSale).toHaveBeenCalledWith(expect.objectContaining({ transactionId: "txn_normal" }));
+    expect(cardstream.chargeSale).toHaveBeenCalledWith(expect.objectContaining({ amount: 42 }));
+    expect(cardstream.authoriseSale).not.toHaveBeenCalled();
+    expect(cardstream.captureSale).not.toHaveBeenCalled();
     expect(createFromPayment.createOrderFromPayment).toHaveBeenCalledWith(
       expect.anything(), "txn_normal", expect.any(String), null, { paid: true }
     );
     expect(email.sendOrderConfirmation).toHaveBeenCalledWith(expect.objectContaining({ paidInFull: true }));
+  });
+
+  it("returns 402 and creates no order when the card is declined", async () => {
+    cardstream.chargeSale.mockResolvedValue({ status: "declined", reason: "Card declined (mock)" });
+
+    const { POST } = await import("./route");
+    const res = await POST(new Request("https://example.test/api/checkout", {
+      method: "POST",
+      body: JSON.stringify(normalBody()),
+    }));
+
+    expect(res.status).toBe(402);
+    expect(await res.json()).toMatchObject({ status: "declined" });
+    expect(createFromPayment.createOrderFromPayment).not.toHaveBeenCalled();
+    expect(email.sendOrderConfirmation).not.toHaveBeenCalled();
   });
 });

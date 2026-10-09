@@ -15,6 +15,20 @@ export type AuthoriseSaleResult =
   | { status: "requires_action"; transactionId: string; challenge: unknown }
   | { status: "declined"; reason: string };
 
+/**
+ * Single-step payment: authorise and settle in one request (Pay360's default behaviour when the
+ * `deferred` flag is omitted, docs.pay360.com/cards/authorisations). Used to charge every order in
+ * full at checkout - no hold, no 7-day expiry, nothing to capture afterwards.
+ */
+export type ChargeSaleInput = AuthoriseSaleInput;
+
+export type ChargeSaleResult =
+  | { status: "paid"; transactionId: string }
+  /** 3DS challenge needed. Once the shopper completes it and confirmThreeDS succeeds, the payment
+   * is treated as settled (assumed: Pay360's docs don't spell out 3DS on a non-deferred payment). */
+  | { status: "requires_action"; transactionId: string; challenge: unknown }
+  | { status: "declined"; reason: string };
+
 export interface ConfirmThreeDSInput {
   transactionId: string;
   threeDSResponse: unknown;
@@ -93,6 +107,7 @@ export type RefundSaleResult =
   | { status: "failed"; reason: string };
 
 export interface CardstreamClient {
+  chargeSale(input: ChargeSaleInput): Promise<ChargeSaleResult>;
   authoriseSale(input: AuthoriseSaleInput): Promise<AuthoriseSaleResult>;
   confirmThreeDS(input: ConfirmThreeDSInput): Promise<ConfirmThreeDSResult>;
   captureSale(input: CaptureSaleInput): Promise<CaptureSaleResult>;
