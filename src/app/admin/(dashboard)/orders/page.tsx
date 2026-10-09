@@ -17,7 +17,7 @@ export default async function AdminOrdersPage() {
     <div>
       <h1 className="font-serif text-2xl font-bold text-navy">Orders</h1>
       <p className="mt-2 text-sm text-text-light">
-        Every order by stage: awaiting capture, being prepared, and any Christmas pre-orders still pending.
+        Orders being prepared, plus anything awaiting payment capture or any Christmas pre-orders still pending.
       </p>
 
       <div className="mt-6 grid items-start gap-6 md:grid-cols-2">
@@ -37,24 +37,26 @@ export default async function AdminOrdersPage() {
           </section>
         )}
 
+        {/* Only shown when something is actually held, so the capture explanation never appears for nothing. */}
+        {pendingCapture.length > 0 && (
         <section className="border border-border bg-white p-6" style={{ borderRadius: "5px" }}>
           <SectionHeading title="Awaiting capture" count={pendingCapture.length} />
           <p className="mt-2 text-sm leading-relaxed text-text-light">
             The card is held but not charged. Enter the final weighed price per item, then capture to take payment for the
             confirmed amount. Holds expire 7 days after authorisation, so capture the oldest orders (shown first) first.
           </p>
-          {pendingCapture.length === 0 ? (
-            <p className="mt-6 text-sm text-text-light">No orders awaiting capture right now.</p>
-          ) : (
-            <div className="mt-5 space-y-4">
-              {pendingCapture.map((order) => (
-                <CaptureOrderCard key={order.id} order={order} />
-              ))}
-            </div>
-          )}
+          <div className="mt-5 space-y-4">
+            {pendingCapture.map((order) => (
+              <CaptureOrderCard key={order.id} order={order} />
+            ))}
+          </div>
         </section>
+        )}
 
-        <section className="border border-border bg-white p-6" style={{ borderRadius: "5px" }}>
+        <section
+          className={`border border-border bg-white p-6 ${pendingCapture.length === 0 ? "md:col-span-2" : ""}`}
+          style={{ borderRadius: "5px" }}
+        >
           <SectionHeading title="Orders being prepared" count={processing.length} />
           <p className="mt-2 text-sm leading-relaxed text-text-light">
             Already charged and being prepared. Mark complete once the order has been collected or delivered.
