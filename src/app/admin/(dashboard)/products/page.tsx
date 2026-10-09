@@ -1,48 +1,48 @@
 import SyncProductsPanel from "./sync-products-panel";
 import ChristmasSettingsPanel from "./christmas-settings-panel";
-
-const SPREADSHEET_URL = "https://docs.google.com/spreadsheets/d/1u0g6qC-xsbrjuhRpha80i8MvZdM5frfKhX9fG0a_VUY/edit?usp=sharing";
+import { getProductSourceInfo } from "@/lib/product-source";
 
 export default function AdminProductsPage() {
+  const source = getProductSourceInfo();
   return (
     <>
-      <h1 className="font-serif text-2xl font-bold text-navy">Sync products from Google Sheet</h1>
+      <h1 className="font-serif text-2xl font-bold text-navy">Sync products from {source.name}</h1>
       <p className="mt-1 text-base text-text-light">
-        Pulls the &quot;Products&quot; tab of the shared spreadsheet and updates each product&apos;s title, price,
+        Pulls the &quot;{source.productsTable}&quot; table from {source.name} and updates each product&apos;s title, price,
         publish status, stock, description, preparation options, origin, sustainability, storage text and Christmas
         pre-order eligibility on the live site.
       </p>
       <p className="mt-2 text-sm text-text-light">
-        Set a row&apos;s <code className="text-xs">Stock</code> column to <code className="text-xs">In stock</code> or{" "}
+        Set a {source.rowWord}&apos;s <code className="text-xs">Stock</code> column to <code className="text-xs">In stock</code> or{" "}
         <code className="text-xs">Out of stock</code> to switch a product between available and sold out. Out-of-stock
         products still show in the shop but are marked &quot;Sold out&quot; and can&apos;t be added to an order.
       </p>
       <p className="mt-2 text-sm text-text-light">
-        Almost every product can be pre-ordered for Christmas by default. Set a row&apos;s{" "}
+        Almost every product can be pre-ordered for Christmas by default. Set a {source.rowWord}&apos;s{" "}
         <code className="text-xs">Excluded from Christmas?</code> column to <code className="text-xs">Excluded</code> to
         opt a specific product out (<code className="text-xs">Included</code> or blank leaves it eligible).
       </p>
       <p className="mt-2 text-sm text-text-light">
-        Christmas items typically cost more around the festive period. Set a row&apos;s{" "}
+        Christmas items typically cost more around the festive period. Set a {source.rowWord}&apos;s{" "}
         <code className="text-xs">Christmas price</code> column to override that product&apos;s price, only for
-        Christmas orders, same as previous years&apos; separate Christmas price sheet. Leave it blank to charge the
+        Christmas orders, same as previous years&apos; separate Christmas price list. Leave it blank to charge the
         normal price even at Christmas. It never shows up as a second price anywhere in the shop, it&apos;s applied
         once a customer has chosen to order for Christmas at checkout.
       </p>
       <p className="mt-2 text-sm text-text-light">
         Weight/size-tiered products (Salmon Whole, Lobster, Halibut Steaks, Turbot, Crab | Dressed) have no single
         price of their own, each size is its own WooCommerce variation. Sync now also reads the{" "}
-        <code className="text-xs">&quot;Variations&quot;</code> tab and updates each size&apos;s price from its{" "}
+        <code className="text-xs">&quot;{source.variationsTable}&quot;</code> table and updates each size&apos;s price from its{" "}
         <code className="text-xs">price</code> column, matched by <code className="text-xs">variation_id</code>.
         Christmas pricing isn&apos;t supported for these yet.
       </p>
       <a
-        href={SPREADSHEET_URL}
+        href={source.url}
         target="_blank"
         rel="noopener noreferrer"
         className="mt-2 inline-block text-base text-navy underline hover:text-lobster"
       >
-        Open the spreadsheet →
+        {source.linkLabel} →
       </a>
 
       <SyncProductsPanel />

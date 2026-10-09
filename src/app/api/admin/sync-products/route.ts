@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { revalidateTag } from "next/cache";
 import { isStaffAuthenticated } from "@/lib/staff-auth";
-import { readSheetAsRows } from "@/lib/google-sheets";
+import { readProductRows } from "@/lib/product-source";
 import { updateWooProduct, updateWooProductVariation, PRODUCTS_TAG } from "@/lib/woocommerce/products";
 
 const META_KEYS = {
@@ -38,7 +38,7 @@ export async function POST() {
 
   let rows: Record<string, string>[];
   try {
-    rows = await readSheetAsRows("Products");
+    rows = await readProductRows("Products");
   } catch (err) {
     return NextResponse.json({ error: err instanceof Error ? err.message : "Failed to read the sheet" }, { status: 502 });
   }
@@ -213,7 +213,7 @@ export async function POST() {
   // The "Variations" tab lets staff edit those prices the same way as the main Products tab.
   let variationRows: Record<string, string>[] = [];
   try {
-    variationRows = await readSheetAsRows("Variations");
+    variationRows = await readProductRows("Variations");
   } catch (err) {
     results.push({
       kind: "variation",

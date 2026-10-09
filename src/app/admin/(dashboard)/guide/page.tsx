@@ -1,10 +1,11 @@
-const SPREADSHEET_URL = "https://docs.google.com/spreadsheets/d/1u0g6qC-xsbrjuhRpha80i8MvZdM5frfKhX9fG0a_VUY/edit?usp=sharing";
+import { getProductSourceInfo } from "@/lib/product-source";
 
 export default function AdminGuidePage() {
+  const source = getProductSourceInfo();
   return (
     <div className="max-w-3xl">
       <h1 className="font-serif text-2xl font-bold text-navy">Admin Guide</h1>
-      <p className="mt-1 text-base text-text-light">How orders, payments, and the product spreadsheet sync work.</p>
+      <p className="mt-1 text-base text-text-light">How orders, payments, and the product sync work.</p>
 
       <section className="mt-8 border border-border bg-white p-5" style={{ borderRadius: "5px" }}>
         <h2 className="font-medium text-navy">Christmas pre-orders</h2>
@@ -26,13 +27,13 @@ export default function AdminGuidePage() {
           </p>
           <p>
             Almost every product can be pre-ordered for Christmas by default. A few can be marked as
-            excluded (see the spreadsheet sync below). Customers choose Standard or Christmas at
+            excluded (see the product sync below). Customers choose Standard or Christmas at
             checkout, same as before — if their basket has an excluded item, Christmas is blocked
             with a message telling them to remove it.
           </p>
           <p>
             The Christmas on/off switch and per-product Christmas prices are managed on the{" "}
-            <strong className="text-navy">Products</strong> page, alongside the spreadsheet sync.
+            <strong className="text-navy">Products</strong> page, alongside the product sync.
             Both take effect immediately, no redeploy needed.
           </p>
         </div>
@@ -99,16 +100,16 @@ export default function AdminGuidePage() {
       </section>
 
       <section className="mt-6 border border-border bg-white p-5" style={{ borderRadius: "5px" }}>
-        <h2 className="font-medium text-navy">Product spreadsheet sync</h2>
+        <h2 className="font-medium text-navy">Product sync</h2>
         <div className="mt-3 space-y-3 text-base leading-relaxed text-text-light">
           <p>
             Product details (title, price, stock, status, description, tag, preparation, origin, sustainability, storage,
             Christmas price, Christmas deposit) can be edited in the{" "}
-            <a href={SPREADSHEET_URL} target="_blank" rel="noopener noreferrer" className="text-navy underline hover:text-lobster">
-              shared Google Sheet
+            <a href={source.url} target="_blank" rel="noopener noreferrer" className="text-navy underline hover:text-lobster">
+              {source.name}
             </a>{" "}
             rather than logging into WordPress. On the <strong className="text-navy">Products</strong> page, click{" "}
-            <strong className="text-navy">Sync now</strong> to pull the sheet&apos;s &quot;Products&quot; tab and
+            <strong className="text-navy">Sync now</strong> to pull the &quot;{source.productsTable}&quot; table and
             push any changes to the shop.
           </p>
           <p>
@@ -120,10 +121,10 @@ export default function AdminGuidePage() {
           <p>
             <strong className="text-navy">Weight/size-tiered products</strong> (Salmon Whole, Lobster Cooked,
             Lobster Live, Halibut Steaks, Turbot, Crab | Dressed) don&apos;t have a single price, each size is a
-            separate WooCommerce variation. These live on the sheet&apos;s{" "}
-            <strong className="text-navy">&quot;Variations&quot;</strong> tab instead, matched by{" "}
+            separate WooCommerce variation. These live in the{" "}
+            <strong className="text-navy">&quot;{source.variationsTable}&quot;</strong> table instead, matched by{" "}
             <code className="text-xs">variation_id</code> (not <code className="text-xs">product_id</code>).
-            Sync now pulls both tabs in one go.
+            Sync now pulls both tables in one go.
           </p>
         </div>
       </section>
