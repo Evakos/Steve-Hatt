@@ -30,7 +30,19 @@ export default function Testimonials() {
               <blockquote className="mt-4 flex-1 text-base leading-relaxed text-text">{t.quote}</blockquote>
               <figcaption className="mt-5 border-t border-border pt-4">
                 <p className="text-sm font-medium text-navy">{t.name}</p>
-                {t.detail && <p className="text-sm text-text-light">{t.detail}</p>}
+                {t.source ? (
+                  <p className="text-sm text-text-light">
+                    {t.href ? (
+                      <a href={t.href} target="_blank" rel="noopener noreferrer" className="underline decoration-lobster/50 underline-offset-2 hover:text-navy hover:decoration-lobster">
+                        {t.source}
+                      </a>
+                    ) : (
+                      t.source
+                    )}
+                  </p>
+                ) : (
+                  t.detail && <p className="text-sm text-text-light">{t.detail}</p>
+                )}
               </figcaption>
             </figure>
           ))}
