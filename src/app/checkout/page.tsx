@@ -342,7 +342,7 @@ export default function CheckoutPage() {
               {confirmedOrder.itemCount} item{confirmedOrder.itemCount > 1 ? "s" : ""} ·{" "}
               {confirmedOrder.slot.type === "delivery" ? "Delivery" : "Collection"} ·{" "}
               {submitState.paidInFull
-                ? "Paid in full"
+                ? "Paid"
                 : `£${submitState.estimatedTotal.toFixed(2)} (estimated)`}
             </p>
             {submitState.depositAmount && !submitState.paidInFull ? (
@@ -359,7 +359,7 @@ export default function CheckoutPage() {
                 <Gift className={`mt-0.5 h-4 w-4 shrink-0 ${confirmedOrder.isChristmas ? "text-[#1a3a2a]" : "text-teal"}`} />
                 <p className={`text-xs ${confirmedOrder.isChristmas ? "text-[#1a3a2a]/70" : "text-text-light"}`}>
                   {submitState.paidInFull
-                    ? `Your payment of £${submitState.estimatedTotal.toFixed(2)} has been taken in full. We'll be in touch if anything changes once your order is prepared.`
+                    ? `Your payment of £${submitState.estimatedTotal.toFixed(2)} has been taken. We'll be in touch if anything changes once your order is prepared.`
                     : submitState.depositAmount
                     ? `Your £${submitState.depositAmount.toFixed(2)} deposit is paid. The remaining balance will be confirmed and settled once your order is weighed and prepared, a few days before your ${confirmedOrder.slot.type === "delivery" ? "delivery" : "collection"} date.`
                     : "You haven't been charged yet. We've verified your card and will take payment automatically a few days before your delivery or collection date, once your order is weighed, no action needed from you."}
