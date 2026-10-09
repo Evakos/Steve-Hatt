@@ -1,3 +1,4 @@
+import Testimonials from "@/components/testimonials";
 import Image from "next/image";
 import Link from "next/link";
 import { getAllProducts } from "@/lib/products";
@@ -232,6 +233,8 @@ export default async function Home() {
           </div>
         </div>
       </section>
+
+      <Testimonials />
 
       {/* Christmas pre-orders - only while Christmas ordering is active site-wide (see /admin/guide).
           Deliberately styled as a festive band distinct from every other section on the page: the
