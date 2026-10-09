@@ -8,7 +8,7 @@ export default function Testimonials() {
   const hasPlaceholders = testimonials.some((t) => t.placeholder);
 
   return (
-    <section className="bg-cream">
+    <section className="overflow-hidden bg-cream">
       <div className="mx-auto max-w-6xl px-6 py-20">
         <div className="mb-10 text-center">
           <p className="text-xs tracking-widest text-text-light uppercase">Kind words</p>
@@ -19,11 +19,19 @@ export default function Testimonials() {
             </p>
           )}
         </div>
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="relative">
+          {/* Full-bleed navy band that starts partway down the first row of cards (so the cards poke
+              above it) and fades out to the page colour. */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -right-[50vw] -bottom-20 -left-[50vw] top-24"
+            style={{ background: "linear-gradient(to bottom, #242E67 0%, rgba(36,46,103,0.55) 40%, rgba(36,46,103,0) 100%)" }}
+          />
+        <div className="relative grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {testimonials.map((t, i) => (
             <figure
               key={i}
-              className="flex flex-col border border-border bg-white p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
+              className="flex flex-col border border-border bg-white p-6 shadow-lg transition-all hover:-translate-y-0.5 hover:shadow-xl"
               style={{ borderRadius: "14px" }}
             >
               <Quote className="h-6 w-6 text-lobster" aria-hidden />
@@ -46,6 +54,7 @@ export default function Testimonials() {
               </figcaption>
             </figure>
           ))}
+        </div>
         </div>
       </div>
     </section>
