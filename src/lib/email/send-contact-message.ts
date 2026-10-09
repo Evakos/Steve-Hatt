@@ -24,7 +24,7 @@ export async function sendContactMessage(input: ContactMessageInput): Promise<vo
     ${emailHeading("New contact form message")}
     <p><strong>From:</strong> ${name} (${email})</p>
     <p style="white-space:pre-wrap;">${message}</p>
-  `);
+  `, "staff");
 
   await sendEmail({
     from: `Steve Hatt Fishmongers <${FROM_ADDRESS}>`,

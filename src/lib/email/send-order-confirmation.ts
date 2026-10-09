@@ -211,10 +211,10 @@ export async function sendAdminNewOrderNotification(input: AdminNewOrderNotifica
       <tr><td style="padding:8px 0 0;font-weight:700;color:${COLORS.navy};border-top:1px solid ${COLORS.border};">${hasDeposit ? "Balance to capture on collection (estimate)" : "Estimated total (held, not yet charged)"}</td><td style="padding:8px 0 0;text-align:right;font-weight:700;color:${COLORS.navy};border-top:1px solid ${COLORS.border};">&pound;${(hasDeposit ? balance : repriced.total).toFixed(2)}</td></tr>`}
     </table>
     ${isPaidInFull
-      ? `<p style="margin-top:16px;font-size:13px;color:${COLORS.textLight};">This order is already paid - no capture needed.</p>`
+      ? `<p style="margin-top:16px;font-size:13px;color:${COLORS.textLight};">This order is already paid in full.</p>`
       : `<p style="margin-top:16px;font-size:13px;color:${COLORS.textLight};">Once weighed and prepared, capture the final price on the orders page.</p>`}
     ${emailButton(`${SITE_URL}/admin/orders`, "Go to admin orders")}
-  `);
+  `, "staff");
 
   try {
     await sendEmail({
@@ -287,7 +287,7 @@ export async function sendAdminPreOrderAuthFailedAlert(input: AdminPreOrderAuthF
     <p>Scheduled re-authorisation failed for ${customerName} (${customerEmail}): ${reason}</p>
     <p style="font-size:13px;color:${COLORS.textLight};">The customer has been asked to get in touch. This order
     won't appear in the normal capture queue until payment is resolved.</p>
-  `);
+  `, "staff");
 
   try {
     await sendEmail({
@@ -332,7 +332,7 @@ export async function sendExpiringAuthAlert(input: ExpiringAuthAlertInput) {
       ${rows}
     </table>
     ${emailButton(`${SITE_URL}/admin/orders`, "Go to admin orders")}
-  `);
+  `, "staff");
 
   try {
     await sendEmail({
