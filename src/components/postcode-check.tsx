@@ -1,17 +1,33 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { MapPin, Truck, Store, CheckCircle, XCircle, Loader2, Mail } from "lucide-react";
-import { DELIVERY_ZONES, normalisePostcode, extractOutcode } from "@/lib/delivery-zones";
+import { useEffect, useRef, useState } from "react";
+import { MapPin, Truck, Store, CheckCircle, XCircle, Loader2, Mail, UserPlus, X } from "lucide-react";
+import { normalisePostcode, extractOutcode, isInDeliveryZone, formatFullPostcode } from "@/lib/delivery-zones";
 
 type SendState = "idle" | "sending" | "sent" | "error";
 
-/** Shown under a delivery result for visitors who are not signed in: one field, and the existing
- * magic-link sign-in does the rest (the first click creates the account). The postcode they just
- * checked travels in the link and is saved to the new account, so checkout starts filled in. */
+/**
+ * A one-line link under a delivery result that opens a small pop-up, so the hero never grows. In the
+ * pop-up the visitor enters an email and the existing magic-link sign-in does the rest (the first
+ * click creates the account). The postcode they just checked travels in the link and is saved to
+ * the new account, so checkout starts filled in.
+ */
 function AccountPrompt({ postcode }: { postcode: string }) {
+  const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [state, setState] = useState<SendState>("idle");
+  const inputRef = useRef<HTMLInputElement>(null);
+  const saved = formatFullPostcode(postcode);
+
+  useEffect(() => {
+    if (!open) return;
+    inputRef.current?.focus();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
 
   async function send() {
     setState("sending");
@@ -27,59 +43,101 @@ function AccountPrompt({ postcode }: { postcode: string }) {
     }
   }
 
-  if (state === "sent") {
-    return (
-      <div className="mt-4 bg-lobster-light p-4 text-sm text-navy" style={{ borderRadius: "12px" }}>
-        <p className="font-medium">Check your inbox</p>
-        <p className="mt-1 text-text-light">
-          We have sent a sign-in link to {email.trim()}. Click it and your account is ready, with your postcode saved.
-        </p>
-      </div>
-    );
-  }
-
   return (
-    <form
-      className="mt-4 bg-lobster-light p-4"
-      style={{ borderRadius: "12px" }}
-      onSubmit={(e) => {
-        e.preventDefault();
-        void send();
-      }}
-    >
-      <p className="text-sm font-medium text-navy">Save time at checkout</p>
-      <p className="mt-0.5 text-xs leading-relaxed text-text-light">
-        Enter your email and we will send a sign-in link, and remember your postcode. No password needed.
-      </p>
-      <div className="mt-3 flex gap-2">
-        <div className="relative flex-1">
-          <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-light" aria-hidden />
-          <input
-            type="email"
-            required
-            placeholder="Your email"
-            value={email}
-            onChange={(e) => {
-              setEmail(e.target.value);
-              if (state === "error") setState("idle");
-            }}
-            className="w-full border border-border bg-white py-2.5 pl-9 pr-3 text-sm text-navy outline-none placeholder:text-text-light focus:border-navy"
-            style={{ borderRadius: "6px" }}
-          />
-        </div>
-        <button
-          type="submit"
-          disabled={state === "sending"}
-          className="bg-lobster px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#e2573b] disabled:cursor-wait disabled:opacity-70"
-          style={{ borderRadius: "6px" }}
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="mt-1 inline-flex items-center gap-1.5 text-xs font-medium text-lobster underline-offset-2 hover:underline"
+      >
+        <UserPlus className="h-3.5 w-3.5" aria-hidden />
+        Save this postcode for faster checkout
+      </button>
+
+      {open && (
+        <div
+          className="fixed inset-0 z-[70] flex items-center justify-center bg-navy/60 p-4 backdrop-blur-sm"
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget) setOpen(false);
+          }}
         >
-          {state === "sending" ? <Loader2 className="h-4 w-4 animate-spin" /> : "Send link"}
-        </button>
-      </div>
-      {state === "error" && (
-        <p className="mt-2 text-xs text-lobster">That did not work. Please check the email address and try again.</p>
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="account-prompt-title"
+            className="relative w-full max-w-sm bg-white p-6 shadow-2xl"
+            style={{ borderRadius: "16px" }}
+          >
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              className="absolute right-3 top-3 text-text-light transition-colors hover:text-navy"
+              aria-label="Close"
+            >
+              <X className="h-5 w-5" />
+            </button>
+
+            {state === "sent" ? (
+              <div className="py-2 text-center">
+                <p id="account-prompt-title" className="font-serif text-xl font-semibold text-navy">Check your inbox</p>
+                <p className="mt-2 text-sm leading-relaxed text-text-light">
+                  We have sent a sign-in link to <strong className="text-navy">{email.trim()}</strong>. Click it and
+                  your account is ready{saved ? `, with ${saved} saved` : ""}.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setOpen(false)}
+                  className="mt-5 bg-lobster px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#e2573b]"
+                  style={{ borderRadius: "6px" }}
+                >
+                  Done
+                </button>
+              </div>
+            ) : (
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  void send();
+                }}
+              >
+                <p id="account-prompt-title" className="font-serif text-xl font-semibold text-navy">Save time at checkout</p>
+                <p className="mt-2 text-sm leading-relaxed text-text-light">
+                  Enter your email and we will send a sign-in link. We will remember your postcode
+                  {saved ? ` (${saved})` : ""}, your details and your orders. No password needed.
+                </p>
+                <div className="relative mt-4">
+                  <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-light" aria-hidden />
+                  <input
+                    ref={inputRef}
+                    type="email"
+                    required
+                    placeholder="Your email"
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      if (state === "error") setState("idle");
+                    }}
+                    className="w-full border border-border bg-white py-3 pl-9 pr-3 text-sm text-navy outline-none placeholder:text-text-light focus:border-navy"
+                    style={{ borderRadius: "6px" }}
+                  />
+                </div>
+                {state === "error" && (
+                  <p className="mt-2 text-xs text-lobster">That did not work. Please check the email address and try again.</p>
+                )}
+                <button
+                  type="submit"
+                  disabled={state === "sending"}
+                  className="mt-4 flex w-full items-center justify-center bg-lobster px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-[#e2573b] disabled:cursor-wait disabled:opacity-70"
+                  style={{ borderRadius: "6px" }}
+                >
+                  {state === "sending" ? <Loader2 className="h-4 w-4 animate-spin" /> : "Send sign-in link"}
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
       )}
-    </form>
+    </>
   );
 }
 
@@ -111,7 +169,9 @@ export default function PostcodeCheck() {
     const normalised = normalisePostcode(input);
     const code = extractOutcode(normalised);
 
-    if (!code || normalised.length < 3) {
+    // "N1 8" would read as the real outward code N18, so a postcode typed with a space must be complete.
+    const halfTyped = /\s/.test(input.trim()) && !formatFullPostcode(input);
+    if (!code || normalised.length < 3 || halfTyped) {
       setState("invalid");
       return;
     }
@@ -121,7 +181,7 @@ export default function PostcodeCheck() {
 
     // Simulate a brief check
     setTimeout(() => {
-      const delivers = DELIVERY_ZONES.some((zone) => code.startsWith(zone));
+      const delivers = isInDeliveryZone(code);
       setState(delivers ? "delivers" : "collect-only");
     }, 600);
   }
