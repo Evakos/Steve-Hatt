@@ -22,14 +22,14 @@ export default function AdminGuidePage() {
         <h2 className="mt-2 font-serif text-xl font-bold text-navy">
           A fast, modern shop that the Steve Hatt team can run themselves.
         </h2>
-        <p className="mt-3 max-w-3xl text-sm leading-relaxed text-text-light">
+        <p className="mt-3 text-sm leading-relaxed text-text-light">
           WordPress and WooCommerce stay as the back shop, where products and orders live. Customers use a quicker
           shopfront on top of it, and the team manages products from Airtable and orders from this admin, with
           straightforward payments.
         </p>
-        <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-5 grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {pillars.map((p) => (
-            <div key={p.title} className="bg-white p-4" style={{ borderRadius: "5px" }}>
+            <div key={p.title} className="w-full bg-white p-5" style={{ borderRadius: "5px" }}>
               <p className="text-sm font-medium text-navy">{p.title}</p>
               <p className="mt-1 text-sm leading-relaxed text-text-light">{p.text}</p>
             </div>

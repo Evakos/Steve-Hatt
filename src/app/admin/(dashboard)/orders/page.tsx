@@ -14,7 +14,7 @@ export default async function AdminOrdersPage() {
   );
 
   return (
-    <>
+    <div className="max-w-4xl">
       {christmasPreOrders.length > 0 && (
         <>
           <h2 className="font-serif text-2xl font-bold text-navy">Christmas pre-orders</h2>
@@ -64,6 +64,6 @@ export default async function AdminOrdersPage() {
           ))}
         </div>
       )}
-    </>
+    </div>
   );
 }

@@ -7,7 +7,7 @@ const code = "text-[0.9em]";
 export default function AdminProductsPage() {
   const source = getProductSourceInfo();
   return (
-    <>
+    <div className="max-w-4xl">
       <h1 className="font-serif text-2xl font-bold text-navy">Sync products from {source.name}</h1>
       <p className="mt-3 text-sm leading-relaxed text-text-light">
         Pulls the &quot;{source.productsTable}&quot; table from {source.name} and updates each product&apos;s title,
@@ -60,6 +60,6 @@ export default function AdminProductsPage() {
         needed.
       </p>
       <ChristmasSettingsPanel />
-    </>
+    </div>
   );
 }

@@ -17,7 +17,7 @@ export default async function AdminDashboardLayout({ children }: { children: Rea
     <div className="flex min-h-screen bg-cream">
       <AdminSidebar />
       <main className="flex-1">
-        <div className="mx-auto max-w-4xl px-8 py-10">{children}</div>
+        <div className="w-full px-8 py-10">{children}</div>
       </main>
     </div>
   );
