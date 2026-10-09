@@ -64,7 +64,7 @@ export default function CaptureOrderCard({ order }: Props) {
   }
 
   return (
-    <div className="border border-border bg-white p-5" style={{ borderRadius: "5px" }}>
+    <div className="border border-border bg-cream p-5" style={{ borderRadius: "5px" }}>
       <div className="flex items-baseline justify-between">
         <h2 className="font-medium text-navy">
           Order #{order.number}, {order.billing.first_name} {order.billing.last_name}

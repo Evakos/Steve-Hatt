@@ -39,7 +39,7 @@ export default function CompleteOrderCard({ order }: Props) {
   }
 
   return (
-    <div className="flex items-center justify-between border border-border bg-white p-4" style={{ borderRadius: "5px" }}>
+    <div className="flex flex-wrap items-center justify-between gap-3 border border-border bg-cream p-4" style={{ borderRadius: "5px" }}>
       <div>
         <p className="text-sm font-medium text-navy">
           Order #{order.number}, {order.billing.first_name} {order.billing.last_name}

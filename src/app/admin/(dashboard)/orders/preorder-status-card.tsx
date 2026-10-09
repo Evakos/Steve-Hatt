@@ -32,7 +32,7 @@ export default function PreOrderStatusCard({ order }: Props) {
 
   return (
     <div
-      className={`border bg-white p-4 text-sm ${failed ? "border-red-300" : "border-border"}`}
+      className={`border bg-cream p-4 text-sm ${failed ? "border-red-300" : "border-border"}`}
       style={{ borderRadius: "5px" }}
     >
       <div className="flex items-baseline justify-between">

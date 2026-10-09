@@ -14,56 +14,73 @@ export default async function AdminOrdersPage() {
   );
 
   return (
-    <div className="max-w-4xl">
-      {christmasPreOrders.length > 0 && (
-        <>
-          <h2 className="font-serif text-2xl font-bold text-navy">Christmas pre-orders</h2>
-          <p className="mt-1 text-sm text-text-light">
-            Card verified but no hold placed yet, a scheduled job authorises these automatically a few days
-            before delivery, then they move to the queue below like any other order. Nothing for you to do
-            here unless one is flagged as failed.
+    <div>
+      <h1 className="font-serif text-2xl font-bold text-navy">Orders</h1>
+      <p className="mt-2 text-sm text-text-light">
+        Every order by stage: awaiting capture, being prepared, and any Christmas pre-orders still pending.
+      </p>
+
+      <div className="mt-6 grid items-start gap-6 md:grid-cols-2">
+        {christmasPreOrders.length > 0 && (
+          <section className="border border-border bg-white p-6 md:col-span-2" style={{ borderRadius: "5px" }}>
+            <SectionHeading title="Christmas pre-orders" count={christmasPreOrders.length} />
+            <p className="mt-2 text-sm leading-relaxed text-text-light">
+              Card verified but no hold placed yet. A scheduled job authorises these automatically a few days before
+              delivery, then they move to the queue below like any other order. Nothing for you to do here unless one is
+              flagged as failed.
+            </p>
+            <div className="mt-5 space-y-3">
+              {christmasPreOrders.map((order) => (
+                <PreOrderStatusCard key={order.id} order={order} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        <section className="border border-border bg-white p-6" style={{ borderRadius: "5px" }}>
+          <SectionHeading title="Awaiting capture" count={pendingCapture.length} />
+          <p className="mt-2 text-sm leading-relaxed text-text-light">
+            The card is held but not charged. Enter the final weighed price per item, then capture to take payment for the
+            confirmed amount. Holds expire 7 days after authorisation, so capture the oldest orders (shown first) first.
           </p>
-          <div className="mt-6 space-y-3">
-            {christmasPreOrders.map((order) => (
-              <PreOrderStatusCard key={order.id} order={order} />
-            ))}
-          </div>
-        </>
-      )}
+          {pendingCapture.length === 0 ? (
+            <p className="mt-6 text-sm text-text-light">No orders awaiting capture right now.</p>
+          ) : (
+            <div className="mt-5 space-y-4">
+              {pendingCapture.map((order) => (
+                <CaptureOrderCard key={order.id} order={order} />
+              ))}
+            </div>
+          )}
+        </section>
 
-      <h1 className={`font-serif text-2xl font-bold text-navy ${christmasPreOrders.length > 0 ? "mt-12" : ""}`}>
-        Orders awaiting capture
-      </h1>
-      <p className="mt-1 text-sm text-text-light">
-        Card is authorised (held) but not charged for these, enter the final weighed price per item, then
-        capture to actually take payment for the confirmed amount. Holds expire 7 days after authorisation,
-        so capture the oldest orders (shown first below) first.
-      </p>
+        <section className="border border-border bg-white p-6" style={{ borderRadius: "5px" }}>
+          <SectionHeading title="Orders being prepared" count={processing.length} />
+          <p className="mt-2 text-sm leading-relaxed text-text-light">
+            Already charged and being prepared. Mark complete once the order has been collected or delivered.
+          </p>
+          {processing.length === 0 ? (
+            <p className="mt-6 text-sm text-text-light">No orders being prepared right now.</p>
+          ) : (
+            <div className="mt-5 space-y-3">
+              {processing.map((order) => (
+                <CompleteOrderCard key={order.id} order={order} />
+              ))}
+            </div>
+          )}
+        </section>
+      </div>
+    </div>
+  );
+}
 
-      {pendingCapture.length === 0 ? (
-        <p className="mt-10 text-center text-sm text-text-light">No orders awaiting capture right now.</p>
-      ) : (
-        <div className="mt-6 space-y-4">
-          {pendingCapture.map((order) => (
-            <CaptureOrderCard key={order.id} order={order} />
-          ))}
-        </div>
-      )}
-
-      <h2 className="mt-12 font-serif text-2xl font-bold text-navy">Orders being prepared</h2>
-      <p className="mt-1 text-sm text-text-light">
-        Charged and being prepared, mark complete once the order has been collected or delivered.
-      </p>
-
-      {processing.length === 0 ? (
-        <p className="mt-10 text-center text-sm text-text-light">No orders being prepared right now.</p>
-      ) : (
-        <div className="mt-6 space-y-3">
-          {processing.map((order) => (
-            <CompleteOrderCard key={order.id} order={order} />
-          ))}
-        </div>
-      )}
+function SectionHeading({ title, count }: { title: string; count: number }) {
+  return (
+    <div className="flex items-center justify-between gap-3">
+      <h2 className="font-medium text-navy">{title}</h2>
+      <span className="bg-cream px-2.5 py-0.5 text-xs font-medium text-navy" style={{ borderRadius: "999px" }}>
+        {count}
+      </span>
     </div>
   );
 }
