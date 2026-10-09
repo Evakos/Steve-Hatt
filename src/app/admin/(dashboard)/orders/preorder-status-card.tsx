@@ -1,5 +1,5 @@
 import type { WooOrder } from "@/lib/woocommerce/types";
-import OrderBadges from "./order-badges";
+import OrderBadges, { OrderDeliveryDetails } from "./order-badges";
 
 // Mirrors AUTH_LEAD_DAYS in src/app/api/cron/reauthorise-preorders/route.ts - used here only to
 // describe the schedule to staff, not to make any decision.
@@ -34,7 +34,7 @@ export default function PreOrderStatusCard({ order }: Props) {
   return (
     <div
       className={`border bg-cream p-4 text-sm ${failed ? "border-red-300" : "border-border"}`}
-      style={{ borderRadius: "5px" }}
+      style={{ borderRadius: "14px" }}
     >
       <div className="flex items-baseline justify-between">
         <span className="font-medium text-navy">
@@ -44,6 +44,7 @@ export default function PreOrderStatusCard({ order }: Props) {
       </div>
       <OrderBadges order={order} />
       {slotLabel && <p className="mt-2 text-sm font-medium text-navy">{slotLabel}</p>}
+        <OrderDeliveryDetails order={order} />
       {failed ? (
         <p className="mt-1 text-sm font-medium text-red-600">
           Card declined on scheduled charge{failureReason ? `, ${failureReason}` : ""}. Customer has been emailed

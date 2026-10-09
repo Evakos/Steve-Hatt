@@ -122,6 +122,8 @@ export interface WooOrder {
   total: string;
   date_created: string;
   billing: WooOrderBilling;
+  /** Delivery address - for delivery orders this mirrors billing (see create-order-from-payment.ts). */
+  shipping?: WooOrderBilling;
   line_items: WooOrderLineItem[];
   meta_data: { key: string; value: unknown }[];
 }

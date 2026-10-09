@@ -50,7 +50,7 @@ export default function SyncProductsPanel() {
         onClick={handleSync}
         disabled={syncing}
         className="bg-lobster px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-lobster/90 disabled:cursor-not-allowed disabled:opacity-50"
-        style={{ borderRadius: "5px" }}
+        style={{ borderRadius: "10px" }}
       >
         {syncing ? "Syncing…" : "Sync now"}
       </button>
@@ -58,7 +58,7 @@ export default function SyncProductsPanel() {
       {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
 
       {result && (
-        <div className="mt-4 border border-border bg-white p-4" style={{ borderRadius: "5px" }}>
+        <div className="mt-4 border border-border bg-white p-4" style={{ borderRadius: "14px" }}>
           <p className="text-sm font-medium text-navy">
             {result.updated} updated, {result.errors} error{result.errors === 1 ? "" : "s"}, {result.total} rows read
           </p>

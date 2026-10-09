@@ -39,7 +39,7 @@ export default function AdminSidebar() {
               className={`flex items-center gap-2.5 px-3 py-2 text-sm transition-colors ${
                 active ? "bg-white/10 font-medium text-white" : "text-white/60 hover:bg-white/5 hover:text-white"
               }`}
-              style={{ borderRadius: "5px" }}
+              style={{ borderRadius: "10px" }}
             >
               <Icon className="h-4 w-4" />
               {label}
@@ -54,7 +54,7 @@ export default function AdminSidebar() {
           onClick={handleLogout}
           disabled={signingOut}
           className="flex w-full items-center gap-2.5 px-3 py-2 text-sm text-white/60 transition-colors hover:bg-white/5 hover:text-white disabled:opacity-50"
-          style={{ borderRadius: "5px" }}
+          style={{ borderRadius: "10px" }}
         >
           <LogOut className="h-4 w-4" />
           {signingOut ? "Signing out…" : "Sign out"}

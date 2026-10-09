@@ -22,7 +22,7 @@ export default async function AdminOrdersPage() {
 
       <div className="mt-6 grid items-start gap-6 md:grid-cols-2">
         {christmasPreOrders.length > 0 && (
-          <section className="border border-border bg-white p-6 md:col-span-2" style={{ borderRadius: "5px" }}>
+          <section className="border border-border bg-white p-6 shadow-sm md:col-span-2" style={{ borderRadius: "20px" }}>
             <SectionHeading title="Christmas pre-orders" count={christmasPreOrders.length} />
             <p className="mt-2 text-sm leading-relaxed text-text-light">
               Card verified but no hold placed yet. A scheduled job authorises these automatically a few days before
@@ -39,7 +39,7 @@ export default async function AdminOrdersPage() {
 
         {/* Only shown when something is actually held, so the capture explanation never appears for nothing. */}
         {pendingCapture.length > 0 && (
-        <section className="border border-border bg-white p-6" style={{ borderRadius: "5px" }}>
+        <section className="border border-border bg-white p-6 shadow-sm" style={{ borderRadius: "20px" }}>
           <SectionHeading title="Awaiting capture" count={pendingCapture.length} />
           <p className="mt-2 text-sm leading-relaxed text-text-light">
             The card is held but not charged. Enter the final weighed price per item, then capture to take payment for the
@@ -54,8 +54,8 @@ export default async function AdminOrdersPage() {
         )}
 
         <section
-          className={`border border-border bg-white p-6 ${pendingCapture.length === 0 ? "md:col-span-2" : ""}`}
-          style={{ borderRadius: "5px" }}
+          className={`border border-border bg-white p-6 shadow-sm ${pendingCapture.length === 0 ? "md:col-span-2" : ""}`}
+          style={{ borderRadius: "20px" }}
         >
           <SectionHeading title="Orders being prepared" count={processing.length} />
           <p className="mt-2 text-sm leading-relaxed text-text-light">

@@ -34,7 +34,7 @@ export default function StaffLoginPage() {
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-cream px-6">
-      <form onSubmit={handleSubmit} className="w-full max-w-sm border border-border bg-white p-6" style={{ borderRadius: "5px" }}>
+      <form onSubmit={handleSubmit} className="w-full max-w-sm border border-border bg-white p-6 shadow-sm" style={{ borderRadius: "20px" }}>
         <h1 className="font-serif text-xl font-bold text-navy">Staff Login</h1>
         <p className="mt-1 text-base text-text-light">Steve Hatt Fishmongers, order capture</p>
         <input
@@ -44,14 +44,14 @@ export default function StaffLoginPage() {
           placeholder="Password"
           autoFocus
           className="mt-4 w-full border border-border px-3 py-2 text-base"
-          style={{ borderRadius: "5px" }}
+          style={{ borderRadius: "10px" }}
         />
         {error && <p className="mt-2 text-base text-red-600">{error}</p>}
         <button
           type="submit"
           disabled={submitting || !password}
           className="mt-4 w-full bg-lobster px-4 py-2.5 text-base font-medium text-white transition-colors hover:bg-lobster/90 disabled:cursor-not-allowed disabled:opacity-50"
-          style={{ borderRadius: "5px" }}
+          style={{ borderRadius: "10px" }}
         >
           {submitting ? "Signing in…" : "Sign in"}
         </button>

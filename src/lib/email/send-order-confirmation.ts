@@ -2,6 +2,7 @@ import "server-only";
 import { sendEmail } from "./send";
 import { getServerEnv } from "@/lib/env";
 import type { RepricedOrder } from "@/lib/checkout/reprice";
+import type { DeliveryDetails } from "@/lib/checkout/delivery-address";
 import { COLORS, SITE_URL, emailOrderBadges, emailShell, emailHeading, emailNotice, emailAlert, emailButton, emailLineItemsTable } from "./layout";
 
 const FROM_ADDRESS = "orders@stevehattfishmongers.co.uk";
@@ -173,7 +174,7 @@ export async function sendOrderCompleteEmail(input: OrderCompleteInput) {
   }
 }
 
-export interface AdminNewOrderNotificationInput {
+export interface AdminNewOrderNotificationInput extends Partial<DeliveryDetails> {
   orderNumber: string;
   customerName: string;
   customerEmail: string;
@@ -194,7 +195,7 @@ export interface AdminNewOrderNotificationInput {
  * doesn't fail the order.
  */
 export async function sendAdminNewOrderNotification(input: AdminNewOrderNotificationInput) {
-  const { orderNumber, customerName, customerEmail, repriced, slotLabel, fulfilmentType, depositAmount, paidInFull } = input;
+  const { orderNumber, customerName, customerEmail, repriced, slotLabel, fulfilmentType, depositAmount, paidInFull, customerPhone, deliveryAddress } = input;
   const to = getServerEnv().ADMIN_NOTIFICATION_EMAIL;
   const isPaidInFull = paidInFull === true;
   const deposit = depositAmount ?? 0;
@@ -205,9 +206,18 @@ export async function sendAdminNewOrderNotification(input: AdminNewOrderNotifica
     ${emailHeading(`New order #${orderNumber} - needs preparing`)}
     ${emailOrderBadges({ fulfilmentType, isChristmas: repriced.isChristmas })}
     <p style="margin:0 0 4px;font-size:16px;font-weight:700;color:${COLORS.navy};">${fulfilmentType === "delivery" ? "Delivery" : "Collection"}: ${slotLabel}</p>
-    <p style="margin:0 0 4px;">${customerName} (${customerEmail})</p>
+    <p style="margin:0 0 4px;">${customerName} (${customerEmail})${customerPhone ? `, ${customerPhone}` : ""}</p>
+    ${fulfilmentType === "delivery" && deliveryAddress
+      ? `<div style="margin:12px 0 4px;padding:12px 14px;background:${COLORS.lobsterLight};border:1px solid ${COLORS.lobster}55;border-radius:5px;font-size:14px;color:${COLORS.navy};">
+      <strong>Deliver to</strong><br />${[...deliveryAddress.lines, deliveryAddress.postcode].filter(Boolean).join("<br />")}
+    </div>`
+      : ""}
     ${emailLineItemsTable(repriced.lineItems)}
     <table style="width:100%;border-collapse:collapse;">
+      ${fulfilmentType === "delivery"
+        ? `<tr><td style="padding:4px 0;color:${COLORS.textLight};">Subtotal</td><td style="padding:4px 0;text-align:right;color:${COLORS.text};">&pound;${repriced.subtotal.toFixed(2)}</td></tr>
+      <tr><td style="padding:4px 0;color:${COLORS.textLight};">Delivery</td><td style="padding:4px 0;text-align:right;color:${COLORS.text};">&pound;${repriced.deliveryFee.toFixed(2)}</td></tr>`
+        : ""}
       ${isPaidInFull
         ? `<tr><td style="padding:4px 0;font-weight:700;color:${COLORS.navy};">Paid at checkout</td><td style="padding:4px 0;text-align:right;font-weight:700;color:${COLORS.navy};">&pound;${repriced.total.toFixed(2)}</td></tr>`
         : `${hasDeposit ? `<tr><td style="padding:4px 0;color:${COLORS.textLight};">Deposit captured at checkout</td><td style="padding:4px 0;text-align:right;color:${COLORS.text};">&pound;${deposit.toFixed(2)}</td></tr>` : ""}

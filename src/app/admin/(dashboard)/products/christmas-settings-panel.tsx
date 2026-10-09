@@ -59,7 +59,7 @@ export default function ChristmasSettingsPanel() {
 
   return (
     <div className="mt-5">
-      <div className="flex items-center justify-between border border-border bg-cream p-5" style={{ borderRadius: "5px" }}>
+      <div className="flex items-center justify-between border border-border bg-cream p-5" style={{ borderRadius: "14px" }}>
         <div>
           <p className="text-sm font-medium text-navy">Christmas ordering</p>
           <p className="mt-1 text-sm text-text-light">Shows the Christmas option to customers site-wide when on.</p>
@@ -79,7 +79,7 @@ export default function ChristmasSettingsPanel() {
           </button>
       </div>
 
-      <div className="mt-4 border border-border bg-cream p-5" style={{ borderRadius: "5px" }}>
+      <div className="mt-4 border border-border bg-cream p-5" style={{ borderRadius: "14px" }}>
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-navy">Payment model</p>
@@ -111,7 +111,7 @@ export default function ChristmasSettingsPanel() {
       </div>
 
       {useDepositFlow && (
-      <div className="mt-4 border border-border bg-cream p-5" style={{ borderRadius: "5px" }}>
+      <div className="mt-4 border border-border bg-cream p-5" style={{ borderRadius: "14px" }}>
         <div className="flex items-center justify-between gap-3">
           <div>
             <p className="text-sm font-medium text-navy">Default deposit (£)</p>
@@ -134,7 +134,7 @@ export default function ChristmasSettingsPanel() {
       </div>
       )}
 
-      <div className="mt-4 border border-dashed border-border bg-cream/60 p-5 opacity-70" style={{ borderRadius: "5px" }}>
+      <div className="mt-4 border border-dashed border-border bg-cream/60 p-5 opacity-70" style={{ borderRadius: "14px" }}>
         <div className="flex items-center justify-between">
           <p className="text-sm font-medium text-navy">Seasonal price premium (experimental, not active)</p>
           <p className="text-sm font-semibold text-navy">{premiumPercent}%</p>
@@ -161,7 +161,7 @@ export default function ChristmasSettingsPanel() {
           onClick={handleSave}
           disabled={!dirty || saving}
           className="bg-lobster px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-lobster/90 disabled:cursor-not-allowed disabled:opacity-50"
-          style={{ borderRadius: "5px" }}
+          style={{ borderRadius: "10px" }}
         >
           {saving ? "Saving…" : "Save changes"}
         </button>

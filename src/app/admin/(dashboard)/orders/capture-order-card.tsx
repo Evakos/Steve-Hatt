@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { WooOrder } from "@/lib/woocommerce/types";
-import OrderBadges from "./order-badges";
+import OrderBadges, { OrderDeliveryDetails } from "./order-badges";
 
 // Pay360 authorisations expire 7 days after creation by default - after that, Capture (and
 // Cancel) both fail (docs.pay360.com/cards/authorisations). Order date_created is a reliable
@@ -64,7 +64,7 @@ export default function CaptureOrderCard({ order }: Props) {
   }
 
   return (
-    <div className="border border-border bg-cream p-5" style={{ borderRadius: "5px" }}>
+    <div className="border border-border bg-cream p-5" style={{ borderRadius: "14px" }}>
       <div className="flex items-baseline justify-between">
         <h2 className="font-medium text-navy">
           Order #{order.number}, {order.billing.first_name} {order.billing.last_name}
@@ -77,6 +77,7 @@ export default function CaptureOrderCard({ order }: Props) {
       </div>
       <OrderBadges order={order} />
       {slotLabel && <p className="mt-2 text-sm font-medium text-navy">{slotLabel}</p>}
+        <OrderDeliveryDetails order={order} />
       <p className={`mt-0.5 text-sm ${authExpired ? "font-medium text-red-600" : authExpiringSoon ? "font-medium text-amber-600" : "text-text-light"}`}>
         {daysSinceAuth <= 0
           ? "Authorised today"
@@ -138,7 +139,7 @@ export default function CaptureOrderCard({ order }: Props) {
           onClick={handleCapture}
           disabled={submitting || overAuthorised || finalTotal <= 0}
           className="bg-lobster px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-lobster/90 disabled:cursor-not-allowed disabled:opacity-50"
-          style={{ borderRadius: "5px" }}
+          style={{ borderRadius: "10px" }}
         >
           {submitting ? "Capturing…" : "Capture payment"}
         </button>

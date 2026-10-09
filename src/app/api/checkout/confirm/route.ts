@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getCardstreamClient } from "@/lib/cardstream/client";
 import { createOrderFromPayment } from "@/lib/checkout/create-order-from-payment";
 import { createPreOrderFromVerification } from "@/lib/checkout/create-preorder-from-verification";
+import { adminDeliveryFields } from "@/lib/checkout/delivery-address";
 import { repriceCheckoutRequest } from "@/lib/checkout/reprice";
 import { confirmRequestSchema } from "@/lib/checkout/schema";
 import { sendOrderConfirmation, sendAdminNewOrderNotification } from "@/lib/email/send-order-confirmation";
@@ -65,6 +66,7 @@ export async function POST(request: Request) {
         depositAmount,
       });
       await sendAdminNewOrderNotification({
+        ...adminDeliveryFields(checkout),
         orderNumber: order.number,
         customerName: `${checkout.customer.firstName} ${checkout.customer.lastName}`,
         customerEmail: checkout.customer.email,
@@ -97,6 +99,7 @@ export async function POST(request: Request) {
     paidInFull: true,
   });
   await sendAdminNewOrderNotification({
+        ...adminDeliveryFields(checkout),
     orderNumber: order.number,
     customerName: `${checkout.customer.firstName} ${checkout.customer.lastName}`,
     customerEmail: checkout.customer.email,

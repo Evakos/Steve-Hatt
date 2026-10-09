@@ -30,3 +30,19 @@ export default function OrderBadges({ order }: { order: WooOrder }) {
     </div>
   );
 }
+
+/** Delivery address and phone, shown only on delivery orders so whoever is driving has everything
+ * on the card. Collection orders show nothing here. */
+export function OrderDeliveryDetails({ order }: { order: WooOrder }) {
+  const isDelivery = order.meta_data.find((m) => m.key === "_checkout_fulfilment_type")?.value === "delivery";
+  if (!isDelivery) return null;
+  const a = order.shipping && order.shipping.address_1 ? order.shipping : order.billing;
+  const lines = [a.address_1, a.address_2, a.city, a.postcode].filter((v): v is string => Boolean(v && v.trim()));
+  return (
+    <div className="mt-3 bg-lobster-light p-3 text-sm text-navy" style={{ borderRadius: "14px" }}>
+      <p className="font-medium">Deliver to</p>
+      <p className="mt-0.5">{lines.length > 0 ? lines.join(", ") : "No address recorded, check with the customer"}</p>
+      {order.billing.phone && <p className="mt-0.5 text-text-light">Phone: {order.billing.phone}</p>}
+    </div>
+  );
+}

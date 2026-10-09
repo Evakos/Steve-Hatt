@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { WooOrder } from "@/lib/woocommerce/types";
-import OrderBadges from "./order-badges";
+import OrderBadges, { OrderDeliveryDetails } from "./order-badges";
 
 interface Props {
   order: WooOrder;
@@ -39,13 +39,14 @@ export default function CompleteOrderCard({ order }: Props) {
   }
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 border border-border bg-cream p-4" style={{ borderRadius: "5px" }}>
+    <div className="flex flex-wrap items-center justify-between gap-3 border border-border bg-cream p-4" style={{ borderRadius: "14px" }}>
       <div>
         <p className="text-sm font-medium text-navy">
           Order #{order.number}, {order.billing.first_name} {order.billing.last_name}
         </p>
         <OrderBadges order={order} />
         {slotLabel && <p className="mt-2 text-sm font-medium text-navy">{slotLabel}</p>}
+        <OrderDeliveryDetails order={order} />
         <p className="mt-0.5 text-sm text-text-light">£{order.total} charged</p>
       </div>
       <div className="flex items-center gap-3">
@@ -55,7 +56,7 @@ export default function CompleteOrderCard({ order }: Props) {
           onClick={handleComplete}
           disabled={submitting}
           className="bg-teal px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-teal/90 disabled:cursor-not-allowed disabled:opacity-50"
-          style={{ borderRadius: "5px" }}
+          style={{ borderRadius: "10px" }}
         >
           {submitting ? "Completing…" : "Mark complete"}
         </button>

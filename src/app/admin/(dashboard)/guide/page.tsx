@@ -26,7 +26,7 @@ export default function AdminGuidePage() {
 
       <section
         className="mt-6 bg-navy p-6"
-        style={{ borderRadius: "5px" }}
+        style={{ borderRadius: "20px" }}
       >
         <p className="text-xs font-medium tracking-widest text-teal uppercase">The aim of this rebuild</p>
         <h2 className="mt-2 font-serif text-xl font-bold text-white">
@@ -39,7 +39,7 @@ export default function AdminGuidePage() {
         </p>
         <div className="mt-5 grid w-full gap-4 sm:grid-cols-2">
           {pillars.map((p) => (
-            <div key={p.title} className="w-full bg-white/10 p-5" style={{ borderRadius: "5px" }}>
+            <div key={p.title} className="w-full bg-white/10 p-5" style={{ borderRadius: "14px" }}>
               <p className="text-sm font-medium text-white">{p.title}</p>
               <p className="mt-1 text-sm leading-relaxed text-white/75">{p.text}</p>
             </div>
@@ -47,7 +47,7 @@ export default function AdminGuidePage() {
         </div>
       </section>
 
-      <section className="mt-6 border border-border bg-white p-6" style={{ borderRadius: "5px" }}>
+      <section className="mt-6 border border-border bg-white p-6 shadow-sm" style={{ borderRadius: "20px" }}>
         <h2 className="font-medium text-navy">How it works, at a glance</h2>
         <ol className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-6 lg:gap-0">
           {steps.map((step, i) => (
@@ -75,7 +75,7 @@ export default function AdminGuidePage() {
       <p className="mt-1 text-sm text-text-light">Open any section below for the full detail.</p>
 
       <div className="mt-4 grid items-start gap-6 md:grid-cols-2">
-      <details className="group border border-border bg-white p-6" style={{ borderRadius: "5px" }}>
+      <details className="group border border-border bg-white p-6 shadow-sm" style={{ borderRadius: "20px" }}>
         <summary className="flex cursor-pointer list-none items-center justify-between gap-3 font-medium text-navy [&::-webkit-details-marker]:hidden">
           {"Switching Christmas on, step by step"}
           <ChevronDown className="h-4 w-4 shrink-0 text-text-light transition-transform group-open:rotate-180" />
@@ -148,7 +148,7 @@ export default function AdminGuidePage() {
         </div>
       </details>
 
-      <details className="group border border-border bg-white p-6" style={{ borderRadius: "5px" }}>
+      <details className="group border border-border bg-white p-6 shadow-sm" style={{ borderRadius: "20px" }}>
         <summary className="flex cursor-pointer list-none items-center justify-between gap-3 font-medium text-navy [&::-webkit-details-marker]:hidden">
           {"Christmas pre-orders"}
           <ChevronDown className="h-4 w-4 shrink-0 text-text-light transition-transform group-open:rotate-180" />
@@ -183,7 +183,7 @@ export default function AdminGuidePage() {
         </div>
       </details>
 
-      <details className="group border border-border bg-white p-6" style={{ borderRadius: "5px" }}>
+      <details className="group border border-border bg-white p-6 shadow-sm" style={{ borderRadius: "20px" }}>
         <summary className="flex cursor-pointer list-none items-center justify-between gap-3 font-medium text-navy [&::-webkit-details-marker]:hidden">
           {"Product sync"}
           <ChevronDown className="h-4 w-4 shrink-0 text-text-light transition-transform group-open:rotate-180" />
@@ -216,7 +216,7 @@ export default function AdminGuidePage() {
         </div>
       </details>
 
-      <details className="group border border-border bg-white p-6" style={{ borderRadius: "5px" }}>
+      <details className="group border border-border bg-white p-6 shadow-sm" style={{ borderRadius: "20px" }}>
         <summary className="flex cursor-pointer list-none items-center justify-between gap-3 font-medium text-navy [&::-webkit-details-marker]:hidden">
           {"Payments and orders"}
           <ChevronDown className="h-4 w-4 shrink-0 text-text-light transition-transform group-open:rotate-180" />
