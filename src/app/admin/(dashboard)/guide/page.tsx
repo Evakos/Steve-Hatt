@@ -25,7 +25,7 @@ export default function AdminGuidePage() {
       <p className="mt-2 text-sm text-text-light">How orders, payments, and the product sync work.</p>
 
       <section
-        className="mt-6 bg-[#1a3a2a] p-6"
+        className="mt-6 bg-navy p-6"
         style={{ borderRadius: "5px" }}
       >
         <p className="text-xs font-medium tracking-widest text-teal uppercase">The aim of this rebuild</p>
@@ -59,7 +59,7 @@ export default function AdminGuidePage() {
                 />
               )}
               <span
-                className="relative z-10 flex h-10 w-10 items-center justify-center bg-[#1a3a2a] text-sm font-medium text-white lg:mx-auto"
+                className="relative z-10 flex h-10 w-10 items-center justify-center bg-navy text-sm font-medium text-white lg:mx-auto"
                 style={{ borderRadius: "999px" }}
               >
                 {i + 1}
