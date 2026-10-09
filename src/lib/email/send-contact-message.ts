@@ -1,15 +1,10 @@
 import "server-only";
-import { Resend } from "resend";
+import { sendEmail } from "./send";
 import { getServerEnv } from "@/lib/env";
 import { emailShell, emailHeading } from "./layout";
 
 const FROM_ADDRESS = "orders@stevehattfishmongers.co.uk";
 
-let cachedClient: Resend | null = null;
-function resend() {
-  if (!cachedClient) cachedClient = new Resend(getServerEnv().RESEND_API_KEY);
-  return cachedClient;
-}
 
 export interface ContactMessageInput {
   name: string;
@@ -31,7 +26,7 @@ export async function sendContactMessage(input: ContactMessageInput): Promise<vo
     <p style="white-space:pre-wrap;">${message}</p>
   `);
 
-  await resend().emails.send({
+  await sendEmail({
     from: `Steve Hatt Fishmongers <${FROM_ADDRESS}>`,
     to,
     replyTo: email,

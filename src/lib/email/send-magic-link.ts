@@ -1,15 +1,9 @@
 import "server-only";
-import { Resend } from "resend";
-import { getServerEnv } from "@/lib/env";
+import { sendEmail } from "./send";
 import { COLORS, emailShell, emailHeading, emailButton } from "./layout";
 
 const FROM_ADDRESS = "orders@stevehattfishmongers.co.uk";
 
-let cachedClient: Resend | null = null;
-function resend() {
-  if (!cachedClient) cachedClient = new Resend(getServerEnv().RESEND_API_KEY);
-  return cachedClient;
-}
 
 /**
  * The only email in the passwordless sign-in flow (see customer-auth.ts) - there's no separate
@@ -26,7 +20,7 @@ export async function sendMagicLinkEmail(to: string, verifyUrl: string): Promise
     <p style="color:${COLORS.textLight};font-size:12px;">If you didn't request this, you can safely ignore this email.</p>
   `);
 
-  await resend().emails.send({
+  await sendEmail({
     from: `Steve Hatt Fishmongers <${FROM_ADDRESS}>`,
     to,
     subject: "Sign in to Steve Hatt Fishmongers",
