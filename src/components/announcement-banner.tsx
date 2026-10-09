@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Gift, X, Snowflake } from "lucide-react";
 import Link from "next/link";
 
@@ -42,9 +42,28 @@ export default function AnnouncementBanner({
   dismissible = true,
 }: Props) {
   const [visible, setVisible] = useState(true);
+  // The Christmas banner only shows while Christmas ordering is switched on (same flag the shop
+  // uses - /api/feature-flags/christmas). It renders nothing until that answer arrives, so it never
+  // flashes up on pages when Christmas is off.
+  const [christmasActive, setChristmasActive] = useState(false);
   const config = banners[variant] || banners.christmas;
 
-  if (!visible) return null;
+  useEffect(() => {
+    if (variant !== "christmas") return;
+    let cancelled = false;
+    fetch("/api/feature-flags/christmas")
+      .then((res) => (res.ok ? res.json() : { active: false }))
+      .then((data) => {
+        if (!cancelled) setChristmasActive(data.active === true);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [variant]);
+
+  const needsFlag = variant === "christmas";
+  if (!visible || (needsFlag && !christmasActive)) return null;
 
   return (
     <div className={`relative ${config.bg} ${config.textColor}`}>
