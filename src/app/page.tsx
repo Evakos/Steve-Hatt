@@ -216,7 +216,7 @@ export default async function Home() {
       </section>
 
       {/* Sustainability */}
-      <section className="bg-navy">
+      <section style={{ background: "linear-gradient(135deg, #d4452c 0%, #e2573b 45%, #f27052 100%)" }}>
         <div className="mx-auto max-w-6xl px-6 py-20">
           <div className="grid gap-8 md:grid-cols-3">
             {[
@@ -225,9 +225,9 @@ export default async function Home() {
               { icon: <Recycle className="h-6 w-6" />, title: "Zero Waste", desc: "Every cut is prepared to order. No pre-packaging, no waste, no compromise on freshness." },
             ].map((item) => (
               <div key={item.title}>
-                <span className="mb-4 block text-teal">{item.icon}</span>
+                <span className="mb-4 block text-white">{item.icon}</span>
                 <h3 className="mb-3 font-serif text-lg font-semibold text-white">{item.title}</h3>
-                <p className="text-sm leading-relaxed text-white/60">{item.desc}</p>
+                <p className="text-sm leading-relaxed text-white/85">{item.desc}</p>
               </div>
             ))}
           </div>
