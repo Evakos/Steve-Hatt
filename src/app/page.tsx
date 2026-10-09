@@ -288,36 +288,6 @@ export default async function Home() {
         </section>
       )}
 
-      {/* Opening hours + contact */}
-      <section className="bg-white">
-        <div className="mx-auto max-w-6xl px-6 py-16">
-          <div className="grid gap-8 md:grid-cols-3">
-            <div>
-              <h3 className="mb-4 font-serif text-lg font-semibold text-navy">Opening Hours</h3>
-              <div className="space-y-2 text-base text-text-light">
-                <p>Tuesday - Saturday: 7am - 5pm</p>
-                <p>Sunday: Closed</p>
-                <p>Monday: Closed</p>
-              </div>
-            </div>
-            <div>
-              <h3 className="mb-4 font-serif text-lg font-semibold text-navy">Visit Us</h3>
-              <p className="text-base text-text-light">88 Essex Road<br />Islington, London<br />N1 8LU</p>
-              <p className="mt-2 text-base text-text-light">
-                <a href="tel:+442072263963" className="transition-colors hover:text-navy">020 7226 3963</a>
-              </p>
-            </div>
-            <div>
-              <h3 className="mb-4 font-serif text-lg font-semibold text-navy">Delivery Zones</h3>
-              <p className="text-base text-text-light">
-                <strong className="text-navy">Next-day delivery to:</strong><br />
-                EC1, EC2, E2, E5, E8, N1, N4, N5, N6, N7, N10, N16, N19, NW5
-              </p>
-              <p className="mt-2 text-base text-text-light">Minimum order £20 · Standard delivery £5.00</p>
-            </div>
-          </div>
-        </div>
-      </section>
 
       <Footer />
     </main>
