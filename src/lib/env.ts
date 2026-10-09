@@ -30,6 +30,9 @@ const serverEnvSchema = z.object({
       (emails) => emails.length > 0 && emails.every((email) => z.email().safeParse(email).success),
       { message: "must be one or more comma-separated email addresses" }
     ),
+  // Optional - Reply-To address set on every outgoing email, so customer replies go to a mailbox the
+  // shop reads. Leave unset to reply to the From address (orders@).
+  REPLY_TO_EMAIL: z.preprocess((v) => (v === "" ? undefined : v), z.email().optional()),
   STAFF_PASSWORD: z.string().min(1),
   STAFF_SESSION_SECRET: z.string().min(1),
   CUSTOMER_SESSION_SECRET: z.string().min(1),

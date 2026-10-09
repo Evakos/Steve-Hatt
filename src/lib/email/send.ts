@@ -16,7 +16,9 @@ type EmailPayload = Parameters<Resend["emails"]["send"]>[0];
  * silently swallows every failure - callers' try/catch blocks never fire. This surfaces them.
  */
 export async function sendEmail(payload: EmailPayload): Promise<void> {
-  const { error } = await resend().emails.send(payload);
+  // Optional shop-wide Reply-To (REPLY_TO_EMAIL), so customer replies reach a mailbox someone reads.
+  const replyTo = getServerEnv().REPLY_TO_EMAIL;
+  const { error } = await resend().emails.send(replyTo && !payload.replyTo ? { ...payload, replyTo } : payload);
   if (error) {
     throw new Error(`Resend rejected the email (${error.name}): ${error.message}`);
   }

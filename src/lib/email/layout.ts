@@ -48,8 +48,14 @@ export function emailShell(bodyHtml: string): string {
           ${bodyHtml}
         </div>
         <div style="background:${COLORS.cream};padding:20px 28px;text-align:center;border-top:1px solid ${COLORS.border};">
-          <p style="margin:0;font-size:12px;color:${COLORS.textLight};">
-            Steve Hatt Fishmongers &middot; 88 Essex Road, Islington, London N1 8LU
+          <p style="margin:0 0 10px;font-size:12px;color:${COLORS.navy};">
+            Questions or changes? Please call the shop or use the
+            <a href="${SITE_URL}/contact" style="color:${COLORS.navy};">contact form</a>, and quote your order number.
+          </p>
+          <p style="margin:0;font-size:12px;line-height:1.6;color:${COLORS.textLight};">
+            Steve Hatt Fishmongers &middot; 88-89 Essex Road, Islington, London N1 8LU<br />
+            Tel. <a href="tel:+442072263963" style="color:${COLORS.textLight};">020 7226 3963</a><br />
+            Tue to Fri 8am to 7pm &middot; Sat 7am to 5pm &middot; Closed Sun and Mon
           </p>
         </div>
       </div>
