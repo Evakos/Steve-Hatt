@@ -2,10 +2,10 @@ import { ChevronDown } from "lucide-react";
 import { getProductSourceInfo } from "@/lib/product-source";
 
 const pillars = [
-  { title: "A fast shop", text: "The shopfront runs on a modern, quick front end, so customers browse and order without waiting." },
-  { title: "Run it yourselves", text: "Edit products in Airtable, press Sync now, and the shop updates. No WordPress login needed." },
-  { title: "Paid at checkout", text: "Every order is paid in full at checkout and lands on the Orders page ready to prepare." },
-  { title: "Christmas made simple", text: "One switch turns Christmas ordering on, with dated slots for the 20th to the 24th." },
+  { title: "One shop, all year", text: "The everyday shop and the Christmas shop are brought together, with a switch for Christmas ordering and its dated slots." },
+  { title: "Fast and responsive", text: "A modern front end that loads quickly and responds instantly, so customers browse and order without waiting." },
+  { title: "Better product information", text: "Origin, preparation, storage and sustainability on every product, so customers know exactly what they are buying." },
+  { title: "Accurate, and run by you", text: "Product information is kept in Airtable, checked and owned by the shop, and updated with one click." },
 ];
 
 const steps = [
@@ -30,12 +30,12 @@ export default function AdminGuidePage() {
       >
         <p className="text-xs font-medium tracking-widest text-teal uppercase">The aim of this rebuild</p>
         <h2 className="mt-2 font-serif text-xl font-bold text-white">
-          A fast, modern shop that the Steve Hatt team can run themselves.
+          One shop for the whole year: faster to use, with better product information.
         </h2>
         <p className="mt-3 text-sm leading-relaxed text-white/80">
-          WordPress and WooCommerce stay as the back shop, where products and orders live. Customers use a quicker
-          shopfront on top of it, and the team manages products from Airtable and orders from this admin, with
-          straightforward payments.
+          The everyday shop and the Christmas shop now live together, on a front end built for speed. Each product carries
+          fuller information (origin, preparation, storage and sustainability), which the shop checks and keeps accurate in Airtable.
+          WordPress and WooCommerce stay as the back shop, where products and orders live.
         </p>
         <div className="mt-5 grid w-full gap-4 sm:grid-cols-2">
           {pillars.map((p) => (
