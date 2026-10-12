@@ -132,7 +132,7 @@ export default async function Home() {
             <div className="flex flex-col items-center gap-2 text-center md:flex-row md:text-left">
               <div className="flex-1">
                 <h2 className="font-serif text-xl font-semibold text-navy">Check if we deliver to you</h2>
-                <p className="mt-1 text-base text-text-light">
+                <p className="mt-1 text-sm text-text-light">
                   Enter your postcode to see delivery options. Not in our zone? Click &amp; collect is always available.
                   <br />
                   <Link href="/account" className="font-medium text-navy underline">Sign In/Register</Link> for faster checkout.
