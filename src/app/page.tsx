@@ -236,21 +236,21 @@ export default async function Home() {
 
       {/* Christmas pre-orders - only while Christmas ordering is active site-wide (see /admin/guide).
           Deliberately styled as a festive band distinct from every other section on the page: the
-          announcement banner's festive green (#1a3a2a), snowflake accents, and a curated four-product
+          announcement banner's beige (sand), snowflake accents, and a curated four-product
           grid of classic Christmas picks (see CHRISTMAS_FEATURED_SLUGS above). */}
       {christmasActive && (
-        <section id="christmas" className="relative overflow-hidden bg-[#1a3a2a]">
-          <Snowflake className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 text-white/10" />
-          <Snowflake className="pointer-events-none absolute -bottom-14 -left-10 h-52 w-52 text-white/10" />
+        <section id="christmas" className="relative overflow-hidden bg-sand">
+          <Snowflake className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 text-navy/5" />
+          <Snowflake className="pointer-events-none absolute -bottom-14 -left-10 h-52 w-52 text-navy/5" />
           <div className="relative mx-auto max-w-6xl px-6 py-20">
             <div className="mb-10 text-center">
-              <p className="text-xs tracking-widest text-white/80 uppercase">Festive season</p>
-              <h2 className="mt-2 font-serif text-3xl font-bold text-white md:text-4xl">Christmas Pre-Orders</h2>
-              <p className="mx-auto mt-4 max-w-lg text-lg leading-relaxed text-white/85">
+              <p className="text-xs tracking-widest text-text-light uppercase">Festive season</p>
+              <h2 className="mt-2 font-serif text-3xl font-bold text-navy md:text-4xl">Christmas Pre-Orders</h2>
+              <p className="mx-auto mt-4 max-w-lg text-lg leading-relaxed text-text-light">
                 Reserve your Christmas feast now. Pre-order by 20th December for delivery or collection on 23rd-24th December. Every order prepared fresh by your fishmonger.
               </p>
               {anyChristmasPricing && (
-                <p className="mx-auto mt-3 max-w-lg text-sm text-white/70">
+                <p className="mx-auto mt-3 max-w-lg text-sm text-text-light">
                   Some items have a different price for Christmas, reflecting higher market prices over the festive
                   period. Prices shown here are unaffected - this only applies once you choose to order for
                   Christmas at checkout.
@@ -259,7 +259,7 @@ export default async function Home() {
             </div>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {christmasFeatured.map((p) => (
-                <Link key={p.slug} href={`/shop/${p.slug}`} className="group border border-white/20 bg-white p-5 transition-all hover:border-white hover:shadow-xl" style={{ borderRadius: '5px' }}>
+                <Link key={p.slug} href={`/shop/${p.slug}`} className="group border border-border bg-white p-5 transition-all hover:border-navy/30 hover:shadow-md" style={{ borderRadius: '5px' }}>
                   <div className="relative mb-3 h-32 overflow-hidden bg-sand" style={{ borderRadius: '3px' }}>
                     <Image src={p.image} alt={p.name} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw" className="object-cover transition-transform group-hover:scale-105" />
                     <span className="absolute left-2 top-2 bg-[#1a3a2a] px-2 py-1 text-[10px] font-medium tracking-wide text-white uppercase" style={{ borderRadius: '2px' }}>{p.tag}</span>
