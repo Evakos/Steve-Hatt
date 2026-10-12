@@ -83,8 +83,17 @@ export default async function Home() {
                 <p className="mt-6 max-w-lg text-lg leading-relaxed text-white/90">
                   The freshest fish from the British coastline, prepared by hand and delivered to your door. Order online for next-day local delivery or click & collect.
                 </p>
-                <div className="mt-6">
+                <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2">
                   <GoogleRating data={googleReview} />
+                  <span className="hidden h-4 w-px bg-white/30 sm:block" aria-hidden />
+                  <a
+                    href="https://www.timeout.com/london/shopping/steve-hatt"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-white/85 transition-colors hover:text-white"
+                  >
+                    <strong className="font-medium text-white">Time Out London:</strong> <em>&ldquo;first class fresh fish&rdquo;</em>
+                  </a>
                 </div>
                 <div className="mt-6 flex items-center gap-4">
                   <a href="#shop" className="bg-lobster px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-lobster/90" style={{ borderRadius: '6px' }}>
