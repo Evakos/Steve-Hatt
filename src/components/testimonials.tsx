@@ -17,11 +17,10 @@ function SharpStar({ filled }: { filled: boolean }) {
   );
 }
 
-/** Homepage customer-review grid. Hidden when there are no testimonials; labelled as sample content
- * while any entry is still a placeholder (see content/testimonials.ts). */
+/** Homepage customer-review grid. Hidden when there are no testimonials. Entries still marked
+ * `placeholder: true` in content/testimonials.ts are sample text and must be replaced before launch. */
 export default function Testimonials() {
   if (testimonials.length === 0) return null;
-  const hasPlaceholders = testimonials.some((t) => t.placeholder);
 
   return (
     <section className="bg-cream">
@@ -29,11 +28,6 @@ export default function Testimonials() {
         <div className="mb-10 text-center">
           <p className="text-xs tracking-widest text-text-light uppercase">Kind words</p>
           <h2 className="mt-2 font-serif text-3xl font-bold text-navy">What our customers say</h2>
-          {hasPlaceholders && (
-            <p className="mx-auto mt-3 inline-block bg-lobster-light px-3 py-1 text-xs font-medium text-lobster" style={{ borderRadius: "999px" }}>
-              Sample reviews, to be replaced with real ones
-            </p>
-          )}
         </div>
         <div className="grid gap-12 md:grid-cols-3 md:gap-10">
           {testimonials.map((t, i) => (
