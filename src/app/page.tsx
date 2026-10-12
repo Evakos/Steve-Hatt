@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { getAllProducts } from "@/lib/products";
 import { isChristmasShopActive } from "@/lib/feature-flags";
-import { Truck, Fish, Scaling, Leaf, Anchor, Recycle, ShoppingBag, Search, Gift, Snowflake } from "lucide-react";
+import { Truck, Fish, Scaling, Leaf, Anchor, Recycle, ShoppingBag, Search, Snowflake } from "lucide-react";
 import Header from "@/components/header";
 import PostcodeCheck from "@/components/postcode-check";
 import AnnouncementBanner from "@/components/announcement-banner";
@@ -244,11 +244,7 @@ export default async function Home() {
           <Snowflake className="pointer-events-none absolute -bottom-14 -left-10 h-52 w-52 text-white/10" />
           <div className="relative mx-auto max-w-6xl px-6 py-20">
             <div className="mb-10 text-center">
-              <p className="flex items-center justify-center gap-2 text-xs tracking-widest text-white/80 uppercase">
-                <Gift className="h-4 w-4" />
-                Festive season
-                <Gift className="h-4 w-4" />
-              </p>
+              <p className="text-xs tracking-widest text-white/80 uppercase">Festive season</p>
               <h2 className="mt-2 font-serif text-3xl font-bold text-white md:text-4xl">Christmas Pre-Orders</h2>
               <p className="mx-auto mt-4 max-w-lg text-lg leading-relaxed text-white/85">
                 Reserve your Christmas feast now. Pre-order by 20th December for delivery or collection on 23rd-24th December. Every order prepared fresh by your fishmonger.
