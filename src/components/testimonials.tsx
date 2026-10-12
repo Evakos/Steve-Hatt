@@ -1,8 +1,21 @@
-import { Quote, Star } from "lucide-react";
+import { Quote } from "lucide-react";
 import { testimonials as allTestimonials } from "@/content/testimonials";
 
 /** The homepage shows the first three entries, one tidy row. */
 const testimonials = allTestimonials.slice(0, 3);
+
+/** A crisp five-pointed star with sharp points (no rounded joins), in a bright yellow. */
+function SharpStar({ filled }: { filled: boolean }) {
+  return (
+    <svg viewBox="0 0 24 24" className="h-6 w-6" aria-hidden>
+      <polygon
+        points="12,1.5 15.1,8.6 22.8,9.3 17,14.4 18.7,22 12,18 5.3,22 7,14.4 1.2,9.3 8.9,8.6"
+        fill={filled ? "#FFC21A" : "#E5E7EB"}
+        strokeLinejoin="miter"
+      />
+    </svg>
+  );
+}
 
 /** Homepage customer-review grid. Hidden when there are no testimonials; labelled as sample content
  * while any entry is still a placeholder (see content/testimonials.ts). */
@@ -26,9 +39,9 @@ export default function Testimonials() {
           {testimonials.map((t, i) => (
             <figure key={i} className="flex flex-col">
               {t.rating ? (
-                <div className="flex gap-1 text-lobster" role="img" aria-label={`${t.rating} out of 5 stars`}>
+                <div className="flex gap-1" role="img" aria-label={`${t.rating} out of 5 stars`}>
                   {Array.from({ length: 5 }, (_, n) => (
-                    <Star key={n} className={`h-5 w-5 ${n < t.rating! ? "fill-current" : "text-border"}`} aria-hidden />
+                    <SharpStar key={n} filled={n < t.rating!} />
                   ))}
                 </div>
               ) : (
