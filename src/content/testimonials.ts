@@ -11,15 +11,15 @@ export interface Testimonial {
   source?: string;
   /** Link to the original, shown on the source line. */
   href?: string;
-  /** True for sample text only. While any placeholder is present, the homepage grid shows a
-   * "sample reviews" label so nothing invented is ever passed off as a real customer. */
+  /** True for sample text only. These must be replaced with real, permitted customer quotes before launch. */
   placeholder?: boolean;
 }
 
 /**
- * Customer reviews shown in the homepage grid (components/testimonials.tsx). Replace the sample
- * entries below with real quotes (with the customer's permission) and delete `placeholder: true`.
- * An empty list hides the section entirely.
+ * Reviews shown on the homepage (components/testimonials.tsx). Entries without a `source` are customer
+ * reviews and fill the three-column grid; an entry with a `source` is a press quote shown on its own line
+ * underneath. Replace the sample entries with real quotes (with the customer's permission) and delete
+ * `placeholder: true`. An empty list hides the section entirely.
  */
 export const testimonials: Testimonial[] = [
   {

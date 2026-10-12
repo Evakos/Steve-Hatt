@@ -1,8 +1,10 @@
 import { Quote } from "lucide-react";
 import { testimonials as allTestimonials } from "@/content/testimonials";
 
-/** The homepage shows the first three entries, one tidy row. */
-const testimonials = allTestimonials.slice(0, 3);
+/** Customer reviews fill the grid (first three, one tidy row). Press quotes, which have a `source` and no
+ * rating, are not customers, so they sit on their own line underneath. */
+const testimonials = allTestimonials.filter((t) => !t.source).slice(0, 3);
+const press = allTestimonials.find((t) => t.source);
 
 /** A crisp five-pointed star with sharp points (no rounded joins), in a bright yellow. */
 function SharpStar({ filled }: { filled: boolean }) {
@@ -61,6 +63,21 @@ export default function Testimonials() {
             </figure>
           ))}
         </div>
+        {press && (
+          <p className="mx-auto mt-14 max-w-2xl text-center text-base italic leading-relaxed text-text-light">
+            &ldquo;{press.quote}&rdquo;{" "}
+            <span className="not-italic">
+              {press.href ? (
+                <a href={press.href} target="_blank" rel="noopener noreferrer" className="font-medium text-navy underline decoration-lobster/50 underline-offset-2 hover:decoration-lobster">
+                  {press.name}
+                </a>
+              ) : (
+                press.name
+              )}
+              {press.source ? `, ${press.source.toLowerCase()}` : ""}
+            </span>
+          </p>
+        )}
       </div>
     </section>
   );
