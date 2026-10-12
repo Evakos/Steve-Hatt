@@ -28,12 +28,12 @@ export default function Testimonials() {
               so the cards poke above it. */}
           <div
             aria-hidden
-            className="pointer-events-none absolute -right-[50vw] -bottom-44 -left-[50vw] top-8"
+            className="pointer-events-none absolute -right-[50vw] -bottom-44 -left-[50vw] h-60"
             style={{
-              // Solid navy at the foot (it continues into the footer), easing out gradually to nothing at
-              // the top. Many small steps keep the fade smooth, with no visible edge.
+              // Solid navy at the very bottom (it runs on into the footer), easing out smoothly to nothing. The
+              // fade only reaches the lowest edge of the cards, so they sit on cream and the blend stays subtle.
               background:
-                "linear-gradient(to top, rgba(36,46,103,1) 0%, rgba(36,46,103,1) 30%, rgba(36,46,103,0.86) 40%, rgba(36,46,103,0.66) 50%, rgba(36,46,103,0.44) 61%, rgba(36,46,103,0.26) 72%, rgba(36,46,103,0.12) 83%, rgba(36,46,103,0.04) 93%, rgba(36,46,103,0) 100%)",
+                "linear-gradient(to top, rgba(36,46,103,1.000) 0%, rgba(36,46,103,0.985) 7%, rgba(36,46,103,0.945) 14%, rgba(36,46,103,0.882) 21%, rgba(36,46,103,0.802) 29%, rgba(36,46,103,0.708) 36%, rgba(36,46,103,0.606) 43%, rgba(36,46,103,0.500) 50%, rgba(36,46,103,0.394) 57%, rgba(36,46,103,0.292) 64%, rgba(36,46,103,0.198) 71%, rgba(36,46,103,0.118) 79%, rgba(36,46,103,0.055) 86%, rgba(36,46,103,0.015) 93%, rgba(36,46,103,0.000) 100%)",
             }}
           />
         <div className="relative grid gap-6 md:grid-cols-3">
