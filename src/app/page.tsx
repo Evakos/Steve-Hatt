@@ -83,16 +83,16 @@ export default async function Home() {
                 <p className="mt-6 max-w-lg text-lg leading-relaxed text-white/90">
                   The freshest fish from the British coastline, prepared by hand and delivered to your door. Order online for next-day local delivery or click & collect.
                 </p>
-                <div className="mt-10 flex items-center gap-4">
+                <div className="mt-6">
+                  <GoogleRating data={googleReview} />
+                </div>
+                <div className="mt-6 flex items-center gap-4">
                   <a href="#shop" className="bg-lobster px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-lobster/90" style={{ borderRadius: '6px' }}>
                     Shop Today&apos;s Catch
                   </a>
                   <a href="#how" className="border border-white/40 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-white/10" style={{ borderRadius: '6px' }}>
                     How It Works
                   </a>
-                </div>
-                <div className="mt-6">
-                  <GoogleRating data={googleReview} />
                 </div>
               </div>
             </div>
