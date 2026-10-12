@@ -1,4 +1,4 @@
-import { Quote } from "lucide-react";
+import { Quote, Star } from "lucide-react";
 import { testimonials as allTestimonials } from "@/content/testimonials";
 
 /** The homepage shows the first three entries, one tidy row. */
@@ -22,16 +22,20 @@ export default function Testimonials() {
             </p>
           )}
         </div>
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="grid gap-12 md:grid-cols-3 md:gap-10">
           {testimonials.map((t, i) => (
-            <figure
-              key={i}
-              className="flex flex-col border border-border bg-white p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
-              style={{ borderRadius: "14px" }}
-            >
-              <Quote className="h-6 w-6 text-lobster" aria-hidden />
-              <blockquote className="mt-4 flex-1 text-base leading-relaxed text-text">{t.quote}</blockquote>
-              <figcaption className="mt-5 border-t border-border pt-4">
+            <figure key={i} className="flex flex-col">
+              {t.rating ? (
+                <div className="flex gap-1 text-lobster" role="img" aria-label={`${t.rating} out of 5 stars`}>
+                  {Array.from({ length: 5 }, (_, n) => (
+                    <Star key={n} className={`h-5 w-5 ${n < t.rating! ? "fill-current" : "text-border"}`} aria-hidden />
+                  ))}
+                </div>
+              ) : (
+                <Quote className="h-6 w-6 text-lobster" aria-hidden />
+              )}
+              <blockquote className="mt-4 flex-1 text-lg leading-relaxed text-navy">{t.quote}</blockquote>
+              <figcaption className="mt-5">
                 <p className="text-sm font-medium text-navy">{t.name}</p>
                 {t.source ? (
                   <p className="text-sm text-text-light">
