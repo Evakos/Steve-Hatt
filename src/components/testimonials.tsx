@@ -12,7 +12,7 @@ export default function Testimonials() {
 
   return (
     <section className="overflow-hidden bg-cream">
-      <div className="mx-auto max-w-6xl px-6 py-20">
+      <div className="mx-auto max-w-6xl px-6 pt-20 pb-36">
         <div className="mb-10 text-center">
           <p className="text-xs tracking-widest text-text-light uppercase">Kind words</p>
           <h2 className="mt-2 font-serif text-3xl font-bold text-navy">What our customers say</h2>
@@ -28,8 +28,13 @@ export default function Testimonials() {
               so the cards poke above it. */}
           <div
             aria-hidden
-            className="pointer-events-none absolute -right-[50vw] -bottom-20 -left-[50vw] top-24"
-            style={{ background: "linear-gradient(to top, #242E67 0%, #242E67 18%, rgba(36,46,103,0.6) 55%, rgba(36,46,103,0) 100%)" }}
+            className="pointer-events-none absolute -right-[50vw] -bottom-36 -left-[50vw] top-12"
+            style={{
+              // Solid colours (no transparency) so the blend stays clean instead of going grey, running
+              // from the page cream at the top to full navy by the lower part of the cards, then on into the footer.
+              background:
+                "linear-gradient(to bottom, #faf8f5 0%, #e4e7f1 14%, #b4bad6 32%, #7580b3 52%, #3c4786 72%, #242E67 88%, #242E67 100%)",
+            }}
           />
         <div className="relative grid gap-6 md:grid-cols-3">
           {testimonials.map((t, i) => (
