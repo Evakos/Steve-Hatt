@@ -234,8 +234,6 @@ export default async function Home() {
         </div>
       </section>
 
-      <Testimonials />
-
       {/* Christmas pre-orders - only while Christmas ordering is active site-wide (see /admin/guide).
           Deliberately styled as a festive band distinct from every other section on the page: the
           announcement banner's festive red (#c94b4b), snowflake accents, and a curated four-product
@@ -288,6 +286,8 @@ export default async function Home() {
         </section>
       )}
 
+      {/* Reviews sit last, directly above the footer, so their navy fade runs straight into it */}
+      <Testimonials />
 
       <Footer />
     </main>

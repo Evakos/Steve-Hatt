@@ -12,7 +12,7 @@ export default function Testimonials() {
 
   return (
     <section className="overflow-hidden bg-cream">
-      <div className="mx-auto max-w-6xl px-6 pt-20 pb-36">
+      <div className="mx-auto max-w-6xl px-6 pt-20 pb-44">
         <div className="mb-10 text-center">
           <p className="text-xs tracking-widest text-text-light uppercase">Kind words</p>
           <h2 className="mt-2 font-serif text-3xl font-bold text-navy">What our customers say</h2>
@@ -28,12 +28,12 @@ export default function Testimonials() {
               so the cards poke above it. */}
           <div
             aria-hidden
-            className="pointer-events-none absolute -right-[50vw] -bottom-36 -left-[50vw] top-12"
+            className="pointer-events-none absolute -right-[50vw] -bottom-44 -left-[50vw] top-8"
             style={{
-              // Solid colours (no transparency) so the blend stays clean instead of going grey, running
-              // from the page cream at the top to full navy by the lower part of the cards, then on into the footer.
+              // Solid navy at the foot (it continues into the footer), easing out gradually to nothing at
+              // the top. Many small steps keep the fade smooth, with no visible edge.
               background:
-                "linear-gradient(to bottom, #faf8f5 0%, #e4e7f1 14%, #b4bad6 32%, #7580b3 52%, #3c4786 72%, #242E67 88%, #242E67 100%)",
+                "linear-gradient(to top, rgba(36,46,103,1) 0%, rgba(36,46,103,1) 30%, rgba(36,46,103,0.86) 40%, rgba(36,46,103,0.66) 50%, rgba(36,46,103,0.44) 61%, rgba(36,46,103,0.26) 72%, rgba(36,46,103,0.12) 83%, rgba(36,46,103,0.04) 93%, rgba(36,46,103,0) 100%)",
             }}
           />
         <div className="relative grid gap-6 md:grid-cols-3">
