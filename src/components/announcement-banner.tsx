@@ -19,7 +19,7 @@ interface BannerConfig {
 const banners: Record<string, BannerConfig> = {
   christmas: {
     icon: <Snowflake className="h-4 w-4" />,
-    bg: "bg-[#c94b4b]",
+    bg: "bg-[#1a3a2a]",
     textColor: "text-white",
     accent: "text-white",
     message: "Christmas pre-orders are now open! Reserve your festive feast.",

@@ -236,10 +236,10 @@ export default async function Home() {
 
       {/* Christmas pre-orders - only while Christmas ordering is active site-wide (see /admin/guide).
           Deliberately styled as a festive band distinct from every other section on the page: the
-          announcement banner's festive red (#c94b4b), snowflake accents, and a curated four-product
+          announcement banner's festive green (#1a3a2a), snowflake accents, and a curated four-product
           grid of classic Christmas picks (see CHRISTMAS_FEATURED_SLUGS above). */}
       {christmasActive && (
-        <section id="christmas" className="relative overflow-hidden bg-[#c94b4b]">
+        <section id="christmas" className="relative overflow-hidden bg-[#1a3a2a]">
           <Snowflake className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 text-white/10" />
           <Snowflake className="pointer-events-none absolute -bottom-14 -left-10 h-52 w-52 text-white/10" />
           <div className="relative mx-auto max-w-6xl px-6 py-20">

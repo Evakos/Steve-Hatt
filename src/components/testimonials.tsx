@@ -11,8 +11,8 @@ export default function Testimonials() {
   const hasPlaceholders = testimonials.some((t) => t.placeholder);
 
   return (
-    <section className="overflow-hidden bg-cream">
-      <div className="mx-auto max-w-6xl px-6 pt-20 pb-56">
+    <section className="bg-cream">
+      <div className="mx-auto max-w-6xl px-6 py-20">
         <div className="mb-10 text-center">
           <p className="text-xs tracking-widest text-text-light uppercase">Kind words</p>
           <h2 className="mt-2 font-serif text-3xl font-bold text-navy">What our customers say</h2>
@@ -22,25 +22,11 @@ export default function Testimonials() {
             </p>
           )}
         </div>
-        <div className="relative">
-          {/* Full-bleed navy band rising from the footer: solid navy at the bottom (so it runs straight
-              into the navy footer), fading to nothing towards the top. It starts partway down the cards,
-              so the cards poke above it. */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute -right-[50vw] -bottom-56 -left-[50vw] h-56"
-            style={{
-              // Solid navy at the very bottom (it runs on into the footer), easing out smoothly to nothing. The
-              // fade only reaches the lowest edge of the cards, so they sit on cream and the blend stays subtle.
-              background:
-                "linear-gradient(to top, rgba(36,46,103,1.000) 0%, rgba(36,46,103,0.985) 7%, rgba(36,46,103,0.945) 14%, rgba(36,46,103,0.882) 21%, rgba(36,46,103,0.802) 29%, rgba(36,46,103,0.708) 36%, rgba(36,46,103,0.606) 43%, rgba(36,46,103,0.500) 50%, rgba(36,46,103,0.394) 57%, rgba(36,46,103,0.292) 64%, rgba(36,46,103,0.198) 71%, rgba(36,46,103,0.118) 79%, rgba(36,46,103,0.055) 86%, rgba(36,46,103,0.015) 93%, rgba(36,46,103,0.000) 100%)",
-            }}
-          />
-        <div className="relative grid gap-6 md:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-3">
           {testimonials.map((t, i) => (
             <figure
               key={i}
-              className="flex flex-col border border-border bg-white p-6 shadow-lg transition-all hover:-translate-y-0.5 hover:shadow-xl"
+              className="flex flex-col border border-border bg-white p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
               style={{ borderRadius: "14px" }}
             >
               <Quote className="h-6 w-6 text-lobster" aria-hidden />
@@ -63,7 +49,6 @@ export default function Testimonials() {
               </figcaption>
             </figure>
           ))}
-        </div>
         </div>
       </div>
     </section>
