@@ -9,6 +9,9 @@ export interface Testimonial {
   rating?: number;
   /** Where a published quote came from, e.g. "Time Out London, 2010". Shown instead of `detail`. */
   source?: string;
+  /** Optional publication logo for a press quote: a file in /public, for example
+   * { src: "/press/time-out.svg", alt: "Time Out", width: 90 }. Only use a logo you have permission to show. */
+  logo?: { src: string; alt: string; width: number };
   /** Link to the original, shown on the source line. */
   href?: string;
   /** True for sample text only. These must be replaced with real, permitted customer quotes before launch. */

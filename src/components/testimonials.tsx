@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Quote } from "lucide-react";
 import { testimonials as allTestimonials } from "@/content/testimonials";
 
@@ -64,7 +65,11 @@ export default function Testimonials() {
           ))}
         </div>
         {press && (
-          <p className="mx-auto mt-14 max-w-2xl text-center text-base italic leading-relaxed text-text-light">
+          <div className="mx-auto mt-14 flex max-w-2xl flex-col items-center gap-4">
+            {press.logo && (
+              <Image src={press.logo.src} alt={press.logo.alt} width={press.logo.width} height={Math.round(press.logo.width / 3)} className="h-auto w-auto max-h-8" />
+            )}
+          <p className="text-center text-base italic leading-relaxed text-text-light">
             &ldquo;{press.quote}&rdquo;{" "}
             <span className="not-italic">
               {press.href ? (
@@ -77,6 +82,7 @@ export default function Testimonials() {
               {press.source ? `, ${press.source.toLowerCase()}` : ""}
             </span>
           </p>
+          </div>
         )}
       </div>
     </section>
