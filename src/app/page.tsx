@@ -78,14 +78,14 @@ export default async function Home() {
           <div className="relative flex sm:absolute sm:inset-0 sm:items-center">
             <div className="mx-auto w-full max-w-6xl px-6 py-12 sm:py-0">
               <div className="max-w-2xl">
-                <p className="animate-fade-up mb-3 text-xs tracking-widest text-white/80 uppercase sm:mb-4 sm:text-sm">Est. 1895 · Essex Road, London</p>
-                <h1 className="animate-fade-up font-serif text-4xl font-bold leading-[1.1] text-white sm:text-5xl md:text-6xl lg:text-7xl" style={{ animationDelay: "90ms" }}>
+                <p className="animate-fade-up mb-3 text-xs tracking-widest text-white/80 uppercase sm:mb-4 sm:text-sm" style={{ animationDelay: "1600ms" }}>Est. 1895 · Essex Road, London</p>
+                <h1 className="animate-fade-up font-serif text-4xl font-bold leading-[1.1] text-white sm:text-5xl md:text-6xl lg:text-7xl" style={{ animationDelay: "1690ms" }}>
                   From Sea, to Shop, to You.
                 </h1>
-                <p className="animate-fade-up mt-4 max-w-lg text-base leading-relaxed text-white/90 sm:mt-6 sm:text-lg" style={{ animationDelay: "180ms" }}>
+                <p className="animate-fade-up mt-4 max-w-lg text-base leading-relaxed text-white/90 sm:mt-6 sm:text-lg" style={{ animationDelay: "1780ms" }}>
                   The <strong className="font-semibold text-white">freshest fish from the British coastline</strong>, prepared by hand and delivered to your door. Order online for next-day local delivery or click &amp; collect.
                 </p>
-                <div className="animate-fade-up mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 sm:mt-6" style={{ animationDelay: "270ms" }}>
+                <div className="animate-fade-up mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 sm:mt-6" style={{ animationDelay: "1870ms" }}>
                   <GoogleRating data={googleReview} />
                   <span className="hidden h-4 w-px bg-white/30 sm:block" aria-hidden />
                   <a
@@ -97,7 +97,7 @@ export default async function Home() {
                     <strong className="font-medium text-white">Time Out London:</strong> <em>&ldquo;first class fresh fish&rdquo;</em>
                   </a>
                 </div>
-                <div className="animate-fade-up mt-4 flex flex-col gap-3 sm:mt-6 sm:flex-row sm:items-center sm:gap-4" style={{ animationDelay: "360ms" }}>
+                <div className="animate-fade-up mt-4 flex flex-col gap-3 sm:mt-6 sm:flex-row sm:items-center sm:gap-4" style={{ animationDelay: "1960ms" }}>
                   <a href="#shop" className="bg-lobster px-6 py-3 text-center text-sm font-medium text-white transition-colors hover:bg-lobster/90" style={{ borderRadius: '6px' }}>
                     Shop Today&apos;s Catch
                   </a>
