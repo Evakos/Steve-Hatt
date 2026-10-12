@@ -44,7 +44,7 @@ export default function Testimonials() {
               ) : (
                 <Quote className="h-6 w-6 text-lobster" aria-hidden />
               )}
-              <blockquote className="mt-4 flex-1 text-lg leading-relaxed text-navy">{t.quote}</blockquote>
+              <blockquote className="mt-4 flex-1 text-lg leading-snug text-navy">{t.quote}</blockquote>
               <figcaption className="mt-5">
                 <p className="text-sm font-medium text-navy">{t.name}</p>
                 {t.source ? (
