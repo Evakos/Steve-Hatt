@@ -23,7 +23,7 @@ const CHRISTMAS_FEATURED_SLUGS = [
   "smoked-salmon-gold-board",
   "lobster-live",
   "scallops",
-  "oysters-carlingford-2",
+  "oysters-carlingford",
 ];
 
 /** Fisher-Yates shuffle, then take the first n - used to rotate "Today's Catch" rather than
