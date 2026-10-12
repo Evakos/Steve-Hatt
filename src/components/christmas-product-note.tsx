@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Snowflake } from "lucide-react";
 import { getUpcomingChristmasDates } from "@/lib/christmas-dates";
 
 const dateFormat = new Intl.DateTimeFormat("en-GB", { weekday: "short", day: "numeric", month: "short" });
@@ -42,15 +43,16 @@ export default function ChristmasProductNote({ excluded }: { excluded: boolean }
 
   return (
     <div
-      className="mt-4 border border-[#1a3a2a]/15 bg-[#e8f5ed] p-5 shadow-sm"
+      className="relative mt-4 overflow-hidden border border-[#1a3a2a]/15 bg-[#e8f5ed] p-5 shadow-sm"
       style={{ borderRadius: "14px" }}
     >
-      <p className="font-serif text-lg font-semibold leading-tight text-[#1a3a2a]">Available for Christmas pre-order</p>
-      <p className="mt-1 text-sm leading-relaxed text-[#1a3a2a]/80">
+      <Snowflake className="pointer-events-none absolute -right-4 -top-4 h-24 w-24 text-[#1a3a2a]/5" aria-hidden />
+      <p className="relative font-serif text-lg font-semibold leading-tight text-[#1a3a2a]">Available for Christmas pre-order</p>
+      <p className="relative mt-1 text-sm leading-relaxed text-[#1a3a2a]/80">
         Reserve it now for the festive table, then choose your delivery or collection day at checkout.
       </p>
       {dates.length > 0 && (
-        <ul className="mt-3 flex flex-wrap gap-2" aria-label="Christmas delivery and collection dates">
+        <ul className="relative mt-3 flex flex-wrap gap-2" aria-label="Christmas delivery and collection dates">
           {dates.map((d) => (
             <li
               key={d.toISOString()}
@@ -62,7 +64,7 @@ export default function ChristmasProductNote({ excluded }: { excluded: boolean }
           ))}
         </ul>
       )}
-      <p className="mt-3 text-xs text-[#1a3a2a]/60">The shop is closed on Sunday and Monday.</p>
+      <p className="relative mt-3 text-xs text-[#1a3a2a]/60">The shop is closed on Sunday and Monday.</p>
     </div>
   );
 }
