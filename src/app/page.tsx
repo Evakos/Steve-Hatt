@@ -71,6 +71,7 @@ export default async function Home() {
             }}
           >
             <Image src="/hero-shop-floor.jpg" alt="A Steve Hatt fishmonger setting out fresh fish on ice" fill sizes="100vw" className="object-cover object-[65%_center]" priority />
+            <div className="absolute inset-0 bg-navy/25" />
             <div className="absolute inset-0 bg-gradient-to-t from-navy/70 via-transparent to-transparent" />
           </div>
           <div className="absolute inset-0 flex items-end sm:items-center">
