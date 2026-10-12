@@ -3,10 +3,11 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getAllProducts, getProductBySlug } from "@/lib/products";
-import { Gift, MapPin, Thermometer, Leaf } from "lucide-react";
+import { MapPin, Thermometer, Leaf } from "lucide-react";
 import Header from "@/components/header";
 import AnnouncementBanner from "@/components/announcement-banner";
 import AddToCart from "@/components/add-to-cart";
+import ChristmasProductNote from "@/components/christmas-product-note";
 
 export async function generateStaticParams() {
   const products = await getAllProducts();
@@ -87,15 +88,8 @@ export default async function ProductPage({
 
               <AddToCart product={product} />
 
-              {/* Christmas availability note */}
-              {product.featuredFor?.includes("christmas") && (
-                <div className="mt-3 flex items-center gap-2 border border-[#1a3a2a]/20 bg-[#e8f5ed] px-4 py-3" style={{ borderRadius: '5px' }}>
-                  <Gift className="h-4 w-4 shrink-0 text-[#1a3a2a]" />
-                  <p className="text-sm text-[#1a3a2a]/80">
-                    Available for Christmas pre-order, choose a festive delivery date at checkout.
-                  </p>
-                </div>
-              )}
+              {/* Christmas availability note - appears only while Christmas ordering is on */}
+              <ChristmasProductNote excluded={Boolean(product.excludedFromChristmas)} />
 
 
               {/* Info grid */}
