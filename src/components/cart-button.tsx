@@ -13,7 +13,6 @@ export default function CartButton() {
       className="relative flex items-center gap-1.5 text-sm text-text-light transition-colors hover:text-navy"
     >
       <ShoppingBag className="h-4 w-4" />
-      Basket
       {itemCount > 0 && (
         <span
           className="absolute -right-2.5 -top-2 flex h-4 w-4 items-center justify-center bg-lobster text-[10px] font-medium text-white"
