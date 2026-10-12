@@ -1,9 +1,10 @@
-import Testimonials from "@/components/testimonials";
 import Image from "next/image";
 import Link from "next/link";
 import { getAllProducts } from "@/lib/products";
 import { isChristmasShopActive } from "@/lib/feature-flags";
 import { Truck, Fish, Scaling, Leaf, Anchor, Recycle, ShoppingBag, Search, Snowflake } from "lucide-react";
+import GoogleRating from "@/components/google-rating";
+import { getGoogleReviewData } from "@/lib/google-reviews";
 import Header from "@/components/header";
 import PostcodeCheck from "@/components/postcode-check";
 import AnnouncementBanner from "@/components/announcement-banner";
@@ -38,9 +39,10 @@ function pickRandom<T>(items: T[], n: number): T[] {
 }
 
 export default async function Home() {
-  const [products, christmasActive] = await Promise.all([
+  const [products, christmasActive, googleReview] = await Promise.all([
     getAllProducts(),
     isChristmasShopActive(),
+    getGoogleReviewData(),
   ]);
   const todaysCatch = pickRandom(products, 6);
   // Curated festive picks for the Christmas section - only products whose slug is in the
@@ -88,6 +90,9 @@ export default async function Home() {
                   <a href="#how" className="border border-white/40 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-white/10" style={{ borderRadius: '6px' }}>
                     How It Works
                   </a>
+                </div>
+                <div className="mt-6">
+                  <GoogleRating data={googleReview} />
                 </div>
               </div>
             </div>
@@ -281,9 +286,6 @@ export default async function Home() {
           </div>
         </section>
       )}
-
-      {/* Reviews sit last, directly above the footer, so their navy fade runs straight into it */}
-      <Testimonials />
 
       <Footer />
     </main>
