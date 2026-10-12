@@ -62,7 +62,7 @@ export default async function Home() {
 
       {/* Hero - text overlaid on the photo, matching a traditional hero banner */}
       <section className="bg-white">
-        <div className="relative bg-navy" style={{ height: "50vh" }}>
+        <div className="relative bg-navy sm:h-[50vh]">
           <div
             className="absolute inset-y-0 right-0 w-full sm:w-[80%]"
             style={{
@@ -71,20 +71,20 @@ export default async function Home() {
             }}
           >
             <Image src="/hero-shop-floor.jpg" alt="A Steve Hatt fishmonger setting out fresh fish on ice" fill sizes="100vw" className="object-cover object-[65%_center]" priority />
-            <div className="absolute inset-0 bg-navy/40" />
-            <div className="absolute inset-0 bg-gradient-to-t from-navy/70 via-transparent to-transparent" />
+            <div className="absolute inset-0 bg-navy/60 sm:bg-navy/40" />
+            <div className="absolute inset-0 bg-gradient-to-t from-navy/85 via-navy/20 to-transparent sm:from-navy/70 sm:via-transparent" />
           </div>
-          <div className="absolute inset-0 flex items-end sm:items-center">
-            <div className="mx-auto w-full max-w-6xl px-6 pb-10 sm:pb-0">
+          <div className="relative flex sm:absolute sm:inset-0 sm:items-center">
+            <div className="mx-auto w-full max-w-6xl px-6 py-12 sm:py-0">
               <div className="max-w-2xl">
-                <p className="mb-4 text-sm tracking-widest text-white/80 uppercase">Est. 1895 · Essex Road, London</p>
-                <h1 className="font-serif text-5xl font-bold leading-[1.1] text-white md:text-6xl lg:text-7xl">
+                <p className="mb-3 text-xs tracking-widest text-white/80 uppercase sm:mb-4 sm:text-sm">Est. 1895 · Essex Road, London</p>
+                <h1 className="font-serif text-4xl font-bold leading-[1.1] text-white sm:text-5xl md:text-6xl lg:text-7xl">
                   From Sea, to Shop, to You.
                 </h1>
-                <p className="mt-6 max-w-lg text-lg leading-relaxed text-white/90">
-                  The freshest fish from the British coastline, prepared by hand and delivered to your door. Order online for next-day local delivery or click & collect.
+                <p className="mt-4 max-w-lg text-base leading-relaxed text-white/90 sm:mt-6 sm:text-lg">
+                  The <strong className="font-semibold text-white">freshest fish from the British coastline</strong>, prepared by hand and delivered to your door. Order online for next-day local delivery or click &amp; collect.
                 </p>
-                <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2">
+                <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 sm:mt-6">
                   <GoogleRating data={googleReview} />
                   <span className="hidden h-4 w-px bg-white/30 sm:block" aria-hidden />
                   <a
@@ -96,11 +96,11 @@ export default async function Home() {
                     <strong className="font-medium text-white">Time Out London:</strong> <em>&ldquo;first class fresh fish&rdquo;</em>
                   </a>
                 </div>
-                <div className="mt-6 flex items-center gap-4">
-                  <a href="#shop" className="bg-lobster px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-lobster/90" style={{ borderRadius: '6px' }}>
+                <div className="mt-4 flex flex-col gap-3 sm:mt-6 sm:flex-row sm:items-center sm:gap-4">
+                  <a href="#shop" className="bg-lobster px-6 py-3 text-center text-sm font-medium text-white transition-colors hover:bg-lobster/90" style={{ borderRadius: '6px' }}>
                     Shop Today&apos;s Catch
                   </a>
-                  <a href="#how" className="border border-white/40 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-white/10" style={{ borderRadius: '6px' }}>
+                  <a href="#how" className="border border-white/40 px-6 py-3 text-center text-sm font-medium text-white transition-colors hover:bg-white/10" style={{ borderRadius: '6px' }}>
                     How It Works
                   </a>
                 </div>
@@ -111,12 +111,11 @@ export default async function Home() {
 
         {/* Trust strip - full width, directly attached with no gap */}
         <div className="border-b border-border/50 bg-navy">
-          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-8 px-6 py-5 md:justify-between">
+          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-8 gap-y-3 px-6 py-4 sm:py-5 md:justify-between">
             {[
               { icon: <Truck className="h-4 w-4" />, text: "Local delivery across Islington" },
               { icon: <Leaf className="h-4 w-4" />, text: "Sustainably sourced" },
               { icon: <Fish className="h-4 w-4" />, text: "Prepared to order" },
-              { icon: <Scaling className="h-4 w-4" />, text: "You only pay for what you receive" },
             ].map((item) => (
               <div key={item.text} className="flex items-center gap-2 text-sm tracking-wide text-white/70">
                 <span className="text-teal">{item.icon}</span>
@@ -148,7 +147,7 @@ export default async function Home() {
 
       {/* Shop */}
       <section id="shop" className="bg-white">
-        <div className="mx-auto max-w-6xl px-6 py-20">
+        <div className="mx-auto max-w-6xl px-6 py-12 md:py-20">
           <div className="mb-10 flex items-end justify-between">
             <div>
               <p className="text-xs tracking-widest text-text-light uppercase">Fresh today</p>
@@ -179,7 +178,7 @@ export default async function Home() {
 
       {/* How it works */}
       <section id="how" className="bg-white">
-        <div className="mx-auto max-w-6xl px-6 py-20">
+        <div className="mx-auto max-w-6xl px-6 py-12 md:py-20">
           <p className="text-xs tracking-widest text-text-light uppercase">Simple & transparent</p>
           <h2 className="mt-2 mb-10 font-serif text-3xl font-bold text-navy">How It Works</h2>
           <div className="grid gap-4 md:grid-cols-4">
@@ -196,7 +195,7 @@ export default async function Home() {
 
       {/* Story */}
       <section id="story" className="bg-sand">
-        <div className="mx-auto max-w-6xl px-6 py-20">
+        <div className="mx-auto max-w-6xl px-6 py-12 md:py-20">
           <div className="grid gap-12 md:grid-cols-2">
             <div>
               <p className="text-xs tracking-widest text-text-light uppercase">Our heritage</p>
@@ -206,7 +205,7 @@ export default async function Home() {
                   For over 130 years, Steve Hatt has been the heart of Islington&apos;s food community. What started as a small fishmonger on Essex Road has grown into one of London&apos;s most respected sources of fresh seafood.
                 </p>
                 <p>
-                  We believe in supporting a sustainable ecology by bringing the freshest fish from the British coastline to our community with the smallest possible ecological footprint. Every piece is hand-selected, prepared to order, and delivered with the care you&apos;d expect from a family business.
+                  We believe in supporting a sustainable ecology by bringing the freshest fish from the British coastline to our community with the smallest possible ecological footprint. Every piece is <strong className="font-semibold text-navy">hand-selected, prepared to order</strong>, and delivered with the care you&apos;d expect from a family business.
                 </p>
                 <p>
                   Now you can order online and have the same quality delivered to your door, or collect from the shop. Same fish, same standards, more convenience.
@@ -257,11 +256,11 @@ export default async function Home() {
         <section id="christmas" className="relative overflow-hidden bg-sand">
           <Snowflake className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 text-navy/5" />
           <Snowflake className="pointer-events-none absolute -bottom-14 -left-10 h-52 w-52 text-navy/5" />
-          <div className="relative mx-auto max-w-6xl px-6 py-20">
+          <div className="relative mx-auto max-w-6xl px-6 py-12 md:py-20">
             <div className="mb-10 text-center">
               <p className="text-xs tracking-widest text-text-light uppercase">Festive season</p>
               <h2 className="mt-2 font-serif text-3xl font-bold text-navy md:text-4xl">Christmas Pre-Orders</h2>
-              <p className="mx-auto mt-4 max-w-lg text-lg leading-relaxed text-text-light">
+              <p className="mx-auto mt-4 max-w-lg text-base leading-relaxed text-text-light">
                 Reserve your Christmas feast now. Pre-order by 20th December for delivery or collection on 23rd-24th December. Every order prepared fresh by your fishmonger.
               </p>
               {anyChristmasPricing && (
