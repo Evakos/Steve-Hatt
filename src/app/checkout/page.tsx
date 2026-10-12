@@ -298,7 +298,7 @@ export default function CheckoutPage() {
         <section className="flex-1 bg-cream">
           <div className="mx-auto max-w-6xl px-6 py-20 text-center">
             <h1 className="font-serif text-3xl font-bold text-navy">Checkout</h1>
-            <p className="mt-4 text-sm text-text-light">Your order is empty.</p>
+            <p className="mt-4 text-sm text-text-light">Your basket is empty.</p>
             <Link
               href="/#shop"
               className="mt-6 inline-block bg-lobster px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-lobster/90"
@@ -475,7 +475,7 @@ export default function CheckoutPage() {
                         <div className="mt-3 flex items-start gap-2 border border-[#1a3a2a]/20 bg-[#e8f5ed]/50 px-4 py-3" style={{ borderRadius: "5px" }}>
                           <Gift className="mt-0.5 h-4 w-4 shrink-0 text-[#1a3a2a]" />
                           <p className="text-sm text-[#1a3a2a]/80">
-                            Some items in your order have a different price for Christmas, reflecting higher
+                            Some items in your basket have a different price for Christmas, reflecting higher
                             market prices over the festive period. Prices shown elsewhere on the site are
                             unaffected, this only applies once you choose to order for Christmas, and is reflected
                             in the totals below.
@@ -789,7 +789,7 @@ export default function CheckoutPage() {
 
 
                 <Link href="/cart" className="mt-4 block text-center text-xs text-text-light hover:text-navy">
-                  ← Back to order
+                  ← Back to basket
                 </Link>
               </div>
             </div>

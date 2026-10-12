@@ -23,7 +23,7 @@ export default function MiniCart() {
 
         {items.length === 0 ? (
           <div className="px-4 py-6 text-center text-sm text-text-light">
-            Your order is empty
+            Your basket is empty
           </div>
         ) : (
           <>
@@ -61,7 +61,7 @@ export default function MiniCart() {
                 className="mt-3 block w-full bg-lobster px-4 py-2.5 text-center text-sm font-medium text-white transition-colors hover:bg-lobster/90"
                 style={{ borderRadius: "6px" }}
               >
-                View Order
+                View Basket
               </Link>
               <Link
                 href="/checkout"

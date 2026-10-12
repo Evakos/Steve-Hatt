@@ -20,8 +20,8 @@ export default function CartPage() {
           <h1 className="font-serif text-3xl font-bold text-navy">Your Order</h1>
           <p className="mt-2 text-base text-text-light">
             {items.length === 0
-              ? "Your order is empty."
-              : `${items.length} item${items.length > 1 ? "s" : ""} in your order`}
+              ? "Your basket is empty."
+              : `${items.length} item${items.length > 1 ? "s" : ""} in your basket`}
           </p>
 
           {items.length === 0 ? (
@@ -111,7 +111,7 @@ export default function CartPage() {
                   onClick={clearCart}
                   className="text-sm text-text-light underline hover:text-navy"
                 >
-                  Clear order
+                  Clear basket
                 </button>
               </div>
 
