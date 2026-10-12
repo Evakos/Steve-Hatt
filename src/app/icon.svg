@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Fish head">
+  <rect width="64" height="64" rx="14" fill="#242E67"/>
+  <!-- head, side-on, snout pointing left -->
+  <path d="M7 33 C12 19 27 12 43 14 C51 15 56 22 56 32 C56 43 50 51 42 52 C26 54 12 48 7 33 Z" fill="#F27052"/>
+  <!-- open mouth -->
+  <path d="M7 33 L24 36.5" stroke="#242E67" stroke-width="2.6" stroke-linecap="round" fill="none"/>
+  <!-- gill cover -->
+  <path d="M39 19 C46 28 46 39 39 48" stroke="#242E67" stroke-width="2.8" stroke-linecap="round" fill="none"/>
+  <!-- eye -->
+  <circle cx="23" cy="27" r="5.2" fill="#FFFFFF"/>
+  <circle cx="24" cy="27.4" r="2.4" fill="#242E67"/>
+</svg>
