@@ -129,16 +129,20 @@ export default async function Home() {
         {/* Postcode check - full width, directly attached with no gap */}
         <div className="bg-ocean-light">
           <div className="mx-auto max-w-6xl px-6 py-12">
-            <div className="flex flex-col items-center gap-4 text-center md:flex-row md:text-left">
-              <div className="flex-1">
+            <div className="grid items-start gap-8 text-center md:grid-cols-3 md:gap-10 md:text-left">
+              <div>
                 <h2 className="font-serif text-xl font-semibold text-navy">Check if we deliver to you</h2>
-                <p className="mt-1 text-base text-text-light">
+                <p className="mt-1 text-base leading-relaxed text-text-light">
                   Enter your postcode to see delivery options. Not in our zone? Click &amp; collect is always available.
-                  <br />
+                </p>
+              </div>
+              <div>
+                <h2 className="font-serif text-xl font-semibold text-navy">Faster checkout</h2>
+                <p className="mt-1 text-base leading-relaxed text-text-light">
                   <Link href="/account" className="font-medium text-navy underline">Sign In/Register</Link> for faster checkout.
                 </p>
               </div>
-              <div className="w-full max-w-xs md:w-auto">
+              <div className="mx-auto w-full max-w-xs md:mx-0 md:max-w-none">
                 <PostcodeCheck />
               </div>
             </div>
