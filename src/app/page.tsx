@@ -222,16 +222,16 @@ export default async function Home() {
 
       {/* Sustainability */}
       <section className="bg-navy">
-        <div className="mx-auto max-w-6xl px-6 py-20">
-          <div className="grid gap-8 md:grid-cols-3">
+        <div className="mx-auto max-w-6xl px-6 py-10">
+          <div className="grid gap-6 md:grid-cols-3">
             {[
               { icon: <Leaf className="h-6 w-6" />, title: "Sustainability", desc: "We source from responsible British fisheries, prioritising seasonal catches and sustainable methods." },
               { icon: <Anchor className="h-6 w-6" />, title: "Local Suppliers", desc: "Our relationships with coastal suppliers span decades. We know where every fish comes from." },
               { icon: <Recycle className="h-6 w-6" />, title: "Zero Waste", desc: "Every cut is prepared to order. No pre-packaging, no waste, no compromise on freshness." },
             ].map((item) => (
               <div key={item.title}>
-                <span className="mb-4 block text-teal">{item.icon}</span>
-                <h3 className="mb-3 font-serif text-lg font-semibold text-white">{item.title}</h3>
+                <span className="mb-2 block text-teal">{item.icon}</span>
+                <h3 className="mb-1.5 font-serif text-lg font-semibold text-white">{item.title}</h3>
                 <p className="text-sm leading-relaxed text-white/60">{item.desc}</p>
               </div>
             ))}
