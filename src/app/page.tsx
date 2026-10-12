@@ -9,6 +9,7 @@ import Header from "@/components/header";
 import PostcodeCheck from "@/components/postcode-check";
 import AnnouncementBanner from "@/components/announcement-banner";
 import Footer from "@/components/footer";
+import Reveal from "@/components/reveal";
 
 const howItWorks = [
   { icon: <ShoppingBag className="h-5 w-5" />, step: "01", title: "Browse & Order", desc: "Our stock is updated daily based on what's come in fresh. Select your fish and approximate weight." },
@@ -77,14 +78,14 @@ export default async function Home() {
           <div className="relative flex sm:absolute sm:inset-0 sm:items-center">
             <div className="mx-auto w-full max-w-6xl px-6 py-12 sm:py-0">
               <div className="max-w-2xl">
-                <p className="mb-3 text-xs tracking-widest text-white/80 uppercase sm:mb-4 sm:text-sm">Est. 1895 · Essex Road, London</p>
-                <h1 className="font-serif text-4xl font-bold leading-[1.1] text-white sm:text-5xl md:text-6xl lg:text-7xl">
+                <p className="animate-fade-up mb-3 text-xs tracking-widest text-white/80 uppercase sm:mb-4 sm:text-sm">Est. 1895 · Essex Road, London</p>
+                <h1 className="animate-fade-up font-serif text-4xl font-bold leading-[1.1] text-white sm:text-5xl md:text-6xl lg:text-7xl" style={{ animationDelay: "90ms" }}>
                   From Sea, to Shop, to You.
                 </h1>
-                <p className="mt-4 max-w-lg text-base leading-relaxed text-white/90 sm:mt-6 sm:text-lg">
+                <p className="animate-fade-up mt-4 max-w-lg text-base leading-relaxed text-white/90 sm:mt-6 sm:text-lg" style={{ animationDelay: "180ms" }}>
                   The <strong className="font-semibold text-white">freshest fish from the British coastline</strong>, prepared by hand and delivered to your door. Order online for next-day local delivery or click &amp; collect.
                 </p>
-                <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 sm:mt-6">
+                <div className="animate-fade-up mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 sm:mt-6" style={{ animationDelay: "270ms" }}>
                   <GoogleRating data={googleReview} />
                   <span className="hidden h-4 w-px bg-white/30 sm:block" aria-hidden />
                   <a
@@ -96,7 +97,7 @@ export default async function Home() {
                     <strong className="font-medium text-white">Time Out London:</strong> <em>&ldquo;first class fresh fish&rdquo;</em>
                   </a>
                 </div>
-                <div className="mt-4 flex flex-col gap-3 sm:mt-6 sm:flex-row sm:items-center sm:gap-4">
+                <div className="animate-fade-up mt-4 flex flex-col gap-3 sm:mt-6 sm:flex-row sm:items-center sm:gap-4" style={{ animationDelay: "360ms" }}>
                   <a href="#shop" className="bg-lobster px-6 py-3 text-center text-sm font-medium text-white transition-colors hover:bg-lobster/90" style={{ borderRadius: '6px' }}>
                     Shop Today&apos;s Catch
                   </a>
@@ -111,7 +112,7 @@ export default async function Home() {
 
         {/* Trust strip - full width, directly attached with no gap */}
         <div className="border-b border-border/50 bg-navy">
-          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-8 gap-y-3 px-6 py-4 sm:py-5 md:justify-between">
+          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-8 gap-y-3 px-6 py-4 sm:py-5">
             {[
               { icon: <Truck className="h-4 w-4" />, text: "Local delivery across Islington" },
               { icon: <Leaf className="h-4 w-4" />, text: "Sustainably sourced" },
@@ -128,6 +129,7 @@ export default async function Home() {
         {/* Postcode check - compact vertical footprint */}
         <div className="bg-ocean-light">
           <div className="mx-auto max-w-6xl px-6 py-6">
+            <Reveal>
             <div className="flex flex-col items-center gap-2 text-center md:flex-row md:text-left">
               <div className="flex-1">
                 <h2 className="font-serif text-xl font-semibold text-navy">Check if we deliver to you</h2>
@@ -141,6 +143,7 @@ export default async function Home() {
                 <PostcodeCheck />
               </div>
             </div>
+            </Reveal>
           </div>
         </div>
       </section>
@@ -148,6 +151,7 @@ export default async function Home() {
       {/* Shop */}
       <section id="shop" className="bg-white">
         <div className="mx-auto max-w-6xl px-6 py-12 md:py-20">
+          <Reveal>
           <div className="mb-10 flex items-end justify-between">
             <div>
               <p className="text-xs tracking-widest text-text-light uppercase">Fresh today</p>
@@ -155,11 +159,13 @@ export default async function Home() {
             </div>
             <Link href="/shop" className="text-sm text-navy hover:underline">View all →</Link>
           </div>
+          </Reveal>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {todaysCatch.map((p) => (
-              <Link key={p.slug} href={`/shop/${p.slug}`} className="group border border-border bg-white p-4 transition-all hover:border-navy/30 hover:shadow-md" style={{ borderRadius: '5px' }}>
+            {todaysCatch.map((p, i) => (
+              <Reveal key={p.slug} delay={Math.min(i, 5) * 70}>
+              <Link href={`/shop/${p.slug}`} className="group block border border-border bg-white p-4 transition-all duration-300 hover:-translate-y-1 hover:border-navy/30 hover:shadow-lg" style={{ borderRadius: '5px' }}>
                 <div className="relative mb-3 h-40 overflow-hidden bg-sand" style={{ borderRadius: '3px' }}>
-                  <Image src={p.image} alt={p.name} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover transition-transform group-hover:scale-105" />
+                  <Image src={p.image} alt={p.name} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover" />
                   <span className="absolute left-2 top-2 bg-lobster px-2 py-1 text-[10px] font-medium tracking-wide text-white uppercase" style={{ borderRadius: '2px' }}>{p.tag}</span>
                 </div>
                 <h3 className="font-serif text-lg font-semibold text-navy">{p.name}</h3>
@@ -171,6 +177,7 @@ export default async function Home() {
                   </span>
                 </div>
               </Link>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -179,15 +186,19 @@ export default async function Home() {
       {/* How it works */}
       <section id="how" className="bg-white">
         <div className="mx-auto max-w-6xl px-6 py-12 md:py-20">
+          <Reveal>
           <p className="text-xs tracking-widest text-text-light uppercase">Simple & transparent</p>
           <h2 className="mt-2 mb-10 font-serif text-3xl font-bold text-navy">How It Works</h2>
+          </Reveal>
           <div className="grid gap-4 md:grid-cols-4">
-            {howItWorks.map((item) => (
-              <div key={item.step} className="border border-border p-6" style={{ borderRadius: '5px' }}>
+            {howItWorks.map((item, i) => (
+              <Reveal key={item.step} delay={Math.min(i, 3) * 70}>
+              <div className="border border-border p-6" style={{ borderRadius: '5px' }}>
                 <span className="font-serif text-2xl font-light text-lobster/40">{item.step}</span>
                 <h3 className="mt-3 font-serif text-base font-semibold text-navy">{item.title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-text-light">{item.desc}</p>
               </div>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -197,6 +208,7 @@ export default async function Home() {
       <section id="story" className="bg-sand">
         <div className="mx-auto max-w-6xl px-6 py-12 md:py-20">
           <div className="grid gap-12 md:grid-cols-2">
+            <Reveal>
             <div>
               <p className="text-xs tracking-widest text-text-light uppercase">Our heritage</p>
               <h2 className="mt-2 font-serif text-3xl font-bold text-navy">Local Since 1895</h2>
@@ -216,15 +228,18 @@ export default async function Home() {
                 className="mt-8 inline-block bg-lobster px-6 py-3 text-sm font-medium text-white transition-all hover:-translate-y-px hover:bg-[#e2573b] hover:shadow-md active:translate-y-0"
                 style={{ borderRadius: "6px" }}
               >
-                Learn more about our story
+                Learn More
               </Link>
             </div>
+            </Reveal>
+            <Reveal delay={120}>
             <div
               className="relative aspect-square overflow-hidden bg-navy/5"
               style={{ borderRadius: "60% 40% 30% 70% / 60% 30% 70% 40%" }}
             >
               <Image src="/hero.svg" alt="Illustration of the fishing harbour" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover object-[74%_center]" />
             </div>
+            </Reveal>
           </div>
         </div>
       </section>
@@ -232,6 +247,7 @@ export default async function Home() {
       {/* Sustainability */}
       <section className="bg-navy">
         <div className="mx-auto max-w-6xl px-6 py-10">
+          <Reveal>
           <div className="grid gap-6 md:grid-cols-3">
             {[
               { icon: <Leaf className="h-6 w-6" />, title: "Sustainability", desc: "We source from responsible British fisheries, prioritising seasonal catches and sustainable methods." },
@@ -245,6 +261,7 @@ export default async function Home() {
               </div>
             ))}
           </div>
+          </Reveal>
         </div>
       </section>
 
@@ -257,6 +274,7 @@ export default async function Home() {
           <Snowflake className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 text-navy/5" />
           <Snowflake className="pointer-events-none absolute -bottom-14 -left-10 h-52 w-52 text-navy/5" />
           <div className="relative mx-auto max-w-6xl px-6 py-12 md:py-20">
+            <Reveal>
             <div className="mb-10 text-center">
               <p className="text-xs tracking-widest text-text-light uppercase">Festive season</p>
               <h2 className="mt-2 font-serif text-3xl font-bold text-navy md:text-4xl">Christmas Pre-Orders</h2>
@@ -271,11 +289,13 @@ export default async function Home() {
                 </p>
               )}
             </div>
+            </Reveal>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {christmasFeatured.map((p) => (
-                <Link key={p.slug} href={`/shop/${p.slug}`} className="group border border-border bg-white p-5 transition-all hover:border-navy/30 hover:shadow-md" style={{ borderRadius: '5px' }}>
+              {christmasFeatured.map((p, i) => (
+                <Reveal key={p.slug} delay={Math.min(i, 3) * 70}>
+                <Link href={`/shop/${p.slug}`} className="group block border border-border bg-white p-5 transition-all duration-300 hover:-translate-y-1 hover:border-navy/30 hover:shadow-lg" style={{ borderRadius: '5px' }}>
                   <div className="relative mb-3 h-32 overflow-hidden bg-sand" style={{ borderRadius: '3px' }}>
-                    <Image src={p.image} alt={p.name} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw" className="object-cover transition-transform group-hover:scale-105" />
+                    <Image src={p.image} alt={p.name} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw" className="object-cover" />
                     <span className="absolute left-2 top-2 bg-lobster px-2 py-1 text-[10px] font-medium tracking-wide text-white uppercase" style={{ borderRadius: '2px' }}>{p.tag}</span>
                   </div>
                   <h3 className="truncate font-serif text-sm font-semibold text-navy" title={p.name}>{p.name}</h3>
@@ -290,6 +310,7 @@ export default async function Home() {
                     <p className="mt-2 text-[10px] text-teal">{p.preOrderDelivery}</p>
                   )}
                 </Link>
+                </Reveal>
               ))}
             </div>
           </div>
