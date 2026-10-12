@@ -12,7 +12,7 @@ export default function Testimonials() {
 
   return (
     <section className="overflow-hidden bg-cream">
-      <div className="mx-auto max-w-6xl px-6 pt-20 pb-44">
+      <div className="mx-auto max-w-6xl px-6 pt-20 pb-56">
         <div className="mb-10 text-center">
           <p className="text-xs tracking-widest text-text-light uppercase">Kind words</p>
           <h2 className="mt-2 font-serif text-3xl font-bold text-navy">What our customers say</h2>
@@ -28,7 +28,7 @@ export default function Testimonials() {
               so the cards poke above it. */}
           <div
             aria-hidden
-            className="pointer-events-none absolute -right-[50vw] -bottom-44 -left-[50vw] h-60"
+            className="pointer-events-none absolute -right-[50vw] -bottom-56 -left-[50vw] h-56"
             style={{
               // Solid navy at the very bottom (it runs on into the footer), easing out smoothly to nothing. The
               // fade only reaches the lowest edge of the cards, so they sit on cream and the blend stays subtle.
