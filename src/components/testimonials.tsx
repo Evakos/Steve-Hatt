@@ -25,7 +25,7 @@ export default function Testimonials() {
   if (testimonials.length === 0) return null;
 
   return (
-    <section className="bg-cream">
+    <section className="border-t border-navy/5 bg-sand">
       <div className="mx-auto max-w-6xl px-6 py-20">
         <div className="mb-10 text-center">
           <p className="text-xs tracking-widest text-text-light uppercase">Kind words</p>
