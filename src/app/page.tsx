@@ -262,13 +262,13 @@ export default async function Home() {
                 <Link key={p.slug} href={`/shop/${p.slug}`} className="group border border-border bg-white p-5 transition-all hover:border-navy/30 hover:shadow-md" style={{ borderRadius: '5px' }}>
                   <div className="relative mb-3 h-32 overflow-hidden bg-sand" style={{ borderRadius: '3px' }}>
                     <Image src={p.image} alt={p.name} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw" className="object-cover transition-transform group-hover:scale-105" />
-                    <span className="absolute left-2 top-2 bg-[#1a3a2a] px-2 py-1 text-[10px] font-medium tracking-wide text-white uppercase" style={{ borderRadius: '2px' }}>{p.tag}</span>
+                    <span className="absolute left-2 top-2 bg-lobster px-2 py-1 text-[10px] font-medium tracking-wide text-white uppercase" style={{ borderRadius: '2px' }}>{p.tag}</span>
                   </div>
-                  <h3 className="font-serif text-lg font-semibold text-[#1a3a2a]">{p.name}</h3>
+                  <h3 className="truncate font-serif text-sm font-semibold text-navy" title={p.name}>{p.name}</h3>
                   <p className="mt-1 text-sm text-text-light">{p.weight}</p>
                   <div className="mt-3 flex items-center justify-between">
-                    <span className="text-base font-semibold text-[#1a3a2a]">{p.priceLabel}</span>
-                    <span className="bg-[#1a3a2a] px-3 py-1.5 text-xs font-medium text-white transition-colors group-hover:bg-[#1a3a2a]/85" style={{ borderRadius: '3px' }}>
+                    <span className="text-base font-semibold text-navy">{p.priceLabel}</span>
+                    <span className="bg-lobster px-3 py-1.5 text-xs font-medium text-white transition-colors group-hover:bg-[#e2573b]" style={{ borderRadius: '3px' }}>
                       Pre-order
                     </span>
                   </div>
