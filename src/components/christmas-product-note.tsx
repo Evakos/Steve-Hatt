@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Gift, Snowflake } from "lucide-react";
 import { getUpcomingChristmasDates } from "@/lib/christmas-dates";
 
 const dateFormat = new Intl.DateTimeFormat("en-GB", { weekday: "short", day: "numeric", month: "short" });
@@ -33,8 +32,7 @@ export default function ChristmasProductNote({ excluded }: { excluded: boolean }
 
   if (excluded) {
     return (
-      <div className="mt-4 flex items-start gap-3 border border-border bg-white px-4 py-3 text-sm text-text-light" style={{ borderRadius: "12px" }}>
-        <Gift className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+      <div className="mt-4 border border-border bg-white px-4 py-3 text-sm text-text-light" style={{ borderRadius: "12px" }}>
         <p>This product is not available for Christmas pre-order. You can still order it for a standard delivery or collection date.</p>
       </div>
     );
@@ -44,35 +42,27 @@ export default function ChristmasProductNote({ excluded }: { excluded: boolean }
 
   return (
     <div
-      className="relative mt-4 overflow-hidden border border-[#1a3a2a]/15 bg-[#e8f5ed] p-5 shadow-sm"
+      className="mt-4 border border-[#1a3a2a]/15 bg-[#e8f5ed] p-5 shadow-sm"
       style={{ borderRadius: "14px" }}
     >
-      <Snowflake className="pointer-events-none absolute -right-4 -top-4 h-24 w-24 text-[#1a3a2a]/5" aria-hidden />
-      <div className="relative flex items-start gap-3">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center bg-[#1a3a2a] text-white" style={{ borderRadius: "999px" }}>
-          <Gift className="h-4 w-4" aria-hidden />
-        </span>
-        <div>
-          <p className="font-serif text-lg font-semibold leading-tight text-[#1a3a2a]">Available for Christmas pre-order</p>
-          <p className="mt-1 text-sm leading-relaxed text-[#1a3a2a]/80">
-            Reserve it now for the festive table, then choose your delivery or collection day at checkout.
-          </p>
-          {dates.length > 0 && (
-            <ul className="mt-3 flex flex-wrap gap-2" aria-label="Christmas delivery and collection dates">
-              {dates.map((d) => (
-                <li
-                  key={d.toISOString()}
-                  className="bg-white px-3 py-1 text-xs font-medium text-[#1a3a2a] shadow-sm"
-                  style={{ borderRadius: "999px" }}
-                >
-                  {dateFormat.format(d)}
-                </li>
-              ))}
-            </ul>
-          )}
-          <p className="mt-3 text-xs text-[#1a3a2a]/60">The shop is closed on Sunday and Monday.</p>
-        </div>
-      </div>
+      <p className="font-serif text-lg font-semibold leading-tight text-[#1a3a2a]">Available for Christmas pre-order</p>
+      <p className="mt-1 text-sm leading-relaxed text-[#1a3a2a]/80">
+        Reserve it now for the festive table, then choose your delivery or collection day at checkout.
+      </p>
+      {dates.length > 0 && (
+        <ul className="mt-3 flex flex-wrap gap-2" aria-label="Christmas delivery and collection dates">
+          {dates.map((d) => (
+            <li
+              key={d.toISOString()}
+              className="bg-white px-3 py-1 text-xs font-medium text-[#1a3a2a] shadow-sm"
+              style={{ borderRadius: "999px" }}
+            >
+              {dateFormat.format(d)}
+            </li>
+          ))}
+        </ul>
+      )}
+      <p className="mt-3 text-xs text-[#1a3a2a]/60">The shop is closed on Sunday and Monday.</p>
     </div>
   );
 }
