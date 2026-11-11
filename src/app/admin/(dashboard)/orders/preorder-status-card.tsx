@@ -1,5 +1,5 @@
 import type { WooOrder } from "@/lib/woocommerce/types";
-import OrderBadges, { OrderDeliveryDetails } from "./order-badges";
+import { DeliveryBox, Field, OrderBody, OrderItems, OrderTile, OrderTop, orderMeta } from "./order-parts";
 
 // Mirrors AUTH_LEAD_DAYS in src/app/api/cron/reauthorise-preorders/route.ts - used here only to
 // describe the schedule to staff, not to make any decision.
@@ -13,17 +13,11 @@ interface Props {
  * this exists so a pending pre-order (or a failed auto-charge) is visible before/without staff
  * having to go looking for it. See src/lib/checkout/create-preorder-from-verification.ts. */
 export default function PreOrderStatusCard({ order }: Props) {
-  const slotLabel = order.meta_data.find((m) => m.key === "_checkout_slot_label")?.value as string | undefined;
-  const slotDateStr = order.meta_data.find((m) => m.key === "_checkout_slot_date")?.value as string | undefined;
-  const estimatedAmount = order.meta_data.find((m) => m.key === "_cardstream_estimated_amount")?.value as
-    | string
-    | undefined;
-  const preauthStatus = order.meta_data.find((m) => m.key === "_cardstream_preauth_status")?.value as
-    | string
-    | undefined;
-  const failureReason = order.meta_data.find((m) => m.key === "_cardstream_preauth_failure_reason")?.value as
-    | string
-    | undefined;
+  const slotLabel = orderMeta(order, "_checkout_slot_label") as string | undefined;
+  const slotDateStr = orderMeta(order, "_checkout_slot_date") as string | undefined;
+  const estimatedAmount = orderMeta(order, "_cardstream_estimated_amount") as string | undefined;
+  const preauthStatus = orderMeta(order, "_cardstream_preauth_status") as string | undefined;
+  const failureReason = orderMeta(order, "_cardstream_preauth_failure_reason") as string | undefined;
 
   const daysUntilSlot = slotDateStr
     ? Math.ceil((new Date(slotDateStr).getTime() - new Date().getTime()) / 86_400_000)
@@ -32,35 +26,38 @@ export default function PreOrderStatusCard({ order }: Props) {
   const failed = preauthStatus === "auth_failed";
 
   return (
-    <div
-      className={`h-full border bg-cream p-3.5 text-sm ${failed ? "border-red-300" : "border-border"}`}
-      style={{ borderRadius: "12px" }}
-    >
-      <div className="flex items-baseline justify-between gap-2">
-        <span className="font-medium text-navy">
-          <span className="font-semibold">#{order.number}</span> {order.billing.first_name} {order.billing.last_name}
-        </span>
-        <span className="shrink-0 text-xs text-text-light">Est. £{Number(estimatedAmount ?? order.total).toFixed(2)}</span>
-      </div>
-      {slotLabel && <p className="mt-0.5 text-xs font-medium text-text-light">{slotLabel}</p>}
-      <OrderBadges order={order} />
-      <OrderDeliveryDetails order={order} />
-      {failed ? (
-        <p className="mt-2 text-xs font-medium text-red-600">
-          Card declined on scheduled charge{failureReason ? `, ${failureReason}` : ""}. Customer has been emailed
-          to get in touch; needs follow-up.
-        </p>
-      ) : (
-        <p className="mt-2 text-xs text-text-light">
-          Card verified, charged automatically{" "}
-          {daysUntilAuth !== null
-            ? daysUntilAuth > 0
-              ? `in ${daysUntilAuth} day${daysUntilAuth === 1 ? "" : "s"} (${AUTH_LEAD_DAYS} days before delivery)`
-              : "any time now"
-            : "closer to the delivery date"}
-          .
-        </p>
-      )}
-    </div>
+    <OrderTile tone={failed ? "alert" : "normal"}>
+      <OrderTop order={order} />
+      <OrderBody>
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="When">
+            <span className="font-medium">{slotLabel ?? "Not set"}</span>
+          </Field>
+          <Field label="Estimated total" className="text-right">
+            <span className="text-base font-semibold">£{Number(estimatedAmount ?? order.total).toFixed(2)}</span>
+          </Field>
+        </div>
+        <DeliveryBox order={order} />
+        <OrderItems order={order} />
+        <Field label="Card status">
+          {failed ? (
+            <span className="font-medium text-red-600">
+              Declined on the scheduled charge{failureReason ? `, ${failureReason}` : ""}. The customer has been emailed
+              to get in touch. Needs follow-up.
+            </span>
+          ) : (
+            <span>
+              Card verified. It will be charged automatically{" "}
+              {daysUntilAuth !== null
+                ? daysUntilAuth > 0
+                  ? `in ${daysUntilAuth} day${daysUntilAuth === 1 ? "" : "s"} (${AUTH_LEAD_DAYS} days before delivery)`
+                  : "any time now"
+                : "closer to the delivery date"}
+              .
+            </span>
+          )}
+        </Field>
+      </OrderBody>
+    </OrderTile>
   );
 }
