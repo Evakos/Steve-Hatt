@@ -25,7 +25,7 @@ export default function AdminSidebar() {
   }
 
   return (
-    <aside className="w-56 shrink-0 bg-navy px-4 py-6">
+    <aside className="sticky top-0 flex h-screen w-56 shrink-0 flex-col bg-navy px-4 py-6">
       <div className="px-2">
         <p className="font-serif text-lg font-bold text-white">Steve Hatt</p>
         <p className="text-xs tracking-widest text-white/50 uppercase">Admin</p>
@@ -49,12 +49,12 @@ export default function AdminSidebar() {
         })}
       </nav>
 
-      <div className="mt-8 border-t border-white/10 pt-4">
+      <div className="mt-auto border-t border-white/10 pt-4">
         <button
           type="button"
           onClick={handleLogout}
           disabled={signingOut}
-          className="flex w-full items-center gap-2.5 px-3 py-2 text-sm text-white/60 transition-colors hover:bg-white/5 hover:text-white disabled:opacity-50"
+          className="flex w-full items-center justify-center gap-2 bg-red-600 px-3 py-2.5 text-sm font-medium text-white transition-colors hover:bg-red-700 disabled:opacity-50"
           style={{ borderRadius: "6px" }}
         >
           <LogOut className="h-4 w-4" />
