@@ -19,6 +19,11 @@ export interface ChristmasSettings {
    * gated on this being on. See src/lib/feature-flags.ts.
    */
   christmasUseDepositFlow: boolean;
+  /**
+   * January date (YYYY-MM-DD) on which online ordering reopens after the Christmas break. "" means
+   * the default, 4th January. Left untouched when undefined. See src/lib/ordering-window.ts.
+   */
+  ordersReopenDate?: string;
 }
 
 export async function updateChristmasSettings(input: ChristmasSettings): Promise<void> {
@@ -45,6 +50,9 @@ export async function updateChristmasSettings(input: ChristmasSettings): Promise
         { operation: "upsert", key: "christmasPremiumPercent", value: input.premiumPercent },
         { operation: "upsert", key: "christmasDepositAmount", value: input.christmasDepositAmount },
         { operation: "upsert", key: "christmasUseDepositFlow", value: input.christmasUseDepositFlow },
+        ...(input.ordersReopenDate !== undefined
+          ? [{ operation: "upsert", key: "ordersReopenDate", value: input.ordersReopenDate }]
+          : []),
       ],
     }),
   });

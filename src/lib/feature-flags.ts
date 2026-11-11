@@ -1,7 +1,24 @@
 import "server-only";
 import { get } from "@vercel/edge-config";
 import { hasUpcomingChristmasDates } from "./christmas-dates";
-import { isOnlineOrderingClosed } from "./ordering-window";
+import { currentDate, isChristmasSeason, isOnlineOrderingClosed } from "./ordering-window";
+
+/** Staff-set reopen date (YYYY-MM-DD, a January day) from Edge Config, or "" to use the default
+ * 4th January. Only honoured in its own year, see ordering-window.ts. */
+export async function getOrdersReopenDate(): Promise<string> {
+  try {
+    const value = await get("ordersReopenDate");
+    return typeof value === "string" ? value : "";
+  } catch {
+    return "";
+  }
+}
+
+/** Whether online ordering is closed right now: the automatic Christmas break (18th December to
+ * the reopen day), honouring a staff-set reopen date. Use this on the server, not the sync helper. */
+export async function areOnlineOrdersClosed(): Promise<boolean> {
+  return isOnlineOrderingClosed(currentDate(), await getOrdersReopenDate());
+}
 
 /**
  * Whether Christmas pre-ordering is currently being offered site-wide - staff flip this via a
@@ -15,8 +32,11 @@ import { isOnlineOrderingClosed } from "./ordering-window";
  * option is never presented with no bookable dates behind it.
  */
 export async function isChristmasShopActive(): Promise<boolean> {
-  // No Christmas ordering once the closing window starts (after 17th December, see ordering-window.ts).
-  if (isOnlineOrderingClosed() || !hasUpcomingChristmasDates()) return false;
+  // Christmas ordering only exists from 1st October to 17th December (see ordering-window.ts), so
+  // the switch can be left on after the season: it closes itself after the 17th and stays off
+  // through January, when next year's dates would otherwise count as "upcoming".
+  const now = currentDate();
+  if (!isChristmasSeason(now) || !hasUpcomingChristmasDates(now)) return false;
   return getChristmasShopActiveRaw();
 }
 

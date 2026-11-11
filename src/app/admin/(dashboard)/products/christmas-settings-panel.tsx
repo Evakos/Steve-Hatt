@@ -2,34 +2,43 @@
 
 import { useState, useEffect } from "react";
 
+// The January the next (or current) Christmas break ends in: from July onwards that's next year's.
+const now = new Date();
+const BREAK_JANUARY_YEAR = now.getMonth() >= 6 ? now.getFullYear() + 1 : now.getFullYear();
+
 export default function ChristmasSettingsPanel() {
   const [loading, setLoading] = useState(true);
   const [active, setActive] = useState(false);
   const [premiumPercent, setPremiumPercent] = useState(0);
   const [depositAmount, setDepositAmount] = useState(0);
   const [useDepositFlow, setUseDepositFlow] = useState(false);
+  // "" means the default reopen date (4th January).
+  const [reopenDate, setReopenDate] = useState("");
   // Tracks the last-saved values so "Save" can be disabled when there's nothing new to apply,
   // and so a failed save doesn't leave the UI claiming a value that was never actually stored.
-  const [saved, setSaved] = useState<{ active: boolean; premiumPercent: number; depositAmount: number; useDepositFlow: boolean } | null>(null);
+  const [saved, setSaved] = useState<{ active: boolean; premiumPercent: number; depositAmount: number; useDepositFlow: boolean; reopenDate: string } | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/admin/christmas-settings")
       .then((res) => (res.ok ? res.json() : Promise.reject(res)))
-      .then((data: { active: boolean; premiumPercent: number; depositAmount: number; christmasUseDepositFlow: boolean }) => {
+      .then((data: { active: boolean; premiumPercent: number; christmasDepositAmount: number; christmasUseDepositFlow: boolean; ordersReopenDate?: string }) => {
+        // A stored date from a previous year is stale (the server ignores it too), so show the default.
+        const storedReopen = data.ordersReopenDate?.startsWith(`${BREAK_JANUARY_YEAR}-`) ? data.ordersReopenDate : "";
         setActive(data.active);
         setPremiumPercent(data.premiumPercent);
-        setDepositAmount(data.depositAmount ?? 0);
+        setDepositAmount(data.christmasDepositAmount ?? 0);
         setUseDepositFlow(data.christmasUseDepositFlow ?? false);
-        setSaved({ active: data.active, premiumPercent: data.premiumPercent, depositAmount: data.depositAmount ?? 0, useDepositFlow: data.christmasUseDepositFlow ?? false });
+        setReopenDate(storedReopen);
+        setSaved({ active: data.active, premiumPercent: data.premiumPercent, depositAmount: data.christmasDepositAmount ?? 0, useDepositFlow: data.christmasUseDepositFlow ?? false, reopenDate: storedReopen });
       })
       .catch(() => setError("Couldn't load current settings."))
       .finally(() => setLoading(false));
   }, []);
 
   const dirty =
-    !saved || saved.active !== active || saved.premiumPercent !== premiumPercent || saved.depositAmount !== depositAmount || saved.useDepositFlow !== useDepositFlow;
+    !saved || saved.active !== active || saved.premiumPercent !== premiumPercent || saved.depositAmount !== depositAmount || saved.useDepositFlow !== useDepositFlow || saved.reopenDate !== reopenDate;
 
   async function handleSave() {
     setSaving(true);
@@ -38,14 +47,14 @@ export default function ChristmasSettingsPanel() {
       const res = await fetch("/api/admin/christmas-settings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ active, premiumPercent, christmasDepositAmount: depositAmount, christmasUseDepositFlow: useDepositFlow }),
+        body: JSON.stringify({ active, premiumPercent, christmasDepositAmount: depositAmount, christmasUseDepositFlow: useDepositFlow, ordersReopenDate: reopenDate }),
       });
       const data = await res.json();
       if (!res.ok) {
         setError(data.error ?? "Save failed");
         return;
       }
-      setSaved({ active, premiumPercent, depositAmount, useDepositFlow });
+      setSaved({ active, premiumPercent, depositAmount, useDepositFlow, reopenDate });
     } catch {
       setError("Network error. Please try again.");
     } finally {
@@ -133,6 +142,36 @@ export default function ChristmasSettingsPanel() {
         </div>
       </div>
       )}
+
+      <div className="mt-4 border border-border bg-cream p-5" style={{ borderRadius: "14px" }}>
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <p className="text-sm font-medium text-navy">Reopening after Christmas</p>
+            <p className="mt-1 text-sm text-text-light">
+              Online ordering closes by itself after 17th December and reopens by itself on{" "}
+              {reopenDate ? "the date chosen here" : "4th January (the default)"}. Nothing needs switching on or off.
+              Only pick a date if the shop needs to reopen on a different day in January, for example if fish
+              supply isn&apos;t ready. Orders can&apos;t be placed before it.
+            </p>
+          </div>
+          <div className="flex shrink-0 flex-col items-end gap-1">
+            <input
+              type="date"
+              min={`${BREAK_JANUARY_YEAR}-01-01`}
+              max={`${BREAK_JANUARY_YEAR}-01-31`}
+              value={reopenDate}
+              onChange={(e) => setReopenDate(e.target.value)}
+              className="border border-border px-2 py-1 text-sm"
+              style={{ borderRadius: "4px" }}
+            />
+            {reopenDate && (
+              <button type="button" onClick={() => setReopenDate("")} className="text-xs text-text-light underline">
+                Use the default (4th January)
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
 
       <div className="mt-4 border border-dashed border-border bg-cream/60 p-5 opacity-70" style={{ borderRadius: "14px" }}>
         <div className="flex items-center justify-between">
