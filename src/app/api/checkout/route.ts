@@ -7,9 +7,9 @@ import { repriceCheckoutRequest } from "@/lib/checkout/reprice";
 import { checkoutRequestSchema } from "@/lib/checkout/schema";
 import { sendOrderConfirmation, sendAdminNewOrderNotification } from "@/lib/email/send-order-confirmation";
 import { getCustomerSession } from "@/lib/customer-auth";
-import { getChristmasDepositAmount, getChristmasUseDepositFlow } from "@/lib/feature-flags";
+import { getChristmasDepositAmount, getChristmasUseDepositFlow, getDisabledSlots, areOnlineOrdersClosed } from "@/lib/feature-flags";
 import { ORDERS_CLOSED_REASON } from "@/lib/ordering-window";
-import { areOnlineOrdersClosed } from "@/lib/feature-flags";
+import { isSlotDisabled, slotWindowFromLabel } from "@/lib/slots";
 
 export async function POST(request: Request) {
   if (await areOnlineOrdersClosed()) {
@@ -21,6 +21,17 @@ export async function POST(request: Request) {
     return NextResponse.json({ status: "invalid", issues: parsed.error.issues }, { status: 400 });
   }
   const checkout = parsed.data;
+
+  // A slot staff have switched off in /admin/slots can't be booked, even from a page that was
+  // opened before they switched it off.
+  const slotWindow = slotWindowFromLabel(checkout.fulfilment.slot.label, checkout.fulfilment.type);
+  if (slotWindow && isSlotDisabled(await getDisabledSlots(), new Date(checkout.fulfilment.slot.date), slotWindow)) {
+    return NextResponse.json(
+      { status: "slot_unavailable", reason: "Sorry, that time slot is no longer available. Please go back and choose another." },
+      { status: 409 }
+    );
+  }
+
   const customerId = await getCustomerSession();
 
   const repriced = await repriceCheckoutRequest(checkout);

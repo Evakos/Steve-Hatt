@@ -14,6 +14,17 @@ export async function getOrdersReopenDate(): Promise<string> {
   }
 }
 
+/** Slot keys staff have switched off in /admin/slots ("YYYY-MM-DD|window-id", see lib/slots.ts).
+ * Empty if nothing is switched off or Edge Config can't be reached, so slots default to on. */
+export async function getDisabledSlots(): Promise<string[]> {
+  try {
+    const value = await get("disabledSlots");
+    return Array.isArray(value) ? value.filter((v): v is string => typeof v === "string") : [];
+  } catch {
+    return [];
+  }
+}
+
 /** Whether online ordering is closed right now: the automatic Christmas break (18th December to
  * the reopen day), honouring a staff-set reopen date. Use this on the server, not the sync helper. */
 export async function areOnlineOrdersClosed(): Promise<boolean> {

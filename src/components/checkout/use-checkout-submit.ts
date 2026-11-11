@@ -39,7 +39,9 @@ export function useCheckoutSubmit() {
         return;
       }
       if (!res.ok) {
-        setState({ phase: "error", message: "Something went wrong. Please try again." });
+        // The shop closing, or a slot being switched off, come with a reason fit to show customers.
+        const friendly = (data.status === "slot_unavailable" || data.status === "closed") && typeof data.reason === "string";
+        setState({ phase: "error", message: friendly ? data.reason : "Something went wrong. Please try again." });
         return;
       }
       if (data.status === "requires_action") {

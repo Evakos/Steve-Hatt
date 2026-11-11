@@ -1,14 +1,19 @@
 import { listPendingCaptureOrders, listProcessingOrders, listPendingPreOrders } from "@/lib/woocommerce/orders";
+import type { WooOrder } from "@/lib/woocommerce/types";
 import CaptureOrderCard from "./capture-order-card";
 import CompleteOrderCard from "./complete-order-card";
 import PreOrderStatusCard from "./preorder-status-card";
+
+// Every order is now charged in full at checkout, so there is nothing to hold and capture later.
+// The "Awaiting capture" section is switched off; set this to true to bring it back.
+const SHOW_AWAITING_CAPTURE = false;
 
 // Orders sit in a responsive grid: as many tiles per row as the width allows (about 17rem each).
 const GRID = "mt-4 grid grid-cols-[repeat(auto-fill,minmax(17rem,1fr))] gap-3";
 
 export default async function AdminOrdersPage() {
   const [pendingCapture, processing, pendingPreOrders] = await Promise.all([
-    listPendingCaptureOrders(),
+    SHOW_AWAITING_CAPTURE ? listPendingCaptureOrders() : Promise.resolve<WooOrder[]>([]),
     listProcessingOrders(),
     listPendingPreOrders(),
   ]);
@@ -20,7 +25,7 @@ export default async function AdminOrdersPage() {
     <div>
       <h1 className="font-serif text-2xl font-bold text-navy">Orders</h1>
       <p className="mt-1 text-sm text-text-light">
-        Paid orders ready to prepare. Older held orders or pending Christmas pre-orders show here only if there are any.
+        Paid orders ready to prepare. Pending Christmas pre-orders show here only if there are any.
       </p>
 
       <div className="mt-5 space-y-5">

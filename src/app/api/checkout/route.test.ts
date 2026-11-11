@@ -26,11 +26,15 @@ beforeEach(() => {
   repricedResult.total = 42;
   repricedResult.subtotal = 42;
   repricedResult.deliveryFee = 0;
+  flags.areOnlineOrdersClosed.mockResolvedValue(false);
+  flags.getDisabledSlots.mockResolvedValue([]);
 });
 
 const flags = {
   getChristmasUseDepositFlow: vi.fn(),
   getChristmasDepositAmount: vi.fn(),
+  areOnlineOrdersClosed: vi.fn(),
+  getDisabledSlots: vi.fn(),
 };
 vi.mock("@/lib/feature-flags", () => flags);
 

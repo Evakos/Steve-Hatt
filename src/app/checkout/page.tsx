@@ -25,17 +25,13 @@ import {
 } from "@/lib/delivery-zones";
 import Header from "@/components/header";
 import AnnouncementBanner from "@/components/announcement-banner";
-import { isInChristmasBreak, LAST_ORDER_LABEL, ORDERS_CLOSED_REASON } from "@/lib/ordering-window";
+import { LAST_ORDER_LABEL, ORDERS_CLOSED_REASON } from "@/lib/ordering-window";
+import { SLOT_WINDOWS, getAvailableDates, isSlotDisabled } from "@/lib/slots";
 import ContactAddressForm, { EMPTY_CONTACT_ADDRESS, type ContactAddressValue } from "@/components/checkout/contact-address-form";
 import PaymentPanel from "@/components/checkout/payment-panel";
 import ThreeDSChallenge from "@/components/checkout/three-ds-challenge";
 import { useCheckoutSubmit } from "@/components/checkout/use-checkout-submit";
-import {
-  getUpcomingChristmasDates,
-  isChristmasFulfilmentDate,
-  isTueToSat,
-  hasUpcomingChristmasDates,
-} from "@/lib/christmas-dates";
+import { isChristmasFulfilmentDate, hasUpcomingChristmasDates } from "@/lib/christmas-dates";
 import type { CheckoutRequest } from "@/lib/checkout/schema";
 
 type SlotType = "delivery" | "collection";
@@ -54,34 +50,6 @@ function formatDate(date: Date): string {
     day: "numeric",
     month: "long",
   });
-}
-
-function getAvailableDates(): Date[] {
-  const dates: Date[] = [];
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  // Standard slots: next 21 days (Tue-Sat only)
-  for (let i = 1; i <= 21; i++) {
-    const d = new Date(today);
-    d.setDate(d.getDate() + i);
-    // No everyday slots inside the Christmas break (25th December to 3rd January).
-    if (isTueToSat(d) && !isInChristmasBreak(d)) {
-      dates.push(d);
-    }
-  }
-
-  // Christmas pre-order dates (Dec 20-24) come from the shared lib/christmas-dates.ts helper -
-  // whenever they're still ahead this December, they're bookable, de-duped against the 21-day
-  // window above for the late-November/December overlap.
-  for (const d of getUpcomingChristmasDates()) {
-    if (!dates.some((existing) => existing.getTime() === d.getTime())) {
-      dates.push(d);
-    }
-  }
-
-  dates.sort((a, b) => a.getTime() - b.getTime());
-  return dates;
 }
 
 export default function CheckoutPage() {
@@ -137,11 +105,14 @@ export default function CheckoutPage() {
   const [christmasShopActive, setChristmasShopActive] = useState(false);
   const [christmasUseDepositFlow, setChristmasUseDepositFlow] = useState(false);
   const [ordersClosed, setOrdersClosed] = useState(false);
+  // Delivery/collection slots staff have switched off in /admin/slots - hidden from the picker.
+  const [disabledSlots, setDisabledSlots] = useState<string[]>([]);
   useEffect(() => {
     fetch("/api/feature-flags/christmas")
       .then((res) => (res.ok ? res.json() : null))
-      .then((data: { active: boolean; useDepositFlow?: boolean; ordersClosed?: boolean } | null) => {
+      .then((data: { active: boolean; useDepositFlow?: boolean; ordersClosed?: boolean; disabledSlots?: string[] } | null) => {
         setOrdersClosed(data?.ordersClosed === true);
+        setDisabledSlots(data?.disabledSlots ?? []);
         // Christmas is only offered while fulfilment dates are actually bookable (Dec 20-24
         // still ahead). If the switch is on those dates exist year-round, so the flow works
         // for testing/setup outside the November-December season too.
@@ -230,15 +201,14 @@ export default function CheckoutPage() {
       if (orderType === "christmas" && !christmas) return;
       if (orderType === "standard" && christmas) return;
 
-      if (slotType === "delivery") {
-        result.push({ date, label: `${formatDate(date)} · Morning (9am-12pm)`, type: "delivery", isChristmas: christmas });
-        result.push({ date, label: `${formatDate(date)} · Afternoon (12pm-5pm)`, type: "delivery", isChristmas: christmas });
-      } else {
-        result.push({ date, label: `${formatDate(date)} · Collection (7am-5pm)`, type: "collection", isChristmas: christmas });
-      }
+      // Each date offers the windows in SLOT_WINDOWS for this slot type, minus any staff have
+      // switched off (/admin/slots).
+      SLOT_WINDOWS.filter((w) => w.type === slotType && !isSlotDisabled(disabledSlots, date, w.id)).forEach((w) => {
+        result.push({ date, label: `${formatDate(date)} · ${w.name} (${w.time})`, type: w.type, isChristmas: christmas });
+      });
     });
     return result;
-  }, [slotType, orderType]);
+  }, [slotType, orderType, disabledSlots]);
 
   const canProceedToPayment = !!selectedSlot;
   const deliveryCost = slotType === "delivery" ? 5 : 0;
