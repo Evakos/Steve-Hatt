@@ -1,4 +1,4 @@
-import { Store, Truck } from "lucide-react";
+import { Snowflake, Store, Truck } from "lucide-react";
 import type { ReactNode } from "react";
 import type { WooOrder } from "@/lib/woocommerce/types";
 
@@ -39,10 +39,11 @@ export function OrderTop({ order }: { order: WooOrder }) {
           {isDelivery ? "Delivery" : "Collection"}
         </span>
         <span
-          className={`px-2 py-0.5 text-[11px] font-semibold ${isChristmas ? "bg-white text-[#1a3a2a]" : "bg-white/20 text-white"}`}
+          className={`inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-semibold ${isChristmas ? "bg-white text-[#1a3a2a]" : "bg-white/20 text-white"}`}
           style={{ borderRadius: "999px" }}
         >
-          {isChristmas ? "🎄 Christmas order" : "Standard order"}
+          {isChristmas && <Snowflake className="h-3 w-3" />}
+          {isChristmas ? "Christmas order" : "Standard order"}
         </span>
       </div>
       <div className="px-3.5 pt-3">

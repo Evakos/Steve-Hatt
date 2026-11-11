@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Store, Truck } from "lucide-react";
+import { Snowflake, Store, Truck } from "lucide-react";
 import { SLOT_WINDOWS, type SlotWindowId } from "@/lib/slots";
 
 interface DateRow {
@@ -127,7 +127,11 @@ export default function SlotsGrid({ dates, initialDisabled }: Props) {
                 <div>
                   <p className="text-sm font-medium text-navy">{d.label}</p>
                   <div className="flex items-center gap-2">
-                    {d.isChristmas && <span className="text-xs font-medium text-[#1a3a2a]">🎄 Christmas</span>}
+                    {d.isChristmas && (
+                      <span className="inline-flex items-center gap-1 text-xs font-medium text-[#1a3a2a]">
+                        <Snowflake className="h-3 w-3" /> Christmas
+                      </span>
+                    )}
                     <button
                       type="button"
                       onClick={() => setMany(dayKeys(d), !dayAllOn)}
