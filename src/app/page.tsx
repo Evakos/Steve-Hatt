@@ -58,7 +58,9 @@ export default async function Home() {
 
   return (
     <main className="flex flex-1 flex-col">
-      {christmasActive && <AnnouncementBanner />}
+      {/* Always rendered: it checks the flag itself, showing the Christmas message while pre-orders
+          run and the closure notice during the Christmas break (when christmasActive is false). */}
+      <AnnouncementBanner />
       <Header />
 
       {/* Hero - text overlaid on the photo, matching a traditional hero banner */}
@@ -279,7 +281,7 @@ export default async function Home() {
               <p className="text-xs tracking-widest text-text-light uppercase">Festive season</p>
               <h2 className="mt-2 font-serif text-3xl font-bold text-navy md:text-4xl">Christmas Pre-Orders</h2>
               <p className="mx-auto mt-4 max-w-lg text-base leading-relaxed text-text-light">
-                Reserve your Christmas feast now. Pre-order by 20th December for delivery or collection on 23rd-24th December. Every order prepared fresh by your fishmonger.
+                Reserve your Christmas feast now. Pre-order by 17th December for delivery or collection between 22nd and 24th December. Every order prepared fresh by your fishmonger.
               </p>
               {anyChristmasPricing && (
                 <p className="mx-auto mt-3 max-w-lg text-sm text-text-light">

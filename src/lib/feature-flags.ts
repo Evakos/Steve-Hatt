@@ -1,6 +1,7 @@
 import "server-only";
 import { get } from "@vercel/edge-config";
 import { hasUpcomingChristmasDates } from "./christmas-dates";
+import { isOnlineOrderingClosed } from "./ordering-window";
 
 /**
  * Whether Christmas pre-ordering is currently being offered site-wide - staff flip this via a
@@ -14,7 +15,8 @@ import { hasUpcomingChristmasDates } from "./christmas-dates";
  * option is never presented with no bookable dates behind it.
  */
 export async function isChristmasShopActive(): Promise<boolean> {
-  if (!hasUpcomingChristmasDates()) return false;
+  // No Christmas ordering once the closing window starts (after 17th December, see ordering-window.ts).
+  if (isOnlineOrderingClosed() || !hasUpcomingChristmasDates()) return false;
   return getChristmasShopActiveRaw();
 }
 

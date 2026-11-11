@@ -5,6 +5,8 @@ import type { RepricedOrder } from "@/lib/checkout/reprice";
 import type { DeliveryDetails } from "@/lib/checkout/delivery-address";
 import { COLORS, SITE_URL, emailOrderBadges, emailShell, emailHeading, emailNotice, emailAlert, emailButton, emailLineItemsTable } from "./layout";
 
+import { LAST_ORDER_LABEL } from "@/lib/ordering-window";
+
 const FROM_ADDRESS = "orders@stevehattfishmongers.co.uk";
 
 
@@ -78,6 +80,13 @@ export async function sendOrderConfirmation(input: OrderConfirmationInput) {
     ${emailLineItemsTable(repriced.lineItems)}
     ${totalsTable}
     <p style="margin-top:20px;font-size:15px;"><strong>${fulfilmentType === "delivery" ? "Delivery" : "Collection"}:</strong> ${slotLabel}</p>
+    ${
+      repriced.isChristmas
+        ? emailNotice(
+            `<strong>Christmas closing times.</strong> Please ${fulfilmentType === "delivery" ? "be available for delivery" : "collect your order"} within the time shown above. The shop is closed on Sunday and Monday, and online ordering is closed from ${LAST_ORDER_LABEL} until the new year.`
+          )
+        : ""
+    }
   `);
 
   try {

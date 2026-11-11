@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Check, Info } from "lucide-react";
 import type { Product } from "@/lib/products";
 import { useCart } from "@/lib/cart-context";
@@ -31,6 +31,23 @@ export default function AddToCart({ product }: Props) {
   const [quantity, setQuantity] = useState(product.priceType === "per-piece" ? 6 : 1);
   const [added, setAdded] = useState(false);
   const outOfStock = product.stockStatus === "outofstock";
+  // Christmas break (after 17th December until the new year): no online orders, so the button is
+  // disabled. Product pages are static, so this asks the server in the browser (same endpoint as
+  // the banner) and reacts the moment the window opens, with no rebuild.
+  const [ordersClosed, setOrdersClosed] = useState(false);
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/feature-flags/christmas")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!cancelled) setOrdersClosed(data?.ordersClosed === true);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+  const unavailable = outOfStock || ordersClosed;
 
   const selectedSizeOption = product.sizeOptions?.find((s) => s.label === selectedSize);
 
@@ -158,9 +175,9 @@ export default function AddToCart({ product }: Props) {
         </div>
         <button
           onClick={handleAdd}
-          disabled={outOfStock}
+          disabled={unavailable}
           className={`flex flex-1 items-center justify-center gap-2 px-6 py-3 text-sm font-medium tracking-wide transition-colors ${
-            outOfStock
+            unavailable
               ? "cursor-not-allowed bg-border text-text-light"
               : added
                 ? "bg-teal text-white"
@@ -170,6 +187,8 @@ export default function AddToCart({ product }: Props) {
         >
         {outOfStock ? (
           "Out of stock"
+        ) : ordersClosed ? (
+          "Online ordering closed until the new year"
         ) : added ? (
           <>
             <Check className="h-4 w-4" />

@@ -8,8 +8,12 @@ import { confirmRequestSchema } from "@/lib/checkout/schema";
 import { sendOrderConfirmation, sendAdminNewOrderNotification } from "@/lib/email/send-order-confirmation";
 import { getCustomerSession } from "@/lib/customer-auth";
 import { getChristmasDepositAmount, getChristmasUseDepositFlow } from "@/lib/feature-flags";
+import { isOnlineOrderingClosed, ORDERS_CLOSED_REASON } from "@/lib/ordering-window";
 
 export async function POST(request: Request) {
+  if (isOnlineOrderingClosed()) {
+    return NextResponse.json({ status: "closed", reason: ORDERS_CLOSED_REASON }, { status: 403 });
+  }
   const json = await request.json().catch(() => null);
   const parsed = confirmRequestSchema.safeParse(json);
   if (!parsed.success) {

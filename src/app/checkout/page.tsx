@@ -25,6 +25,7 @@ import {
 } from "@/lib/delivery-zones";
 import Header from "@/components/header";
 import AnnouncementBanner from "@/components/announcement-banner";
+import { isInChristmasBreak, LAST_ORDER_LABEL, ORDERS_CLOSED_REASON } from "@/lib/ordering-window";
 import ContactAddressForm, { EMPTY_CONTACT_ADDRESS, type ContactAddressValue } from "@/components/checkout/contact-address-form";
 import PaymentPanel from "@/components/checkout/payment-panel";
 import ThreeDSChallenge from "@/components/checkout/three-ds-challenge";
@@ -64,7 +65,8 @@ function getAvailableDates(): Date[] {
   for (let i = 1; i <= 21; i++) {
     const d = new Date(today);
     d.setDate(d.getDate() + i);
-    if (isTueToSat(d)) {
+    // No everyday slots inside the Christmas break (25th December to 3rd January).
+    if (isTueToSat(d) && !isInChristmasBreak(d)) {
       dates.push(d);
     }
   }
@@ -134,10 +136,12 @@ export default function CheckoutPage() {
   // percentage mechanism, not the live one, see reprice.ts - deliberately ignored here.)
   const [christmasShopActive, setChristmasShopActive] = useState(false);
   const [christmasUseDepositFlow, setChristmasUseDepositFlow] = useState(false);
+  const [ordersClosed, setOrdersClosed] = useState(false);
   useEffect(() => {
     fetch("/api/feature-flags/christmas")
       .then((res) => (res.ok ? res.json() : null))
-      .then((data: { active: boolean; useDepositFlow?: boolean } | null) => {
+      .then((data: { active: boolean; useDepositFlow?: boolean; ordersClosed?: boolean } | null) => {
+        setOrdersClosed(data?.ordersClosed === true);
         // Christmas is only offered while fulfilment dates are actually bookable (Dec 20-24
         // still ahead). If the switch is on those dates exist year-round, so the flow works
         // for testing/setup outside the November-December season too.
@@ -287,6 +291,39 @@ export default function CheckoutPage() {
     const request = buildCheckoutRequest();
     if (!request || !pendingTokenRef.current) return;
     confirmThreeDS({ ...request, payment: { token: pendingTokenRef.current } }, threeDSResponse);
+  }
+
+  // Christmas break: online ordering is closed (after 17th December until the new year). Checked
+  // before the empty-cart view so anyone landing here sees why, not "basket is empty". The order
+  // API refuses too, so a stale tab can't sneak an order through.
+  if (ordersClosed && submitState.phase !== "authorised" && !confirmedOrder) {
+    return (
+      <main className="flex flex-1 flex-col">
+        <AnnouncementBanner />
+        <Header />
+        <section className="flex-1 bg-cream">
+          <div className="mx-auto max-w-xl px-6 py-20 text-center">
+            <h1 className="font-serif text-3xl font-bold text-navy">Online ordering is closed</h1>
+            <p className="mt-4 text-sm leading-relaxed text-text-light">{ORDERS_CLOSED_REASON}</p>
+            <Link
+              href="/contact"
+              className="mt-6 inline-block bg-lobster px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-lobster/90"
+              style={{ borderRadius: "6px" }}
+            >
+              Contact the shop
+            </Link>
+          </div>
+        </section>
+        <footer className="mt-auto border-t border-border bg-navy">
+          <div className="mx-auto max-w-6xl px-6 py-10">
+            <div className="flex items-center justify-between">
+              <Image src="/logo-alt.svg" alt="Steve Hatt" width={120} height={50} className="h-8 w-auto" />
+              <p className="text-xs text-white/40">&copy; {new Date().getFullYear()} Steve Hatt Fishmongers</p>
+            </div>
+          </div>
+        </footer>
+      </main>
+    );
   }
 
   // Empty cart (not after a confirmed order)
@@ -587,6 +624,17 @@ export default function CheckoutPage() {
                             ? "Select a delivery date and time."
                             : "Select a collection date."}
                       </p>
+                      {orderType === "christmas" && (
+                        <p
+                          className="mt-3 border border-[#1a3a2a]/15 bg-[#e8f5ed] px-4 py-3 text-xs leading-relaxed text-[#1a3a2a]"
+                          style={{ borderRadius: "10px" }}
+                        >
+                          <strong>Christmas closing times:</strong> please collect, or be available for delivery,
+                          within the time shown for your slot. The shop is closed on Sunday and Monday. Christmas
+                          pre-orders close on {LAST_ORDER_LABEL}, and online ordering stays closed until the new
+                          year.
+                        </p>
+                      )}
 
                       {slots.length > 0 ? (
                         <div

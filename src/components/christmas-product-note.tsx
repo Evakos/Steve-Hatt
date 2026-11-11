@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Snowflake } from "lucide-react";
 import { getUpcomingChristmasDates } from "@/lib/christmas-dates";
+import { LAST_ORDER_LABEL } from "@/lib/ordering-window";
 
 const dateFormat = new Intl.DateTimeFormat("en-GB", { weekday: "short", day: "numeric", month: "short" });
 
@@ -49,7 +50,8 @@ export default function ChristmasProductNote({ excluded }: { excluded: boolean }
       <Snowflake className="pointer-events-none absolute -right-4 -top-4 h-24 w-24 text-[#1a3a2a]/5" aria-hidden />
       <p className="relative font-serif text-lg font-semibold leading-tight text-[#1a3a2a]">Available for Christmas pre-order</p>
       <p className="relative mt-1 text-sm leading-relaxed text-[#1a3a2a]/80">
-        Reserve it now for the festive table, then choose your delivery or collection day at checkout.
+        Reserve it now for the festive table, then choose your delivery or collection day at checkout. Christmas
+        pre-orders close on {LAST_ORDER_LABEL}.
       </p>
       {dates.length > 0 && (
         <ul className="relative mt-3 flex flex-wrap gap-2" aria-label="Christmas delivery and collection dates">
