@@ -33,26 +33,26 @@ export default function PreOrderStatusCard({ order }: Props) {
 
   return (
     <div
-      className={`border bg-cream p-4 text-sm ${failed ? "border-red-300" : "border-border"}`}
-      style={{ borderRadius: "14px" }}
+      className={`h-full border bg-cream p-3.5 text-sm ${failed ? "border-red-300" : "border-border"}`}
+      style={{ borderRadius: "12px" }}
     >
-      <div className="flex items-baseline justify-between">
+      <div className="flex items-baseline justify-between gap-2">
         <span className="font-medium text-navy">
-          Order #{order.number}, {order.billing.first_name} {order.billing.last_name}
+          <span className="font-semibold">#{order.number}</span> {order.billing.first_name} {order.billing.last_name}
         </span>
-        <span className="text-sm text-text-light">Estimated: £{Number(estimatedAmount ?? order.total).toFixed(2)}</span>
+        <span className="shrink-0 text-xs text-text-light">Est. £{Number(estimatedAmount ?? order.total).toFixed(2)}</span>
       </div>
+      {slotLabel && <p className="mt-0.5 text-xs font-medium text-text-light">{slotLabel}</p>}
       <OrderBadges order={order} />
-      {slotLabel && <p className="mt-2 text-sm font-medium text-navy">{slotLabel}</p>}
-        <OrderDeliveryDetails order={order} />
+      <OrderDeliveryDetails order={order} />
       {failed ? (
-        <p className="mt-1 text-sm font-medium text-red-600">
+        <p className="mt-2 text-xs font-medium text-red-600">
           Card declined on scheduled charge{failureReason ? `, ${failureReason}` : ""}. Customer has been emailed
           to get in touch; needs follow-up.
         </p>
       ) : (
-        <p className="mt-1 text-sm text-text-light">
-          Card verified, will be charged automatically{" "}
+        <p className="mt-2 text-xs text-text-light">
+          Card verified, charged automatically{" "}
           {daysUntilAuth !== null
             ? daysUntilAuth > 0
               ? `in ${daysUntilAuth} day${daysUntilAuth === 1 ? "" : "s"} (${AUTH_LEAD_DAYS} days before delivery)`

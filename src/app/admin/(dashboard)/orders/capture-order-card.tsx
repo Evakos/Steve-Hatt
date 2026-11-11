@@ -64,21 +64,21 @@ export default function CaptureOrderCard({ order }: Props) {
   }
 
   return (
-    <div className="border border-border bg-cream p-5" style={{ borderRadius: "14px" }}>
-      <div className="flex items-baseline justify-between">
-        <h2 className="font-medium text-navy">
-          Order #{order.number}, {order.billing.first_name} {order.billing.last_name}
-        </h2>
-        <span className="text-sm text-text-light">
+    <div className="flex h-full flex-col border border-border bg-cream p-3.5" style={{ borderRadius: "12px" }}>
+      <div className="flex items-baseline justify-between gap-2">
+        <h3 className="text-sm font-medium text-navy">
+          <span className="font-semibold">#{order.number}</span> {order.billing.first_name} {order.billing.last_name}
+        </h3>
+        <span className="shrink-0 text-xs text-text-light">
           {depositAmount > 0
-            ? `Deposit paid: £${depositAmount.toFixed(2)} · Balance held: £${authorisedAmount.toFixed(2)}`
-            : `Authorised: £${authorisedAmount.toFixed(2)}`}
+            ? `Deposit £${depositAmount.toFixed(2)} · Held £${authorisedAmount.toFixed(2)}`
+            : `Held £${authorisedAmount.toFixed(2)}`}
         </span>
       </div>
+      {slotLabel && <p className="mt-0.5 text-xs font-medium text-text-light">{slotLabel}</p>}
       <OrderBadges order={order} />
-      {slotLabel && <p className="mt-2 text-sm font-medium text-navy">{slotLabel}</p>}
-        <OrderDeliveryDetails order={order} />
-      <p className={`mt-0.5 text-sm ${authExpired ? "font-medium text-red-600" : authExpiringSoon ? "font-medium text-amber-600" : "text-text-light"}`}>
+      <OrderDeliveryDetails order={order} />
+      <p className={`mt-2 text-xs ${authExpired ? "font-medium text-red-600" : authExpiringSoon ? "font-medium text-amber-600" : "text-text-light"}`}>
         {daysSinceAuth <= 0
           ? "Authorised today"
           : `Authorised ${daysSinceAuth} day${daysSinceAuth === 1 ? "" : "s"} ago`}
@@ -89,7 +89,7 @@ export default function CaptureOrderCard({ order }: Props) {
             : ""}
       </p>
 
-      <div className="mt-3 space-y-2">
+      <div className="mb-3 mt-2.5 space-y-1.5">
         {order.line_items.map((li) => {
           const unitPriceApplied = li.meta_data.find((m) => m.key === "Unit price applied")?.value as
             | string
@@ -98,18 +98,18 @@ export default function CaptureOrderCard({ order }: Props) {
             | string
             | undefined;
           return (
-            <div key={li.id} className="flex items-center justify-between gap-3 text-sm">
-              <span className="text-navy">
+            <div key={li.id} className="flex items-center justify-between gap-2 text-xs">
+              <span className="min-w-0 text-navy">
                 {li.name}
                 {(unitPriceApplied || weightEstimated) && (
-                  <span className="ml-2 text-sm text-text-light">
+                  <span className="block text-xs text-text-light">
                     {[unitPriceApplied && `${unitPriceApplied} applied`, weightEstimated && `est. ${weightEstimated}`]
                       .filter(Boolean)
                       .join(" · ")}
                   </span>
                 )}
               </span>
-              <div className="flex items-center gap-1">
+              <div className="flex shrink-0 items-center gap-1">
                 <span className="text-text-light">£</span>
                 <input
                   type="number"
@@ -117,7 +117,7 @@ export default function CaptureOrderCard({ order }: Props) {
                   min="0"
                   value={amounts[li.id]}
                   onChange={(e) => setAmounts((prev) => ({ ...prev, [li.id]: e.target.value }))}
-                  className="w-24 border border-border px-2 py-1 text-right text-sm"
+                  className="w-20 border border-border px-2 py-1 text-right text-xs"
                   style={{ borderRadius: "4px" }}
                 />
               </div>
@@ -126,25 +126,25 @@ export default function CaptureOrderCard({ order }: Props) {
         })}
       </div>
 
-      <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
-        <span className="text-sm font-medium text-navy">
-          Final total: £{finalTotal.toFixed(2)}
-          {overAuthorised && <span className="ml-2 text-sm font-normal text-red-600">exceeds balance held</span>}
+      <div className="mt-auto flex items-center justify-between gap-2 border-t border-border pt-2.5">
+        <span className="text-xs font-medium text-navy">
+          Total £{finalTotal.toFixed(2)}
+          {overAuthorised && <span className="block font-normal text-red-600">exceeds balance held</span>}
           {!overAuthorised && depositOverpaid && (
-            <span className="ml-2 text-sm font-normal text-amber-600">deposit overpayment will be refunded</span>
+            <span className="block font-normal text-amber-600">deposit overpayment will be refunded</span>
           )}
         </span>
         <button
           type="button"
           onClick={handleCapture}
           disabled={submitting || overAuthorised || finalTotal <= 0}
-          className="bg-lobster px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-lobster/90 disabled:cursor-not-allowed disabled:opacity-50"
+          className="shrink-0 bg-lobster px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-lobster/90 disabled:cursor-not-allowed disabled:opacity-50"
           style={{ borderRadius: "6px" }}
         >
           {submitting ? "Capturing…" : "Capture payment"}
         </button>
       </div>
-      {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+      {error && <p className="mt-2 text-xs text-red-600">{error}</p>}
     </div>
   );
 }

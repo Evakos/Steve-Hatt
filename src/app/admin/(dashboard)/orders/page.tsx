@@ -3,6 +3,9 @@ import CaptureOrderCard from "./capture-order-card";
 import CompleteOrderCard from "./complete-order-card";
 import PreOrderStatusCard from "./preorder-status-card";
 
+// Orders sit in a responsive grid: as many tiles per row as the width allows (about 17rem each).
+const GRID = "mt-4 grid grid-cols-[repeat(auto-fill,minmax(17rem,1fr))] gap-3";
+
 export default async function AdminOrdersPage() {
   const [pendingCapture, processing, pendingPreOrders] = await Promise.all([
     listPendingCaptureOrders(),
@@ -16,61 +19,59 @@ export default async function AdminOrdersPage() {
   return (
     <div>
       <h1 className="font-serif text-2xl font-bold text-navy">Orders</h1>
-      <p className="mt-2 text-sm text-text-light">
+      <p className="mt-1 text-sm text-text-light">
         Paid orders ready to prepare. Older held orders or pending Christmas pre-orders show here only if there are any.
       </p>
 
-      <div className="mt-6 grid items-start gap-6 md:grid-cols-2">
-        {christmasPreOrders.length > 0 && (
-          <section className="border border-border bg-white p-6 shadow-sm md:col-span-2" style={{ borderRadius: "20px" }}>
-            <SectionHeading title="Christmas pre-orders" count={christmasPreOrders.length} />
-            <p className="mt-2 text-sm leading-relaxed text-text-light">
-              Card verified but no hold placed yet. A scheduled job authorises these automatically a few days before
-              delivery, then they move to the queue below like any other order. Nothing for you to do here unless one is
-              flagged as failed.
+      <div className="mt-5 space-y-5">
+        {/* Only shown when something is actually held, so the capture explanation never appears for nothing. */}
+        {pendingCapture.length > 0 && (
+          <section className="border border-border bg-white p-5 shadow-sm" style={{ borderRadius: "16px" }}>
+            <SectionHeading title="Awaiting capture" count={pendingCapture.length} />
+            <p className="mt-1.5 text-xs leading-relaxed text-text-light">
+              The card is held but not charged. Enter the final weighed price per item, then capture to take payment for
+              the confirmed amount. Holds expire 7 days after authorisation, so capture the oldest orders (shown first)
+              first.
             </p>
-            <div className="mt-5 space-y-3">
-              {christmasPreOrders.map((order) => (
-                <PreOrderStatusCard key={order.id} order={order} />
+            <div className="mt-4 grid grid-cols-[repeat(auto-fill,minmax(20rem,1fr))] gap-3">
+              {pendingCapture.map((order) => (
+                <CaptureOrderCard key={order.id} order={order} />
               ))}
             </div>
           </section>
         )}
 
-        {/* Only shown when something is actually held, so the capture explanation never appears for nothing. */}
-        {pendingCapture.length > 0 && (
-        <section className="border border-border bg-white p-6 shadow-sm" style={{ borderRadius: "20px" }}>
-          <SectionHeading title="Awaiting capture" count={pendingCapture.length} />
-          <p className="mt-2 text-sm leading-relaxed text-text-light">
-            The card is held but not charged. Enter the final weighed price per item, then capture to take payment for the
-            confirmed amount. Holds expire 7 days after authorisation, so capture the oldest orders (shown first) first.
-          </p>
-          <div className="mt-5 space-y-4">
-            {pendingCapture.map((order) => (
-              <CaptureOrderCard key={order.id} order={order} />
-            ))}
-          </div>
-        </section>
-        )}
-
-        <section
-          className={`border border-border bg-white p-6 shadow-sm ${pendingCapture.length === 0 ? "md:col-span-2" : ""}`}
-          style={{ borderRadius: "20px" }}
-        >
+        <section className="border border-border bg-white p-5 shadow-sm" style={{ borderRadius: "16px" }}>
           <SectionHeading title="Orders being prepared" count={processing.length} />
-          <p className="mt-2 text-sm leading-relaxed text-text-light">
+          <p className="mt-1.5 text-xs leading-relaxed text-text-light">
             Already charged and being prepared. Mark complete once the order has been collected or delivered.
           </p>
           {processing.length === 0 ? (
-            <p className="mt-6 text-sm text-text-light">No orders being prepared right now.</p>
+            <p className="mt-4 text-sm text-text-light">No orders being prepared right now.</p>
           ) : (
-            <div className="mt-5 space-y-3">
+            <div className={GRID}>
               {processing.map((order) => (
                 <CompleteOrderCard key={order.id} order={order} />
               ))}
             </div>
           )}
         </section>
+
+        {christmasPreOrders.length > 0 && (
+          <section className="border border-border bg-white p-5 shadow-sm" style={{ borderRadius: "16px" }}>
+            <SectionHeading title="Christmas pre-orders" count={christmasPreOrders.length} />
+            <p className="mt-1.5 text-xs leading-relaxed text-text-light">
+              Card verified but no hold placed yet. A scheduled job authorises these automatically a few days before
+              delivery, then they move to the queue above like any other order. Nothing for you to do here unless one is
+              flagged as failed.
+            </p>
+            <div className={GRID}>
+              {christmasPreOrders.map((order) => (
+                <PreOrderStatusCard key={order.id} order={order} />
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </div>
   );
