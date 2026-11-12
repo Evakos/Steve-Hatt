@@ -17,6 +17,10 @@ const prepTooltips: Record<string, string> = {
   "Split and cleaned": "Split in half lengthways, cleaned and ready to grill or roast.",
   "Live (whole)": "Delivered alive for maximum freshness. Cook within 24 hours of delivery.",
   "Ready to eat": "No preparation needed. Enjoy straight from the pack.",
+  "Filleted (skin on)": "Boned into fillets with the skin left on. Ready to pan-fry skin side down for crisp skin.",
+  "Peeled (raw)": "Shell removed, raw and ready to cook. Cook thoroughly before eating.",
+  "Shell-on (raw)": "Raw and still in the shell, which keeps them juicy and adds flavour. Cook thoroughly before eating.",
+  "Whole (gutted & scaled)": "Whole fish, gutted and scaled. Ready to roast, bake or barbecue.",
 };
 
 interface Props {
