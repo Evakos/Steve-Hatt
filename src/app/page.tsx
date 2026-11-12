@@ -232,7 +232,7 @@ export default async function Home() {
           <div className="grid gap-4 md:grid-cols-4">
             {howItWorks.map((item, i) => (
               <Reveal key={item.step} delay={Math.min(i, 3) * 70}>
-              <div className="border border-border p-6" style={{ borderRadius: '5px' }}>
+              <div className="h-full border border-border bg-cream p-6 md:min-h-[13rem]" style={{ borderRadius: '5px' }}>
                 <span className="font-serif text-2xl font-light text-lobster/40">{item.step}</span>
                 <h3 className="mt-3 font-serif text-base font-semibold text-navy">{item.title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-text-light">{item.desc}</p>
