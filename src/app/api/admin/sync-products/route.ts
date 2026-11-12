@@ -13,6 +13,8 @@ const META_KEYS = {
   excludedFromChristmas: "_steve_hatt_excluded_from_christmas",
   christmasPrice: "_steve_hatt_christmas_price",
   christmasDeposit: "_steve_hatt_christmas_deposit",
+  priceType: "_steve_hatt_price_type",
+  pricePerKg: "_steve_hatt_price_per_kg",
 } as const;
 
 const VALID_STATUSES = new Set(["draft", "pending", "private", "publish"]);
@@ -153,6 +155,44 @@ export async function POST() {
       christmasDeposit = parsedChristmasDeposit.toFixed(2);
     }
 
+    // How the price works. "fixed" (the default when blank) is one price for the product. "per-kg"
+    // means priced by weight: the customer picks a weight and pays price x weight, where the price
+    // is £ per kg (taken from the optional "Price per kg" column, else from the "price" column).
+    // "per-piece" means the price is for each one (an oyster, a prawn).
+    const priceTypeRaw = row["Price type"];
+    let priceType: "fixed" | "per-kg" | "per-piece" | undefined;
+    let pricePerKg: string | undefined;
+    if (priceTypeRaw) {
+      const normalisedType = priceTypeRaw.trim().toLowerCase();
+      if (normalisedType === "fixed" || normalisedType === "per-kg" || normalisedType === "per-piece") {
+        priceType = normalisedType;
+      } else {
+        results.push({
+          kind: "product",
+          productId,
+          title,
+          status: "error",
+          message: `"Price type" column must be fixed, per-kg or per-piece, got: ${priceTypeRaw}`,
+        });
+        continue;
+      }
+    }
+    if (priceType === "per-kg") {
+      const perKgRaw = row["Price per kg"] || row.price;
+      const parsedPerKg = Number(perKgRaw);
+      if (!perKgRaw || !Number.isFinite(parsedPerKg) || parsedPerKg <= 0) {
+        results.push({
+          kind: "product",
+          productId,
+          title,
+          status: "error",
+          message: `A per-kg product needs a "Price per kg" (or a "price"), got: ${perKgRaw ?? "nothing"}`,
+        });
+        continue;
+      }
+      pricePerKg = parsedPerKg.toFixed(2);
+    }
+
     // Manual availability toggle - "In stock" / "Out of stock" (optionally "On backorder").
     // Blank leaves WooCommerce's current stock status untouched.
     const stockRaw = row["Stock"];
@@ -191,6 +231,11 @@ export async function POST() {
     }
     if (christmasDeposit !== undefined) {
       metaData.push({ key: META_KEYS.christmasDeposit, value: christmasDeposit });
+    }
+    if (priceType !== undefined) {
+      metaData.push({ key: META_KEYS.priceType, value: priceType });
+      // Anything that is no longer per-kg has its stored per-kg price cleared, so it can't linger.
+      metaData.push({ key: META_KEYS.pricePerKg, value: pricePerKg ?? "0" });
     }
 
     try {

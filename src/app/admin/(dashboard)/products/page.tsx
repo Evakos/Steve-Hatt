@@ -40,6 +40,13 @@ export default async function AdminProductsPage() {
           customer has chosen to order for Christmas at checkout.
         </li>
         <li>
+          <strong className="font-medium text-navy">Priced by weight.</strong> Set <code className={code}>Price type</code>{" "}
+          to <code className={code}>per-kg</code> for a product sold by weight, and the customer picks a weight and pays
+          the price for that weight. The <code className={code}>price</code> column is then the £ per kg (or fill the
+          optional <code className={code}>Price per kg</code> column). Use <code className={code}>per-piece</code> when
+          the price is for each one, and <code className={code}>fixed</code> (or blank) for a single price.
+        </li>
+        <li>
           <strong className="font-medium text-navy">Sizes.</strong> Weight and size products (Salmon Whole, Lobster,
           Halibut Steaks, Turbot, Crab | Dressed) have no single price, each size is its own WooCommerce variation.
           Sync also reads the &quot;{source.variationsTable}&quot; table and updates each size&apos;s{" "}
