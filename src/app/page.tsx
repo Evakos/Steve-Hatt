@@ -383,8 +383,8 @@ export default async function Home() {
                     </li>
                   ))}
                 </ol>
-                <p className="mt-4 text-center text-xs leading-relaxed text-text-light lg:whitespace-nowrap">
-                  A few items can&apos;t be ordered for Christmas dates. If one is in your basket, checkout will tell you
+                <p className="mt-4 text-center text-xs leading-relaxed text-text-light md:whitespace-nowrap md:text-[11px] lg:text-xs">
+                  *A few items can&apos;t be ordered for Christmas dates. If one is in your basket, checkout will tell you
                   which to remove.
                 </p>
               </div>
