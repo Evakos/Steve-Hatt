@@ -4,7 +4,7 @@ import { getAllProducts } from "@/lib/products";
 import { isChristmasShopActive } from "@/lib/feature-flags";
 import { getUpcomingChristmasDates } from "@/lib/christmas-dates";
 import { LAST_ORDER_LABEL } from "@/lib/ordering-window";
-import { Truck, Fish, Scaling, Leaf, Anchor, Recycle, ShoppingBag, Search, Snowflake } from "lucide-react";
+import { Truck, Fish, Scaling, Leaf, Anchor, Recycle, ShoppingBag, Search, Snowflake, CalendarDays, CreditCard, type LucideIcon } from "lucide-react";
 import GoogleRating from "@/components/google-rating";
 import { getGoogleReviewData } from "@/lib/google-reviews";
 import Header from "@/components/header";
@@ -59,11 +59,13 @@ function ordinal(n: number): string {
 }
 
 // How a Christmas order works, shown in the Christmas section while Christmas ordering is on.
-const CHRISTMAS_STEPS = [
-  { title: "Fill your basket", text: "Choose your Christmas fish and shellfish from the shop." },
-  { title: "Choose For Christmas", text: "At checkout, pick delivery or collection, then your date and time slot." },
-  { title: "Pay in full", text: "You pay at checkout and get a confirmation email straight away." },
-  { title: "Prepared fresh", text: "Your fishmonger prepares your order for your chosen day." },
+// Each step has an image placeholder (an icon on a beige panel). To use a photo instead, add an
+// `image` path to the step, for example image: "/christmas/step-1.jpg".
+const CHRISTMAS_STEPS: { title: string; text: string; icon: LucideIcon; image?: string }[] = [
+  { title: "Fill your basket", text: "Choose your Christmas fish and shellfish from the shop.", icon: ShoppingBag },
+  { title: "Choose For Christmas", text: "At checkout, pick delivery or collection, then your date and time slot.", icon: CalendarDays },
+  { title: "Pay in full", text: "You pay at checkout and get a confirmation email straight away.", icon: CreditCard },
+  { title: "Prepared fresh", text: "Your fishmonger prepares your order for your chosen day.", icon: Fish },
 ];
 
 export default async function Home() {
@@ -357,21 +359,33 @@ export default async function Home() {
             <Reveal>
               <div className="mt-12">
                 <h3 className="mb-6 text-center font-serif text-2xl font-bold text-navy">How a Christmas order works</h3>
-                <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <ol className="grid gap-4 md:grid-cols-2">
                   {CHRISTMAS_STEPS.map((step, i) => (
                     <li
                       key={step.title}
-                      className="flex h-full flex-col border border-border bg-white p-6 sm:min-h-[11rem]"
+                      className="flex h-full overflow-hidden border border-border bg-white sm:min-h-[11rem]"
                       style={{ borderRadius: "5px" }}
                     >
-                      <span
-                        className="flex h-8 w-8 shrink-0 items-center justify-center bg-navy text-sm font-medium text-white"
-                        style={{ borderRadius: "999px" }}
-                      >
-                        {i + 1}
-                      </span>
-                      <h3 className="mt-4 font-serif text-base font-semibold text-navy">{step.title}</h3>
-                      <p className="mt-2 text-sm leading-relaxed text-text-light">{step.text}</p>
+                      {/* Image placeholder: full bleed to the card's left, top and bottom edges */}
+                      <div className="relative w-2/5 shrink-0 bg-sand">
+                        {step.image ? (
+                          <Image src={step.image} alt="" fill sizes="(max-width: 768px) 40vw, 20vw" className="object-cover" />
+                        ) : (
+                          <div className="flex h-full items-center justify-center">
+                            <step.icon className="h-10 w-10 text-navy/25" />
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex flex-1 flex-col p-5 sm:p-6">
+                        <span
+                          className="flex h-8 w-8 shrink-0 items-center justify-center bg-navy text-sm font-medium text-white"
+                          style={{ borderRadius: "999px" }}
+                        >
+                          {i + 1}
+                        </span>
+                        <h3 className="mt-4 font-serif text-base font-semibold text-navy">{step.title}</h3>
+                        <p className="mt-2 text-sm leading-relaxed text-text-light">{step.text}</p>
+                      </div>
                     </li>
                   ))}
                 </ol>
