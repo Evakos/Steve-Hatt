@@ -119,7 +119,7 @@ export default async function Home() {
           <div className="relative flex sm:absolute sm:inset-0 sm:items-center">
             <div className="mx-auto w-full max-w-6xl px-6 py-12 sm:py-0">
               <div className="max-w-2xl">
-                <p className="animate-fade-up mb-3 text-xs tracking-widest text-white/80 uppercase sm:mb-4 sm:text-sm" style={{ animationDelay: "1600ms" }}>Est. 1895 · Essex Road, London</p>
+                <p className="animate-fade-up mb-3 text-[11px] font-medium tracking-widest text-white/80 uppercase sm:mb-4 sm:text-xs" style={{ animationDelay: "1600ms" }}>Est. 1895 · Essex Road, London</p>
                 <h1 className="animate-fade-up font-serif text-4xl font-bold leading-[1.1] text-white sm:text-5xl md:text-6xl lg:text-7xl" style={{ animationDelay: "1690ms" }}>
                   From Sea, to Shop, to You.
                 </h1>
