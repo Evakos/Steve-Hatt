@@ -70,7 +70,7 @@ export default function PaymentModePanel({ initialSandbox, mock }: Props) {
   };
 
   return (
-    <div className="mt-4 max-w-3xl border border-border bg-card p-5" style={{ borderRadius: "5px" }}>
+    <div className="mt-4 border border-border bg-cream p-5" style={{ borderRadius: "14px" }}>
       <div className="flex flex-col gap-3 sm:flex-row">
         {option(true)}
         {option(false)}
