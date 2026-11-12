@@ -15,7 +15,8 @@ const WEIGHT_CHOICES = [
   { value: 1, label: "1kg" },
 ];
 
-const prepTooltips: Record<string, string> = {
+// Built-in wording, used for any option the product's own "Preparation notes" in Airtable don't cover.
+const defaultPrepTooltips: Record<string, string> = {
   "Scaled & Cleaned": "Scales removed, gutted and washed. Ready to cook whole, roast, or stuff.",
   "Cleaned Only": "Gutted and washed but scales left on. Ideal for barbecuing or baking in salt crust.",
   "Filleted (skin removed)": "Boned and skinned into fillets. Ready to pan-fry, poach, or bake.",
@@ -44,6 +45,7 @@ export default function AddToCart({ product }: Props) {
   const [quantity, setQuantity] = useState(product.priceType === "per-piece" ? 6 : 1);
   const [added, setAdded] = useState(false);
   const outOfStock = product.stockStatus === "outofstock";
+  const prepTooltips = { ...defaultPrepTooltips, ...product.preparationNotes };
   // Christmas break (after 17th December until the new year): no online orders, so the button is
   // disabled. Product pages are static, so this asks the server in the browser (same endpoint as
   // the banner) and reacts the moment the window opens, with no rebuild.

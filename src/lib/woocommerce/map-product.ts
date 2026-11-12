@@ -22,7 +22,21 @@ const META_KEYS = {
   christmasPrice: "_steve_hatt_christmas_price", // manual Christmas price override, same units as price/pricePerKg
   christmasDeposit: "_steve_hatt_christmas_deposit", // per-product Christmas deposit (£ per unit)
   preOrderDelivery: "_steve_hatt_pre_order_delivery",
+  weight: "_steve_hatt_weight", // pack size label shown beside the price, e.g. "Approx. 250g"
+  preparationNotes: "_steve_hatt_preparation_notes", // one "Option: what it means" line per preparation option
 } as const;
+
+/** Turns the "Option: what it means" lines into a lookup, ignoring any line without a description. */
+function parsePreparationNotes(raw: string): Record<string, string> {
+  const notes: Record<string, string> = {};
+  for (const line of raw.split("\n")) {
+    const at = line.indexOf(":");
+    if (at <= 0) continue;
+    const text = line.slice(at + 1).trim();
+    if (text) notes[line.slice(0, at).trim()] = text;
+  }
+  return notes;
+}
 
 /**
  * The WooCommerce REST API runs `description` through `wpautop` on output, wrapping plain text
@@ -94,7 +108,8 @@ export function mapWooProductToProduct(wooProduct: WooProduct, variations: WooPr
     price: Number.parseFloat(wooProduct.price || wooProduct.regular_price) || 0,
     priceLabel: "",
     pricePerKg: Number.parseFloat(readMeta(wooProduct.meta_data, META_KEYS.pricePerKg)) || 0,
-    weight: "",
+    weight: readMeta(wooProduct.meta_data, META_KEYS.weight),
+    preparationNotes: parsePreparationNotes(readMeta(wooProduct.meta_data, META_KEYS.preparationNotes)),
     image: wooProduct.images[0]?.src ?? "",
     tag: readMeta(wooProduct.meta_data, META_KEYS.tag),
     description: stripHtml(wooProduct.description),

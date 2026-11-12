@@ -77,8 +77,20 @@ export default async function Home() {
   const todaysCatch = pickRandom(products, 6);
   // Curated festive picks for the Christmas section - only products whose slug is in the
   // shortlist above are shown (each still needs the christmas tag to be eligible to order).
-  const christmasFeatured = CHRISTMAS_FEATURED_SLUGS.map((slug) => products.find((p) => p.slug === slug))
-    .filter((p): p is NonNullable<typeof p> => Boolean(p))
+  // Which products are featured is set in Airtable ("Featured at Christmas"). Until that has been
+  // synced, the built-in shortlist is used, so the section is never empty.
+  const flaggedFeatured = products.filter((p) => p.featuredFor?.includes("christmas"));
+  const featuredRank = (slug: string) => {
+    const i = CHRISTMAS_FEATURED_SLUGS.indexOf(slug);
+    return i === -1 ? CHRISTMAS_FEATURED_SLUGS.length : i;
+  };
+  const christmasPool =
+    flaggedFeatured.length > 0
+      ? [...flaggedFeatured].sort((a, b) => featuredRank(a.slug) - featuredRank(b.slug))
+      : CHRISTMAS_FEATURED_SLUGS.map((slug) => products.find((p) => p.slug === slug)).filter(
+          (p): p is NonNullable<typeof p> => Boolean(p)
+        );
+  const christmasFeatured = christmasPool
     .filter((p) => p.stockStatus !== "outofstock" && !p.excludedFromChristmas)
     .slice(0, CHRISTMAS_FEATURED_COUNT);
   // Manual per-product Christmas pricing (set via the Products sheet's christmas_price column)

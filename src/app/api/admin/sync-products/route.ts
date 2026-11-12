@@ -15,6 +15,9 @@ const META_KEYS = {
   christmasDeposit: "_steve_hatt_christmas_deposit",
   priceType: "_steve_hatt_price_type",
   pricePerKg: "_steve_hatt_price_per_kg",
+  weight: "_steve_hatt_weight",
+  featuredFor: "_steve_hatt_featured_for",
+  preparationNotes: "_steve_hatt_preparation_notes",
 } as const;
 
 const VALID_STATUSES = new Set(["draft", "pending", "private", "publish"]);
@@ -217,7 +220,31 @@ export async function POST() {
       }
     }
 
+    // "Featured" puts the product in the home page's Christmas section; "Not featured" takes it out.
+    const featuredRaw = row["Featured at Christmas"];
+    let featuredFor: string[] | undefined;
+    if (featuredRaw) {
+      const normalisedFeatured = featuredRaw.trim().toLowerCase();
+      if (normalisedFeatured === "featured") {
+        featuredFor = ["christmas"];
+      } else if (normalisedFeatured === "not featured") {
+        featuredFor = [];
+      } else {
+        results.push({
+          kind: "product",
+          productId,
+          title,
+          status: "error",
+          message: `"Featured at Christmas" column must be Featured or Not featured, got: ${featuredRaw}`,
+        });
+        continue;
+      }
+    }
+
     const metaData: { key: string; value: string }[] = [];
+    if (row["Pack size"]) metaData.push({ key: META_KEYS.weight, value: row["Pack size"] });
+    if (row["Preparation notes"]) metaData.push({ key: META_KEYS.preparationNotes, value: row["Preparation notes"] });
+    if (featuredFor !== undefined) metaData.push({ key: META_KEYS.featuredFor, value: JSON.stringify(featuredFor) });
     if (row.tag) metaData.push({ key: META_KEYS.tag, value: row.tag });
     if (preparation) metaData.push({ key: META_KEYS.preparation, value: JSON.stringify(preparation) });
     if (row.origin) metaData.push({ key: META_KEYS.origin, value: row.origin });

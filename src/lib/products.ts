@@ -28,6 +28,9 @@ export type Product = {
   origin: string;
   sustainability: string;
   storage: string;
+  /** What each preparation option means (the tooltip text), keyed by option name, from the
+   * "Preparation notes" column. Options missing here fall back to the built-in wording. */
+  preparationNotes?: Record<string, string>;
   /** WooCommerce stock status - "instock" | "outofstock" | "onbackorder". Read from Woo and
    * written back from the sheet's "Stock" column; drives the "Sold out" treatment on the shop. */
   stockStatus?: "instock" | "outofstock" | "onbackorder";

@@ -53,9 +53,15 @@ export default async function AdminProductsPage() {
         <Note title="Priced by weight">
           Set <code className={code}>Price type</code> to <code className={code}>per-kg</code> for a product sold by
           weight, and the customer picks a weight and pays the price for that weight. The{" "}
-          <code className={code}>price</code> column is then the £ per kg (or fill the optional{" "}
-          <code className={code}>Price per kg</code> column). Use <code className={code}>per-piece</code> when the price is
-          for each one, and <code className={code}>fixed</code> (or blank) for a single price.
+          <code className={code}>price</code> column is then the £ per kg. Use <code className={code}>per-piece</code>{" "}
+          when the price is for each one, and <code className={code}>fixed</code> (or blank) for a single price.
+        </Note>
+        <Note title="Product page and home page">
+          <code className={code}>Pack size</code> is the short note beside the price (for example Approx. 250g).{" "}
+          <code className={code}>Preparation notes</code> holds one line per preparation option, written{" "}
+          <code className={code}>Option: what it means</code>, and shows as the tooltip. Any option left out keeps the
+          built-in wording. <code className={code}>Featured at Christmas</code> chooses the products shown in the
+          Christmas section of the home page (up to 8, skipping anything out of stock or excluded).
         </Note>
         <Note title="Sizes" wide>
           Weight and size products (Salmon Whole, Lobster, Halibut Steaks, Turbot, Crab | Dressed) have no single price,
