@@ -64,7 +64,7 @@ function ordinal(n: number): string {
 const CHRISTMAS_STEPS: { title: string; text: string; icon: LucideIcon; image?: string }[] = [
   { title: "Fill your basket", text: "Choose your Christmas fish and shellfish from the shop.", icon: ShoppingBag },
   { title: "Choose For Christmas", text: "At checkout, pick delivery or collection, then your date and time slot.", icon: CalendarDays },
-  { title: "Pay in full", text: "You pay at checkout and get a confirmation email straight away.", icon: CreditCard },
+  { title: "Pay in full", text: "You pay at checkout and get a confirmation email straight away, which confirms your delivery method.", icon: CreditCard },
   { title: "Prepared fresh", text: "Your fishmonger prepares your order for your chosen day.", icon: Fish },
 ];
 
