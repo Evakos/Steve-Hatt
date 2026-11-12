@@ -4,7 +4,7 @@ import { getAllProducts } from "@/lib/products";
 import { isChristmasShopActive } from "@/lib/feature-flags";
 import { getUpcomingChristmasDates } from "@/lib/christmas-dates";
 import { LAST_ORDER_LABEL } from "@/lib/ordering-window";
-import { Truck, Fish, Scaling, Leaf, Anchor, Recycle, ShoppingBag, Search, Snowflake, CalendarDays, CreditCard, type LucideIcon } from "lucide-react";
+import { Truck, Fish, Scaling, Leaf, Anchor, Recycle, ShoppingBag, Search, Snowflake, CalendarDays, CreditCard, ArrowRight, type LucideIcon } from "lucide-react";
 import GoogleRating from "@/components/google-rating";
 import { getGoogleReviewData } from "@/lib/google-reviews";
 import Header from "@/components/header";
@@ -366,8 +366,22 @@ export default async function Home() {
                   className="grid gap-px overflow-hidden border border-border bg-border sm:grid-cols-2 lg:grid-cols-4"
                   style={{ borderRadius: "5px" }}
                 >
-                  {CHRISTMAS_STEPS.map((step) => (
-                    <li key={step.title} className="flex flex-col bg-white">
+                  {CHRISTMAS_STEPS.map((step, i) => (
+                    <li key={step.title} className="relative flex flex-col bg-white">
+                      {/* Arrow on the line between this step and the next, vertically centred and half over the
+                          next card. Only where the next step really is to the right: steps 1 and 3 from tablet
+                          width (two across), step 2 as well at desktop width (four across). */}
+                      {i < CHRISTMAS_STEPS.length - 1 && (
+                        <span
+                          aria-hidden
+                          className={`absolute top-1/2 right-0 z-10 h-8 w-8 -translate-y-1/2 translate-x-1/2 items-center justify-center border border-border bg-white text-navy shadow-sm ${
+                            i === 1 ? "hidden lg:flex" : "hidden sm:flex"
+                          }`}
+                          style={{ borderRadius: "4px" }}
+                        >
+                          <ArrowRight className="h-4 w-4" />
+                        </span>
+                      )}
                       <div className="flex flex-1 flex-col p-5">
                         <h3 className="font-serif text-base leading-tight font-semibold text-navy">{step.title}</h3>
                         <p className="mt-1.5 text-sm leading-snug text-text-light">{step.text}</p>
