@@ -1,4 +1,5 @@
 import type { Product, SizeOption } from "@/lib/products";
+import { removeLongDashes } from "@/lib/text";
 import type { WooProduct, WooProductVariation } from "./types";
 
 /**
@@ -31,7 +32,7 @@ const META_KEYS = {
  * formatting back out rather than rendering literal "<p>" characters or shipping HTML in a meta tag.
  */
 function stripHtml(html: string): string {
-  return html
+  return removeLongDashes(html
     .replace(/<\/p>\s*<p>/gi, "\n\n")
     .replace(/<br\s*\/?>/gi, "\n")
     .replace(/<[^>]+>/g, "")
@@ -41,14 +42,14 @@ function stripHtml(html: string): string {
     .replace(/&#8216;|&lsquo;/g, "‘")
     .replace(/&#8220;|&ldquo;/g, "“")
     .replace(/&#8221;|&rdquo;/g, "”")
-    .replace(/&#8211;|&ndash;/g, "-")
-    .replace(/&#8212;|&mdash;/g, "-")
-    .trim();
+    .replace(/&#8211;|&ndash;/g, "–")
+    .replace(/&#8212;|&mdash;/g, "—")
+    .trim());
 }
 
 function readMeta(metaData: WooProduct["meta_data"], key: string): string {
   const entry = metaData.find((m) => m.key === key);
-  return typeof entry?.value === "string" ? entry.value : "";
+  return typeof entry?.value === "string" ? removeLongDashes(entry.value) : "";
 }
 
 function readMetaJsonArray(metaData: WooProduct["meta_data"], key: string): string[] {
@@ -88,7 +89,7 @@ export function mapWooProductToProduct(wooProduct: WooProduct, variations: WooPr
   const base: Product = {
     wooId: wooProduct.id,
     slug: wooProduct.slug,
-    name: wooProduct.name,
+    name: removeLongDashes(wooProduct.name),
     category: wooProduct.categories[0]?.name ?? "",
     price: Number.parseFloat(wooProduct.price || wooProduct.regular_price) || 0,
     priceLabel: "",

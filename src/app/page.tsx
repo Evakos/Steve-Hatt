@@ -323,7 +323,7 @@ export default async function Home() {
               {anyChristmasPricing && (
                 <p className="mx-auto mt-3 max-w-lg text-sm text-text-light">
                   Some items have a different price for Christmas, reflecting higher market prices over the festive
-                  period. Prices shown here are unaffected - this only applies once you choose to order for
+                  period. Prices shown here are unaffected. This only applies once you choose to order for
                   Christmas at checkout.
                 </p>
               )}
