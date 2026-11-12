@@ -2,7 +2,17 @@ import { NextResponse } from "next/server";
 import { revalidateTag } from "next/cache";
 import { isStaffAuthenticated } from "@/lib/staff-auth";
 import { readProductRows } from "@/lib/product-source";
-import { updateWooProduct, updateWooProductVariation, PRODUCTS_TAG } from "@/lib/woocommerce/products";
+import { parseAttachmentCell } from "@/lib/airtable";
+import {
+  getWooProduct,
+  listAllWooProducts,
+  listWooCategories,
+  listWooVariations,
+  updateWooProduct,
+  updateWooProductVariation,
+  PRODUCTS_TAG,
+} from "@/lib/woocommerce/products";
+import type { WooProduct, WooProductVariation } from "@/lib/woocommerce/types";
 
 const META_KEYS = {
   tag: "_steve_hatt_tag",
@@ -15,6 +25,7 @@ const META_KEYS = {
   christmasDeposit: "_steve_hatt_christmas_deposit",
   priceType: "_steve_hatt_price_type",
   pricePerKg: "_steve_hatt_price_per_kg",
+  photoKey: "_steve_hatt_photo_key",
   weight: "_steve_hatt_weight",
   featuredFor: "_steve_hatt_featured_for",
   preparationNotes: "_steve_hatt_preparation_notes",
@@ -26,6 +37,38 @@ const VALID_STATUSES = new Set(["draft", "pending", "private", "publish"]);
 const EXCLUDED_TRUE_VALUES = new Set(["excluded", "true", "1", "yes"]);
 const EXCLUDED_FALSE_VALUES = new Set(["included", "false", "0", "no"]);
 
+const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const IMAGE_EXTENSIONS: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+  "image/gif": "gif",
+};
+
+/** A file name boiled down so the same photo compares equal however WordPress renamed it
+ * (spaces, "-scaled", a "-1" added to avoid a clash). */
+function photoFingerprint(nameOrUrl: string | undefined): string {
+  if (!nameOrUrl) return "";
+  const base = decodeURIComponent(nameOrUrl.split("?")[0].split("/").pop() ?? "").replace(/\.[a-z0-9]+$/i, "");
+  return base
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/-scaled$/, "")
+    .replace(/-\d+$/, "");
+}
+
+/** The photo's name for WooCommerce, always ending in a real image extension. */
+function photoFileName(filename: string, type: string): string {
+  const cleaned = filename.replace(/[^\w.\-]+/g, "_");
+  if (/\.(jpe?g|png|webp|gif)$/i.test(cleaned)) return cleaned;
+  return `${cleaned.replace(/\.[^.]*$/, "") || "photo"}.${IMAGE_EXTENSIONS[type] ?? "jpg"}`;
+}
+
+function readStoredMeta(product: WooProduct | undefined, key: string): string {
+  const value = product?.meta_data.find((m) => m.key === key)?.value;
+  return typeof value === "string" ? value : "";
+}
+
 interface SyncResult {
   kind: "product" | "variation";
   productId: number;
@@ -34,7 +77,7 @@ interface SyncResult {
   message?: string;
 }
 
-export async function POST() {
+export async function POST(request: Request) {
   // Defense-in-depth: proxy.ts already gates /api/admin/*, but per the framework's own guidance
   // a matcher/route refactor could silently drop that coverage, so re-check here too.
   if (!(await isStaffAuthenticated())) {
@@ -47,6 +90,22 @@ export async function POST() {
   } catch (err) {
     return NextResponse.json({ error: err instanceof Error ? err.message : "Failed to read the sheet" }, { status: 502 });
   }
+
+  // What the shop holds right now, so photos, categories and sizes are only touched when edited.
+  let existingProducts: Map<number, WooProduct>;
+  let categoryByName: Map<string, { id: number; name: string }>;
+  try {
+    const [products, categories] = await Promise.all([listAllWooProducts(), listWooCategories()]);
+    existingProducts = new Map(products.map((p) => [p.id, p]));
+    categoryByName = new Map(categories.map((c) => [c.name.toLowerCase(), c]));
+  } catch (err) {
+    return NextResponse.json({ error: err instanceof Error ? err.message : "Failed to read the shop" }, { status: 502 });
+  }
+
+  // WooCommerce downloads photos from this site (Airtable's own links have no file extension, which
+  // it refuses), so it needs the public address: the production domain on Vercel, else this request's.
+  const productionHost = process.env.VERCEL_PROJECT_PRODUCTION_URL;
+  const photoOrigin = productionHost ? `https://${productionHost}` : new URL(request.url).origin;
 
   const results: SyncResult[] = [];
 
@@ -220,6 +279,60 @@ export async function POST() {
       }
     }
 
+    // Page address. Changing it changes the product's web address (old links stop working).
+    const slug = row.slug?.trim() || undefined;
+    if (slug && !SLUG_PATTERN.test(slug)) {
+      results.push({
+        kind: "product",
+        productId,
+        title,
+        status: "error",
+        message: `"slug" can only use lowercase letters, numbers and hyphens, got: ${slug}`,
+      });
+      continue;
+    }
+
+    // Category. Several can be given, separated by " | "; the first is the one shown on the product.
+    let categoryIds: { id: number }[] | undefined;
+    if (row.category) {
+      const names = row.category.split("|").map((n) => n.trim()).filter(Boolean);
+      const found = names.map((n) => categoryByName.get(n.toLowerCase()));
+      const unknown = names.filter((_, i) => !found[i]);
+      if (unknown.length > 0) {
+        results.push({
+          kind: "product",
+          productId,
+          title,
+          status: "error",
+          message: `Unknown category ${unknown.join(", ")}. Use ${[...categoryByName.values()].map((c) => c.name).join(", ")}.`,
+        });
+        continue;
+      }
+      categoryIds = found.map((c) => ({ id: c!.id }));
+    }
+
+    // Photo. The shop is only given the photo again when the Airtable file has changed (each upload
+    // has its own id, remembered on the product); a photo that is already live is just recorded.
+    let photoMarker: { key: string; value: string } | undefined;
+    let newImages: { src: string; alt: string }[] | undefined;
+    let photoAlreadyLive = false;
+    const photos = parseAttachmentCell(row.Photo);
+    if (photos.length > 0 && row.__recordId) {
+      const photoKey = photos.map((p) => p.id).join(",");
+      const current = existingProducts.get(productId);
+      const storedKey = readStoredMeta(current, META_KEYS.photoKey);
+      if (storedKey !== photoKey) {
+        photoMarker = { key: META_KEYS.photoKey, value: photoKey };
+        photoAlreadyLive = !storedKey && photoFingerprint(current?.images[0]?.src) === photoFingerprint(photos[0].filename);
+        if (!photoAlreadyLive) {
+          newImages = photos.map((p) => ({
+            src: `${photoOrigin}/api/product-photo/${row.__recordId}/${p.id}/${photoFileName(p.filename, p.type)}`,
+            alt: row.title || "",
+          }));
+        }
+      }
+    }
+
     // "Featured" puts the product in the home page's Christmas section; "Not featured" takes it out.
     const featuredRaw = row["Featured at Christmas"];
     let featuredFor: string[] | undefined;
@@ -242,6 +355,7 @@ export async function POST() {
     }
 
     const metaData: { key: string; value: string }[] = [];
+    if (photoAlreadyLive && photoMarker) metaData.push(photoMarker);
     if (row["Pack size"]) metaData.push({ key: META_KEYS.weight, value: row["Pack size"] });
     if (row["Preparation notes"]) metaData.push({ key: META_KEYS.preparationNotes, value: row["Preparation notes"] });
     if (featuredFor !== undefined) metaData.push({ key: META_KEYS.featuredFor, value: JSON.stringify(featuredFor) });
@@ -268,12 +382,29 @@ export async function POST() {
     try {
       await updateWooProduct(productId, {
         name: row.title || undefined,
+        slug,
+        categories: categoryIds,
         regular_price: regularPrice,
         status: wooStatus,
         stock_status: stockStatus,
         description: row.description || undefined,
         meta_data: metaData.length > 0 ? metaData : undefined,
       });
+      // The photo goes in its own request so a problem with it can't stop the price and text saving.
+      if (newImages && photoMarker) {
+        try {
+          await updateWooProduct(productId, { images: newImages, meta_data: [photoMarker] });
+        } catch (err) {
+          results.push({
+            kind: "product",
+            productId,
+            title,
+            status: "error",
+            message: `Saved, but the photo didn't update: ${err instanceof Error ? err.message : "upload failed"}`,
+          });
+          continue;
+        }
+      }
       results.push({ kind: "product", productId, title, status: "updated" });
     } catch (err) {
       results.push({ kind: "product", productId, title, status: "error", message: err instanceof Error ? err.message : "Update failed" });
@@ -295,6 +426,10 @@ export async function POST() {
       message: err instanceof Error ? err.message : "Failed to read the Variations tab",
     });
   }
+
+  // Sizes already renamed on the shop, so each product's own list of sizes can be brought in step.
+  const variationsByParent = new Map<number, WooProductVariation[]>();
+  const renames: { parentProductId: number; parentTitle: string; attributeName: string; from: string; to: string }[] = [];
 
   for (const row of variationRows) {
     const title = `${row.parent_title ?? ""} (${row.attributes ?? ""})`.trim();
@@ -320,11 +455,80 @@ export async function POST() {
       regularPrice = parsedPrice.toFixed(2);
     }
 
+    // "Size name" is the label customers see for this size, e.g. Medium 750g. Only sent when it differs
+    // from what the shop has, so an untouched size is never rewritten.
+    const sizeName = row["Size name"]?.trim();
+    let attributes: { name: string; option: string }[] | undefined;
+    let rename: (typeof renames)[number] | undefined;
+    if (sizeName) {
+      try {
+        let siblings = variationsByParent.get(parentProductId);
+        if (!siblings) {
+          siblings = await listWooVariations(parentProductId);
+          variationsByParent.set(parentProductId, siblings);
+        }
+        const attribute = siblings.find((v) => v.id === variationId)?.attributes[0];
+        if (attribute && attribute.option !== sizeName) {
+          if (siblings.some((v) => v.id !== variationId && v.attributes[0]?.option.toLowerCase() === sizeName.toLowerCase())) {
+            results.push({
+              kind: "variation",
+              productId: variationId,
+              title,
+              status: "error",
+              message: `Another size of this product is already called "${sizeName}"`,
+            });
+            continue;
+          }
+          attributes = [{ name: attribute.name, option: sizeName }];
+          rename = {
+            parentProductId,
+            parentTitle: row.parent_title ?? "",
+            attributeName: attribute.name,
+            from: attribute.option,
+            to: sizeName,
+          };
+        }
+      } catch (err) {
+        results.push({
+          kind: "variation",
+          productId: variationId,
+          title,
+          status: "error",
+          message: err instanceof Error ? err.message : "Couldn't read the current sizes",
+        });
+        continue;
+      }
+    }
+
     try {
-      await updateWooProductVariation(parentProductId, variationId, { regular_price: regularPrice });
+      await updateWooProductVariation(parentProductId, variationId, { regular_price: regularPrice, attributes });
+      if (rename) renames.push(rename);
       results.push({ kind: "variation", productId: variationId, title, status: "updated" });
     } catch (err) {
       results.push({ kind: "variation", productId: variationId, title, status: "error", message: err instanceof Error ? err.message : "Update failed" });
+    }
+  }
+
+  // A renamed size also has to change in the product's own list of sizes (what wp-admin shows), or
+  // the two would disagree. Done once per product, after all of its sizes have been handled.
+  for (const parentId of new Set(renames.map((r) => r.parentProductId))) {
+    const mine = renames.filter((r) => r.parentProductId === parentId);
+    try {
+      const parent = await getWooProduct(parentId);
+      const attributes = parent.attributes.map((a) => {
+        const forThis = mine.filter((r) => r.attributeName === a.name);
+        if (forThis.length === 0) return a;
+        return { ...a, options: a.options.map((o) => forThis.find((r) => r.from === o)?.to ?? o) };
+      });
+      await updateWooProduct(parentId, { attributes });
+    } catch (err) {
+      results.push({
+        kind: "variation",
+        productId: parentId,
+        title: mine[0].parentTitle,
+        status: "error",
+        message: `Sizes renamed, but the product's list of sizes didn't update: ${err instanceof Error ? err.message : "update failed"}`,
+      });
     }
   }
 

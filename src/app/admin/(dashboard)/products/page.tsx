@@ -63,10 +63,18 @@ export default async function AdminProductsPage() {
           built-in wording. <code className={code}>Featured at Christmas</code> chooses the products shown in the
           Christmas section of the home page (up to 8, skipping anything out of stock or excluded).
         </Note>
+        <Note title="Photos, category and page address">
+          <code className={code}>Photo</code> is the product photo: drop a new one in and Sync now puts it on the shop (the
+          first image is the main one). <code className={code}>category</code> must be one of the shop&apos;s categories
+          (Cured, Fresh, Oysters, Shellfish, Smoked), with several separated by <code className={code}>|</code> and the
+          first one shown. <code className={code}>slug</code> is the web address of the page: lowercase letters, numbers and
+          hyphens only, and changing it breaks any link already shared, so leave it alone unless there is a reason.
+        </Note>
         <Note title="Sizes" wide>
           Weight and size products (Salmon Whole, Lobster, Halibut Steaks, Turbot, Crab | Dressed) have no single price,
           each size is its own WooCommerce variation. Sync also reads the &quot;{source.variationsTable}&quot; table and
-          updates each size&apos;s <code className={code}>price</code>, matched by <code className={code}>variation_id</code>.
+          updates each size&apos;s <code className={code}>price</code> and <code className={code}>Size name</code> (the label
+          customers see, such as Medium 750g), matched by <code className={code}>variation_id</code>.
           Christmas pricing isn&apos;t supported for sizes yet.
         </Note>
       </div>

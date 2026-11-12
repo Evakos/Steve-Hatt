@@ -13,12 +13,23 @@ export interface WooCategory {
 export interface WooAttribute {
   id: number;
   name: string;
+  slug?: string;
+  position?: number;
+  visible?: boolean;
   variation: boolean;
   options: string[];
 }
 
 export interface WooProductInput {
   name?: string;
+  /** The page address (the last part of the product's URL). */
+  slug?: string;
+  /** Replaces the product's categories. Only ids are accepted by WooCommerce. */
+  categories?: { id: number }[];
+  /** Replaces the product's photos. WooCommerce downloads each `src` and adds it to its media library. */
+  images?: { src: string; alt?: string }[];
+  /** Sent back whole when only a size's name changes, so the product's list of sizes stays in step. */
+  attributes?: WooAttribute[];
   regular_price?: string;
   /** WooCommerce's publish state (draft/pending/private/publish) - distinct from stock_status,
    * which lives on its own field below. */
@@ -56,6 +67,8 @@ export interface WooProductVariation {
 
 export interface WooProductVariationInput {
   regular_price?: string;
+  /** Renames the size: the attribute's name stays, only its option (the label customers see) changes. */
+  attributes?: { name: string; option: string }[];
 }
 
 export interface WooOrderLineItemInput {

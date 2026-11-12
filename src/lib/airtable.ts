@@ -7,9 +7,43 @@ interface AirtableListResponse {
 }
 
 /** Airtable returns typed values (numbers, checkboxes, arrays); the sync expects the plain strings a sheet cell gives. */
+export interface AirtableAttachment {
+  id: string;
+  filename: string;
+  url: string;
+  type: string;
+}
+
+function isAttachmentList(value: unknown): value is Partial<AirtableAttachment>[] {
+  return (
+    Array.isArray(value) &&
+    value.length > 0 &&
+    value.every(
+      (v) => typeof v === "object" && v !== null && typeof (v as { id?: unknown }).id === "string" && typeof (v as { url?: unknown }).url === "string"
+    )
+  );
+}
+
+/** Reads back an attachment cell (a photo column) that readAirtableRows turned into a string. */
+export function parseAttachmentCell(raw: string | undefined): AirtableAttachment[] {
+  if (!raw) return [];
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    return isAttachmentList(parsed)
+      ? parsed.map((a) => ({ id: a.id ?? "", filename: a.filename ?? "", url: a.url ?? "", type: a.type ?? "" }))
+      : [];
+  } catch {
+    return [];
+  }
+}
+
 function cellToString(value: unknown): string {
   if (value === null || value === undefined) return "";
   if (typeof value === "boolean") return value ? "true" : "";
+  // Attachments (photos) come through as JSON so the sync can read each file's id, name and link.
+  if (isAttachmentList(value)) {
+    return JSON.stringify(value.map((a) => ({ id: a.id, filename: a.filename ?? "", url: a.url, type: a.type ?? "" })));
+  }
   if (Array.isArray(value)) return value.map(cellToString).filter(Boolean).join(", ");
   if (typeof value === "object") return "";
   return String(value);
@@ -40,7 +74,8 @@ export async function readAirtableRows(tableName: string): Promise<Record<string
     const page = (await res.json()) as AirtableListResponse;
     for (const record of page.records) {
       const row = Object.fromEntries(Object.entries(record.fields).map(([k, v]) => [k, cellToString(v)]));
-      if (Object.values(row).some((v) => v !== "")) rows.push(row);
+      // __recordId lets the sync point the shop at this record's photos (see /api/product-photo).
+      if (Object.values(row).some((v) => v !== "")) rows.push({ ...row, __recordId: record.id });
     }
     offset = page.offset;
   } while (offset);

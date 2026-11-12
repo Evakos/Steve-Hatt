@@ -1,7 +1,7 @@
 import "server-only";
 import { wooFetch } from "./client";
 import { mapWooProductToProduct } from "./map-product";
-import type { WooProduct, WooProductInput, WooProductVariation, WooProductVariationInput } from "./types";
+import type { WooCategory, WooProduct, WooProductInput, WooProductVariation, WooProductVariationInput } from "./types";
 import type { Product } from "@/lib/products";
 import type { PricingInput } from "@/lib/pricing";
 
@@ -44,6 +44,24 @@ export async function getFeaturedProducts(feature: string): Promise<Product[]> {
 /** Used by the /admin/products sheet sync to write back name/price/status/description/meta. */
 export async function updateWooProduct(id: number, input: WooProductInput): Promise<WooProduct> {
   return wooFetch<WooProduct>(`products/${id}`, { method: "PUT", body: input });
+}
+
+// Always-fresh reads for the Airtable sync, which needs to know what the shop holds right now
+// (current photos and sizes) so it only changes what was actually edited.
+export async function listAllWooProducts(): Promise<WooProduct[]> {
+  return wooFetch<WooProduct[]>("products", { searchParams: { per_page: 100, status: "any" } });
+}
+
+export async function listWooCategories(): Promise<WooCategory[]> {
+  return wooFetch<WooCategory[]>("products/categories", { searchParams: { per_page: 100 } });
+}
+
+export async function listWooVariations(parentProductId: number): Promise<WooProductVariation[]> {
+  return wooFetch<WooProductVariation[]>(`products/${parentProductId}/variations`, { searchParams: { per_page: 100 } });
+}
+
+export async function getWooProduct(id: number): Promise<WooProduct> {
+  return wooFetch<WooProduct>(`products/${id}`);
 }
 
 /** Same sheet sync, for the weight/size-tiered products (variable products) where price lives on
