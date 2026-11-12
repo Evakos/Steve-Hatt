@@ -25,6 +25,18 @@ export async function getDisabledSlots(): Promise<string[]> {
   }
 }
 
+/** Whether card payments run against Pay360's sandbox (test cards, no real money). Set by the admin
+ * "Payment mode" switch (Edge Config key paymentSandboxMode). It is sandbox unless live has been
+ * switched on explicitly, so a missing value or an Edge Config outage can never take real payments. */
+export async function isPaymentSandboxMode(): Promise<boolean> {
+  try {
+    const value = await get("paymentSandboxMode");
+    return value !== false;
+  } catch {
+    return true;
+  }
+}
+
 /** Whether online ordering is closed right now: the automatic Christmas break (18th December to
  * the reopen day), honouring a staff-set reopen date. Use this on the server, not the sync helper. */
 export async function areOnlineOrdersClosed(): Promise<boolean> {

@@ -29,6 +29,7 @@ import { LAST_ORDER_LABEL, ORDERS_CLOSED_REASON } from "@/lib/ordering-window";
 import { SLOT_WINDOWS, getAvailableDates, isSlotDisabled, toSlotInstant } from "@/lib/slots";
 import ContactAddressForm, { EMPTY_CONTACT_ADDRESS, type ContactAddressValue } from "@/components/checkout/contact-address-form";
 import PaymentPanel from "@/components/checkout/payment-panel";
+import SandboxNotice from "@/components/checkout/sandbox-notice";
 import ThreeDSChallenge from "@/components/checkout/three-ds-challenge";
 import { useCheckoutSubmit } from "@/components/checkout/use-checkout-submit";
 import { isChristmasFulfilmentDate, hasUpcomingChristmasDates } from "@/lib/christmas-dates";
@@ -732,6 +733,7 @@ export default function CheckoutPage() {
                       <p className="mb-2 text-xs font-medium tracking-wide text-navy uppercase">
                         {isChristmasOrder ? "Place Pre-Order" : "Place Order"} · £{(displayEstimatedTotal + deliveryCost).toFixed(2)} (estimated)
                       </p>
+                      <SandboxNotice />
                       <PaymentPanel
                         amount={displayEstimatedTotal + deliveryCost}
                         onToken={handleToken}

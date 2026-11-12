@@ -1,11 +1,16 @@
 import SyncProductsPanel from "./sync-products-panel";
 import ChristmasSettingsPanel from "./christmas-settings-panel";
+import PaymentModePanel from "./payment-mode-panel";
 import { getProductSourceInfo } from "@/lib/product-source";
+import { getServerEnv } from "@/lib/env";
+import { isPaymentSandboxMode } from "@/lib/feature-flags";
 
 const code = "text-[0.9em]";
 
-export default function AdminProductsPage() {
+export default async function AdminProductsPage() {
   const source = getProductSourceInfo();
+  const sandbox = await isPaymentSandboxMode();
+  const mock = getServerEnv().CARDSTREAM_MOCK;
   return (
     <div className="max-w-4xl">
       <h1 className="font-serif text-2xl font-bold text-navy">Sync products from {source.name}</h1>
@@ -60,6 +65,13 @@ export default function AdminProductsPage() {
         needed.
       </p>
       <ChristmasSettingsPanel />
+
+      <h2 className="mt-12 font-serif text-xl font-bold text-navy">Payment mode</h2>
+      <p className="mt-2 text-sm leading-relaxed text-text-light">
+        Sandbox sends card payments to Pay360&apos;s test system, so no real money moves and only test cards work. Live
+        takes real payments. It starts on Sandbox, and takes effect immediately, no redeploy needed.
+      </p>
+      <PaymentModePanel initialSandbox={sandbox} mock={mock} />
     </div>
   );
 }

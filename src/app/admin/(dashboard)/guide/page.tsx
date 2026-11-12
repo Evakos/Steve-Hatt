@@ -288,6 +288,15 @@ export default function AdminGuidePage() {
             Refund in the Pay360 Merchant Portal, then update the order in WordPress.
           </p>
           <p>
+            <strong className="text-navy">Payment mode.</strong> On the <strong className="text-navy">Products</strong>{" "}
+            page, under <strong className="text-navy">Payment mode</strong>, choose{" "}
+            <strong className="text-navy">Sandbox</strong> (Pay360&apos;s test system, test cards only, no real money) or{" "}
+            <strong className="text-navy">Live</strong> (real cards, real money), then{" "}
+            <strong className="text-navy">Save changes</strong>. It starts on Sandbox, so nothing takes real money until
+            you choose Live and confirm. While Sandbox is on, checkout shows a &quot;Sandbox mode&quot; notice above the
+            card form.
+          </p>
+          <p>
             Nothing is held any more, so the <strong className="text-navy">Awaiting capture</strong> section is switched
             off on the Orders page. If an old held order ever needs capturing, ask for the section to be switched back on.
           </p>

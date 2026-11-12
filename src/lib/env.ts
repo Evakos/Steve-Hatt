@@ -36,6 +36,11 @@ const serverEnvSchema = z.object({
   STAFF_PASSWORD: z.string().min(1),
   STAFF_SESSION_SECRET: z.string().min(1),
   CUSTOMER_SESSION_SECRET: z.string().min(1),
+  // Optional - the Pay360 sandbox (MITE) login, used while the admin "Payment mode" switch (Products
+  // page) is on Sandbox. The CARDSTREAM_* login above is the live one. See lib/cardstream/config.ts.
+  CARDSTREAM_SANDBOX_API_USERNAME: z.preprocess((v) => (v === "" ? undefined : v), z.string().min(1).optional()),
+  CARDSTREAM_SANDBOX_API_PASSWORD: z.preprocess((v) => (v === "" ? undefined : v), z.string().min(1).optional()),
+  CARDSTREAM_SANDBOX_INSTALLATION_ID: z.preprocess((v) => (v === "" ? undefined : v), z.string().min(1).optional()),
   // Optional - /admin/products (sheet → site sync) checks for these itself and returns a clear
   // error if absent, rather than these being required for the whole app to boot.
   GOOGLE_SHEETS_SERVICE_ACCOUNT_EMAIL: z.string().min(1).optional(),
