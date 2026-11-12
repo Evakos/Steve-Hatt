@@ -106,10 +106,10 @@ export default function AddToCart({ product }: Props) {
               </button>
               {prepTooltips[opt] && (
                 <div className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-1 w-44 -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100">
-                  <div className="px-4 py-3 text-xs leading-relaxed text-navy" style={{ borderRadius: "4px", backgroundColor: "#EDE8E1", boxShadow: "0 2px 8px rgba(0,0,0,0.12)" }}>
+                  <div className="bg-white px-3.5 py-2.5 text-xs leading-snug text-navy" style={{ borderRadius: "2px", boxShadow: "0 2px 10px rgba(0,0,0,0.14)" }}>
                     {prepTooltips[opt]}
                   </div>
-                  <div className="mx-auto h-0 w-0 border-x-[8px] border-t-[8px] border-x-transparent" style={{ borderTopColor: "#EDE8E1" }} />
+                  <div className="mx-auto h-0 w-0 border-x-[7px] border-t-[7px] border-x-transparent border-t-white" style={{ filter: "drop-shadow(0 2px 2px rgba(0,0,0,0.08))" }} />
                 </div>
               )}
             </div>
