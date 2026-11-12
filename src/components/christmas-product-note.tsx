@@ -66,7 +66,7 @@ export default function ChristmasProductNote({ excluded }: { excluded: boolean }
           ))}
         </ul>
       )}
-      <p className="relative mt-3 text-xs text-[#1a3a2a]/60">The shop is closed on Sunday and Monday.</p>
+      <p className="relative mt-3 text-xs font-bold text-[#1a3a2a]/60">The shop is closed on Sunday and Monday.</p>
     </div>
   );
 }
