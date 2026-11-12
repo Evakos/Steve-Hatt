@@ -28,6 +28,7 @@ beforeEach(() => {
   repricedResult.deliveryFee = 0;
   flags.areOnlineOrdersClosed.mockResolvedValue(false);
   flags.getDisabledSlots.mockResolvedValue([]);
+  flags.isChristmasShopActive.mockResolvedValue(true);
 });
 
 const flags = {
@@ -35,8 +36,17 @@ const flags = {
   getChristmasDepositAmount: vi.fn(),
   areOnlineOrdersClosed: vi.fn(),
   getDisabledSlots: vi.fn(),
+  isChristmasShopActive: vi.fn(),
 };
 vi.mock("@/lib/feature-flags", () => flags);
+
+// The real date rules are tested in slot-rules.test.ts. Here any date passes, and a December date
+// counts as a Christmas one, so these tests can focus on the payment flows.
+vi.mock("@/lib/checkout/slot-rules", () => ({
+  checkBookedSlot: (slotDate: string) => ({ ok: true, isChristmas: slotDate.startsWith("2026-12") }),
+  christmasExclusionReason: () => null,
+  isChristmasSlotDate: (slotDate: string) => slotDate.startsWith("2026-12"),
+}));
 
 vi.mock("@/lib/customer-auth", () => ({
   getCustomerSession: vi.fn().mockResolvedValue(null),
@@ -76,7 +86,7 @@ vi.mock("@/lib/email/send-order-confirmation", () => email);
 function christmasBody(overrides: Record<string, unknown> = {}) {
   return {
     items: [{ wooProductId: 1, quantity: 1, weight: 0, preparation: "Filleted", productName: "Test Fish" }],
-    fulfilment: { type: "collection", slot: { date: new Date().toISOString(), label: "Test", isChristmas: true } },
+    fulfilment: { type: "collection", slot: { date: "2026-12-22T12:00:00.000Z", label: "Test", isChristmas: true } },
     customer: { email: "jo@example.test", firstName: "Jo", lastName: "Bloggs", phone: "07000000000" },
     payment: { token: "tok" },
     ...overrides,
@@ -86,7 +96,7 @@ function christmasBody(overrides: Record<string, unknown> = {}) {
 function normalBody() {
   return {
     items: [{ wooProductId: 1, quantity: 1, weight: 0, preparation: "Filleted", productName: "Test Fish" }],
-    fulfilment: { type: "collection", slot: { date: new Date().toISOString(), label: "Test", isChristmas: false } },
+    fulfilment: { type: "collection", slot: { date: "2026-11-20T12:00:00.000Z", label: "Test", isChristmas: false } },
     customer: { email: "jo@example.test", firstName: "Jo", lastName: "Bloggs", phone: "07000000000" },
     payment: { token: "tok" },
   };

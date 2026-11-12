@@ -78,6 +78,8 @@ export async function getProductForPricing(
   const christmasDepositMeta = wooProduct.meta_data.find((m) => m.key === "_steve_hatt_christmas_deposit");
   const christmasDeposit =
     typeof christmasDepositMeta?.value === "string" ? Number.parseFloat(christmasDepositMeta.value) || undefined : undefined;
+  const excludedMeta = wooProduct.meta_data.find((m) => m.key === "_steve_hatt_excluded_from_christmas");
+  const excludedFromChristmas = String(excludedMeta?.value ?? "").toLowerCase() === "true";
 
   if (wooVariationId) {
     const variation = await wooFetch<WooProductVariation>(`products/${wooProductId}/variations/${wooVariationId}`, {
@@ -91,8 +93,15 @@ export async function getProductForPricing(
       sizeOptionPrice: Number.parseFloat(variation.price) || 0,
       christmasPrice,
       christmasDeposit,
+      excludedFromChristmas,
     };
   }
 
-  return { pricePerKg, price: Number.parseFloat(wooProduct.price || wooProduct.regular_price) || 0, christmasPrice, christmasDeposit };
+  return {
+    pricePerKg,
+    price: Number.parseFloat(wooProduct.price || wooProduct.regular_price) || 0,
+    christmasPrice,
+    christmasDeposit,
+    excludedFromChristmas,
+  };
 }

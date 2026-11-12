@@ -5,6 +5,7 @@ import { createPreOrderFromVerification } from "@/lib/checkout/create-preorder-f
 import { adminDeliveryFields } from "@/lib/checkout/delivery-address";
 import { repriceCheckoutRequest } from "@/lib/checkout/reprice";
 import { confirmRequestSchema } from "@/lib/checkout/schema";
+import { isChristmasSlotDate } from "@/lib/checkout/slot-rules";
 import { sendOrderConfirmation, sendAdminNewOrderNotification } from "@/lib/email/send-order-confirmation";
 import { getCustomerSession } from "@/lib/customer-auth";
 import { getChristmasDepositAmount, getChristmasUseDepositFlow } from "@/lib/feature-flags";
@@ -21,6 +22,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ status: "invalid", issues: parsed.error.issues }, { status: 400 });
   }
   const { transactionId, orderRef, threeDSResponse, checkout } = parsed.data;
+  // Same rule as the first step: the booked date decides Christmas, not the browser's flag. Not
+  // refused here, the card has already been through 3-D Secure; the first step did the checking.
+  checkout.fulfilment.slot.isChristmas = isChristmasSlotDate(checkout.fulfilment.slot.date);
   const customerId = await getCustomerSession();
 
   const cardstream = getCardstreamClient();

@@ -21,6 +21,8 @@ export interface RepricedLineItem {
   lineTotal: number;
   /** Per-product Christmas deposit (£ per unit) - summed at checkout to derive the order deposit. */
   christmasDeposit?: number;
+  /** Product is opted out of Christmas dates, so it can't be on an order for 20th-24th December. */
+  excludedFromChristmas?: boolean;
 }
 
 export interface RepricedOrder {
@@ -67,6 +69,7 @@ export async function repriceCheckoutRequest(checkout: CheckoutRequest): Promise
         unitPrice,
         lineTotal: unitPrice * item.quantity,
         christmasDeposit: pricing.christmasDeposit,
+        excludedFromChristmas: pricing.excludedFromChristmas,
       };
     })
   );

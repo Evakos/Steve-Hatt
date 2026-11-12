@@ -38,6 +38,13 @@ export function slotDateKey(date: Date): string {
   return UK_DAY.format(date);
 }
 
+/** The instant to send to the server for a date picked in the browser: 12:00 UTC on the calendar
+ * day the customer sees. Midday means the UK date is the same in winter and summer time, and in
+ * any timezone the customer happens to be browsing from. */
+export function toSlotInstant(date: Date): Date {
+  return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 12));
+}
+
 export function slotKey(date: Date, windowId: SlotWindowId): string {
   return `${slotDateKey(date)}|${windowId}`;
 }
@@ -56,14 +63,19 @@ export function slotWindowFromLabel(label: string, type: "delivery" | "collectio
   return null;
 }
 
-/** Dates on which slots can be offered: the next 21 days (Tue-Sat, outside the Christmas break)
- * plus any upcoming Christmas fulfilment dates (20th-24th December), in date order. */
-export function getAvailableDates(from: Date = new Date()): Date[] {
+/** How far ahead customers can book, in days. */
+export const BOOKING_WINDOW_DAYS = 21;
+
+/** Dates on which slots can be offered: the next `days` days (Tue-Sat, outside the Christmas
+ * break) plus any upcoming Christmas fulfilment dates (20th-24th December), in date order.
+ * Customers get the default 21 days; the admin asks for longer so slots can be switched off well
+ * in advance. */
+export function getAvailableDates(from: Date = new Date(), days: number = BOOKING_WINDOW_DAYS): Date[] {
   const dates: Date[] = [];
   const today = new Date(from);
   today.setHours(0, 0, 0, 0);
 
-  for (let i = 1; i <= 21; i++) {
+  for (let i = 1; i <= days; i++) {
     const d = new Date(today);
     d.setDate(d.getDate() + i);
     // No everyday slots inside the Christmas break (25th December to 3rd January).

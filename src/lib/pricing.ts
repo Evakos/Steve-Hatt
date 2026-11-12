@@ -19,6 +19,9 @@ export interface PricingInput {
   /** Per-product deposit for a Christmas order (£ per unit), from the sheet's "Christmas deposit"
    * column. Carried through repricing so checkout can sum it; never affects the unit price. */
   christmasDeposit?: number;
+  /** True when the product is opted out of Christmas dates ("Excluded from Christmas?" in the
+   * Products sheet). Checked on the server so it can't be got round from the browser. */
+  excludedFromChristmas?: boolean;
 }
 
 /** Single source of truth for turning product pricing data into a true per-unit price (never a

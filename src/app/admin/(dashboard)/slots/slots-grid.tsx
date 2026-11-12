@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { Snowflake, Store, Truck } from "lucide-react";
 import { SLOT_WINDOWS, type SlotWindowId } from "@/lib/slots";
 
@@ -8,6 +8,8 @@ interface DateRow {
   /** YYYY-MM-DD */
   key: string;
   label: string;
+  /** e.g. "December 2026" */
+  month: string;
   isChristmas: boolean;
 }
 
@@ -39,7 +41,7 @@ export default function SlotsGrid({ dates, initialDisabled }: Props) {
   }
 
   const dayKeys = (d: DateRow) => SLOT_WINDOWS.map((w) => keyFor(d.key, w.id));
-  const windowKeys = (id: SlotWindowId) => dates.map((d) => keyFor(d.key, id));
+  const monthKeys = (month: string) => dates.filter((x) => x.month === month).flatMap(dayKeys);
 
   async function handleSave() {
     setSaving(true);
@@ -93,7 +95,6 @@ export default function SlotsGrid({ dates, initialDisabled }: Props) {
           <div className={`grid ${COLUMNS} items-end gap-2 border-b border-border bg-cream px-4 py-3`}>
             <p className="text-[11px] font-semibold uppercase tracking-wider text-text-light">Day</p>
             {SLOT_WINDOWS.map((w) => {
-              const allOn = windowKeys(w.id).every((k) => !disabled.includes(k));
               return (
                 <div key={w.id}>
                   <p className="flex items-center gap-1 text-xs font-semibold text-navy">
@@ -101,13 +102,6 @@ export default function SlotsGrid({ dates, initialDisabled }: Props) {
                     {w.type === "delivery" ? `Delivery, ${w.name.toLowerCase()}` : "Collection"}
                   </p>
                   <p className="text-xs text-text-light">{w.time}</p>
-                  <button
-                    type="button"
-                    onClick={() => setMany(windowKeys(w.id), !allOn)}
-                    className="mt-0.5 text-xs text-text-light underline hover:text-navy"
-                  >
-                    {allOn ? "Switch all off" : "Switch all on"}
-                  </button>
                 </div>
               );
             })}
@@ -115,11 +109,24 @@ export default function SlotsGrid({ dates, initialDisabled }: Props) {
 
           {dates.length === 0 && <p className="px-4 py-6 text-sm text-text-light">There are no bookable days right now.</p>}
 
-          {dates.map((d) => {
+          {dates.map((d, i) => {
             const dayAllOn = dayKeys(d).every((k) => !disabled.includes(k));
+            const monthAllOn = monthKeys(d.month).every((k) => !disabled.includes(k));
             return (
+              <Fragment key={d.key}>
+                {(i === 0 || dates[i - 1].month !== d.month) && (
+                  <div className="flex items-center justify-between gap-3 border-b border-border bg-cream px-4 py-2">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-navy">{d.month}</p>
+                    <button
+                      type="button"
+                      onClick={() => setMany(monthKeys(d.month), !monthAllOn)}
+                      className="text-xs text-text-light underline hover:text-navy"
+                    >
+                      {monthAllOn ? "Switch month off" : "Switch month on"}
+                    </button>
+                  </div>
+                )}
               <div
-                key={d.key}
                 className={`grid ${COLUMNS} items-center gap-2 border-b border-border px-4 py-2.5 last:border-b-0 ${
                   d.isChristmas ? "bg-[#e8f5ed]/50" : ""
                 }`}
@@ -160,6 +167,7 @@ export default function SlotsGrid({ dates, initialDisabled }: Props) {
                   );
                 })}
               </div>
+              </Fragment>
             );
           })}
         </div>

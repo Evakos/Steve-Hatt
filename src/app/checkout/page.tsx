@@ -26,7 +26,7 @@ import {
 import Header from "@/components/header";
 import AnnouncementBanner from "@/components/announcement-banner";
 import { LAST_ORDER_LABEL, ORDERS_CLOSED_REASON } from "@/lib/ordering-window";
-import { SLOT_WINDOWS, getAvailableDates, isSlotDisabled } from "@/lib/slots";
+import { SLOT_WINDOWS, getAvailableDates, isSlotDisabled, toSlotInstant } from "@/lib/slots";
 import ContactAddressForm, { EMPTY_CONTACT_ADDRESS, type ContactAddressValue } from "@/components/checkout/contact-address-form";
 import PaymentPanel from "@/components/checkout/payment-panel";
 import ThreeDSChallenge from "@/components/checkout/three-ds-challenge";
@@ -203,7 +203,7 @@ export default function CheckoutPage() {
 
       // Each date offers the windows in SLOT_WINDOWS for this slot type, minus any staff have
       // switched off (/admin/slots).
-      SLOT_WINDOWS.filter((w) => w.type === slotType && !isSlotDisabled(disabledSlots, date, w.id)).forEach((w) => {
+      SLOT_WINDOWS.filter((w) => w.type === slotType && !isSlotDisabled(disabledSlots, toSlotInstant(date), w.id)).forEach((w) => {
         result.push({ date, label: `${formatDate(date)} · ${w.name} (${w.time})`, type: w.type, isChristmas: christmas });
       });
     });
@@ -226,7 +226,7 @@ export default function CheckoutPage() {
       })),
       fulfilment: {
         type: slotType,
-        slot: { date: selectedSlot.date.toISOString(), label: selectedSlot.label, isChristmas: selectedSlot.isChristmas },
+        slot: { date: toSlotInstant(selectedSlot.date).toISOString(), label: selectedSlot.label, isChristmas: selectedSlot.isChristmas },
         postcode: slotType === "delivery" ? postcode : undefined,
       },
       customer: {

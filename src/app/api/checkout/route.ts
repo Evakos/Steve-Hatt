@@ -7,7 +7,14 @@ import { repriceCheckoutRequest } from "@/lib/checkout/reprice";
 import { checkoutRequestSchema } from "@/lib/checkout/schema";
 import { sendOrderConfirmation, sendAdminNewOrderNotification } from "@/lib/email/send-order-confirmation";
 import { getCustomerSession } from "@/lib/customer-auth";
-import { getChristmasDepositAmount, getChristmasUseDepositFlow, getDisabledSlots, areOnlineOrdersClosed } from "@/lib/feature-flags";
+import { checkBookedSlot, christmasExclusionReason } from "@/lib/checkout/slot-rules";
+import {
+  getChristmasDepositAmount,
+  getChristmasUseDepositFlow,
+  getDisabledSlots,
+  areOnlineOrdersClosed,
+  isChristmasShopActive,
+} from "@/lib/feature-flags";
 import { ORDERS_CLOSED_REASON } from "@/lib/ordering-window";
 import { isSlotDisabled, slotWindowFromLabel } from "@/lib/slots";
 
@@ -22,6 +29,15 @@ export async function POST(request: Request) {
   }
   const checkout = parsed.data;
 
+  // The booked date alone decides whether this is a Christmas order (20th-24th December) and
+  // whether it can be booked at all. The browser's own isChristmas flag is overwritten, so a stale
+  // page or an altered request can't get Christmas prices or the Christmas flow on a normal date.
+  const slotCheck = checkBookedSlot(checkout.fulfilment.slot.date, { christmasShopActive: await isChristmasShopActive() });
+  if (!slotCheck.ok) {
+    return NextResponse.json({ status: "slot_unavailable", reason: slotCheck.reason }, { status: 409 });
+  }
+  checkout.fulfilment.slot.isChristmas = slotCheck.isChristmas;
+
   // A slot staff have switched off in /admin/slots can't be booked, even from a page that was
   // opened before they switched it off.
   const slotWindow = slotWindowFromLabel(checkout.fulfilment.slot.label, checkout.fulfilment.type);
@@ -35,6 +51,11 @@ export async function POST(request: Request) {
   const customerId = await getCustomerSession();
 
   const repriced = await repriceCheckoutRequest(checkout);
+  // A product opted out of Christmas can't go on an order for a Christmas date.
+  const exclusion = christmasExclusionReason(repriced);
+  if (exclusion) {
+    return NextResponse.json({ status: "slot_unavailable", reason: exclusion }, { status: 409 });
+  }
   const orderRef = crypto.randomUUID();
   const cardstream = getCardstreamClient();
 
