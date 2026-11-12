@@ -20,15 +20,25 @@ const howItWorks = [
   { icon: <Truck className="h-5 w-5" />, step: "04", title: "Delivered Fresh", desc: "Next-day delivery to your door, or collect from Essex Road. Always fresh, never frozen." },
 ];
 
-/** The four products shown in the homepage Christmas pre-order grid - a fixed, curated festive
- * shortlist (smoked salmon, lobster, scallops, oysters) rather than every Christmas-tagged
- * product. Swap slugs here to change what's featured. */
+/** The products shown in the homepage Christmas pre-order grid: a curated shortlist of festive
+ * favourites (smoked salmon, lobster, scallops, oysters, prawns, a whole salmon, dressed crab...)
+ * in order of priority. Anything out of stock or opted out of Christmas is skipped automatically,
+ * and the first CHRISTMAS_FEATURED_COUNT that remain are shown, so the grid is always full of
+ * things a customer can actually order. Swap or reorder slugs here to change what's featured. */
 const CHRISTMAS_FEATURED_SLUGS = [
   "smoked-salmon-gold-board",
+  "smoked-salmon",
+  "lobster-cooked",
   "lobster-live",
   "scallops",
   "oysters-carlingford",
+  "king-prawns",
+  "salmon-whole",
+  "crab-dressed",
+  "langoustine",
+  "black-lumpfish-caviar",
 ];
+const CHRISTMAS_FEATURED_COUNT = 8;
 
 /** Fisher-Yates shuffle, then take the first n - used to rotate "Today's Catch" rather than
  * always showing the same fixed products. */
@@ -65,9 +75,10 @@ export default async function Home() {
   const todaysCatch = pickRandom(products, 6);
   // Curated festive picks for the Christmas section - only products whose slug is in the
   // shortlist above are shown (each still needs the christmas tag to be eligible to order).
-  const christmasFeatured = CHRISTMAS_FEATURED_SLUGS.map((slug) => products.find((p) => p.slug === slug)).filter(
-    (p): p is NonNullable<typeof p> => Boolean(p)
-  );
+  const christmasFeatured = CHRISTMAS_FEATURED_SLUGS.map((slug) => products.find((p) => p.slug === slug))
+    .filter((p): p is NonNullable<typeof p> => Boolean(p))
+    .filter((p) => p.stockStatus !== "outofstock" && !p.excludedFromChristmas)
+    .slice(0, CHRISTMAS_FEATURED_COUNT);
   // Manual per-product Christmas pricing (set via the Products sheet's christmas_price column)
   // is the live mechanism - see src/lib/checkout/reprice.ts. Only mention it here if it's
   // actually in effect for at least one of the featured products.
@@ -318,28 +329,6 @@ export default async function Home() {
               )}
             </div>
             </Reveal>
-            <Reveal>
-              <ol className="mx-auto mb-4 grid max-w-5xl gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                {CHRISTMAS_STEPS.map((step, i) => (
-                  <li key={step.title} className="flex gap-3 border border-border bg-white/70 p-4" style={{ borderRadius: "5px" }}>
-                    <span
-                      className="flex h-7 w-7 shrink-0 items-center justify-center bg-navy text-xs font-medium text-white"
-                      style={{ borderRadius: "999px" }}
-                    >
-                      {i + 1}
-                    </span>
-                    <div>
-                      <p className="text-sm font-medium text-navy">{step.title}</p>
-                      <p className="mt-0.5 text-sm leading-relaxed text-text-light">{step.text}</p>
-                    </div>
-                  </li>
-                ))}
-              </ol>
-              <p className="mx-auto mb-10 max-w-xl text-center text-xs leading-relaxed text-text-light">
-                A few items can&apos;t be ordered for Christmas dates. If one is in your basket, checkout will tell you
-                which to remove.
-              </p>
-            </Reveal>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {christmasFeatured.map((p, i) => (
                 <Reveal key={p.slug} delay={Math.min(i, 3) * 70}>
@@ -363,6 +352,33 @@ export default async function Home() {
                 </Reveal>
               ))}
             </div>
+
+            {/* How a Christmas order works, below the products */}
+            <Reveal>
+              <div className="mt-12">
+                <p className="mb-5 text-center text-xs tracking-widest text-text-light uppercase">How a Christmas order works</p>
+                <ol className="mx-auto grid max-w-5xl gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                  {CHRISTMAS_STEPS.map((step, i) => (
+                    <li key={step.title} className="flex gap-3 border border-border bg-white/70 p-4" style={{ borderRadius: "5px" }}>
+                      <span
+                        className="flex h-7 w-7 shrink-0 items-center justify-center bg-navy text-xs font-medium text-white"
+                        style={{ borderRadius: "999px" }}
+                      >
+                        {i + 1}
+                      </span>
+                      <div>
+                        <p className="text-sm font-medium text-navy">{step.title}</p>
+                        <p className="mt-0.5 text-sm leading-relaxed text-text-light">{step.text}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ol>
+                <p className="mx-auto mt-4 max-w-xl text-center text-xs leading-relaxed text-text-light">
+                  A few items can&apos;t be ordered for Christmas dates. If one is in your basket, checkout will tell you
+                  which to remove.
+                </p>
+              </div>
+            </Reveal>
           </div>
         </section>
       )}
