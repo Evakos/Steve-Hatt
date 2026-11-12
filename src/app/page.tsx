@@ -366,22 +366,8 @@ export default async function Home() {
                   className="grid gap-px overflow-hidden border border-border bg-border sm:grid-cols-2 lg:grid-cols-4"
                   style={{ borderRadius: "5px" }}
                 >
-                  {CHRISTMAS_STEPS.map((step, i) => (
-                    <li key={step.title} className="relative flex flex-col bg-white">
-                      {/* A pointer, not an icon: the card's edge comes to a point in the middle of its right
-                          side and pushes into the next card. A grey triangle with a slightly smaller white one
-                          over it, so only the two slanted edges show. Only where the next step really is to the
-                          right: steps 1 and 3 from tablet width (two across), step 2 as well at desktop width
-                          (four across). */}
-                      {i < CHRISTMAS_STEPS.length - 1 && (
-                        <div
-                          aria-hidden
-                          className={`pointer-events-none absolute top-1/2 left-full z-10 ${i === 1 ? "hidden lg:block" : "hidden sm:block"}`}
-                        >
-                          <span className="absolute top-1/2 left-0 block h-0 w-0 -translate-y-1/2 border-y-[14px] border-l-[14px] border-y-transparent border-l-border" />
-                          <span className="absolute top-1/2 -left-px block h-0 w-0 -translate-y-1/2 border-y-[13px] border-l-[13px] border-y-transparent border-l-white" />
-                        </div>
-                      )}
+                  {CHRISTMAS_STEPS.map((step) => (
+                    <li key={step.title} className="flex flex-col bg-white">
                       <div className="flex flex-1 flex-col p-5">
                         <h3 className="font-serif text-base leading-tight font-semibold text-navy">{step.title}</h3>
                         <p className="mt-1.5 text-sm leading-snug text-text-light">{step.text}</p>
