@@ -51,7 +51,7 @@ export default async function ProductPage({
 
       {/* Breadcrumb */}
       <div className="bg-cream">
-        <div className="mx-auto max-w-6xl px-6 pt-4">
+        <div className="mx-auto max-w-6xl px-6 pt-4 pb-3">
           <nav className="text-sm text-text-light">
             <Link href="/" className="hover:text-navy">Home</Link>
             <span className="mx-2">/</span>
@@ -64,7 +64,7 @@ export default async function ProductPage({
 
       {/* Product detail */}
       <section className="bg-cream">
-        <div className="mx-auto max-w-6xl px-6 py-12">
+        <div className="mx-auto max-w-6xl px-6 pt-0 pb-12">
           <div className="grid gap-8 md:grid-cols-[1fr_1fr]">
             {/* Image */}
             <div className="relative aspect-5/4 overflow-hidden bg-white" style={{ borderRadius: '5px' }}>
