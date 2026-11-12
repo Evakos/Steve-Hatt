@@ -377,8 +377,8 @@ export default async function Home() {
                         )}
                       </div>
                       <div className="flex flex-1 flex-col p-5">
-                        <h3 className="font-serif text-base font-semibold text-navy">{step.title}</h3>
-                        <p className="mt-2 text-sm leading-relaxed text-text-light">{step.text}</p>
+                        <h3 className="font-serif text-base leading-tight font-semibold text-navy">{step.title}</h3>
+                        <p className="mt-1.5 text-sm leading-snug text-text-light">{step.text}</p>
                       </div>
                     </li>
                   ))}
