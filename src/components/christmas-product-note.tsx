@@ -44,8 +44,8 @@ export default function ChristmasProductNote({ excluded }: { excluded: boolean }
 
   return (
     <div
-      className="relative mt-4 overflow-hidden border border-[#1a3a2a]/15 bg-[#e8f5ed] p-5 shadow-sm"
-      style={{ borderRadius: "14px" }}
+      className="relative mt-4 overflow-hidden bg-[#e8f5ed] p-5 shadow-sm"
+      style={{ borderRadius: "5px" }}
     >
       <Snowflake className="pointer-events-none absolute -right-4 -top-4 h-24 w-24 text-[#1a3a2a]/5" aria-hidden />
       <p className="relative font-serif text-lg font-semibold leading-tight text-[#1a3a2a]">Available for Christmas pre-order</p>
