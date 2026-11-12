@@ -317,11 +317,11 @@ export default async function Home() {
             <div className="mb-10 text-center">
               <p className="text-xs tracking-widest text-text-light uppercase">Festive season</p>
               <h2 className="mt-2 font-serif text-3xl font-bold text-navy md:text-4xl">Christmas Pre-Orders</h2>
-              <p className="mx-auto mt-4 max-w-lg text-base leading-relaxed text-text-light">
+              <p className="mx-auto mt-4 max-w-3xl text-base leading-relaxed text-text-light md:text-lg">
                 Reserve your Christmas feast now. Pre-order by {LAST_ORDER_LABEL} for delivery or collection {christmasWhen}. Every order prepared fresh by your fishmonger.
               </p>
               {anyChristmasPricing && (
-                <p className="mx-auto mt-3 max-w-lg text-sm text-text-light">
+                <p className="mx-auto mt-3 max-w-3xl text-sm text-text-light">
                   Some items have a different price for Christmas, reflecting higher market prices over the festive
                   period. Prices shown here are unaffected. This only applies once you choose to order for
                   Christmas at checkout.
