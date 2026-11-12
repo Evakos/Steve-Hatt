@@ -59,8 +59,8 @@ function ordinal(n: number): string {
 }
 
 // How a Christmas order works, shown in the Christmas section while Christmas ordering is on.
-// Each step has an image placeholder (an icon on a beige panel). To use a photo instead, add an
-// `image` path to the step, for example image: "/christmas/step-1.jpg".
+// Images are switched off for now. Each step still carries an `icon` (and an optional `image`
+// path) so the image panel can be put back on the cards later.
 const CHRISTMAS_STEPS: { title: string; text: string; icon: LucideIcon; image?: string }[] = [
   { title: "Fill your basket", text: "Choose your Christmas fish and shellfish from the shop.", icon: ShoppingBag },
   { title: "Choose For Christmas", text: "At checkout, pick delivery or collection, then your date and time slot.", icon: CalendarDays },
@@ -359,23 +359,13 @@ export default async function Home() {
             <Reveal>
               <div className="mt-12">
                 <h3 className="mb-6 text-center font-serif text-2xl font-bold text-navy">How a Christmas order works</h3>
-                <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                {/* One box with a thin line between each step (the gap shows the border colour behind it) */}
+                <ol
+                  className="grid gap-px overflow-hidden border border-border bg-border sm:grid-cols-2 lg:grid-cols-4"
+                  style={{ borderRadius: "5px" }}
+                >
                   {CHRISTMAS_STEPS.map((step) => (
-                    <li
-                      key={step.title}
-                      className="flex h-full flex-col overflow-hidden border border-border bg-white"
-                      style={{ borderRadius: "5px" }}
-                    >
-                      {/* Image placeholder: full bleed across the top of the card, edge to edge */}
-                      <div className="relative h-36 shrink-0 bg-sand">
-                        {step.image ? (
-                          <Image src={step.image} alt="" fill sizes="(max-width: 768px) 40vw, 20vw" className="object-cover" />
-                        ) : (
-                          <div className="flex h-full items-center justify-center">
-                            <step.icon className="h-10 w-10 text-navy/25" />
-                          </div>
-                        )}
-                      </div>
+                    <li key={step.title} className="flex flex-col bg-white">
                       <div className="flex flex-1 flex-col p-5">
                         <h3 className="font-serif text-base leading-tight font-semibold text-navy">{step.title}</h3>
                         <p className="mt-1.5 text-sm leading-snug text-text-light">{step.text}</p>
