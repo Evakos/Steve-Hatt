@@ -135,7 +135,7 @@ export default async function Home() {
                     rel="noopener noreferrer"
                     className="text-sm text-white/85 transition-colors hover:text-white"
                   >
-                    <strong className="font-medium text-white">Time Out London:</strong> <em>&ldquo;first class fresh fish&rdquo;</em>
+                    <strong className="font-medium text-white">Time Out London:</strong> <em>&ldquo;...first class fresh fish&rdquo;</em>
                   </a>
                 </div>
                 <div className="animate-fade-up mt-4 flex flex-col gap-3 sm:mt-6 sm:flex-row sm:items-center sm:gap-4" style={{ animationDelay: "1960ms" }}>
