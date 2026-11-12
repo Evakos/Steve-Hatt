@@ -78,12 +78,12 @@ export default function AddToCart({ product }: Props) {
       {/* Preparation options */}
       <div className="mt-8">
         <p className="mb-3 text-sm font-medium text-navy">Preparation</p>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-1.5">
           {product.preparation.map((opt) => (
             <div key={opt} className="group relative">
               <button
                 onClick={() => setSelectedPrep(opt)}
-                className={`flex items-center gap-1.5 border px-3 py-2 text-sm transition-colors ${
+                className={`flex items-center gap-1.5 whitespace-nowrap border px-2.5 py-2 text-[13px] transition-colors ${
                   selectedPrep === opt
                     ? "border-navy bg-navy text-white"
                     : "border-border bg-white text-navy hover:border-navy"
