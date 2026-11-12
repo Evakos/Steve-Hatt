@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import { Snowflake, Store, Truck } from "lucide-react";
 import { SLOT_WINDOWS, type SlotWindowId } from "@/lib/slots";
 
@@ -42,6 +42,13 @@ export default function SlotsGrid({ dates, initialDisabled }: Props) {
 
   const dayKeys = (d: DateRow) => SLOT_WINDOWS.map((w) => keyFor(d.key, w.id));
   const monthKeys = (month: string) => dates.filter((x) => x.month === month).flatMap(dayKeys);
+
+  // One tab per month, so the five months ahead aren't one very long list.
+  const months = [...new Set(dates.map((d) => d.month))];
+  const [activeMonth, setActiveMonth] = useState(months[0] ?? "");
+  const shown = dates.filter((d) => d.month === activeMonth);
+  const monthOffCount = (month: string) => monthKeys(month).filter((k) => disabled.includes(k)).length;
+  const activeAllOn = monthKeys(activeMonth).every((k) => !disabled.includes(k));
 
   async function handleSave() {
     setSaving(true);
@@ -89,9 +96,50 @@ export default function SlotsGrid({ dates, initialDisabled }: Props) {
       </div>
       {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
 
-      <div className="mt-4 overflow-x-auto border border-border bg-white shadow-sm" style={{ borderRadius: "16px" }}>
+      {months.length > 0 && (
+        <div className="mt-4 flex items-center gap-3">
+          <div role="tablist" aria-label="Month" className="flex min-w-0 flex-1 gap-1.5 overflow-x-auto pb-1">
+            {months.map((m) => {
+              const active = m === activeMonth;
+              const off = monthOffCount(m);
+              return (
+                <button
+                  key={m}
+                  type="button"
+                  role="tab"
+                  aria-selected={active}
+                  onClick={() => setActiveMonth(m)}
+                  className={`flex shrink-0 items-center gap-1.5 px-3.5 py-2 text-sm font-medium transition-colors ${
+                    active ? "bg-navy text-white" : "border border-border bg-white text-navy hover:bg-cream"
+                  }`}
+                  style={{ borderRadius: "999px" }}
+                >
+                  {m}
+                  {off > 0 && (
+                    <span
+                      className={`px-1.5 text-[11px] font-semibold ${active ? "bg-white/20 text-white" : "bg-sand text-text-light"}`}
+                      style={{ borderRadius: "999px" }}
+                    >
+                      {off} off
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+          <button
+            type="button"
+            onClick={() => setMany(monthKeys(activeMonth), !activeAllOn)}
+            className="shrink-0 text-xs text-text-light underline hover:text-navy"
+          >
+            {activeAllOn ? "Switch month off" : "Switch month on"}
+          </button>
+        </div>
+      )}
+
+      <div className="mt-3 overflow-x-auto border border-border bg-white shadow-sm" style={{ borderRadius: "16px" }}>
         <div className="min-w-[34rem]">
-          {/* Column headings, each with an all-dates switch */}
+          {/* Column headings */}
           <div className={`grid ${COLUMNS} items-end gap-2 border-b border-border bg-cream px-4 py-3`}>
             <p className="text-[11px] font-semibold uppercase tracking-wider text-text-light">Day</p>
             {SLOT_WINDOWS.map((w) => {
@@ -109,24 +157,11 @@ export default function SlotsGrid({ dates, initialDisabled }: Props) {
 
           {dates.length === 0 && <p className="px-4 py-6 text-sm text-text-light">There are no bookable days right now.</p>}
 
-          {dates.map((d, i) => {
+          {shown.map((d) => {
             const dayAllOn = dayKeys(d).every((k) => !disabled.includes(k));
-            const monthAllOn = monthKeys(d.month).every((k) => !disabled.includes(k));
             return (
-              <Fragment key={d.key}>
-                {(i === 0 || dates[i - 1].month !== d.month) && (
-                  <div className="flex items-center justify-between gap-3 border-b border-border bg-cream px-4 py-2">
-                    <p className="text-xs font-semibold uppercase tracking-wider text-navy">{d.month}</p>
-                    <button
-                      type="button"
-                      onClick={() => setMany(monthKeys(d.month), !monthAllOn)}
-                      className="text-xs text-text-light underline hover:text-navy"
-                    >
-                      {monthAllOn ? "Switch month off" : "Switch month on"}
-                    </button>
-                  </div>
-                )}
               <div
+                key={d.key}
                 className={`grid ${COLUMNS} items-center gap-2 border-b border-border px-4 py-2.5 last:border-b-0 ${
                   d.isChristmas ? "bg-[#e8f5ed]/50" : ""
                 }`}
@@ -167,7 +202,6 @@ export default function SlotsGrid({ dates, initialDisabled }: Props) {
                   );
                 })}
               </div>
-              </Fragment>
             );
           })}
         </div>
