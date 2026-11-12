@@ -5,6 +5,15 @@ import { Check, Info } from "lucide-react";
 import type { Product } from "@/lib/products";
 import { useCart } from "@/lib/cart-context";
 import { computeUnitPrice } from "@/lib/pricing";
+import CustomSelect from "@/components/custom-select";
+
+const WEIGHT_CHOICES = [
+  { value: 0.1, label: "100g" },
+  { value: 0.2, label: "200g" },
+  { value: 0.3, label: "300g" },
+  { value: 0.5, label: "500g" },
+  { value: 1, label: "1kg" },
+];
 
 const prepTooltips: Record<string, string> = {
   "Scaled & Cleaned": "Scales removed, gutted and washed. Ready to cook whole, roast, or stuff.",
@@ -135,21 +144,16 @@ export default function AddToCart({ product }: Props) {
       {product.priceType === "per-kg" && (
         <div className="mt-6">
           <p className="mb-3 text-sm font-medium text-navy">Approximate weight</p>
-          <div className="flex items-center gap-3">
-            <select
-              className="border border-border bg-white px-4 py-2.5 text-sm text-navy outline-none focus:border-navy"
-              style={{ borderRadius: "3px" }}
+          <div className="flex flex-wrap items-center gap-4">
+            <CustomSelect
+              ariaLabel="Approximate weight"
               value={weight}
-              onChange={(e) => setWeight(parseFloat(e.target.value))}
-            >
-              <option value="0.1">100g</option>
-              <option value="0.2">200g</option>
-              <option value="0.3">300g</option>
-              <option value="0.5">500g</option>
-              <option value="1">1kg</option>
-            </select>
+              onChange={setWeight}
+              options={WEIGHT_CHOICES.map((w) => ({ ...w, hint: `£${(product.pricePerKg * w.value).toFixed(2)}` }))}
+            />
             <span className="text-sm text-text-light">
-              Estimated: £{(product.pricePerKg * weight).toFixed(2)}
+              Estimated{" "}
+              <span className="font-semibold text-navy">£{(product.pricePerKg * weight).toFixed(2)}</span>
             </span>
           </div>
         </div>
