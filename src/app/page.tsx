@@ -357,19 +357,21 @@ export default async function Home() {
             <Reveal>
               <div className="mt-12">
                 <p className="mb-5 text-center text-xs tracking-widest text-text-light uppercase">How a Christmas order works</p>
-                <ol className="mx-auto grid max-w-5xl gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                   {CHRISTMAS_STEPS.map((step, i) => (
-                    <li key={step.title} className="flex gap-3 border border-border bg-white/70 p-4" style={{ borderRadius: "5px" }}>
+                    <li
+                      key={step.title}
+                      className="flex h-full flex-col border border-border bg-white p-6 sm:min-h-[11rem]"
+                      style={{ borderRadius: "5px" }}
+                    >
                       <span
-                        className="flex h-7 w-7 shrink-0 items-center justify-center bg-navy text-xs font-medium text-white"
+                        className="flex h-8 w-8 shrink-0 items-center justify-center bg-navy text-sm font-medium text-white"
                         style={{ borderRadius: "999px" }}
                       >
                         {i + 1}
                       </span>
-                      <div>
-                        <p className="text-sm font-medium text-navy">{step.title}</p>
-                        <p className="mt-0.5 text-sm leading-relaxed text-text-light">{step.text}</p>
-                      </div>
+                      <h3 className="mt-4 font-serif text-base font-semibold text-navy">{step.title}</h3>
+                      <p className="mt-2 text-sm leading-relaxed text-text-light">{step.text}</p>
                     </li>
                   ))}
                 </ol>
