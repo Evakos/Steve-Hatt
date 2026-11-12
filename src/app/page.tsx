@@ -359,15 +359,15 @@ export default async function Home() {
             <Reveal>
               <div className="mt-12">
                 <h3 className="mb-6 text-center font-serif text-2xl font-bold text-navy">How a Christmas order works</h3>
-                <ol className="grid gap-4 md:grid-cols-2">
-                  {CHRISTMAS_STEPS.map((step, i) => (
+                <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                  {CHRISTMAS_STEPS.map((step) => (
                     <li
                       key={step.title}
-                      className="flex h-full overflow-hidden border border-border bg-white sm:min-h-[11rem]"
+                      className="flex h-full flex-col overflow-hidden border border-border bg-white"
                       style={{ borderRadius: "5px" }}
                     >
-                      {/* Image placeholder: full bleed to the card's left, top and bottom edges */}
-                      <div className="relative w-2/5 shrink-0 bg-sand">
+                      {/* Image placeholder: full bleed across the top of the card, edge to edge */}
+                      <div className="relative h-36 shrink-0 bg-sand">
                         {step.image ? (
                           <Image src={step.image} alt="" fill sizes="(max-width: 768px) 40vw, 20vw" className="object-cover" />
                         ) : (
@@ -376,14 +376,8 @@ export default async function Home() {
                           </div>
                         )}
                       </div>
-                      <div className="flex flex-1 flex-col p-5 sm:p-6">
-                        <span
-                          className="flex h-8 w-8 shrink-0 items-center justify-center bg-navy text-sm font-medium text-white"
-                          style={{ borderRadius: "999px" }}
-                        >
-                          {i + 1}
-                        </span>
-                        <h3 className="mt-4 font-serif text-base font-semibold text-navy">{step.title}</h3>
+                      <div className="flex flex-1 flex-col p-5">
+                        <h3 className="font-serif text-base font-semibold text-navy">{step.title}</h3>
                         <p className="mt-2 text-sm leading-relaxed text-text-light">{step.text}</p>
                       </div>
                     </li>
