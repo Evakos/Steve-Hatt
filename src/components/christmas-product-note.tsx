@@ -59,7 +59,7 @@ export default function ChristmasProductNote({ excluded }: { excluded: boolean }
             <li
               key={d.toISOString()}
               className="bg-white px-3 py-1 text-xs font-medium text-[#1a3a2a] shadow-sm"
-              style={{ borderRadius: "999px" }}
+              style={{ borderRadius: "4px" }}
             >
               {dateFormat.format(d)}
             </li>
