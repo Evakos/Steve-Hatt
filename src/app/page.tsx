@@ -4,7 +4,7 @@ import { getAllProducts } from "@/lib/products";
 import { isChristmasShopActive } from "@/lib/feature-flags";
 import { getUpcomingChristmasDates } from "@/lib/christmas-dates";
 import { LAST_ORDER_LABEL } from "@/lib/ordering-window";
-import { Truck, Fish, Scaling, Leaf, Anchor, Recycle, ShoppingBag, Search, Snowflake, CalendarDays, CreditCard, ArrowRight, type LucideIcon } from "lucide-react";
+import { Truck, Fish, Scaling, Leaf, Anchor, Recycle, ShoppingBag, Search, Snowflake, CalendarDays, CreditCard, type LucideIcon } from "lucide-react";
 import GoogleRating from "@/components/google-rating";
 import { getGoogleReviewData } from "@/lib/google-reviews";
 import Header from "@/components/header";
@@ -368,19 +368,19 @@ export default async function Home() {
                 >
                   {CHRISTMAS_STEPS.map((step, i) => (
                     <li key={step.title} className="relative flex flex-col bg-white">
-                      {/* Arrow on the line between this step and the next, vertically centred and half over the
-                          next card. Only where the next step really is to the right: steps 1 and 3 from tablet
-                          width (two across), step 2 as well at desktop width (four across). */}
+                      {/* A pointer, not an icon: the card's edge comes to a point in the middle of its right
+                          side and pushes into the next card. A grey triangle with a slightly smaller white one
+                          over it, so only the two slanted edges show. Only where the next step really is to the
+                          right: steps 1 and 3 from tablet width (two across), step 2 as well at desktop width
+                          (four across). */}
                       {i < CHRISTMAS_STEPS.length - 1 && (
-                        <span
+                        <div
                           aria-hidden
-                          className={`absolute top-1/2 right-0 z-10 h-8 w-8 -translate-y-1/2 translate-x-1/2 items-center justify-center border border-border bg-white text-navy shadow-sm ${
-                            i === 1 ? "hidden lg:flex" : "hidden sm:flex"
-                          }`}
-                          style={{ borderRadius: "4px" }}
+                          className={`pointer-events-none absolute top-1/2 left-full z-10 ${i === 1 ? "hidden lg:block" : "hidden sm:block"}`}
                         >
-                          <ArrowRight className="h-4 w-4" />
-                        </span>
+                          <span className="absolute top-1/2 left-0 block h-0 w-0 -translate-y-1/2 border-y-[14px] border-l-[14px] border-y-transparent border-l-border" />
+                          <span className="absolute top-1/2 -left-px block h-0 w-0 -translate-y-1/2 border-y-[13px] border-l-[13px] border-y-transparent border-l-white" />
+                        </div>
                       )}
                       <div className="flex flex-1 flex-col p-5">
                         <h3 className="font-serif text-base leading-tight font-semibold text-navy">{step.title}</h3>
