@@ -34,7 +34,7 @@ export default function ChristmasProductNote({ excluded }: { excluded: boolean }
 
   if (excluded) {
     return (
-      <div className="mt-4 border border-border bg-white px-4 py-3 text-sm text-text-light" style={{ borderRadius: "12px" }}>
+      <div className="mt-4 border border-border bg-card px-4 py-3 text-sm text-text-light" style={{ borderRadius: "12px" }}>
         <p>This product is not available for Christmas pre-order. You can still order it for a standard delivery or collection date.</p>
       </div>
     );

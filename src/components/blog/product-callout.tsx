@@ -6,7 +6,7 @@ export default function ProductCallout({ product }: { product: Product }) {
   return (
     <Link
       href={`/shop/${product.slug}`}
-      className="group flex items-center gap-4 border border-border bg-white p-3 transition-all hover:border-navy/30 hover:shadow-md"
+      className="group flex items-center gap-4 border border-border bg-card p-3 transition-all hover:border-navy/30 hover:shadow-md"
       style={{ borderRadius: "5px" }}
     >
       <div className="relative h-16 w-16 shrink-0 overflow-hidden bg-sand" style={{ borderRadius: "3px" }}>

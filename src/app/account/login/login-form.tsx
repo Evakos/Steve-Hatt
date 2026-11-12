@@ -40,7 +40,7 @@ export default function LoginForm() {
 
   if (sent) {
     return (
-      <div className="w-full max-w-sm border border-border bg-white p-6 text-center" style={{ borderRadius: "5px" }}>
+      <div className="w-full max-w-sm border border-border bg-card p-6 text-center" style={{ borderRadius: "5px" }}>
         <h1 className="font-serif text-xl font-bold text-navy">Check your email</h1>
         <p className="mt-2 text-sm text-text-light">
           We&apos;ve sent a sign-in link to <strong>{email}</strong>. It expires in 15 minutes.
@@ -50,7 +50,7 @@ export default function LoginForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="w-full max-w-sm border border-border bg-white p-6" style={{ borderRadius: "5px" }}>
+    <form onSubmit={handleSubmit} className="w-full max-w-sm border border-border bg-card p-6" style={{ borderRadius: "5px" }}>
       <h1 className="font-serif text-xl font-bold text-navy">Sign in</h1>
       <p className="mt-1 text-sm text-text-light">
         Enter your email and we&apos;ll send you a sign-in link, no password needed. New here? This creates

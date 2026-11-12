@@ -56,7 +56,7 @@ export default function BlogIndexPage() {
           {featured && (
             <Link
               href={`/blog/${featured.slug}`}
-              className="group mb-10 grid overflow-hidden bg-white shadow-sm transition-shadow hover:shadow-lg md:grid-cols-2"
+              className="group mb-10 grid overflow-hidden bg-card shadow-sm transition-shadow hover:shadow-lg md:grid-cols-2"
               style={{ borderRadius: "8px" }}
             >
               <div className="relative h-56 overflow-hidden md:h-full">
@@ -85,7 +85,7 @@ export default function BlogIndexPage() {
                 <Link
                   key={post.slug}
                   href={`/blog/${post.slug}`}
-                  className="group flex flex-col overflow-hidden bg-white shadow-sm transition-shadow hover:shadow-md"
+                  className="group flex flex-col overflow-hidden bg-card shadow-sm transition-shadow hover:shadow-md"
                   style={{ borderRadius: "8px" }}
                 >
                   <div className="relative h-48 overflow-hidden">

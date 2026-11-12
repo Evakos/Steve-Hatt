@@ -94,14 +94,14 @@ export default async function ProductPage({
 
               {/* Info grid */}
               <div className="mt-4 grid grid-cols-2 gap-2">
-                <div className="border border-border bg-white p-4" style={{ borderRadius: '5px' }}>
+                <div className="border border-border bg-card p-4" style={{ borderRadius: '5px' }}>
                   <div className="mb-1 flex items-center gap-1.5">
                     <MapPin className="h-3.5 w-3.5 text-text-light" />
                     <p className="text-xs tracking-widest text-text-light uppercase">Origin</p>
                   </div>
                   <p className="text-sm text-navy">{product.origin}</p>
                 </div>
-                <div className="border border-border bg-white p-4" style={{ borderRadius: '5px' }}>
+                <div className="border border-border bg-card p-4" style={{ borderRadius: '5px' }}>
                   <div className="mb-1 flex items-center gap-1.5">
                     <Thermometer className="h-3.5 w-3.5 text-text-light" />
                     <p className="text-xs tracking-widest text-text-light uppercase">Storage</p>
@@ -111,7 +111,7 @@ export default async function ProductPage({
               </div>
 
               {/* Sustainability */}
-              <div className="mt-2 border border-border bg-white p-4" style={{ borderRadius: '5px' }}>
+              <div className="mt-2 border border-border bg-card p-4" style={{ borderRadius: '5px' }}>
                 <div className="mb-1 flex items-center gap-1.5">
                   <Leaf className="h-3.5 w-3.5 text-text-light" />
                   <p className="text-xs tracking-widest text-text-light uppercase">Sustainability</p>

@@ -46,7 +46,7 @@ export default function CartPage() {
                   return (
                     <div
                       key={item.id}
-                      className="flex gap-4 border border-border bg-white p-4"
+                      className="flex gap-4 border border-border bg-card p-4"
                       style={{ borderRadius: "5px" }}
                     >
                       <div
@@ -118,7 +118,7 @@ export default function CartPage() {
               {/* Order summary */}
               <div className="lg:col-span-1">
                 <div
-                  className="border border-border bg-white p-6"
+                  className="border border-border bg-card p-6"
                   style={{ borderRadius: "5px" }}
                 >
                   <h2 className="font-serif text-lg font-semibold text-navy">

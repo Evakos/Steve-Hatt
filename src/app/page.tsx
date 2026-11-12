@@ -204,7 +204,7 @@ export default async function Home() {
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {todaysCatch.map((p, i) => (
               <Reveal key={p.slug} delay={Math.min(i, 5) * 70}>
-              <Link href={`/shop/${p.slug}`} className="group block border border-border bg-white p-4 transition-all duration-300 hover:-translate-y-1 hover:border-navy/30 hover:shadow-lg" style={{ borderRadius: '5px' }}>
+              <Link href={`/shop/${p.slug}`} className="group block border border-border bg-card p-4 transition-all duration-300 hover:-translate-y-1 hover:border-navy/30 hover:shadow-lg" style={{ borderRadius: '5px' }}>
                 <div className="relative mb-3 h-40 overflow-hidden bg-sand" style={{ borderRadius: '3px' }}>
                   <Image src={p.image} alt={p.name} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover" />
                   <span className="absolute left-2 top-2 bg-lobster px-2 py-1 text-[10px] font-medium tracking-wide text-white uppercase" style={{ borderRadius: '2px' }}>{p.tag}</span>
@@ -336,7 +336,7 @@ export default async function Home() {
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {christmasFeatured.map((p, i) => (
                 <Reveal key={p.slug} delay={Math.min(i, 3) * 70}>
-                <Link href={`/shop/${p.slug}`} className="group block border border-border bg-white p-5 transition-all duration-300 hover:-translate-y-1 hover:border-navy/30 hover:shadow-lg" style={{ borderRadius: '5px' }}>
+                <Link href={`/shop/${p.slug}`} className="group block border border-border bg-card p-5 transition-all duration-300 hover:-translate-y-1 hover:border-navy/30 hover:shadow-lg" style={{ borderRadius: '5px' }}>
                   <div className="relative mb-3 h-32 overflow-hidden bg-sand" style={{ borderRadius: '3px' }}>
                     <Image src={p.image} alt={p.name} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw" className="object-cover" />
                     <span className="absolute left-2 top-2 bg-lobster px-2 py-1 text-[10px] font-medium tracking-wide text-white uppercase" style={{ borderRadius: '2px' }}>{p.tag}</span>
@@ -367,7 +367,7 @@ export default async function Home() {
                   style={{ borderRadius: "5px" }}
                 >
                   {CHRISTMAS_STEPS.map((step) => (
-                    <li key={step.title} className="flex flex-col bg-white">
+                    <li key={step.title} className="flex flex-col bg-card">
                       <div className="flex flex-1 flex-col p-5">
                         <h3 className="font-serif text-base leading-tight font-semibold text-navy">{step.title}</h3>
                         <p className="mt-1.5 text-sm leading-snug text-text-light">{step.text}</p>

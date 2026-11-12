@@ -65,7 +65,7 @@ function AccountPrompt({ postcode }: { postcode: string }) {
             role="dialog"
             aria-modal="true"
             aria-labelledby="account-prompt-title"
-            className="relative w-full max-w-sm bg-white p-6 shadow-2xl"
+            className="relative w-full max-w-sm bg-card p-6 shadow-2xl"
             style={{ borderRadius: "16px" }}
           >
             <button

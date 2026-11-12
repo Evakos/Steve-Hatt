@@ -80,7 +80,7 @@ export default function ShopGrid({ products }: Props) {
           <Link
             key={p.slug}
             href={`/shop/${p.slug}`}
-            className="group border border-border bg-white p-4 transition-all hover:border-navy/30 hover:shadow-md"
+            className="group border border-border bg-card p-4 transition-all hover:border-navy/30 hover:shadow-md"
             style={{ borderRadius: "5px" }}
           >
             <div className="relative mb-3 h-40 overflow-hidden bg-sand" style={{ borderRadius: "3px" }}>

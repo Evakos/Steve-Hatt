@@ -13,7 +13,7 @@ export default function MiniCart() {
   return (
     <>
       <div className="fixed inset-0 z-40" onClick={() => setMiniCartOpen(false)} />
-      <div className="absolute right-0 top-full z-50 mt-2 w-80 border border-border bg-white shadow-lg" style={{ borderRadius: "5px" }}>
+      <div className="absolute right-0 top-full z-50 mt-2 w-80 border border-border bg-card shadow-lg" style={{ borderRadius: "5px" }}>
         <div className="flex items-center justify-between border-b border-border px-4 py-3">
           <p className="text-sm font-medium text-navy">Your Order</p>
           <button onClick={() => setMiniCartOpen(false)} className="text-text-light hover:text-navy">

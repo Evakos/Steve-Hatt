@@ -49,7 +49,7 @@ export default function PaymentPanel({ amount, onToken, disabled }: Props) {
   };
 
   return (
-    <div className="border border-border bg-white p-4" style={{ borderRadius: "5px" }}>
+    <div className="border border-border bg-card p-4" style={{ borderRadius: "5px" }}>
       <div className="mb-3 flex items-center gap-1.5 text-xs text-text-light">
         <ShieldCheck className="h-3.5 w-3.5 text-teal" />
         Mock Hosted Payment Fields (dev only), no real card form, no card data collected here

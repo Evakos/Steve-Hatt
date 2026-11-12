@@ -68,7 +68,7 @@ export default function AboutPage() {
             ];
 
             const renderCard = (card: (typeof cards)[number], imageHeight: string, sizes: string) => (
-              <div key={card.title} className="flex flex-col overflow-hidden bg-white shadow-sm" style={{ borderRadius: "8px" }}>
+              <div key={card.title} className="flex flex-col overflow-hidden bg-card shadow-sm" style={{ borderRadius: "8px" }}>
                 {"image" in card && card.image && (
                   <div className={`relative ${imageHeight} overflow-hidden`}>
                     <Image src={card.image} alt={card.alt ?? ""} fill sizes={sizes} className="object-cover" />

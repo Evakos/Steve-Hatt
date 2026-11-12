@@ -34,7 +34,7 @@ export default async function AccountPage() {
         </div>
 
         {/* Saved address */}
-        <section className="mt-8 border border-border bg-white p-6" style={{ borderRadius: "5px" }}>
+        <section className="mt-8 border border-border bg-card p-6" style={{ borderRadius: "5px" }}>
           <h2 className="font-serif text-lg font-semibold text-navy">Saved details</h2>
           <p className="mt-1 text-sm text-text-light">{customer.email}</p>
           {hasAddress ? (
@@ -61,7 +61,7 @@ export default async function AccountPage() {
           ) : (
             <div className="mt-3 space-y-3">
               {orders.map((order) => (
-                <div key={order.id} className="border border-border bg-white p-4" style={{ borderRadius: "5px" }}>
+                <div key={order.id} className="border border-border bg-card p-4" style={{ borderRadius: "5px" }}>
                   <div className="flex items-baseline justify-between">
                     <span className="text-sm font-medium text-navy">Order #{order.number}</span>
                     <span className="text-xs text-text-light">{new Date(order.date_created).toLocaleDateString("en-GB")}</span>

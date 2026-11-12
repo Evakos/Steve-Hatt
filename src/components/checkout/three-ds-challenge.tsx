@@ -20,7 +20,7 @@ export default function ThreeDSChallenge({ onComplete }: Props) {
   }, [onComplete]);
 
   return (
-    <div className="flex flex-col items-center gap-3 border border-border bg-white p-10 text-center" style={{ borderRadius: "5px" }}>
+    <div className="flex flex-col items-center gap-3 border border-border bg-card p-10 text-center" style={{ borderRadius: "5px" }}>
       <Loader2 className="h-6 w-6 animate-spin text-navy" />
       <p className="text-sm text-navy">Verifying your card…</p>
       <p className="text-xs text-text-light">Please don&apos;t close this window.</p>

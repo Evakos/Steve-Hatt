@@ -22,7 +22,7 @@ export default function CookieBanner() {
 
   return (
     <div
-      className="fixed bottom-4 left-4 z-50 max-w-xs border border-border bg-white p-4 shadow-lg"
+      className="fixed bottom-4 left-4 z-50 max-w-xs border border-border bg-card p-4 shadow-lg"
       style={{ borderRadius: "8px" }}
     >
       <div className="flex items-start gap-2.5">

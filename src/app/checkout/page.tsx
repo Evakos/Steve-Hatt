@@ -357,7 +357,7 @@ export default function CheckoutPage() {
                 £{submitState.depositAmount.toFixed(2)} deposit paid · balance to settle on collection
               </p>
             ) : null}
-            <div className="mt-6 border border-border bg-white p-5 text-left" style={{ borderRadius: "5px" }}>
+            <div className="mt-6 border border-border bg-card p-5 text-left" style={{ borderRadius: "5px" }}>
               <div className="flex items-center gap-2 text-sm font-medium text-navy">
                 {confirmedOrder.slot.type === "delivery" ? <Truck className="h-4 w-4 text-teal" /> : <Store className="h-4 w-4 text-teal" />}
                 {confirmedOrder.slot.label}
@@ -497,7 +497,7 @@ export default function CheckoutPage() {
 
                   {/* 2. Postcode check */}
                   {orderType && (
-                    <div className={`${christmasShopActive ? "mt-8" : ""} border border-border bg-white p-5`} style={{ borderRadius: "5px" }}>
+                    <div className={`${christmasShopActive ? "mt-8" : ""} border border-border bg-card p-5`} style={{ borderRadius: "5px" }}>
                       <p className="mb-1 text-sm font-medium text-navy">Enter your postcode</p>
                       <p className="mb-3 text-xs text-text-light">We&apos;ll check if we can deliver to you, or you can collect from our shop.</p>
                       <div className="flex gap-2">
@@ -641,7 +641,7 @@ export default function CheckoutPage() {
                           })}
                         </div>
                       ) : (
-                        <div className="mt-4 border border-border bg-white p-6 text-center" style={{ borderRadius: "5px" }}>
+                        <div className="mt-4 border border-border bg-card p-6 text-center" style={{ borderRadius: "5px" }}>
                           <p className="text-sm font-medium text-navy">
                             No {orderType === "christmas" ? "Christmas" : "delivery or collection"} dates are available.
                           </p>
@@ -692,7 +692,7 @@ export default function CheckoutPage() {
                   </button>
 
                   {selectedSlot && (
-                    <div className="mb-6 flex items-center gap-3 border border-border bg-white px-4 py-3" style={{ borderRadius: "5px" }}>
+                    <div className="mb-6 flex items-center gap-3 border border-border bg-card px-4 py-3" style={{ borderRadius: "5px" }}>
                       {selectedSlot.type === "delivery" ? <Truck className="h-4 w-4 text-teal" /> : <Store className="h-4 w-4 text-teal" />}
                       <span className="text-sm text-navy">{selectedSlot.label}</span>
                       {isChristmasOrder && (
@@ -708,7 +708,7 @@ export default function CheckoutPage() {
                     Enter your details to complete your order.
                   </p>
 
-                  <div className="mt-6 border border-border bg-white p-6" style={{ borderRadius: "5px" }}>
+                  <div className="mt-6 border border-border bg-card p-6" style={{ borderRadius: "5px" }}>
                     <ContactAddressForm value={contact} onChange={setContact} showAddress={slotType === "delivery"} />
                   </div>
 
@@ -718,7 +718,7 @@ export default function CheckoutPage() {
                     </div>
                   ) : submitState.phase === "submitting" || submitState.phase === "confirming" ? (
                     <div
-                      className="mt-6 flex flex-col items-center gap-3 border border-border bg-white p-10 text-center"
+                      className="mt-6 flex flex-col items-center gap-3 border border-border bg-card p-10 text-center"
                       style={{ borderRadius: "5px" }}
                     >
                       <Loader2 className="h-6 w-6 animate-spin text-navy" />
@@ -770,7 +770,7 @@ export default function CheckoutPage() {
 
             {/* Order summary sidebar */}
             <div className="lg:col-span-1">
-              <div className="border border-border bg-white p-6" style={{ borderRadius: "5px" }}>
+              <div className="border border-border bg-card p-6" style={{ borderRadius: "5px" }}>
                 <h2 className="font-serif text-lg font-semibold text-navy">Order Summary</h2>
 
                 <div className="mt-4 space-y-3">

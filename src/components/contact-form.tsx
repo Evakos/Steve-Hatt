@@ -35,7 +35,7 @@ export default function ContactForm() {
 
   if (sent) {
     return (
-      <div className="border border-border bg-white p-6 text-center" style={{ borderRadius: "5px" }}>
+      <div className="border border-border bg-card p-6 text-center" style={{ borderRadius: "5px" }}>
         <h3 className="font-serif text-lg font-bold text-navy">Message sent</h3>
         <p className="mt-2 text-sm text-text-light">
           Thanks, {name}, we aim to respond within 48 hours. Please don&apos;t email us to place an order, order
@@ -46,7 +46,7 @@ export default function ContactForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="border border-border bg-white p-6" style={{ borderRadius: "5px" }}>
+    <form onSubmit={handleSubmit} className="border border-border bg-card p-6" style={{ borderRadius: "5px" }}>
       <div className="space-y-4">
         <div>
           <label className="mb-1.5 block text-xs font-medium tracking-wide text-navy uppercase">Name</label>
