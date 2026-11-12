@@ -50,7 +50,7 @@ export default async function ProductPage({
       <Header />
 
       {/* Breadcrumb */}
-      <div className="bg-white">
+      <div className="bg-cream">
         <div className="mx-auto max-w-6xl px-6 py-4">
           <nav className="text-sm text-text-light">
             <Link href="/" className="hover:text-navy">Home</Link>
