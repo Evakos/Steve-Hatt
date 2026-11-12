@@ -113,14 +113,15 @@ export default function AdminGuidePage() {
           <p>
             On the <strong className="text-navy">Products</strong> page, under Christmas ordering, turn the switch on
             and click <strong className="text-navy">Save changes</strong>. It takes effect straight away on the live
-            site, with no redeploy. The switch is not tied to a date, so it goes on the day you flip it (for example
-            1 November).
+            site, with no redeploy. It goes on the day you flip it (for example 1 November). Christmas ordering can only
+            run from 1 October to 17 December, so a switch left on can never bring it back in January.
           </p>
           <p>
             Customers can then choose a Christmas order at checkout. The slots are{" "}
             <strong className="text-navy">Tuesday to Saturday between 20 and 24 December</strong>, because the shop is
-            closed on Sunday and Monday. A basket containing an excluded product can&apos;t be booked for Christmas, and
-            the customer is told which item to remove.
+            closed on Sunday and Monday. The booked date decides: any of those dates is a Christmas order with Christmas
+            prices, and any other date is a normal order. A basket containing an excluded product can&apos;t be booked
+            for a Christmas date, and the customer is told which item to remove.
           </p>
 
           <h3 className="pt-1 font-medium text-navy">3. What happens to a Christmas order</h3>
@@ -142,8 +143,8 @@ export default function AdminGuidePage() {
 
           <h3 className="pt-1 font-medium text-navy">5. Switching it off</h3>
           <p>
-            Turn the switch off on the Products page at any time. It also switches itself off once the last Christmas
-            date has passed.
+            Turn the switch off on the Products page at any time. It also switches itself off after 17 December, when
+            online ordering closes (see Closing for Christmas and reopening).
           </p>
         </div>
       </details>
@@ -172,8 +173,9 @@ export default function AdminGuidePage() {
           <p>
             Almost every product can be pre-ordered for Christmas by default. A few can be marked as
             excluded (see the product sync below). Customers choose Standard or Christmas at
-            checkout, same as before, if their basket has an excluded item, Christmas is blocked
-            with a message telling them to remove it.
+            checkout. Either way the booked date has the final say: 20 to 24 December is always a
+            Christmas order and any other date never is. If the basket has an excluded item, Christmas
+            is blocked with a message telling them to remove it.
           </p>
           <p>
             The Christmas on/off switch and per-product Christmas prices are managed on the{" "}
@@ -245,9 +247,100 @@ export default function AdminGuidePage() {
             Refund in the Pay360 Merchant Portal, then update the order in WordPress.
           </p>
           <p>
-            Older orders that were only held (not charged) would still appear under{" "}
-            <strong className="text-navy">Awaiting capture</strong> on the Orders page, with a 7 day expiry warning. New
-            orders no longer go there.
+            Nothing is held any more, so the <strong className="text-navy">Awaiting capture</strong> section is switched
+            off on the Orders page. If an old held order ever needs capturing, ask for the section to be switched back on.
+          </p>
+        </div>
+      </details>
+
+      <details className="group border border-border bg-white p-6 shadow-sm" style={{ borderRadius: "20px" }}>
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-3 font-medium text-navy [&::-webkit-details-marker]:hidden">
+          {"The Orders page"}
+          <ChevronDown className="h-4 w-4 shrink-0 text-text-light transition-transform group-open:rotate-180" />
+        </summary>
+        <div className="mt-3 space-y-3 text-sm leading-relaxed text-text-light">
+          <p>
+            Each order is a tile. The coloured bar at the top says <strong className="text-navy">Delivery</strong> (red)
+            or <strong className="text-navy">Collection</strong> (blue), and whether it is a{" "}
+            <strong className="text-navy">Christmas order</strong> (with a snowflake) or a Standard order. Underneath are
+            the order number, the customer, the delivery or collection time, and the items with their quantities and
+            estimated weights. Delivery tiles also have a pink <strong className="text-navy">Deliver to</strong> box with
+            the address and phone number, so whoever is driving has everything on the tile.
+          </p>
+          <p>
+            Use the <strong className="text-navy">Sort by</strong> buttons at the top to reorder the tiles:
+          </p>
+          <ul className="list-disc space-y-1 pl-5">
+            <li>Oldest first (the default) or Newest first.</li>
+            <li>Delivery or collection date, soonest first.</li>
+            <li>Customer A to Z.</li>
+            <li>Delivery first, Collection first, or Christmas first.</li>
+          </ul>
+          <p>
+            Pending Christmas pre-orders appear in their own read-only section at the bottom, only when there are any.
+            <strong className="text-navy">View website</strong> in the left-hand menu (or the Steve Hatt name above it)
+            opens the shop&apos;s front page in a new tab. The red <strong className="text-navy">Sign out</strong> button
+            is at the bottom of the menu.
+          </p>
+        </div>
+      </details>
+
+      <details className="group border border-border bg-white p-6 shadow-sm" style={{ borderRadius: "20px" }}>
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-3 font-medium text-navy [&::-webkit-details-marker]:hidden">
+          {"Delivery and collection slots"}
+          <ChevronDown className="h-4 w-4 shrink-0 text-text-light transition-transform group-open:rotate-180" />
+        </summary>
+        <div className="mt-3 space-y-3 text-sm leading-relaxed text-text-light">
+          <p>
+            The <strong className="text-navy">Delivery slots</strong> page lists every day customers can book, about five
+            months ahead, with one tab for each month. Each day has three slots: Delivery morning (9am-12pm), Delivery
+            afternoon (12pm-5pm) and Collection (7am-5pm). Everything is on unless you switch it off.
+          </p>
+          <ol className="list-decimal space-y-2 pl-5">
+            <li>
+              Click a slot to switch it <strong className="text-navy">On</strong> or{" "}
+              <strong className="text-navy">Off</strong>. Use <strong className="text-navy">Switch day off</strong> for a
+              whole day, or <strong className="text-navy">Switch month off</strong> for the open month.
+            </li>
+            <li>
+              Click <strong className="text-navy">Save changes</strong>. It is live on the website straight away, with no
+              redeploy. A tab shows how many slots are off in that month.
+            </li>
+          </ol>
+          <p>
+            A slot that is off is hidden at checkout, and refused even if a customer already had the page open. Orders
+            already placed for it are not cancelled.
+          </p>
+          <p>
+            Sundays, Mondays and the Christmas break (25 December to 3 January) are never offered, so they are not
+            listed. Customers can only book about three weeks ahead, plus the Christmas dates once Christmas is on, so
+            switching off a later day simply closes it in advance. Good Friday is still listed, so switch it off if you
+            are closed. Christmas dates carry a snowflake and a Christmas tag.
+          </p>
+        </div>
+      </details>
+
+      <details className="group border border-border bg-white p-6 shadow-sm" style={{ borderRadius: "20px" }}>
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-3 font-medium text-navy [&::-webkit-details-marker]:hidden">
+          {"Closing for Christmas and reopening"}
+          <ChevronDown className="h-4 w-4 shrink-0 text-text-light transition-transform group-open:rotate-180" />
+        </summary>
+        <div className="mt-3 space-y-3 text-sm leading-relaxed text-text-light">
+          <p>
+            Online ordering <strong className="text-navy">closes by itself after 17 December</strong> (UK time) and{" "}
+            <strong className="text-navy">reopens by itself on 4 January</strong>. There is nothing to switch. While it is
+            closed the website shows a banner explaining why, add to basket and checkout are blocked, and the order
+            system refuses anything that slips through.
+          </p>
+          <p>
+            To reopen on a different day, go to the <strong className="text-navy">Products</strong> page, find{" "}
+            <strong className="text-navy">Reopening after Christmas</strong>, pick a date in January and click{" "}
+            <strong className="text-navy">Save changes</strong>. It applies to that January only, and{" "}
+            <strong className="text-navy">Use the default (4th January)</strong> puts it back.
+          </p>
+          <p>
+            You do not need to remember to switch Christmas off. Christmas ordering only runs from 1 October to
+            17 December, so a switch left on cannot bring it back in January.
           </p>
         </div>
       </details>
