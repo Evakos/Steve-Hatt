@@ -2,6 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { getAllProducts } from "@/lib/products";
 import { isChristmasShopActive } from "@/lib/feature-flags";
+import { getUpcomingChristmasDates } from "@/lib/christmas-dates";
+import { LAST_ORDER_LABEL } from "@/lib/ordering-window";
 import { Truck, Fish, Scaling, Leaf, Anchor, Recycle, ShoppingBag, Search, Snowflake } from "lucide-react";
 import GoogleRating from "@/components/google-rating";
 import { getGoogleReviewData } from "@/lib/google-reviews";
@@ -39,6 +41,21 @@ function pickRandom<T>(items: T[], n: number): T[] {
   return shuffled.slice(0, n);
 }
 
+/** 22 becomes "22nd", 23 becomes "23rd", 24 becomes "24th". */
+function ordinal(n: number): string {
+  const suffixes = ["th", "st", "nd", "rd"];
+  const v = n % 100;
+  return n + (suffixes[(v - 20) % 10] || suffixes[v] || suffixes[0]);
+}
+
+// How a Christmas order works, shown in the Christmas section while Christmas ordering is on.
+const CHRISTMAS_STEPS = [
+  { title: "Fill your basket", text: "Choose your Christmas fish and shellfish from the shop." },
+  { title: "Choose For Christmas", text: "At checkout, pick delivery or collection, then your date and time slot." },
+  { title: "Pay in full", text: "You pay at checkout and get a confirmation email straight away." },
+  { title: "Prepared fresh", text: "Your fishmonger prepares your order for your chosen day." },
+];
+
 export default async function Home() {
   const [products, christmasActive, googleReview] = await Promise.all([
     getAllProducts(),
@@ -55,6 +72,15 @@ export default async function Home() {
   // is the live mechanism - see src/lib/checkout/reprice.ts. Only mention it here if it's
   // actually in effect for at least one of the featured products.
   const anyChristmasPricing = christmasFeatured.some((p) => !!p.christmasPrice);
+  // The Christmas dates come from the same rules as checkout (Tue-Sat, 20th-24th December), so the
+  // wording is right every year without anyone editing it.
+  const christmasDays = getUpcomingChristmasDates().map((d) => d.getDate());
+  const christmasWhen =
+    christmasDays.length > 1
+      ? `between ${ordinal(christmasDays[0])} and ${ordinal(christmasDays[christmasDays.length - 1])} December`
+      : christmasDays.length === 1
+        ? `on ${ordinal(christmasDays[0])} December`
+        : "on the Christmas dates";
 
   return (
     <main className="flex flex-1 flex-col">
@@ -281,7 +307,7 @@ export default async function Home() {
               <p className="text-xs tracking-widest text-text-light uppercase">Festive season</p>
               <h2 className="mt-2 font-serif text-3xl font-bold text-navy md:text-4xl">Christmas Pre-Orders</h2>
               <p className="mx-auto mt-4 max-w-lg text-base leading-relaxed text-text-light">
-                Reserve your Christmas feast now. Pre-order by 17th December for delivery or collection between 22nd and 24th December. Every order prepared fresh by your fishmonger.
+                Reserve your Christmas feast now. Pre-order by {LAST_ORDER_LABEL} for delivery or collection {christmasWhen}. Every order prepared fresh by your fishmonger.
               </p>
               {anyChristmasPricing && (
                 <p className="mx-auto mt-3 max-w-lg text-sm text-text-light">
@@ -291,6 +317,28 @@ export default async function Home() {
                 </p>
               )}
             </div>
+            </Reveal>
+            <Reveal>
+              <ol className="mx-auto mb-4 grid max-w-5xl gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                {CHRISTMAS_STEPS.map((step, i) => (
+                  <li key={step.title} className="flex gap-3 border border-border bg-white/70 p-4" style={{ borderRadius: "5px" }}>
+                    <span
+                      className="flex h-7 w-7 shrink-0 items-center justify-center bg-navy text-xs font-medium text-white"
+                      style={{ borderRadius: "999px" }}
+                    >
+                      {i + 1}
+                    </span>
+                    <div>
+                      <p className="text-sm font-medium text-navy">{step.title}</p>
+                      <p className="mt-0.5 text-sm leading-relaxed text-text-light">{step.text}</p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+              <p className="mx-auto mb-10 max-w-xl text-center text-xs leading-relaxed text-text-light">
+                A few items can&apos;t be ordered for Christmas dates. If one is in your basket, checkout will tell you
+                which to remove.
+              </p>
             </Reveal>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {christmasFeatured.map((p, i) => (
