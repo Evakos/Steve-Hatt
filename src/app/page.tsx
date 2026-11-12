@@ -225,8 +225,10 @@ export default async function Home() {
       </section>
 
       {/* How it works */}
+      {/* No top padding: it follows Today's Catch on the same white background, whose bottom padding
+          already gives the gap. Otherwise the two paddings add up to a double gap. */}
       <section id="how" className="bg-white">
-        <div className="mx-auto max-w-6xl px-6 py-12 md:py-20">
+        <div className="mx-auto max-w-6xl px-6 pt-0 pb-12 md:pb-20">
           <Reveal>
           <p className="text-xs tracking-widest text-text-light uppercase">Simple & transparent</p>
           <h2 className="mt-2 mb-10 font-serif text-3xl font-bold text-navy">How It Works</h2>
@@ -357,7 +359,7 @@ export default async function Home() {
 
             {/* How a Christmas order works, below the products */}
             <Reveal>
-              <div className="mt-12">
+              <div className="mt-10">
                 <h3 className="mb-6 text-center font-serif text-2xl font-bold text-navy">How a Christmas order works</h3>
                 {/* One box with a thin line between each step (the gap shows the border colour behind it) */}
                 <ol
