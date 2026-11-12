@@ -356,7 +356,7 @@ export default async function Home() {
             {/* How a Christmas order works, below the products */}
             <Reveal>
               <div className="mt-12">
-                <p className="mb-5 text-center text-xs tracking-widest text-text-light uppercase">How a Christmas order works</p>
+                <h3 className="mb-6 text-center font-serif text-2xl font-bold text-navy">How a Christmas order works</h3>
                 <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                   {CHRISTMAS_STEPS.map((step, i) => (
                     <li
