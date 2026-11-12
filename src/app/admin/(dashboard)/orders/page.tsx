@@ -2,6 +2,7 @@ import { listPendingCaptureOrders, listProcessingOrders, listPendingPreOrders } 
 import type { WooOrder } from "@/lib/woocommerce/types";
 import CaptureOrderCard from "./capture-order-card";
 import CompleteOrderCard from "./complete-order-card";
+import { SortBar, parseSort, sortOrders } from "./order-sort";
 import PreOrderStatusCard from "./preorder-status-card";
 
 // Every order is now charged in full at checkout, so there is nothing to hold and capture later.
@@ -11,14 +12,21 @@ const SHOW_AWAITING_CAPTURE = false;
 // Orders sit in a responsive grid: as many tiles per row as the width allows (about 17rem each).
 const GRID = "mt-4 grid grid-cols-[repeat(auto-fill,minmax(17rem,1fr))] gap-3";
 
-export default async function AdminOrdersPage() {
-  const [pendingCapture, processing, pendingPreOrders] = await Promise.all([
+export default async function AdminOrdersPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ sort?: string | string[] }>;
+}) {
+  const sort = parseSort((await searchParams).sort);
+  const [pendingCapture, processingRaw, pendingPreOrders] = await Promise.all([
     SHOW_AWAITING_CAPTURE ? listPendingCaptureOrders() : Promise.resolve<WooOrder[]>([]),
     listProcessingOrders(),
     listPendingPreOrders(),
   ]);
-  const christmasPreOrders = pendingPreOrders.filter(
-    (order) => order.meta_data.find((m) => m.key === "_checkout_is_christmas")?.value === "true"
+  const processing = sortOrders(processingRaw, sort);
+  const christmasPreOrders = sortOrders(
+    pendingPreOrders.filter((order) => order.meta_data.find((m) => m.key === "_checkout_is_christmas")?.value === "true"),
+    sort
   );
 
   return (
@@ -27,6 +35,7 @@ export default async function AdminOrdersPage() {
       <p className="mt-1 text-sm text-text-light">
         Paid orders ready to prepare. Pending Christmas pre-orders show here only if there are any.
       </p>
+      <SortBar current={sort} />
 
       <div className="mt-5 space-y-5">
         {/* Only shown when something is actually held, so the capture explanation never appears for nothing. */}
