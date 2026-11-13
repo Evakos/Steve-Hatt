@@ -52,6 +52,7 @@ export default function AboutPage() {
                 tag: "Meet the Team",
               },
               {
+                placeholder: true,
                 eyebrow: "Our shop",
                 title: "Designed for Excellence",
                 body: "Ever wondered why our shop doesn't smell a bit \"fishy\" like other fishmongers do? It's because we're designed not to. When our building burnt down in 2007, we were able to design the perfect environment for storing and selling fish from the ground up, from drainage below ground, to airflow above ground, with controllable airflow, purpose-built stainless steel counters and optimum refrigeration.",
@@ -103,11 +104,34 @@ export default function AboutPage() {
               </div>
             );
 
+            // The lead card is split, photo beside the text, so neither is stretched across the full
+            // width (a very wide, short photo and a line of text over 1000px long read badly).
+            const renderFeature = (card: (typeof cards)[number]) => (
+              <div className="grid overflow-hidden bg-card shadow-sm md:grid-cols-[1.15fr_1fr]" style={{ borderRadius: "8px" }}>
+                <div className="relative h-64 md:h-auto md:min-h-[26rem]">
+                  {"image" in card && card.image && (
+                    <Image src={card.image} alt={card.alt ?? ""} fill sizes="(max-width: 768px) 100vw, 55vw" className="object-cover" />
+                  )}
+                </div>
+                <div className="flex flex-col justify-center p-8 md:p-12">
+                  <p className="text-xs tracking-widest text-text-light uppercase">{card.eyebrow}</p>
+                  <h2 className="mt-2 font-serif text-3xl font-bold text-navy md:text-4xl">{card.title}</h2>
+                  <p className="mt-4 text-base leading-relaxed text-text-light md:text-lg">{card.body}</p>
+                  <span
+                    className="mt-6 inline-block self-start border border-navy/30 px-4 py-2 text-xs font-medium tracking-widest text-navy uppercase"
+                    style={{ borderRadius: "3px" }}
+                  >
+                    {card.tag}
+                  </span>
+                </div>
+              </div>
+            );
+
             const [first, ...rest] = cards;
 
             return (
               <div className="space-y-8">
-                {renderCard(first, "h-64 md:h-80", "(max-width: 768px) 100vw, 90vw")}
+                {renderFeature(first)}
                 <div className="grid gap-8 md:grid-cols-3">{rest.map((card) => renderCard(card, "h-56", "(max-width: 768px) 100vw, 33vw"))}</div>
               </div>
             );
