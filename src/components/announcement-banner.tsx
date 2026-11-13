@@ -12,7 +12,7 @@ interface BannerConfig {
   bg: string;
   textColor: string;
   accent: string;
-  message: string;
+  message: React.ReactNode;
   cta: string;
   ctaHref: string;
 }
@@ -23,7 +23,12 @@ const banners: Record<string, BannerConfig> = {
     bg: "bg-lobster",
     textColor: "text-white",
     accent: "text-white",
-    message: `Christmas pre-orders are now open! Order by ${LAST_ORDER_LABEL} to reserve your festive feast.`,
+    message: (
+      <>
+        Christmas pre-orders are now open! <strong className="font-semibold">Order by {LAST_ORDER_LABEL}</strong> to
+        reserve your festive feast.
+      </>
+    ),
     cta: "Pre-order now",
     ctaHref: "/shop",
   },
