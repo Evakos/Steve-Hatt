@@ -52,7 +52,7 @@ function LinkColumn({ title, links }: { title: string; links: { href: string; la
  * this shared component since it's homepage-specific content, not site-wide chrome. */
 export default function Footer() {
   return (
-    <footer className="bg-navy">
+    <footer className="mt-auto bg-navy">
       <div className="mx-auto max-w-6xl px-6 pt-14 pb-8">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.3fr]">
           <div>
