@@ -88,7 +88,7 @@ export default async function AdminProductsPage() {
             rel="noopener noreferrer"
             className="text-sm text-navy underline hover:text-lobster"
           >
-            {source.linkLabel} →
+            {source.linkLabel}
           </a>
         </div>
         <SyncProductsPanel />

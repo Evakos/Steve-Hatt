@@ -210,7 +210,7 @@ export default async function Home() {
               <p className="text-xs tracking-widest text-text-light uppercase">Fresh today</p>
               <h2 className="mt-2 font-serif text-3xl font-bold text-navy">Today&apos;s Catch</h2>
             </div>
-            <Link href="/shop" className="text-sm text-navy hover:underline">View all →</Link>
+            <Link href="/shop" className="text-sm text-navy hover:underline">View all</Link>
           </div>
           </Reveal>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

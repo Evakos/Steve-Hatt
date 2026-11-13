@@ -67,7 +67,7 @@ export default function SustainabilityPage() {
                 We only source farmed fish from trusted suppliers and sell only what we consider the best of the
                 best.{" "}
                 <Link href="/suppliers" className="text-navy underline hover:text-lobster">
-                  Learn more about our suppliers →
+                  Learn more about our suppliers
                 </Link>
               </p>
             </div>
@@ -125,7 +125,7 @@ export default function SustainabilityPage() {
             Understanding the best way to protect our planet is a complex and evolving issue. We welcome
             conversation around it and are constantly looking for ways to improve and adapt.{" "}
             <Link href="/contact" className="text-white underline hover:text-white/70">
-              Get in touch →
+              Get in touch
             </Link>
           </p>
         </div>

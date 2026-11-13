@@ -16,7 +16,7 @@ export default function ProductCallout({ product }: { product: Product }) {
         <p className="truncate font-serif text-base font-semibold text-navy">{product.name}</p>
         <p className="text-sm text-text-light">{product.priceLabel}</p>
       </div>
-      <span className="shrink-0 text-sm text-navy underline group-hover:no-underline">Shop →</span>
+      <span className="shrink-0 text-sm text-navy underline group-hover:no-underline">Shop</span>
     </Link>
   );
 }

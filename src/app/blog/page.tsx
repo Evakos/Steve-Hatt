@@ -73,7 +73,7 @@ export default function BlogIndexPage() {
                 <h2 className="mt-3 font-serif text-2xl font-bold text-navy md:text-3xl">{featured.title}</h2>
                 <p className="mt-3 text-lg leading-relaxed text-text-light">{featured.excerpt}</p>
                 <span className="mt-5 inline-flex w-fit items-center gap-1 text-sm font-medium text-navy underline group-hover:no-underline">
-                  Read the recipe →
+                  Read the recipe
                 </span>
               </div>
             </Link>
@@ -96,7 +96,7 @@ export default function BlogIndexPage() {
                     <h2 className="mt-3 font-serif text-xl font-bold text-navy">{post.title}</h2>
                     <p className="mt-3 flex-1 text-sm leading-relaxed text-text-light">{post.excerpt}</p>
                     <span className="mt-4 inline-block self-start text-sm text-navy underline group-hover:no-underline">
-                      Read more →
+                      Read more
                     </span>
                   </div>
                 </Link>

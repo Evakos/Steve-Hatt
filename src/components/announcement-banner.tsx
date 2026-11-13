@@ -94,7 +94,7 @@ export default function AnnouncementBanner({
               href={config.ctaHref}
               className={`inline-block underline underline-offset-2 transition-opacity hover:opacity-80 ${config.accent}`}
             >
-              {config.cta} →
+              {config.cta}
             </Link>
           </span>
         </div>
