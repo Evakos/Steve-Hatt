@@ -813,7 +813,7 @@ export default function CheckoutPage() {
                       style={{ borderRadius: "5px" }}
                     >
                       <p className="text-sm text-navy">
-                        <strong className="font-semibold">Already have an account?</strong> Sign in to use your saved
+                        <strong className="font-medium">Already have an account?</strong> Sign in to use your saved
                         details.
                       </p>
                       <Link
