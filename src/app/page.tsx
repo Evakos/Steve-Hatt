@@ -372,22 +372,22 @@ export default async function Home() {
             {/* How a Christmas order works, below the products */}
             <Reveal>
               <div className="mt-10">
-                <h3 className="mb-6 text-center font-serif text-2xl font-bold text-navy">How a Christmas order works</h3>
-                {/* One box with a thin line between each step (the gap shows the border colour behind it) */}
-                <ol
-                  className="grid gap-px overflow-hidden border border-border bg-border sm:grid-cols-2 lg:grid-cols-4"
-                  style={{ borderRadius: "5px" }}
-                >
-                  {CHRISTMAS_STEPS.map((step) => (
-                    <li key={step.title} className="flex flex-col bg-card">
-                      <div className="flex flex-1 flex-col p-5">
-                        <h3 className="font-serif text-base leading-tight font-semibold text-navy">{step.title}</h3>
-                        <p className="mt-1.5 text-sm leading-snug text-text-light">{step.text}</p>
-                      </div>
+                <h3 className="mb-10 font-serif text-3xl font-bold text-navy">How a Christmas order works</h3>
+                {/* Same format as the How It Works section: four separate numbered cards */}
+                <ol className="grid gap-4 md:grid-cols-4">
+                  {CHRISTMAS_STEPS.map((step, i) => (
+                    <li
+                      key={step.title}
+                      className="h-full border border-border bg-card p-6 md:min-h-[13rem]"
+                      style={{ borderRadius: "5px" }}
+                    >
+                      <span className="font-serif text-2xl font-light text-lobster/40">{String(i + 1).padStart(2, "0")}</span>
+                      <h3 className="mt-3 font-serif text-base font-semibold text-navy">{step.title}</h3>
+                      <p className="mt-2 text-sm leading-relaxed text-text-light">{step.text}</p>
                     </li>
                   ))}
                 </ol>
-                <p className="mt-4 text-center text-xs leading-relaxed text-text-light md:whitespace-nowrap md:text-[11px] lg:text-xs">
+                <p className="mt-4 text-xs leading-relaxed text-text-light">
                   *A few items can&apos;t be ordered for Christmas dates. If one is in your basket, checkout will tell you
                   which to remove.
                 </p>
