@@ -749,16 +749,18 @@ export default function CheckoutPage() {
                         </div>
                       )}
 
-                      {orderType === "christmas" && selectedSlot && (
+                      {/* Only explained when the part-payment flow is on, which is the unusual case. Paying in
+                          full is how every order works, so there's nothing to say about it. */}
+                      {orderType === "christmas" && selectedSlot && christmasUseDepositFlow && (
                         <div className="mt-4 border border-[#1a3a2a]/20 bg-[#e8f5ed] p-4" style={{ borderRadius: "5px" }}>
                           <div className="flex items-start gap-3">
                             <Gift className="mt-0.5 h-5 w-5 shrink-0 text-[#1a3a2a]" />
                             <div>
                               <p className="text-sm font-medium text-[#1a3a2a]">Christmas Pre-Order</p>
                               <p className="mt-1 text-xs leading-relaxed text-[#1a3a2a]/70">
-                                {christmasUseDepositFlow
-                                  ? "We'll verify your card now, you won't be charged today. Payment is taken automatically a few days before your delivery or collection date, once your order is weighed, with no action needed from you."
-                                  : "Your card will be charged in full today at the fixed Christmas price, no later adjustments, just like any other order."}
+                                We&apos;ll verify your card now, you won&apos;t be charged today. Payment is taken automatically a few
+                                days before your delivery or collection date, once your order is weighed, with no action needed from
+                                you.
                               </p>
                             </div>
                           </div>
