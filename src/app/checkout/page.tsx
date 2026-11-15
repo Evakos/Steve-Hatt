@@ -793,13 +793,22 @@ export default function CheckoutPage() {
                     Enter your details to complete your order.
                   </p>
                   {!isSignedIn && (
-                    <p className="mt-1 text-sm text-text-light">
-                      Already have an account?{" "}
-                      <Link href="/account/login?next=checkout" className="text-navy underline hover:text-lobster">
+                    <div
+                      className="mt-4 flex flex-wrap items-center justify-between gap-3 border border-navy/15 bg-sand px-4 py-3"
+                      style={{ borderRadius: "5px" }}
+                    >
+                      <p className="text-sm text-navy">
+                        <strong className="font-semibold">Already have an account?</strong> Sign in to use your saved
+                        details.
+                      </p>
+                      <Link
+                        href="/account/login?next=checkout"
+                        className="bg-navy px-4 py-2 text-xs font-medium tracking-wide text-white transition-colors hover:bg-navy/90"
+                        style={{ borderRadius: "6px" }}
+                      >
                         Sign in
-                      </Link>{" "}
-                      to use your saved details.
-                    </p>
+                      </Link>
+                    </div>
                   )}
 
                   <div className="mt-6 border border-border bg-card p-6" style={{ borderRadius: "5px" }}>
