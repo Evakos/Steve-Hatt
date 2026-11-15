@@ -63,14 +63,9 @@ export default async function ProductPage({
 
             {/* Details */}
             <div>
-              {/* Breadcrumb, directly above the content */}
-              <nav className="mb-4 text-sm text-text-light">
-                <Link href="/" className="hover:text-navy">Home</Link>
-                <span className="mx-2">/</span>
-                <Link href="/#shop" className="hover:text-navy">Shop</Link>
-                <span className="mx-2">/</span>
-                <span className="text-navy">{product.name}</span>
-              </nav>
+              <Link href="/shop" className="mb-4 inline-block text-sm text-text-light underline underline-offset-2 hover:text-navy">
+                Back to shop
+              </Link>
               <span className="text-xs tracking-widest text-text-light uppercase">{product.category}</span>
               <h1 className="mt-1.5 font-serif text-4xl font-bold text-navy">{product.name}</h1>
 
