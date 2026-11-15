@@ -8,6 +8,7 @@ import { checkoutRequestSchema } from "@/lib/checkout/schema";
 import { sendOrderConfirmation, sendAdminNewOrderNotification } from "@/lib/email/send-order-confirmation";
 import { getCustomerSession } from "@/lib/customer-auth";
 import { checkBookedSlot, christmasExclusionReason } from "@/lib/checkout/slot-rules";
+import { deliveryMinimumMessage, deliveryShortfall } from "@/lib/checkout/delivery-minimum";
 import {
   getChristmasDepositAmount,
   getChristmasUseDepositFlow,
@@ -56,6 +57,11 @@ export async function POST(request: Request) {
   if (exclusion) {
     return NextResponse.json({ status: "slot_unavailable", reason: exclusion }, { status: 409 });
   }
+  const shortfall = deliveryShortfall(repriced.subtotal, checkout.fulfilment.type);
+  if (shortfall > 0) {
+    return NextResponse.json({ status: "minimum_not_met", reason: deliveryMinimumMessage(shortfall) }, { status: 409 });
+  }
+
   const orderRef = crypto.randomUUID();
   const cardstream = getCardstreamClient();
 

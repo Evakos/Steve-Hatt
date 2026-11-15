@@ -40,7 +40,7 @@ export function useCheckoutSubmit() {
       }
       if (!res.ok) {
         // The shop closing, or a slot being switched off, come with a reason fit to show customers.
-        const friendly = (data.status === "slot_unavailable" || data.status === "closed") && typeof data.reason === "string";
+        const friendly = (data.status === "slot_unavailable" || data.status === "closed" || data.status === "minimum_not_met") && typeof data.reason === "string";
         setState({ phase: "error", message: friendly ? data.reason : "Something went wrong. Please try again." });
         return;
       }

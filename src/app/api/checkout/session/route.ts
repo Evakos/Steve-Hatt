@@ -4,6 +4,7 @@ import { createOrderFromPayment } from "@/lib/checkout/create-order-from-payment
 import { repriceCheckoutRequest } from "@/lib/checkout/reprice";
 import { sessionRequestSchema, type CheckoutRequest } from "@/lib/checkout/schema";
 import { checkBookedSlot, christmasExclusionReason } from "@/lib/checkout/slot-rules";
+import { deliveryMinimumMessage, deliveryShortfall } from "@/lib/checkout/delivery-minimum";
 import { getCustomerSession } from "@/lib/customer-auth";
 import { areOnlineOrdersClosed, getDisabledSlots, isChristmasShopActive } from "@/lib/feature-flags";
 import { ORDERS_CLOSED_REASON } from "@/lib/ordering-window";
@@ -49,6 +50,11 @@ export async function POST(request: Request) {
   const exclusion = christmasExclusionReason(repriced);
   if (exclusion) {
     return NextResponse.json({ status: "slot_unavailable", reason: exclusion }, { status: 409 });
+  }
+
+  const shortfall = deliveryShortfall(repriced.subtotal, checkout.fulfilment.type);
+  if (shortfall > 0) {
+    return NextResponse.json({ status: "minimum_not_met", reason: deliveryMinimumMessage(shortfall) }, { status: 409 });
   }
 
   const orderRef = crypto.randomUUID();

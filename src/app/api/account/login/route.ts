@@ -4,7 +4,12 @@ import { createMagicLinkToken } from "@/lib/customer-auth";
 import { formatFullPostcode } from "@/lib/delivery-zones";
 import { sendMagicLinkEmail } from "@/lib/email/send-magic-link";
 
-const requestSchema = z.object({ email: z.email(), postcode: z.string().max(12).optional() });
+const requestSchema = z.object({
+  email: z.email(),
+  postcode: z.string().max(12).optional(),
+  // Only the checkout can ask to be returned to, so this can never be used as an open redirect.
+  next: z.literal("checkout").optional(),
+});
 
 // Matches the hardcoded domain already used elsewhere (e.g. send-order-confirmation.ts's
 // /admin/orders link) rather than introducing a new env var for it.
@@ -21,7 +26,7 @@ export async function POST(request: Request) {
   // account when it is clicked. Anything that is not a complete UK postcode is simply dropped.
   const postcode = parsed.data.postcode ? formatFullPostcode(parsed.data.postcode) ?? undefined : undefined;
   const token = createMagicLinkToken(parsed.data.email, postcode);
-  const verifyUrl = `${SITE_URL}/api/account/verify?token=${encodeURIComponent(token)}`;
+  const verifyUrl = `${SITE_URL}/api/account/verify?token=${encodeURIComponent(token)}${parsed.data.next ? `&next=${parsed.data.next}` : ""}`;
 
   try {
     await sendMagicLinkEmail(parsed.data.email, verifyUrl);

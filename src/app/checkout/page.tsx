@@ -31,6 +31,7 @@ import ContactAddressForm, { EMPTY_CONTACT_ADDRESS, type ContactAddressValue } f
 import PaymentPanel from "@/components/checkout/payment-panel";
 import SandboxNotice from "@/components/checkout/sandbox-notice";
 import type { HostedResult } from "@/lib/checkout/hosted-result";
+import { deliveryMinimumMessage, deliveryShortfall } from "@/lib/checkout/delivery-minimum";
 import ThreeDSChallenge from "@/components/checkout/three-ds-challenge";
 import { useCheckoutSubmit } from "@/components/checkout/use-checkout-submit";
 import { isChristmasFulfilmentDate, hasUpcomingChristmasDates } from "@/lib/christmas-dates";
@@ -212,7 +213,10 @@ export default function CheckoutPage() {
     return result;
   }, [slotType, orderType, disabledSlots]);
 
-  const canProceedToPayment = !!selectedSlot;
+  // Guard rail: a delivery order has to reach the minimum before it can go to payment. It only applies
+  // once delivery is the chosen option, so collection orders are never held up by it.
+  const shortfall = deliveryShortfall(displayEstimatedTotal, slotType ?? "collection");
+  const canProceedToPayment = !!selectedSlot && shortfall === 0;
   const deliveryCost = slotType === "delivery" ? 5 : 0;
 
   function buildCheckoutRequest(): CheckoutRequest | null {
@@ -593,6 +597,31 @@ export default function CheckoutPage() {
                     </>
                   )}
 
+                  {/* Delivery minimum: blocks continuing while the basket is under it */}
+                  {slotType === "delivery" && shortfall > 0 && (
+                    <div className="mt-6 flex items-start gap-3 border border-lobster/30 bg-lobster/5 p-4" style={{ borderRadius: "5px" }}>
+                      <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-lobster" />
+                      <div>
+                        <p className="text-sm text-navy">{deliveryMinimumMessage(shortfall)}</p>
+                        <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs">
+                          <Link href="/shop" className="text-navy underline">
+                            Add more to your basket
+                          </Link>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSlotType("collection");
+                              setSelectedSlot(null);
+                            }}
+                            className="text-navy underline"
+                          >
+                            Choose click &amp; collect instead
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   {/* 4. Slot picker */}
                   {showSlots && (
                     <>
@@ -719,6 +748,15 @@ export default function CheckoutPage() {
                   <p className="mt-1 text-sm text-text-light">
                     Enter your details to complete your order.
                   </p>
+                  {!isSignedIn && (
+                    <p className="mt-1 text-sm text-text-light">
+                      Already have an account?{" "}
+                      <Link href="/account/login?next=checkout" className="text-navy underline hover:text-lobster">
+                        Sign in
+                      </Link>{" "}
+                      to use your saved details.
+                    </p>
+                  )}
 
                   <div className="mt-6 border border-border bg-card p-6" style={{ borderRadius: "5px" }}>
                     <ContactAddressForm value={contact} onChange={setContact} showAddress={slotType === "delivery"} />

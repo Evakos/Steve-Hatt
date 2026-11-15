@@ -6,6 +6,7 @@ import { Trash2, ShoppingBag } from "lucide-react";
 import { useCart, lineTotal } from "@/lib/cart-context";
 import Header from "@/components/header";
 import AnnouncementBanner from "@/components/announcement-banner";
+import { DELIVERY_MINIMUM, deliveryShortfall } from "@/lib/checkout/delivery-minimum";
 
 export default function CartPage() {
   const { items, removeItem, updateQuantity, clearCart, estimatedTotal } = useCart();
@@ -142,6 +143,15 @@ export default function CartPage() {
                     </div>
                   </div>
 
+
+                  {/* Heads-up only: whether this matters depends on delivery or collection, chosen at checkout */}
+                  {deliveryShortfall(estimatedTotal, "delivery") > 0 && (
+                    <p className="mt-5 bg-sand p-3 text-sm leading-snug text-navy" style={{ borderRadius: "5px" }}>
+                      Delivery needs a minimum order of £{DELIVERY_MINIMUM}. You&apos;re £
+                      {deliveryShortfall(estimatedTotal, "delivery").toFixed(2)} short, or choose click &amp; collect at checkout,
+                      which has no minimum.
+                    </p>
+                  )}
 
                   <Link
                     href="/checkout"

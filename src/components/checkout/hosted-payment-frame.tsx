@@ -57,7 +57,7 @@ export default function HostedPaymentFrame({ buildRequest, onResult }: Props) {
         setPhase({ name: "frame", url: data.redirectUrl });
         return;
       }
-      const friendly = (data.status === "slot_unavailable" || data.status === "closed") && typeof data.reason === "string";
+      const friendly = (data.status === "slot_unavailable" || data.status === "closed" || data.status === "minimum_not_met") && typeof data.reason === "string";
       setPhase({ name: "error", message: friendly ? data.reason : "We couldn't start the card payment. Please try again." });
     } catch {
       setPhase({ name: "error", message: "Network error. Please try again." });

@@ -9,6 +9,8 @@ export default function LoginForm() {
   const errorParam = searchParams.get("error");
   const expired = errorParam === "expired";
   const unavailable = errorParam === "unavailable";
+  // Arriving from the checkout: after signing in, go back there rather than to the account page.
+  const next = searchParams.get("next") === "checkout" ? "checkout" : undefined;
 
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -23,7 +25,7 @@ export default function LoginForm() {
       const res = await fetch("/api/account/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, next }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -84,7 +86,7 @@ export default function LoginForm() {
         {submitting ? "Sending…" : "Send sign-in link"}
       </button>
       <p className="mt-4 text-center text-xs text-text-light">
-        <Link href="/#shop" className="underline hover:text-navy">Continue as guest</Link>
+        <Link href={next === "checkout" ? "/checkout" : "/#shop"} className="underline hover:text-navy">Continue as guest</Link>
       </p>
     </form>
   );

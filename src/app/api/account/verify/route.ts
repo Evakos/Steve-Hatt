@@ -38,7 +38,9 @@ export async function GET(request: Request) {
     }
   }
 
-  const response = NextResponse.redirect(new URL("/account", request.url));
+  // Back to the checkout if that is where they signed in from; otherwise their account page.
+  const destination = url.searchParams.get("next") === "checkout" ? "/checkout" : "/account";
+  const response = NextResponse.redirect(new URL(destination, request.url));
   response.cookies.set(CUSTOMER_COOKIE_NAME, createCustomerSessionCookieValue(customer.id), {
     httpOnly: true,
     secure: true,
