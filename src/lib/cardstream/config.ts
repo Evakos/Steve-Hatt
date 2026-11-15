@@ -2,8 +2,9 @@ import "server-only";
 import { getServerEnv } from "@/lib/env";
 import { isPaymentSandboxMode } from "@/lib/feature-flags";
 
-/** Pay360's test host (MITE). Live is CARDSTREAM_API_BASE_URL, which should be https://api.pay360.com. */
+/** Pay360's two hosts. Which one is used follows the admin "Test mode" tick box, nothing else. */
 export const PAY360_SANDBOX_URL = "https://api.mite.pay360.com";
+export const PAY360_LIVE_URL = "https://api.pay360.com";
 
 export interface PaymentConfig {
   sandbox: boolean;
@@ -36,14 +37,9 @@ export async function getPaymentConfig(): Promise<PaymentConfig> {
     return { sandbox: true, baseUrl: PAY360_SANDBOX_URL, username, password, installationId };
   }
 
-  if (/\bmite\./i.test(env.CARDSTREAM_API_BASE_URL)) {
-    throw new Error(
-      "Payment mode is Live, but CARDSTREAM_API_BASE_URL still points at Pay360's sandbox. Set it to https://api.pay360.com."
-    );
-  }
   return {
     sandbox: false,
-    baseUrl: env.CARDSTREAM_API_BASE_URL,
+    baseUrl: PAY360_LIVE_URL,
     username: env.CARDSTREAM_API_USERNAME,
     password: env.CARDSTREAM_API_PASSWORD,
     installationId: env.CARDSTREAM_INSTALLATION_ID,

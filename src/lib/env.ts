@@ -5,7 +5,8 @@ const serverEnvSchema = z.object({
   WOOCOMMERCE_URL: z.url(),
   WOOCOMMERCE_CONSUMER_KEY: z.string().min(1),
   WOOCOMMERCE_CONSUMER_SECRET: z.string().min(1),
-  CARDSTREAM_API_BASE_URL: z.url(),
+  // No longer used: the host follows the admin "Test mode" tick box (see lib/cardstream/config.ts).
+  CARDSTREAM_API_BASE_URL: z.url().optional(),
   CARDSTREAM_API_USERNAME: z.string().min(1),
   CARDSTREAM_API_PASSWORD: z.string().min(1),
   CARDSTREAM_INSTALLATION_ID: z.string().min(1),

@@ -103,8 +103,8 @@ export default async function AdminProductsPage() {
 
       <h2 className="mt-12 font-serif text-xl font-bold text-navy">Payment mode</h2>
       <p className="mt-2 text-sm leading-relaxed text-text-light">
-        Sandbox sends card payments to Pay360&apos;s test system, so no real money moves and only test cards work. Live
-        takes real payments. It starts on Sandbox, and takes effect immediately, no redeploy needed.
+        Tick Test mode to send card payments to Pay360&apos;s test system, so no real money moves and only test cards
+        work. Untick it to take real payments. It starts ticked, and takes effect immediately, no redeploy needed.
       </p>
       <PaymentModePanel initialSandbox={sandbox} mock={mock} />
     </div>
