@@ -241,7 +241,7 @@ export default function PaymentPanel({ amount, onToken, disabled }: Props) {
       <button
         type="submit"
         disabled={busy || disabled}
-        className="mt-4 flex w-full items-center justify-center gap-2 bg-lobster px-6 py-3 text-sm font-medium tracking-wide text-white transition-colors hover:bg-lobster/90 disabled:cursor-not-allowed disabled:opacity-60"
+        className="mt-4 flex w-full items-center justify-center gap-2 bg-[#2a7f4f] px-6 py-3 text-sm font-medium tracking-wide text-white transition-colors hover:bg-[#236b42] disabled:cursor-not-allowed disabled:opacity-60"
         style={{ borderRadius: "6px" }}
       >
         {busy ? (
