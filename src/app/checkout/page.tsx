@@ -824,7 +824,7 @@ export default function CheckoutPage() {
                   ) : (
                     <div className="mt-6">
                       <p className="mb-2 text-xs font-medium tracking-wide text-navy uppercase">
-                        {isChristmasOrder ? "Place Pre-Order" : "Place Order"} · £{(displayEstimatedTotal + deliveryCost).toFixed(2)} (estimated)
+                        {isChristmasOrder ? "Place Pre-Order" : "Place Order"} · £{(displayEstimatedTotal + deliveryCost).toFixed(2)}
                       </p>
                       <SandboxNotice />
                       <PaymentPanel buildRequest={buildCheckoutRequest} onResult={handleHostedResult} />

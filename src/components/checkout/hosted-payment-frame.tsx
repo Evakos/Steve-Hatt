@@ -13,6 +13,31 @@ interface Props {
 
 type Phase = { name: "idle" } | { name: "starting" } | { name: "frame"; url: string } | { name: "error"; message: string };
 
+const FIELD_LABELS: Record<string, string> = {
+  email: "email address",
+  firstName: "first name",
+  lastName: "last name",
+  phone: "phone number",
+  line1: "address line 1",
+  city: "town or city",
+  postcode: "postcode",
+};
+
+/** Turns the server's validation problems into "Please check: first name, phone number." for the customer. */
+function invalidDetailsMessage(issues: unknown): string {
+  const labels = new Set<string>();
+  if (Array.isArray(issues)) {
+    for (const issue of issues) {
+      const path = (issue as { path?: unknown })?.path;
+      const last = Array.isArray(path) ? path[path.length - 1] : undefined;
+      if (typeof last === "string" && FIELD_LABELS[last]) labels.add(FIELD_LABELS[last]);
+    }
+  }
+  return labels.size > 0
+    ? `Please check your details above: ${[...labels].join(", ")}.`
+    : "Please complete your details above, then try again.";
+}
+
 const primaryButton =
   "bg-lobster px-5 py-3 text-sm font-medium tracking-wide text-white transition-colors hover:bg-lobster/90 disabled:cursor-not-allowed disabled:opacity-50";
 
@@ -55,6 +80,10 @@ export default function HostedPaymentFrame({ buildRequest, onResult }: Props) {
       const data = await res.json().catch(() => ({}));
       if (res.ok && data.status === "session" && typeof data.redirectUrl === "string") {
         setPhase({ name: "frame", url: data.redirectUrl });
+        return;
+      }
+      if (res.status === 400 && data.status === "invalid") {
+        setPhase({ name: "error", message: invalidDetailsMessage(data.issues) });
         return;
       }
       const friendly = (data.status === "slot_unavailable" || data.status === "closed" || data.status === "minimum_not_met") && typeof data.reason === "string";

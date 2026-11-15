@@ -128,7 +128,7 @@ export default function CartPage() {
 
                   <div className="mt-4 space-y-3 text-base">
                     <div className="flex justify-between text-text-light">
-                      <span>Estimated subtotal</span>
+                      <span>Subtotal</span>
                       <span>£{estimatedTotal.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-text-light">
