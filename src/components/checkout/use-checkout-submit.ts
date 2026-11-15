@@ -89,5 +89,19 @@ export function useCheckoutSubmit() {
 
   const reset = useCallback(() => setState({ phase: "idle" }), []);
 
-  return { state, submit, confirmThreeDS, reset };
+  /** The card frame reported a finished, paid order (see HostedPaymentFrame). */
+  const completeHosted = useCallback((result: { orderId: number; orderNumber: string; estimatedTotal: number }) => {
+    setState({
+      phase: "authorised",
+      orderId: result.orderId,
+      orderNumber: result.orderNumber,
+      estimatedTotal: result.estimatedTotal,
+      paidInFull: true,
+    });
+  }, []);
+
+  /** The card frame reported a payment that didn't go through. */
+  const failHosted = useCallback((reason: string) => setState({ phase: "declined", reason }), []);
+
+  return { state, submit, confirmThreeDS, reset, completeHosted, failHosted };
 }

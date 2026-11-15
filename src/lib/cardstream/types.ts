@@ -106,6 +106,37 @@ export type RefundSaleResult =
   | { status: "refunded"; transactionId: string; amount: number }
   | { status: "failed"; reason: string };
 
+export interface HostedSessionInput {
+  orderRef: string;
+  /** Decimal amount in pounds, e.g. 42.5. */
+  amount: number;
+  currency: "GBP";
+  customerEmail: string;
+  customerName: string;
+  /** Shown on the Pay360 record, e.g. "Steve Hatt Fishmongers order 123". */
+  description: string;
+  /** Where Pay360 sends the customer once they have paid or failed. Always on our own domain. */
+  returnUrl: string;
+  /** Where Pay360 sends the customer if they cancel on the payment page. */
+  cancelUrl: string;
+}
+
+export type HostedSessionResult =
+  | { status: "created"; sessionId: string; redirectUrl: string }
+  | { status: "failed"; reason: string };
+
+export interface HostedOutcomeInput {
+  sessionId: string;
+  orderRef: string;
+  /** The query string Pay360 (or the mock page) put on the return URL. Untrusted: only the mock reads it. */
+  returnParams: Record<string, string>;
+}
+
+export type HostedOutcome =
+  | { status: "paid"; transactionId: string; amount: number }
+  | { status: "pending" }
+  | { status: "failed"; reason: string };
+
 export interface CardstreamClient {
   chargeSale(input: ChargeSaleInput): Promise<ChargeSaleResult>;
   authoriseSale(input: AuthoriseSaleInput): Promise<AuthoriseSaleResult>;
@@ -114,6 +145,13 @@ export interface CardstreamClient {
   refundSale(input: RefundSaleInput): Promise<RefundSaleResult>;
   verifyCard(input: VerifyCardInput): Promise<VerifyCardResult>;
   authoriseSaleWithToken(input: AuthoriseSaleWithTokenInput): Promise<AuthoriseSaleWithTokenResult>;
+  /**
+   * Starts a payment on Pay360's own page, which the checkout shows in a frame. The card number is
+   * typed into that frame and never reaches us. Returns the address to load in the frame.
+   */
+  createHostedSession(input: HostedSessionInput): Promise<HostedSessionResult>;
+  /** Asks Pay360, server to server, whether a hosted payment went through. Never trust the return URL alone. */
+  getHostedOutcome(input: HostedOutcomeInput): Promise<HostedOutcome>;
   /** Verifies an inbound webhook's signature over the exact raw request bytes. Must run before trusting any webhook payload. */
   verifyWebhookSignature(rawBody: string, signatureHeader: string | null): boolean;
 }

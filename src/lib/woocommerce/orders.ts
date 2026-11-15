@@ -37,10 +37,12 @@ export async function listPendingCaptureOrders(): Promise<WooOrder[]> {
  * this app for that meaning, so status alone is a reliable filter - same pattern as
  * listPendingCaptureOrders. */
 export async function listPendingPreOrders(): Promise<WooOrder[]> {
-  return wooFetch<WooOrder[]>("orders", {
+  const orders = await wooFetch<WooOrder[]>("orders", {
     searchParams: { status: "pending", per_page: 50, orderby: "date", order: "asc" },
     next: { revalidate: 0 },
   });
+  // Orders still waiting for the customer to pay on Pay360's card page are "pending" too, but aren't pre-orders.
+  return orders.filter((o) => !o.meta_data.some((m) => m.key === "_checkout_awaiting_payment" && m.value === "yes"));
 }
 
 /** Orders captured/charged but not yet marked complete - the second /admin/orders queue.

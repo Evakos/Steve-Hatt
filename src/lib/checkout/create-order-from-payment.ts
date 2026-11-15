@@ -21,7 +21,7 @@ export async function createOrderFromPayment(
   transactionId: string,
   orderRef: string,
   sessionCustomerId?: number | null,
-  opts?: { paid?: boolean }
+  opts?: { paid?: boolean; awaitingPayment?: boolean; requestJson?: string }
 ): Promise<{ order: WooOrder; repriced: RepricedOrder }> {
   const repriced = await repriceCheckoutRequest(checkout);
   const { customer, fulfilment } = checkout;
@@ -65,15 +65,20 @@ export async function createOrderFromPayment(
   }
 
   const paid = opts?.paid === true;
+  // Created before the customer pays on Pay360's page: pending, no transaction yet, and the whole
+  // checkout request kept on the order so it can be finished once Pay360 confirms (no database).
+  const awaiting = opts?.awaitingPayment === true;
 
   const orderInput: WooOrderInput = {
-    status: paid ? "processing" : "on-hold",
+    status: awaiting ? "pending" : paid ? "processing" : "on-hold",
     set_paid: paid,
-    transaction_id: transactionId,
+    transaction_id: awaiting ? undefined : transactionId,
     payment_method: "cardstream",
-    payment_method_title: paid
-      ? "Card (Cardstream/Pay360) - paid in full"
-      : "Card (Cardstream/Pay360) - authorised, pending capture",
+    payment_method_title: awaiting
+      ? "Card (Pay360) - awaiting payment"
+      : paid
+        ? "Card (Cardstream/Pay360) - paid in full"
+        : "Card (Cardstream/Pay360) - authorised, pending capture",
     customer_id: customerId,
     billing,
     shipping: fulfilment.type === "delivery" ? billing : undefined,
@@ -101,9 +106,15 @@ export async function createOrderFromPayment(
       { key: "_checkout_slot_date", value: fulfilment.slot.date },
       { key: "_checkout_is_christmas", value: String(fulfilment.slot.isChristmas) },
       { key: "_checkout_fulfilment_type", value: fulfilment.type },
-      { key: "_cardstream_transaction_id", value: transactionId },
+      ...(awaiting ? [] : [{ key: "_cardstream_transaction_id", value: transactionId }]),
       { key: "_cardstream_authorised_amount", value: repriced.total.toFixed(2) },
-      { key: "_cardstream_capture_status", value: paid ? "captured" : "pending" },
+      { key: "_cardstream_capture_status", value: awaiting ? "awaiting_payment" : paid ? "captured" : "pending" },
+      ...(awaiting
+        ? [
+            { key: "_checkout_awaiting_payment", value: "yes" },
+            { key: "_checkout_request", value: opts?.requestJson ?? "" },
+          ]
+        : []),
     ],
   };
 

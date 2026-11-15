@@ -20,6 +20,10 @@ export type {
   VerifyCardResult,
   AuthoriseSaleWithTokenInput,
   AuthoriseSaleWithTokenResult,
+  HostedSessionInput,
+  HostedSessionResult,
+  HostedOutcomeInput,
+  HostedOutcome,
 } from "./types";
 
 export function getCardstreamClient(): CardstreamClient {

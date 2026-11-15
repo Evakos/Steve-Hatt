@@ -41,6 +41,9 @@ export const checkoutRequestSchema = z.object({
 
 export type CheckoutRequest = z.infer<typeof checkoutRequestSchema>;
 
+/** The checkout details without a card token: the card is typed into Pay360's own frame, never sent through us. */
+export const sessionRequestSchema = checkoutRequestSchema.omit({ payment: true });
+
 // The confirm step happens after a 3DS redirect/challenge round-trip. This project has no
 // database (see master plan, Phase C3 "known gap"), so there's nowhere server-side to stash
 // the original checkout details between the initial /api/checkout call and this confirmation -
