@@ -40,6 +40,11 @@ import type { CheckoutRequest } from "@/lib/checkout/schema";
 type SlotType = "delivery" | "collection";
 type Step = "delivery" | "payment";
 
+// Where the delivery choices and contact details are kept while the customer leaves to add more to
+// the basket, so coming back to the checkout doesn't wipe their postcode and what they typed.
+// Per browser tab, and cleared once the order is placed.
+const CHECKOUT_PROGRESS_KEY = "steve-hatt-checkout-progress";
+
 interface Slot {
   date: Date;
   label: string;
@@ -69,7 +74,12 @@ export default function CheckoutPage() {
   // Cart is cleared exactly once, right when payment succeeds - not during render (that would
   // update CartProvider's state while this component renders, which React disallows).
   useEffect(() => {
-    if (submitState.phase === "authorised") clearCart();
+    if (submitState.phase === "authorised") {
+      clearCart();
+      try {
+        sessionStorage.removeItem(CHECKOUT_PROGRESS_KEY);
+      } catch {}
+    }
   }, [submitState.phase, clearCart]);
 
   const [contact, setContact] = useState<ContactAddressValue>(EMPTY_CONTACT_ADDRESS);
@@ -173,6 +183,40 @@ export default function CheckoutPage() {
 
   // Slot
   const [selectedSlot, setSelectedSlot] = useState<Slot | null>(null);
+
+  // Remember the order type, postcode check, delivery or collection choice and contact details when the
+  // customer leaves (for example to add more to reach the delivery minimum) and comes back. The slot
+  // itself isn't kept: they pick it again from the current availability.
+  const [progressRestored, setProgressRestored] = useState(false);
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem(CHECKOUT_PROGRESS_KEY);
+      if (raw) {
+        const saved = JSON.parse(raw) as {
+          orderType?: unknown;
+          postcode?: unknown;
+          postcodeStatus?: unknown;
+          slotType?: unknown;
+          contact?: unknown;
+        };
+        if (saved.orderType === "standard" || saved.orderType === "christmas") setOrderType(saved.orderType);
+        if (typeof saved.postcode === "string") setPostcode(saved.postcode);
+        if (saved.postcodeStatus === "valid" || saved.postcodeStatus === "out-of-zone") setPostcodeStatus(saved.postcodeStatus);
+        if (saved.slotType === "delivery" || saved.slotType === "collection") setSlotType(saved.slotType);
+        if (saved.contact && typeof saved.contact === "object") setContact(saved.contact as ContactAddressValue);
+      }
+    } catch {}
+    setProgressRestored(true);
+  }, []);
+  useEffect(() => {
+    if (!progressRestored || submitState.phase === "authorised") return;
+    try {
+      sessionStorage.setItem(
+        CHECKOUT_PROGRESS_KEY,
+        JSON.stringify({ orderType, postcode, postcodeStatus, slotType, contact })
+      );
+    } catch {}
+  }, [progressRestored, submitState.phase, orderType, postcode, postcodeStatus, slotType, contact]);
 
   function handlePostcodeCheck() {
     const normalised = normalisePostcode(postcode);
