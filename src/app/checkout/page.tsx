@@ -32,13 +32,20 @@ import PaymentPanel from "@/components/checkout/payment-panel";
 import SandboxNotice from "@/components/checkout/sandbox-notice";
 import type { HostedResult } from "@/lib/checkout/hosted-result";
 import { deliveryMinimumMessage, deliveryShortfall } from "@/lib/checkout/delivery-minimum";
+import { readyToPay } from "@/components/checkout/hosted-payment-frame";
 import ThreeDSChallenge from "@/components/checkout/three-ds-challenge";
 import { useCheckoutSubmit } from "@/components/checkout/use-checkout-submit";
 import { isChristmasFulfilmentDate, hasUpcomingChristmasDates } from "@/lib/christmas-dates";
 import type { CheckoutRequest } from "@/lib/checkout/schema";
 
 type SlotType = "delivery" | "collection";
-type Step = "delivery" | "payment";
+type Step = "delivery" | "address" | "payment";
+
+const STEPS: { id: Step; label: string }[] = [
+  { id: "delivery", label: "Delivery" },
+  { id: "address", label: "Address" },
+  { id: "payment", label: "Payment" },
+];
 
 // Where the delivery choices and contact details are kept while the customer leaves to add more to
 // the basket, so coming back to the checkout doesn't wipe their postcode and what they typed.
@@ -261,6 +268,8 @@ export default function CheckoutPage() {
   // once delivery is the chosen option, so collection orders are never held up by it.
   const shortfall = deliveryShortfall(displayEstimatedTotal, slotType ?? "collection");
   const canProceedToPayment = !!selectedSlot && shortfall === 0;
+  // The address step is done once the contact details (and, for delivery, the address) are complete.
+  const detailsComplete = readyToPay(buildCheckoutRequest());
   const deliveryCost = slotType === "delivery" ? 5 : 0;
 
   function buildCheckoutRequest(): CheckoutRequest | null {
@@ -470,30 +479,32 @@ export default function CheckoutPage() {
 
       <section className="flex-1 bg-cream">
         <div className="mx-auto max-w-6xl px-6 py-12">
-          {/* Step indicator */}
+          {/* Step indicator: Delivery, Address, Payment. Finished steps can be clicked to go back. */}
           <div className="mb-8 flex items-center gap-3">
-            <button
-              onClick={() => step === "payment" && setStep("delivery")}
-              className={`flex items-center gap-2 text-sm font-medium ${step === "delivery" ? "text-navy" : "text-text-light hover:text-navy"}`}
-            >
-              <span
-                className={`flex h-6 w-6 items-center justify-center text-xs font-medium ${step === "payment" ? "bg-teal text-white" : "bg-navy text-white"}`}
-                style={{ borderRadius: "50%" }}
-              >
-                {step === "payment" ? <Check className="h-3.5 w-3.5" /> : "1"}
-              </span>
-              Delivery
-            </button>
-            <div className="h-px w-8 bg-border" />
-            <span className={`flex items-center gap-2 text-sm font-medium ${step === "payment" ? "text-navy" : "text-text-light"}`}>
-              <span
-                className={`flex h-6 w-6 items-center justify-center text-xs font-medium ${step === "payment" ? "bg-navy text-white" : "bg-border text-text-light"}`}
-                style={{ borderRadius: "50%" }}
-              >
-                2
-              </span>
-              Payment
-            </span>
+            {STEPS.map((s, i) => {
+              const currentIndex = STEPS.findIndex((x) => x.id === step);
+              const done = i < currentIndex;
+              const current = i === currentIndex;
+              return (
+                <div key={s.id} className="flex items-center gap-3">
+                  {i > 0 && <div className="h-px w-8 bg-border" />}
+                  <button
+                    type="button"
+                    disabled={!done}
+                    onClick={() => done && setStep(s.id)}
+                    className={`flex items-center gap-2 text-sm font-medium ${current ? "text-navy" : done ? "text-text-light hover:text-navy" : "cursor-default text-text-light"}`}
+                  >
+                    <span
+                      className={`flex h-6 w-6 items-center justify-center text-xs font-medium ${done ? "bg-teal text-white" : current ? "bg-navy text-white" : "bg-border text-text-light"}`}
+                      style={{ borderRadius: "50%" }}
+                    >
+                      {done ? <Check className="h-3.5 w-3.5" /> : i + 1}
+                    </span>
+                    {s.label}
+                  </button>
+                </div>
+              );
+            })}
           </div>
 
           <div className="grid gap-8 lg:grid-cols-3">
@@ -758,15 +769,15 @@ export default function CheckoutPage() {
 
                   {/* Continue to payment */}
                   <button
-                    onClick={() => canProceedToPayment && setStep("payment")}
+                    onClick={() => canProceedToPayment && setStep("address")}
                     disabled={!canProceedToPayment}
                     className={`mt-8 w-full px-6 py-3.5 text-sm font-medium tracking-wide text-white transition-colors md:w-auto ${canProceedToPayment ? "bg-lobster hover:bg-lobster/90" : "cursor-not-allowed bg-gray-300"}`}
                     style={{ borderRadius: "6px" }}
                   >
-                    Continue to Payment
+                    Continue to Address
                   </button>
                 </>
-              ) : (
+              ) : step === "address" ? (
                 <>
                   <button
                     onClick={() => setStep("delivery")}
@@ -788,9 +799,11 @@ export default function CheckoutPage() {
                     </div>
                   )}
 
-                  <h2 className="font-serif text-2xl font-bold text-navy">Your details & payment</h2>
+                  <h2 className="font-serif text-2xl font-bold text-navy">Your details</h2>
                   <p className="mt-1 text-sm text-text-light">
-                    Enter your details to complete your order.
+                    {slotType === "delivery"
+                      ? "Where should we deliver, and how can we reach you?"
+                      : "How can we reach you about your order?"}
                   </p>
                   {!isSignedIn && (
                     <div
@@ -813,6 +826,61 @@ export default function CheckoutPage() {
 
                   <div className="mt-6 border border-border bg-card p-6" style={{ borderRadius: "5px" }}>
                     <ContactAddressForm value={contact} onChange={setContact} showAddress={slotType === "delivery"} />
+                  </div>
+
+                  <button
+                    onClick={() => detailsComplete && setStep("payment")}
+                    disabled={!detailsComplete}
+                    className={`mt-8 w-full px-6 py-3.5 text-sm font-medium tracking-wide text-white transition-colors md:w-auto ${detailsComplete ? "bg-lobster hover:bg-lobster/90" : "cursor-not-allowed bg-gray-300"}`}
+                    style={{ borderRadius: "6px" }}
+                  >
+                    Continue to Payment
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={() => setStep("address")}
+                    className="mb-4 flex items-center gap-1 text-sm text-text-light transition-colors hover:text-navy"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    Change details
+                  </button>
+
+                  {selectedSlot && (
+                    <div className="mb-6 flex items-center gap-3 border border-border bg-card px-4 py-3" style={{ borderRadius: "5px" }}>
+                      {selectedSlot.type === "delivery" ? <Truck className="h-4 w-4 text-teal" /> : <Store className="h-4 w-4 text-teal" />}
+                      <span className="text-sm text-navy">{selectedSlot.label}</span>
+                      {isChristmasOrder && (
+                        <span className="bg-[#1a3a2a] px-1.5 py-0.5 text-[10px] font-medium text-white" style={{ borderRadius: "2px" }}>
+                          Christmas Pre-Order
+                        </span>
+                      )}
+                    </div>
+                  )}
+
+                  <div
+                    className="mb-6 flex items-start justify-between gap-3 border border-border bg-card px-4 py-3 text-sm"
+                    style={{ borderRadius: "5px" }}
+                  >
+                    <div>
+                      <p className="font-medium text-navy">
+                        {contact.firstName} {contact.lastName}
+                      </p>
+                      <p className="text-text-light">
+                        {contact.email} · {contact.phone}
+                      </p>
+                      {slotType === "delivery" && (
+                        <p className="text-text-light">
+                          {[contact.address.line1, contact.address.line2, contact.address.city, contact.address.postcode]
+                            .filter(Boolean)
+                            .join(", ")}
+                        </p>
+                      )}
+                    </div>
+                    <button type="button" onClick={() => setStep("address")} className="shrink-0 text-xs text-navy underline">
+                      Edit
+                    </button>
                   </div>
 
                   {submitState.phase === "requires_action" ? (

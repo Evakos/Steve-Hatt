@@ -45,7 +45,7 @@ function invalidDetailsMessage(issues: unknown): string {
 }
 
 /** Complete enough to open the card form: valid, a real-looking phone number, and an address for delivery. */
-function readyToPay(request: Details | null): request is Details {
+export function readyToPay(request: Details | null): request is Details {
   if (!request || !sessionRequestSchema.safeParse(request).success) return false;
   if (request.customer.phone.replace(/\D/g, "").length < 10) return false;
   if (request.fulfilment.type === "delivery") {
