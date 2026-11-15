@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
 import { getCardstreamClient } from "@/lib/cardstream/client";
 import { createOrderFromPayment } from "@/lib/checkout/create-order-from-payment";
 import { repriceCheckoutRequest } from "@/lib/checkout/reprice";
@@ -9,7 +10,27 @@ import { getCustomerSession } from "@/lib/customer-auth";
 import { areOnlineOrdersClosed, getDisabledSlots, isChristmasShopActive } from "@/lib/feature-flags";
 import { ORDERS_CLOSED_REASON } from "@/lib/ordering-window";
 import { isSlotDisabled, slotWindowFromLabel } from "@/lib/slots";
-import { updateWooOrder } from "@/lib/woocommerce/orders";
+import { getWooOrder, updateWooOrder } from "@/lib/woocommerce/orders";
+
+// The card form reopens when the customer changes their details; it names the earlier unpaid order so
+// that one can be cancelled instead of left behind.
+const bodySchema = sessionRequestSchema.extend({
+  replaces: z.object({ orderId: z.number().int().positive(), orderRef: z.string().min(1) }).optional(),
+});
+
+/** Cancels an unpaid order from an earlier attempt, but only if the reference matches and it is still awaiting payment. */
+async function cancelReplacedOrder(replaces: { orderId: number; orderRef: string }) {
+  try {
+    const order = await getWooOrder(replaces.orderId);
+    const ref = order.meta_data.find((m) => m.key === "_checkout_order_ref")?.value;
+    const awaiting = order.meta_data.find((m) => m.key === "_checkout_awaiting_payment")?.value;
+    if (ref === replaces.orderRef && awaiting === "yes") {
+      await updateWooOrder(order.id, { status: "cancelled", meta_data: [{ key: "_checkout_awaiting_payment", value: "no" }] });
+    }
+  } catch {
+    // Best effort: a leftover unpaid order is harmless.
+  }
+}
 
 /**
  * Starts a card payment. The card is typed into Pay360's own payment page, shown in a frame on our
@@ -24,11 +45,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ status: "closed", reason: ORDERS_CLOSED_REASON }, { status: 403 });
   }
   const json = await request.json().catch(() => null);
-  const parsed = sessionRequestSchema.safeParse(json);
+  const parsed = bodySchema.safeParse(json);
   if (!parsed.success) {
     return NextResponse.json({ status: "invalid", issues: parsed.error.issues }, { status: 400 });
   }
-  const checkout: CheckoutRequest = { ...parsed.data, payment: { token: "hosted" } };
+  const { replaces, ...details } = parsed.data;
+  const checkout: CheckoutRequest = { ...details, payment: { token: "hosted" } };
 
   // Same rules as the older card route: the booked date decides Christmas, the slot must be
   // bookable and switched on, and nothing opted out of Christmas can be on a Christmas order.
@@ -59,6 +81,7 @@ export async function POST(request: Request) {
 
   const orderRef = crypto.randomUUID();
   const customerId = await getCustomerSession();
+  if (replaces) await cancelReplacedOrder(replaces);
   const { order } = await createOrderFromPayment(checkout, "", orderRef, customerId, {
     awaitingPayment: true,
     requestJson: JSON.stringify(checkout),
@@ -85,7 +108,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ status: "error" }, { status: 502 });
     }
     await updateWooOrder(order.id, { meta_data: [{ key: "_pay360_session_id", value: session.sessionId }] });
-    return NextResponse.json({ status: "session", redirectUrl: session.redirectUrl, orderId: order.id });
+    return NextResponse.json({ status: "session", redirectUrl: session.redirectUrl, orderId: order.id, orderRef });
   } catch (err) {
     console.error(`[pay360] couldn't start a payment for order ${order.id}`, err);
     await abandon();

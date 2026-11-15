@@ -823,11 +823,22 @@ export default function CheckoutPage() {
                     </div>
                   ) : (
                     <div className="mt-6">
-                      <p className="mb-2 text-xs font-medium tracking-wide text-navy uppercase">
-                        {isChristmasOrder ? "Place Pre-Order" : "Place Order"} · £{(displayEstimatedTotal + deliveryCost).toFixed(2)}
+                      <div className="flex items-end justify-between gap-3 border-b border-border pb-3">
+                        <h3 className="font-serif text-xl font-bold text-navy">Payment</h3>
+                        <span className="flex items-center gap-1.5 text-xs text-text-light">
+                          <CreditCard className="h-3.5 w-3.5 text-teal" />
+                          Secure card payment
+                        </span>
+                      </div>
+                      <p className="mt-3 text-sm text-text-light">
+                        {isChristmasOrder ? "Pre-order total" : "Order total"}{" "}
+                        <strong className="text-navy">£{(displayEstimatedTotal + deliveryCost).toFixed(2)}</strong>, paid in
+                        full by card.
                       </p>
                       <SandboxNotice />
-                      <PaymentPanel buildRequest={buildCheckoutRequest} onResult={handleHostedResult} />
+                      <div className="mt-4">
+                        <PaymentPanel buildRequest={buildCheckoutRequest} onResult={handleHostedResult} />
+                      </div>
                       {!isSignedIn && (
                         <p className="mt-2 text-xs text-text-light">
                           We&apos;ll save your details so you can track this order and sign in next time, no
