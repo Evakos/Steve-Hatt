@@ -36,6 +36,11 @@ export default function Preloader() {
     return () => clearTimeout(timer);
   }, [hidden]);
 
+  // Not inside the card frame on the checkout: it would cover the payment form.
+  useEffect(() => {
+    if (window.self !== window.top) setMounted(false);
+  }, []);
+
   if (!mounted) return null;
 
   return (

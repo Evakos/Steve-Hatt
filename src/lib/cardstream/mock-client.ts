@@ -10,6 +10,8 @@ import type {
   VerifyCardInput,
   AuthoriseSaleWithTokenInput,
   CardstreamClient,
+  HostedOutcomeInput,
+  HostedSessionInput,
 } from "./types";
 
 /**
@@ -76,6 +78,27 @@ export const mockCardstreamClient: CardstreamClient = {
       return { status: "declined", reason: "Card declined on scheduled re-authorisation (mock)" };
     }
     return { status: "authorised", transactionId: `mock_${Date.now()}` };
+  },
+
+  async createHostedSession(input: HostedSessionInput) {
+    // The "payment page" is our own /mock-pay360 page, which links back to the return URL.
+    const back = new URL(input.returnUrl);
+    const framePath = `/mock-pay360?return=${encodeURIComponent(back.pathname + back.search)}&amount=${input.amount.toFixed(2)}`;
+    return {
+      status: "created" as const,
+      sessionId: `mock_session_${input.orderRef}`,
+      redirectUrl: `${back.origin}${framePath}`,
+    };
+  },
+
+  async getHostedOutcome(input: HostedOutcomeInput) {
+    // The mock has nothing to ask, so it believes the outcome the mock page put on the return URL.
+    const { outcome, amount } = input.returnParams;
+    if (outcome === "paid") {
+      return { status: "paid" as const, transactionId: `mock_${input.orderRef}`, amount: Number(amount) || 0 };
+    }
+    if (outcome === "declined") return { status: "failed" as const, reason: "Card declined (mock)" };
+    return { status: "pending" as const };
   },
 
   verifyWebhookSignature(rawBody: string, signatureHeader: string | null) {

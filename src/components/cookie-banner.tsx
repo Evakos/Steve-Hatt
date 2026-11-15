@@ -10,7 +10,8 @@ export default function CookieBanner() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    if (!localStorage.getItem(STORAGE_KEY)) setVisible(true);
+    // Never inside the card frame on the checkout.
+    if (window.self === window.top && !localStorage.getItem(STORAGE_KEY)) setVisible(true);
   }, []);
 
   function dismiss() {

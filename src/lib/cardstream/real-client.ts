@@ -10,6 +10,8 @@ import type {
   RefundSaleInput,
   VerifyCardInput,
   AuthoriseSaleWithTokenInput,
+  HostedOutcomeInput,
+  HostedSessionInput,
 } from "./types";
 
 /**
@@ -108,6 +110,24 @@ export const realCardstreamClient: CardstreamClient = {
       "Cardstream merchant-token re-authorisation not implemented - requires Pay360 developer portal access " +
         "(merchant-initiated classification confirmed via docs.pay360.com/stored-credentials-framework). " +
         "See plan Phase D. Set CARDSTREAM_MOCK=true for dev."
+    );
+  },
+
+  async createHostedSession(input: HostedSessionInput) {
+    void input;
+    throw new Error(
+      "Pay360 hosted payment page not implemented yet. It is POST {host}/hosted/rest/sessions/{installationId}/payments " +
+        "(with session.returnUrl and session.cancelUrl; Pay360 replies with a sessionId and a redirectUrl), but the " +
+        "request body isn't confirmed: get Pay360's PaySuite Payment Page 'Take a payment' doc or test against the " +
+        "MITE sandbox before writing it. Use getPaymentConfig() for the host and login. Set CARDSTREAM_MOCK=true for dev."
+    );
+  },
+
+  async getHostedOutcome(input: HostedOutcomeInput) {
+    void input;
+    throw new Error(
+      "Pay360 hosted payment lookup not implemented yet: needs the 'Retrieve a transaction' / session status call " +
+        "confirmed against Pay360's docs or the MITE sandbox. Set CARDSTREAM_MOCK=true for dev."
     );
   },
 
