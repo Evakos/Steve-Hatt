@@ -49,22 +49,9 @@ export default async function ProductPage({
       <AnnouncementBanner />
       <Header />
 
-      {/* Breadcrumb */}
-      <div className="bg-cream">
-        <div className="mx-auto max-w-6xl px-6 pt-4 pb-3">
-          <nav className="text-sm text-text-light">
-            <Link href="/" className="hover:text-navy">Home</Link>
-            <span className="mx-2">/</span>
-            <Link href="/#shop" className="hover:text-navy">Shop</Link>
-            <span className="mx-2">/</span>
-            <span className="text-navy">{product.name}</span>
-          </nav>
-        </div>
-      </div>
-
       {/* Product detail */}
       <section className="bg-cream">
-        <div className="mx-auto max-w-6xl px-6 pt-0 pb-12">
+        <div className="mx-auto max-w-6xl px-6 pt-8 pb-12">
           <div className="grid gap-8 md:grid-cols-[1fr_1fr]">
             {/* Image */}
             <div className="relative aspect-5/4 overflow-hidden bg-white" style={{ borderRadius: '5px' }}>
@@ -76,6 +63,14 @@ export default async function ProductPage({
 
             {/* Details */}
             <div>
+              {/* Breadcrumb, directly above the content */}
+              <nav className="mb-4 text-sm text-text-light">
+                <Link href="/" className="hover:text-navy">Home</Link>
+                <span className="mx-2">/</span>
+                <Link href="/#shop" className="hover:text-navy">Shop</Link>
+                <span className="mx-2">/</span>
+                <span className="text-navy">{product.name}</span>
+              </nav>
               <span className="text-xs tracking-widest text-text-light uppercase">{product.category}</span>
               <h1 className="mt-1.5 font-serif text-4xl font-bold text-navy">{product.name}</h1>
 
