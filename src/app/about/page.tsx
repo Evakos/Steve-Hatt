@@ -107,10 +107,19 @@ export default function AboutPage() {
             // The lead card is split, photo beside the text, so neither is stretched across the full
             // width (a very wide, short photo and a line of text over 1000px long read badly).
             const renderFeature = (card: (typeof cards)[number]) => (
-              <div className="grid overflow-hidden bg-card shadow-sm md:grid-cols-[1.15fr_1fr]" style={{ borderRadius: "8px" }}>
-                <div className="relative h-64 md:h-auto md:min-h-[26rem]">
+              <div className="grid overflow-hidden bg-card shadow-sm md:grid-cols-[0.8fr_1fr]" style={{ borderRadius: "8px" }}>
+                <div className="relative h-64 overflow-hidden md:h-auto md:min-h-[22rem]">
+                  {/* Anchored to the right and nudged larger, so the left edge of the shop-front photo
+                      (the car parked down the passage) falls outside the frame. */}
                   {"image" in card && card.image && (
-                    <Image src={card.image} alt={card.alt ?? ""} fill sizes="(max-width: 768px) 100vw, 55vw" className="object-cover" />
+                    <Image
+                      src={card.image}
+                      alt={card.alt ?? ""}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 45vw"
+                      className="object-cover object-right"
+                      style={{ transform: "scale(1.14)", transformOrigin: "right center" }}
+                    />
                   )}
                 </div>
                 <div className="flex flex-col justify-center p-8 md:p-12">
