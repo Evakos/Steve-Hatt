@@ -289,12 +289,12 @@ export default function AdminGuidePage() {
           </p>
           <p>
             <strong className="text-navy">Payment mode.</strong> On the <strong className="text-navy">Products</strong>{" "}
-            page, under <strong className="text-navy">Payment mode</strong>, tick{" "}
-            <strong className="text-navy">Test mode</strong> (Pay360&apos;s test system, test cards only, no real money)
-            or untick it for <strong className="text-navy">Live</strong> (real cards, real money), then{" "}
-            <strong className="text-navy">Save changes</strong>. It starts ticked, so nothing takes real money until you
-            untick it and confirm. While Test mode is on, checkout shows a &quot;Sandbox mode&quot; notice above the card
-            form.
+            page, under <strong className="text-navy">Payment mode</strong>, the{" "}
+            <strong className="text-navy">Live payments</strong> box is off for sandbox (Pay360&apos;s test system, test
+            cards only, no real money) and on for live (real cards, real money). Press{" "}
+            <strong className="text-navy">Save changes</strong> after changing it. It starts off, so nothing takes real
+            money until you tick it and confirm. While it is off, checkout shows a &quot;Sandbox mode&quot; notice above
+            the card form.
           </p>
           <p>
             Nothing is held any more, so the <strong className="text-navy">Awaiting capture</strong> section is switched
