@@ -30,7 +30,6 @@ import { SLOT_WINDOWS, getAvailableDates, isSlotDisabled, toSlotInstant } from "
 import ContactAddressForm, { EMPTY_CONTACT_ADDRESS, type ContactAddressValue } from "@/components/checkout/contact-address-form";
 import PaymentPanel from "@/components/checkout/payment-panel";
 import SandboxNotice from "@/components/checkout/sandbox-notice";
-import type { HostedResult } from "@/lib/checkout/hosted-result";
 import { deliveryMinimumMessage, deliveryShortfall } from "@/lib/checkout/delivery-minimum";
 import { readyToPay } from "@/components/checkout/hosted-payment-frame";
 import ThreeDSChallenge from "@/components/checkout/three-ds-challenge";
@@ -69,7 +68,7 @@ function formatDate(date: Date): string {
 
 export default function CheckoutPage() {
   const { items, clearCart } = useCart();
-  const { state: submitState, submit, confirmThreeDS, reset: resetSubmit, completeHosted, failHosted } = useCheckoutSubmit();
+  const { state: submitState, submit, confirmThreeDS, reset: resetSubmit } = useCheckoutSubmit();
 
   // Snapshot the slot/christmas-ness at the moment of payment, so the confirmation screen can
   // still show them after clearCart() empties `items`.
@@ -314,16 +313,6 @@ export default function CheckoutPage() {
     pendingTokenRef.current = token;
     setConfirmedOrder({ itemCount: items.length, slot: selectedSlot, isChristmas: isChristmasOrder });
     submit({ ...request, payment: { token } });
-  }
-
-  // The card frame (Pay360's page, shown inside the checkout) reports back here when the customer is done.
-  function handleHostedResult(result: HostedResult) {
-    if (result.status === "paid") {
-      if (selectedSlot) setConfirmedOrder({ itemCount: items.length, slot: selectedSlot, isChristmas: isChristmasOrder });
-      completeHosted(result);
-    } else {
-      failHosted(result.reason);
-    }
   }
 
   function handleThreeDSComplete(threeDSResponse: unknown) {
@@ -909,14 +898,9 @@ export default function CheckoutPage() {
                           Secure card payment
                         </span>
                       </div>
-                      <p className="mt-3 text-sm text-text-light">
-                        {isChristmasOrder ? "Pre-order total" : "Order total"}{" "}
-                        <strong className="text-navy">£{(displayEstimatedTotal + deliveryCost).toFixed(2)}</strong>, paid in
-                        full by card.
-                      </p>
                       <SandboxNotice />
                       <div className="mt-4">
-                        <PaymentPanel buildRequest={buildCheckoutRequest} onResult={handleHostedResult} />
+                        <PaymentPanel amount={displayEstimatedTotal + deliveryCost} onToken={handleToken} disabled={!detailsComplete} />
                       </div>
                       {!isSignedIn && (
                         <p className="mt-2 text-xs text-text-light">
