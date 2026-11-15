@@ -8,6 +8,7 @@ import Header from "@/components/header";
 import AnnouncementBanner from "@/components/announcement-banner";
 import AddToCart from "@/components/add-to-cart";
 import ChristmasProductNote from "@/components/christmas-product-note";
+import { buildProductJsonLd, jsonLdString } from "@/lib/seo/product-schema";
 
 export async function generateStaticParams() {
   const products = await getAllProducts();
@@ -48,6 +49,9 @@ export default async function ProductPage({
     <main className="flex flex-1 flex-col">
       <AnnouncementBanner />
       <Header />
+
+      {/* Structured data so search engines can show this product's price and availability */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(buildProductJsonLd(product)) }} />
 
       {/* Product detail */}
       <section className="bg-cream">
