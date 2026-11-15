@@ -17,7 +17,7 @@ export default function AboutPage() {
       <Header />
 
       <InnerPageHero
-        image="/hero.svg"
+        minHeight={300}
         eyebrow="About"
         title="Setting Standards Since 1895"
         subtitle="Serving the Local Community"
