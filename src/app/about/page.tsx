@@ -23,9 +23,9 @@ export default function AboutPage() {
         subtitle="Serving the Local Community"
       />
 
-      {/* Story cards - pulled up over the hero, like the "About Alor" reference layout */}
+      {/* Story cards - sit below the hero, not over it */}
       <section className="bg-white">
-        <div className="relative z-10 mx-auto -mt-24 max-w-6xl px-6 pb-16 md:-mt-32">
+        <div className="mx-auto max-w-6xl px-6 pt-12 pb-16 md:pt-16">
           {(() => {
             const cards = [
               {
