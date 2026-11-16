@@ -37,7 +37,7 @@ export const blogPosts: BlogPost[] = [
       "The Christmas starter everyone expects, done properly: sweet king prawns, a proper Marie Rose sauce and a ribbon of smoked salmon, ready in 20 minutes.",
     date: "2026-11-16",
     readTime: "6 min read",
-    coverImage: "/shop/prawns.jpg",
+    coverImage: "/christmas-prawn-cocktail.jpg",
     intro: [
       "Some Christmas traditions are worth keeping, and the prawn cocktail is one of them. Made with good prawns and a sauce you whisk up yourself, it is a long way from the dinner party cliché, and it can be mostly done the day before, so you are not stuck in the kitchen when the guests arrive.",
       "We have used our king prawns, a little smoked salmon for a touch of luxury, and finished each glass with a spoonful of trout roe. Everything is on the counter at 88 Essex Road, or you can order it here for Christmas collection or delivery.",
