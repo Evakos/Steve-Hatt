@@ -21,6 +21,8 @@ export interface WooAttribute {
 }
 
 export interface WooProductInput {
+  /** Only sent to turn a product into one with sizes. */
+  type?: "simple" | "variable";
   name?: string;
   /** The page address (the last part of the product's URL). */
   slug?: string;
@@ -59,6 +61,7 @@ export interface WooProduct {
 
 export interface WooProductVariation {
   id: number;
+  status?: string;
   price: string;
   regular_price: string;
   attributes: { name: string; option: string }[];
@@ -67,6 +70,8 @@ export interface WooProductVariation {
 
 export interface WooProductVariationInput {
   regular_price?: string;
+  /** "private" hides the size from the shop without deleting it. */
+  status?: "publish" | "private";
   /** Renames the size: the attribute's name stays, only its option (the label customers see) changes. */
   attributes?: { name: string; option: string }[];
 }

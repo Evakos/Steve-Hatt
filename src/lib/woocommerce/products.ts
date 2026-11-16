@@ -9,10 +9,12 @@ export const PRODUCTS_TAG = "woo-products";
 
 async function fetchVariationsIfVariable(wooProduct: WooProduct): Promise<WooProductVariation[]> {
   if (wooProduct.type !== "variable") return [];
-  return wooFetch<WooProductVariation[]>(`products/${wooProduct.id}/variations`, {
+  const variations = await wooFetch<WooProductVariation[]>(`products/${wooProduct.id}/variations`, {
     searchParams: { per_page: 100 },
     next: { revalidate: 120, tags: [PRODUCTS_TAG] },
   });
+  // A size set to hidden in Airtable stays on the shop's books but isn't offered to customers.
+  return variations.filter((v) => v.status !== "private");
 }
 
 export async function getAllProducts(): Promise<Product[]> {
@@ -63,6 +65,14 @@ export async function listWooCategories(): Promise<WooCategory[]> {
 
 export async function listWooVariations(parentProductId: number): Promise<WooProductVariation[]> {
   return wooFetch<WooProductVariation[]>(`products/${parentProductId}/variations`, { searchParams: { per_page: 100 } });
+}
+
+/** Adds a new size to a product that already has sizes. */
+export async function createWooVariation(
+  parentProductId: number,
+  input: WooProductVariationInput & { attributes: { name: string; option: string }[] }
+): Promise<WooProductVariation> {
+  return wooFetch<WooProductVariation>(`products/${parentProductId}/variations`, { method: "POST", body: input });
 }
 
 export async function getWooProduct(id: number): Promise<WooProduct> {

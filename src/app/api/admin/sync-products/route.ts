@@ -5,6 +5,7 @@ import { readProductRows } from "@/lib/product-source";
 import { parseAttachmentCell } from "@/lib/airtable";
 import {
   createWooProduct,
+  createWooVariation,
   getWooProduct,
   listAllWooProducts,
   listWooCategories,
@@ -131,6 +132,29 @@ export async function POST(request: Request) {
 
   const results: SyncResult[] = [];
 
+  // The Variations table is read first: a new product that has sizes needs no price of its own, and
+  // is only published once its sizes are in.
+  let variationRows: Record<string, string>[] = [];
+  let variationReadError: string | undefined;
+  try {
+    variationRows = await readProductRows("Variations");
+  } catch (err) {
+    variationReadError = err instanceof Error ? err.message : "Failed to read the Variations tab";
+  }
+  const recordsWithSizes = new Set(
+    variationRows.flatMap((r) => (r.Product ?? "").split(",").map((id) => id.trim()).filter(Boolean))
+  );
+  const productTitleByRecord = new Map(rows.map((r) => [r.__recordId, r.title ?? ""]));
+  const wooIdByRecord = new Map<string, number>();
+  const pendingPublish = new Map<number, "draft" | "pending" | "private" | "publish">();
+
+  async function goLive(parentProductId: number) {
+    const finalStatus = pendingPublish.get(parentProductId);
+    if (!finalStatus) return;
+    pendingPublish.delete(parentProductId);
+    await updateWooProduct(parentProductId, { status: finalStatus });
+  }
+
   for (const row of rows) {
     const title = row.title ?? "";
     let productId = Number(row.product_id);
@@ -154,6 +178,9 @@ export async function POST(request: Request) {
         continue;
       }
     }
+
+    if (row.__recordId && Number.isFinite(productId) && productId > 0) wooIdByRecord.set(row.__recordId, productId);
+    const hasSizes = !!row.__recordId && recordsWithSizes.has(row.__recordId);
 
     let preparation: string[] | undefined;
     if (row.preparation) {
@@ -423,7 +450,7 @@ export async function POST(request: Request) {
     // break its pages, and one without a category or price can't be browsed or bought.
     if (isNew) {
       const missing: string[] = [];
-      if (!regularPrice && !pricePerKg) missing.push("a price");
+      if (!regularPrice && !pricePerKg && !hasSizes) missing.push("a price");
       if (!categoryIds) missing.push("a category");
       if (!newImages) missing.push("a photo");
       if (missing.length > 0) {
@@ -457,7 +484,10 @@ export async function POST(request: Request) {
         productId = created.id;
         existingProducts.set(created.id, created);
         productBySlug.set(created.slug, created);
-        if (row.__recordId) productByRecord.set(row.__recordId, created);
+        if (row.__recordId) {
+          productByRecord.set(row.__recordId, created);
+          wooIdByRecord.set(row.__recordId, created.id);
+        }
       } else {
         await updateWooProduct(productId, {
           name: row.title || undefined,
@@ -485,13 +515,20 @@ export async function POST(request: Request) {
           continue;
         }
       }
-      if (isNew) await updateWooProduct(productId, { status: finalStatus });
+      if (isNew && hasSizes) pendingPublish.set(productId, finalStatus);
+      else if (isNew) await updateWooProduct(productId, { status: finalStatus });
       results.push({
         kind: "product",
         productId,
         title,
         status: isNew ? "created" : "updated",
-        message: isNew ? (finalStatus === "publish" ? "Added to the shop" : `Added to the shop as ${finalStatus}`) : undefined,
+        message: isNew
+          ? hasSizes
+            ? "Added as a draft, goes live once its sizes are added"
+            : finalStatus === "publish"
+              ? "Added to the shop"
+              : `Added to the shop as ${finalStatus}`
+          : undefined,
       });
     } catch (err) {
       results.push({ kind: "product", productId, title, status: "error", message: err instanceof Error ? err.message : "Update failed" });
@@ -501,17 +538,8 @@ export async function POST(request: Request) {
   // Weight/size-tiered products (variable products, e.g. Salmon Whole, Turbot) have no single
   // price of their own - each size is a separate WooCommerce variation, priced independently.
   // The "Variations" tab lets staff edit those prices the same way as the main Products tab.
-  let variationRows: Record<string, string>[] = [];
-  try {
-    variationRows = await readProductRows("Variations");
-  } catch (err) {
-    results.push({
-      kind: "variation",
-      productId: NaN,
-      title: "Variations tab",
-      status: "error",
-      message: err instanceof Error ? err.message : "Failed to read the Variations tab",
-    });
+  if (variationReadError) {
+    results.push({ kind: "variation", productId: NaN, title: "Variations tab", status: "error", message: variationReadError });
   }
 
   // Sizes already renamed on the shop, so each product's own list of sizes can be brought in step.
@@ -519,17 +547,86 @@ export async function POST(request: Request) {
   const renames: { parentProductId: number; parentTitle: string; attributeName: string; from: string; to: string }[] = [];
 
   for (const row of variationRows) {
-    const title = `${row.parent_title ?? ""} (${row.attributes ?? ""})`.trim();
-    const variationId = Number(row.variation_id);
-    const parentProductId = Number(row.parent_product_id);
+    // The parent is the "Product" link on the row (what staff pick); parent_product_id is only used
+    // for sizes that already exist.
+    const link = (row.Product ?? "").split(",")[0].trim();
+    let parentProductId = Number(row.parent_product_id);
+    if ((!Number.isFinite(parentProductId) || parentProductId <= 0) && link) parentProductId = wooIdByRecord.get(link) ?? NaN;
+    const parentTitle = row.parent_title || productTitleByRecord.get(link) || "";
+    const title = `${parentTitle} (${row["Size name"] || row.attributes || ""})`.trim();
+    let variationId = Number(row.variation_id);
 
-    if (!Number.isFinite(variationId) || variationId <= 0) {
-      results.push({ kind: "variation", productId: NaN, title, status: "skipped", message: "Missing or invalid variation_id" });
+    // Hiding a size: "private" or "draft" keeps it on the books but stops customers seeing it.
+    const sizeStatusRaw = row.status?.trim().toLowerCase();
+    let sizeStatus: "publish" | "private" | undefined;
+    if (sizeStatusRaw) {
+      if (sizeStatusRaw === "publish") sizeStatus = "publish";
+      else if (sizeStatusRaw === "private" || sizeStatusRaw === "draft") sizeStatus = "private";
+      else {
+        results.push({ kind: "variation", productId: NaN, title, status: "error", message: `status column must be publish, private or draft, got: ${row.status}` });
+        continue;
+      }
+    }
+
+    if (!Number.isFinite(parentProductId) || parentProductId <= 0) {
+      results.push({
+        kind: "variation",
+        productId: Number.isFinite(variationId) ? variationId : NaN,
+        title,
+        status: "skipped",
+        message: "Pick the product this size belongs to in the Product column",
+      });
       continue;
     }
-    if (!Number.isFinite(parentProductId) || parentProductId <= 0) {
-      results.push({ kind: "variation", productId: variationId, title, status: "skipped", message: "Missing or invalid parent_product_id" });
-      continue;
+
+    // No variation_id means a size added in Airtable: matched to the product's size of the same name,
+    // or added as a new one. (Matching is what stops a repeat sync adding it twice.)
+    if (!Number.isFinite(variationId) || variationId <= 0) {
+      const newSize = row["Size name"]?.trim();
+      const newPrice = Number(row.price);
+      if (!newSize) {
+        results.push({ kind: "variation", productId: NaN, title, status: "error", message: "A new size needs a Size name" });
+        continue;
+      }
+      try {
+        let siblings = variationsByParent.get(parentProductId);
+        if (!siblings) {
+          siblings = await listWooVariations(parentProductId);
+          variationsByParent.set(parentProductId, siblings);
+        }
+        const same = siblings.find((v) => v.attributes[0]?.option.toLowerCase() === newSize.toLowerCase());
+        if (same) {
+          variationId = same.id;
+        } else {
+          if (!row.price || !Number.isFinite(newPrice) || newPrice < 0) {
+            results.push({ kind: "variation", productId: NaN, title, status: "error", message: "A new size needs a price" });
+            continue;
+          }
+          // The product's own list of sizes has to include it, and the product has to be one with sizes.
+          const parent = await getWooProduct(parentProductId);
+          const sizeAttribute = parent.attributes.find((a) => a.variation);
+          const attributeName = sizeAttribute?.name ?? "Size";
+          const attributes = sizeAttribute
+            ? parent.attributes.map((a) => (a === sizeAttribute && !a.options.includes(newSize) ? { ...a, options: [...a.options, newSize] } : a))
+            : [
+                ...parent.attributes,
+                { id: 0, name: "Size", position: parent.attributes.length, visible: true, variation: true, options: [newSize] },
+              ];
+          await updateWooProduct(parentProductId, { type: "variable", attributes });
+          const made = await createWooVariation(parentProductId, {
+            regular_price: newPrice.toFixed(2),
+            status: sizeStatus ?? "publish",
+            attributes: [{ name: attributeName, option: newSize }],
+          });
+          siblings.push(made);
+          await goLive(parentProductId);
+          results.push({ kind: "variation", productId: made.id, title, status: "created", message: "Size added" });
+          continue;
+        }
+      } catch (err) {
+        results.push({ kind: "variation", productId: NaN, title, status: "error", message: err instanceof Error ? err.message : "Couldn't add the size" });
+        continue;
+      }
     }
 
     let regularPrice: string | undefined;
@@ -588,8 +685,9 @@ export async function POST(request: Request) {
     }
 
     try {
-      await updateWooProductVariation(parentProductId, variationId, { regular_price: regularPrice, attributes });
+      await updateWooProductVariation(parentProductId, variationId, { regular_price: regularPrice, attributes, status: sizeStatus });
       if (rename) renames.push(rename);
+      await goLive(parentProductId);
       results.push({ kind: "variation", productId: variationId, title, status: "updated" });
     } catch (err) {
       results.push({ kind: "variation", productId: variationId, title, status: "error", message: err instanceof Error ? err.message : "Update failed" });
@@ -617,6 +715,16 @@ export async function POST(request: Request) {
         message: `Sizes renamed, but the product's list of sizes didn't update: ${err instanceof Error ? err.message : "update failed"}`,
       });
     }
+  }
+
+  for (const parentId of pendingPublish.keys()) {
+    results.push({
+      kind: "product",
+      productId: parentId,
+      title: [...productTitleByRecord.entries()].find(([record]) => wooIdByRecord.get(record ?? "") === parentId)?.[1] ?? String(parentId),
+      status: "error",
+      message: "Added as a draft because none of its sizes could be added. Fix the sizes and sync again, then set its status to publish.",
+    });
   }
 
   // Product pages are ISR-cached under this tag (see woocommerce/products.ts) - without this,
