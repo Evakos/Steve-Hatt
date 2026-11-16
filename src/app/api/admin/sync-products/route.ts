@@ -4,6 +4,7 @@ import { isStaffAuthenticated } from "@/lib/staff-auth";
 import { readProductRows } from "@/lib/product-source";
 import { parseAttachmentCell } from "@/lib/airtable";
 import {
+  createWooProduct,
   getWooProduct,
   listAllWooProducts,
   listWooCategories,
@@ -29,6 +30,8 @@ const META_KEYS = {
   weight: "_steve_hatt_weight",
   featuredFor: "_steve_hatt_featured_for",
   preparationNotes: "_steve_hatt_preparation_notes",
+  /** The Airtable record a product was created from, so a repeat sync finds it instead of adding it twice. */
+  airtableRecord: "_steve_hatt_airtable_record",
 } as const;
 
 const VALID_STATUSES = new Set(["draft", "pending", "private", "publish"]);
@@ -64,6 +67,15 @@ function photoFileName(filename: string, type: string): string {
   return `${cleaned.replace(/\.[^.]*$/, "") || "photo"}.${IMAGE_EXTENSIONS[type] ?? "jpg"}`;
 }
 
+/** A product name as a page address: lowercase words joined by hyphens. */
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/&/g, " and ")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
 function readStoredMeta(product: WooProduct | undefined, key: string): string {
   const value = product?.meta_data.find((m) => m.key === key)?.value;
   return typeof value === "string" ? value : "";
@@ -73,7 +85,7 @@ interface SyncResult {
   kind: "product" | "variation";
   productId: number;
   title: string;
-  status: "updated" | "skipped" | "error";
+  status: "created" | "updated" | "skipped" | "error";
   message?: string;
 }
 
@@ -102,6 +114,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: err instanceof Error ? err.message : "Failed to read the shop" }, { status: 502 });
   }
 
+  // How a row with no product_id is matched to a product the shop already has: by the Airtable record
+  // it was created from, then by page address. This is what stops a repeat sync adding it twice.
+  const productByRecord = new Map<string, WooProduct>();
+  const productBySlug = new Map<string, WooProduct>();
+  for (const p of existingProducts.values()) {
+    productBySlug.set(p.slug, p);
+    const record = readStoredMeta(p, META_KEYS.airtableRecord);
+    if (record) productByRecord.set(record, p);
+  }
+
   // WooCommerce downloads photos from this site (Airtable's own links have no file extension, which
   // it refuses), so it needs the public address: the production domain on Vercel, else this request's.
   const productionHost = process.env.VERCEL_PROJECT_PRODUCTION_URL;
@@ -111,10 +133,26 @@ export async function POST(request: Request) {
 
   for (const row of rows) {
     const title = row.title ?? "";
-    const productId = Number(row.product_id);
+    let productId = Number(row.product_id);
+    // A row with no product_id is a product added in Airtable: it is linked to the shop product it
+    // already matches, or created as a new one.
+    let isNew = false;
+    let linkRecord = false;
     if (!Number.isFinite(productId) || productId <= 0) {
-      results.push({ kind: "product", productId: NaN, title, status: "skipped", message: "Missing or invalid product_id" });
-      continue;
+      const derivedSlug = row.slug?.trim() || slugify(title);
+      const known =
+        (row.__recordId ? productByRecord.get(row.__recordId) : undefined) ??
+        (derivedSlug ? productBySlug.get(derivedSlug) : undefined);
+      if (known) {
+        productId = known.id;
+        linkRecord = true;
+      } else if (title) {
+        isNew = true;
+        linkRecord = true;
+      } else {
+        results.push({ kind: "product", productId: NaN, title, status: "skipped", message: "No product_id and no title to create a product from" });
+        continue;
+      }
     }
 
     let preparation: string[] | undefined;
@@ -379,17 +417,59 @@ export async function POST(request: Request) {
       metaData.push({ key: META_KEYS.pricePerKg, value: pricePerKg ?? "0" });
     }
 
+    if (linkRecord && row.__recordId) metaData.push({ key: META_KEYS.airtableRecord, value: row.__recordId });
+
+    // A new product has to be complete enough to show properly: a product without a photo would
+    // break its pages, and one without a category or price can't be browsed or bought.
+    if (isNew) {
+      const missing: string[] = [];
+      if (!regularPrice && !pricePerKg) missing.push("a price");
+      if (!categoryIds) missing.push("a category");
+      if (!newImages) missing.push("a photo");
+      if (missing.length > 0) {
+        results.push({
+          kind: "product",
+          productId,
+          title,
+          status: "error",
+          message: `A new product needs ${missing.join(", ")} before it can be added to the shop.`,
+        });
+        continue;
+      }
+    }
+
+    // A new product is created as a draft and only goes live once its photo is on, so the shop never
+    // shows one without a picture. Its final state is the Status column, else published.
+    const finalStatus = wooStatus ?? "publish";
+
     try {
-      await updateWooProduct(productId, {
-        name: row.title || undefined,
-        slug,
-        categories: categoryIds,
-        regular_price: regularPrice,
-        status: wooStatus,
-        stock_status: stockStatus,
-        description: row.description || undefined,
-        meta_data: metaData.length > 0 ? metaData : undefined,
-      });
+      if (isNew) {
+        const created = await createWooProduct({
+          name: title,
+          slug: slug ?? slugify(title),
+          categories: categoryIds,
+          regular_price: regularPrice ?? pricePerKg,
+          status: "draft",
+          stock_status: stockStatus ?? "instock",
+          description: row.description || undefined,
+          meta_data: metaData.length > 0 ? metaData : undefined,
+        });
+        productId = created.id;
+        existingProducts.set(created.id, created);
+        productBySlug.set(created.slug, created);
+        if (row.__recordId) productByRecord.set(row.__recordId, created);
+      } else {
+        await updateWooProduct(productId, {
+          name: row.title || undefined,
+          slug,
+          categories: categoryIds,
+          regular_price: regularPrice,
+          status: wooStatus,
+          stock_status: stockStatus,
+          description: row.description || undefined,
+          meta_data: metaData.length > 0 ? metaData : undefined,
+        });
+      }
       // The photo goes in its own request so a problem with it can't stop the price and text saving.
       if (newImages && photoMarker) {
         try {
@@ -400,12 +480,19 @@ export async function POST(request: Request) {
             productId,
             title,
             status: "error",
-            message: `Saved, but the photo didn't update: ${err instanceof Error ? err.message : "upload failed"}`,
+            message: `${isNew ? "Created as a draft, not live yet" : "Saved"}, but the photo didn't update: ${err instanceof Error ? err.message : "upload failed"}`,
           });
           continue;
         }
       }
-      results.push({ kind: "product", productId, title, status: "updated" });
+      if (isNew) await updateWooProduct(productId, { status: finalStatus });
+      results.push({
+        kind: "product",
+        productId,
+        title,
+        status: isNew ? "created" : "updated",
+        message: isNew ? (finalStatus === "publish" ? "Added to the shop" : `Added to the shop as ${finalStatus}`) : undefined,
+      });
     } catch (err) {
       results.push({ kind: "product", productId, title, status: "error", message: err instanceof Error ? err.message : "Update failed" });
     }
@@ -538,6 +625,7 @@ export async function POST(request: Request) {
   revalidateTag(PRODUCTS_TAG, "max");
 
   return NextResponse.json({
+    created: results.filter((r) => r.status === "created").length,
     updated: results.filter((r) => r.status === "updated").length,
     errors: results.filter((r) => r.status === "error").length,
     total: results.length,

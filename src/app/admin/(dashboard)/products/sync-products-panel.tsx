@@ -6,11 +6,12 @@ interface SyncResultRow {
   kind: "product" | "variation";
   productId: number;
   title: string;
-  status: "updated" | "skipped" | "error";
+  status: "created" | "updated" | "skipped" | "error";
   message?: string;
 }
 
 interface SyncResponse {
+  created: number;
   updated: number;
   errors: number;
   total: number;
@@ -60,6 +61,7 @@ export default function SyncProductsPanel() {
       {result && (
         <div className="mt-4 border border-border bg-white p-4" style={{ borderRadius: "14px" }}>
           <p className="text-sm font-medium text-navy">
+            {result.created > 0 ? `${result.created} added, ` : ""}
             {result.updated} updated, {result.errors} error{result.errors === 1 ? "" : "s"}, {result.total} rows read
           </p>
           {problems.length > 0 && (

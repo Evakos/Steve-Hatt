@@ -46,6 +46,11 @@ export async function updateWooProduct(id: number, input: WooProductInput): Prom
   return wooFetch<WooProduct>(`products/${id}`, { method: "PUT", body: input });
 }
 
+/** Adds a new simple product to the shop. WooCommerce makes it a simple product unless told otherwise. */
+export async function createWooProduct(input: WooProductInput): Promise<WooProduct> {
+  return wooFetch<WooProduct>("products", { method: "POST", body: input });
+}
+
 // Always-fresh reads for the Airtable sync, which needs to know what the shop holds right now
 // (current photos and sizes) so it only changes what was actually edited.
 export async function listAllWooProducts(): Promise<WooProduct[]> {
