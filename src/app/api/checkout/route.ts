@@ -7,6 +7,9 @@ import { repriceCheckoutRequest } from "@/lib/checkout/reprice";
 import { checkoutRequestSchema } from "@/lib/checkout/schema";
 import { sendOrderConfirmation, sendAdminNewOrderNotification } from "@/lib/email/send-order-confirmation";
 import { getCustomerSession } from "@/lib/customer-auth";
+import { isPay360Challenge } from "@/lib/cardstream/types";
+import { buildBankRedirect } from "@/lib/checkout/three-ds-redirect";
+import { updateWooOrder } from "@/lib/woocommerce/orders";
 import { checkBookedSlot, christmasExclusionReason } from "@/lib/checkout/slot-rules";
 import { deliveryMinimumMessage, deliveryShortfall } from "@/lib/checkout/delivery-minimum";
 import {
@@ -29,6 +32,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ status: "invalid", issues: parsed.error.issues }, { status: 400 });
   }
   const checkout = parsed.data;
+  // The card goes to Pay360 and nowhere else: lifted off the request here so nothing below can store or log it.
+  const card = checkout.payment.card;
+  delete checkout.payment.card;
 
   // The booked date alone decides whether this is a Christmas order (20th-24th December) and
   // whether it can be booked at all. The browser's own isChristmas flag is overwritten, so a stale
@@ -197,10 +203,37 @@ export async function POST(request: Request) {
     currency: "GBP",
     orderRef,
     customerEmail: checkout.customer.email,
+    card,
+    customerName: checkout.customer.firstName,
+    billingAddress: checkout.customer.address
+      ? { line1: checkout.customer.address.line1, city: checkout.customer.address.city, postcode: checkout.customer.address.postcode }
+      : undefined,
   });
 
   if (charge.status === "declined") {
     return NextResponse.json({ status: "declined", reason: charge.reason }, { status: 402 });
+  }
+
+  // The bank has to confirm this payment on its own page. The order is created now, waiting for
+  // payment, because the shopper leaves the site and the bank sends them back to /api/checkout/3ds-return.
+  if (charge.status === "requires_action" && isPay360Challenge(charge.challenge)) {
+    const origin = new URL(request.url).origin;
+    const { order: waiting } = await createOrderFromPayment(checkout, "", orderRef, customerId, {
+      awaitingPayment: true,
+      requestJson: JSON.stringify(checkout),
+    });
+    const redirect = buildBankRedirect(
+      charge.challenge,
+      `${origin}/api/checkout/3ds-return`,
+      `${waiting.id}|${orderRef}|${charge.transactionId}`
+    );
+    if (!redirect) {
+      console.error(`[pay360] order ${waiting.id}: the bank step came back in a shape we can't use`);
+      await updateWooOrder(waiting.id, { status: "failed", meta_data: [{ key: "_checkout_awaiting_payment", value: "no" }] }).catch(() => {});
+      return NextResponse.json({ status: "error" }, { status: 502 });
+    }
+    await updateWooOrder(waiting.id, { meta_data: [{ key: "_pay360_transaction_id", value: charge.transactionId }] });
+    return NextResponse.json({ status: "requires_action", transactionId: charge.transactionId, challenge: redirect, orderRef });
   }
 
   if (charge.status === "requires_action") {

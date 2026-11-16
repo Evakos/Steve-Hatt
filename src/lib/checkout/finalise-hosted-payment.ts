@@ -10,7 +10,7 @@ import { checkoutRequestSchema } from "./schema";
 
 export type FinaliseOutcome = HostedResult | { status: "pending" };
 
-function readMeta(order: WooOrder, key: string): string {
+export function readMeta(order: WooOrder, key: string): string {
   const value = order.meta_data.find((m) => m.key === key)?.value;
   return typeof value === "string" ? value : "";
 }
@@ -56,7 +56,18 @@ export async function finaliseHostedPayment(
   });
 
   if (outcome.status === "pending") return { status: "pending" };
+  return settleAwaitingOrder(order, expectedTotal, outcome);
+}
 
+export type SettledOutcome =
+  | { status: "paid"; transactionId: string; amount: number }
+  | { status: "failed"; reason: string };
+
+/**
+ * Closes off an order that was waiting for payment, once Pay360 has said how it ended: marks it paid
+ * (and sends the emails) or failed. Shared by the hosted page return and the bank (3-D Secure) return.
+ */
+export async function settleAwaitingOrder(order: WooOrder, expectedTotal: number, outcome: SettledOutcome): Promise<HostedResult> {
   if (outcome.status === "failed") {
     await updateWooOrder(order.id, {
       status: "failed",

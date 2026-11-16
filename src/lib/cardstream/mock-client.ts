@@ -53,6 +53,10 @@ export const mockCardstreamClient: CardstreamClient = {
     return { status: "authorised", transactionId: `mock_${Date.now()}` };
   },
 
+  async resumeThreeDS(input: { transactionId: string; paRes?: string }) {
+    return { status: "paid" as const, transactionId: input.transactionId };
+  },
+
   async confirmThreeDS(input: ConfirmThreeDSInput) {
     void input; // mock always approves regardless of the 3DS response
     return { status: "authorised", transactionId: `mock_${Date.now()}` };

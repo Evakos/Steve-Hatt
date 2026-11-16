@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { Loader2, Lock } from "lucide-react";
-import { tokeniseCard } from "@/lib/cardlock/tokenise";
+import { tokeniseCard, type CardDetails } from "@/lib/cardlock/tokenise";
 
 interface Props {
   amount: number;
-  onToken: (token: string) => void;
+  onToken: (token: string, card?: CardDetails) => void;
   disabled?: boolean;
 }
 
@@ -172,7 +172,7 @@ export default function PaymentPanel({ amount, onToken, disabled }: Props) {
       setBusy(false);
       return;
     }
-    onToken(result.token);
+    onToken(result.token, result.card);
   }
 
   return (

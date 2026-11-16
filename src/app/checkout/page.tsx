@@ -33,6 +33,9 @@ import SandboxNotice from "@/components/checkout/sandbox-notice";
 import { deliveryMinimumMessage, deliveryShortfall } from "@/lib/checkout/delivery-minimum";
 import { readyToPay } from "@/components/checkout/hosted-payment-frame";
 import ThreeDSChallenge from "@/components/checkout/three-ds-challenge";
+import ThreeDSRedirect from "@/components/checkout/three-ds-redirect";
+import { isBankRedirect } from "@/lib/checkout/three-ds-redirect";
+import type { CardDetails } from "@/lib/cardlock/tokenise";
 import { useCheckoutSubmit } from "@/components/checkout/use-checkout-submit";
 import { isChristmasFulfilmentDate, hasUpcomingChristmasDates } from "@/lib/christmas-dates";
 import type { CheckoutRequest } from "@/lib/checkout/schema";
@@ -306,13 +309,13 @@ export default function CheckoutPage() {
     };
   }
 
-  function handleToken(token: string) {
+  function handleToken(token: string, card?: CardDetails) {
     if (!selectedSlot) return;
     const request = buildCheckoutRequest();
     if (!request) return;
     pendingTokenRef.current = token;
     setConfirmedOrder({ itemCount: items.length, slot: selectedSlot, isChristmas: isChristmasOrder });
-    submit({ ...request, payment: { token } });
+    submit({ ...request, payment: { token, ...(card ? { card } : {}) } });
   }
 
   function handleThreeDSComplete(threeDSResponse: unknown) {
@@ -876,7 +879,11 @@ export default function CheckoutPage() {
 
                   {submitState.phase === "requires_action" ? (
                     <div className="mt-6">
-                      <ThreeDSChallenge onComplete={handleThreeDSComplete} />
+                      {isBankRedirect(submitState.challenge) ? (
+                        <ThreeDSRedirect redirect={submitState.challenge} />
+                      ) : (
+                        <ThreeDSChallenge onComplete={handleThreeDSComplete} />
+                      )}
                     </div>
                   ) : submitState.phase === "submitting" || submitState.phase === "confirming" ? (
                     <div

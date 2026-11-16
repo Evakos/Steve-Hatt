@@ -7,7 +7,8 @@ export interface CardDetails {
   cvc: string;
 }
 
-export type TokeniseResult = { ok: true; token: string } | { ok: false; error: string };
+/** `card` is set when there is no token to give: the card then goes to Pay360 through our own server. */
+export type TokeniseResult = { ok: true; token: string; card?: CardDetails } | { ok: false; error: string };
 
 /**
  * Turns card details typed on our checkout into a one-time token, in the browser, so that only the
@@ -32,5 +33,6 @@ export async function tokeniseCard(card: CardDetails): Promise<TokeniseResult> {
     return { ok: true, token: "tok_mock_visa" };
   }
 
-  return { ok: false, error: "Card payments aren't switched on yet. Please contact the shop to place your order." };
+  // No CardLock (it is a paid extra on Pay360): the card is passed to our server, which hands it straight to Pay360.
+  return { ok: true, token: "card", card };
 }

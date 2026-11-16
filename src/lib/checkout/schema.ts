@@ -36,6 +36,16 @@ export const checkoutRequestSchema = z.object({
   }),
   payment: z.object({
     token: z.string().min(1),
+    /** The card, when it is passed to Pay360 through our server. Taken off the request as soon as it
+     * arrives (see /api/checkout) so it can never reach an order, a log or an email. */
+    card: z
+      .object({
+        name: z.string().min(1).max(60),
+        number: z.string().regex(/^\d{12,19}$/),
+        expiry: z.string().regex(/^\d{2}\/\d{2}$/),
+        cvc: z.string().regex(/^\d{3,4}$/),
+      })
+      .optional(),
   }),
 });
 

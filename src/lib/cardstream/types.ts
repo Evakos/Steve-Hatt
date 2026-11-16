@@ -20,7 +20,43 @@ export type AuthoriseSaleResult =
  * `deferred` flag is omitted, docs.pay360.com/cards/authorisations). Used to charge every order in
  * full at checkout - no hold, no 7-day expiry, nothing to capture afterwards.
  */
-export type ChargeSaleInput = AuthoriseSaleInput;
+export interface DirectCardDetails {
+  name: string;
+  /** Digits only. */
+  number: string;
+  /** MM/YY */
+  expiry: string;
+  cvc: string;
+}
+
+export type ChargeSaleInput = AuthoriseSaleInput & {
+  /** The card typed on our checkout, passed straight on to Pay360. Never stored, logged or put on an order. */
+  card?: DirectCardDetails;
+  customerName?: string;
+  billingAddress?: { line1: string; city: string; postcode: string };
+};
+
+/** What Pay360 sends back when the bank has to confirm the payment (3-D Secure) on its own page. */
+export interface Pay360ThreeDSChallenge {
+  kind: "pay360-3ds";
+  /** 1 sends the shopper to the bank with a PaReq; 2 sends them with Pay360's server transaction id. */
+  version: number;
+  url: string;
+  pareq?: string;
+  threeDSServerTransId?: string;
+}
+
+export function isPay360Challenge(value: unknown): value is Pay360ThreeDSChallenge {
+  return typeof value === "object" && value !== null && (value as { kind?: unknown }).kind === "pay360-3ds";
+}
+
+export interface ResumeThreeDSInput {
+  transactionId: string;
+  /** Version 1 only: the bank's answer, posted back to us by the shopper's browser. */
+  paRes?: string;
+}
+
+export type ResumeThreeDSResult = { status: "paid"; transactionId: string } | { status: "failed"; reason: string };
 
 export type ChargeSaleResult =
   | { status: "paid"; transactionId: string }
@@ -141,6 +177,8 @@ export interface CardstreamClient {
   chargeSale(input: ChargeSaleInput): Promise<ChargeSaleResult>;
   authoriseSale(input: AuthoriseSaleInput): Promise<AuthoriseSaleResult>;
   confirmThreeDS(input: ConfirmThreeDSInput): Promise<ConfirmThreeDSResult>;
+  /** Finishes a card payment after the shopper has been to their bank (see Pay360ThreeDSChallenge). */
+  resumeThreeDS(input: ResumeThreeDSInput): Promise<ResumeThreeDSResult>;
   captureSale(input: CaptureSaleInput): Promise<CaptureSaleResult>;
   refundSale(input: RefundSaleInput): Promise<RefundSaleResult>;
   verifyCard(input: VerifyCardInput): Promise<VerifyCardResult>;

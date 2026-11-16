@@ -1,6 +1,7 @@
 import "server-only";
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { getServerEnv } from "@/lib/env";
+import { getPaymentConfig, type PaymentConfig } from "./config";
 import type {
   CardstreamClient,
   ChargeSaleInput,
@@ -12,6 +13,7 @@ import type {
   AuthoriseSaleWithTokenInput,
   HostedOutcomeInput,
   HostedSessionInput,
+  ResumeThreeDSInput,
 } from "./types";
 
 /**
@@ -51,14 +53,87 @@ import type {
  * notifications by source IP instead (185.161.164.0/22). Left as-is for now (out of scope for the
  * capture/refund fix); replace with an IP-range check before this goes live against real webhooks.
  */
+interface Pay360Response {
+  transaction?: { transactionId?: string; status?: string };
+  outcome?: { reasonCode?: string; reasonMessage?: string };
+  threeDSecure?: { version?: number | string; status?: string };
+  clientRedirect?: { url?: string; pareq?: string; threeDSServerTransId?: string };
+}
+
+const DECLINED_MESSAGE = "Your card was declined. Please check the details or try another card.";
+
+/** One call to Pay360's direct card API, the same one the old WordPress plugin uses. */
+async function postToPay360(config: PaymentConfig, path: string, body: unknown): Promise<Pay360Response> {
+  const res = await fetch(`${config.baseUrl}/acceptor/rest/transactions/${config.installationId}/${path}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Basic ${Buffer.from(`${config.username}:${config.password}`).toString("base64")}`,
+    },
+    body: JSON.stringify(body),
+    cache: "no-store",
+  });
+  const json = (await res.json().catch(() => null)) as Pay360Response | null;
+  // Only the outcome codes are ever logged, never the request: it holds the card number.
+  if (!res.ok || !json) console.error(`[pay360] ${path.split("/").pop()} answered ${res.status}`, json?.outcome ?? "");
+  return json ?? {};
+}
+
+/**
+ * Real Pay360 client. chargeSale and resumeThreeDS use Pay360's direct card API (the card typed on
+ * our checkout is passed straight on, never stored or logged), copied from the old WordPress
+ * plugin, which works on this live installation. The rest below is still unimplemented.
+ */
 export const realCardstreamClient: CardstreamClient = {
   async chargeSale(input: ChargeSaleInput) {
-    void input;
-    throw new Error(
-      "Cardstream single-step payment not implemented - requires Pay360 developer portal access for the Hosted " +
-        "Payment Fields token flow. Pay360 settles immediately when the request omits the deferred flag " +
-        "(docs.pay360.com/cards/authorisations). See plan Phase D. Set CARDSTREAM_MOCK=true for dev."
+    const card = input.card;
+    if (!card) return { status: "declined", reason: "Your card details didn't arrive. Please try again." };
+
+    const config = await getPaymentConfig();
+    const json = await postToPay360(config, "payment", {
+      transaction: {
+        currency: input.currency,
+        amount: input.amount.toFixed(2),
+        merchantRef: input.orderRef.replace(/-/g, ""),
+        commerceType: "ECOM",
+      },
+      paymentMethod: {
+        card: { pan: card.number, expiryDate: card.expiry.replace("/", ""), cv2: card.cvc, cardHolderName: card.name },
+        ...(input.billingAddress ? { billingAddress: { ...input.billingAddress, countryCode: "GB" } } : {}),
+      },
+      customer: { registered: false, displayName: input.customerName ?? "", email: input.customerEmail },
+    });
+
+    const transactionId = json.transaction?.transactionId;
+    if (transactionId && json.clientRedirect?.url) {
+      return {
+        status: "requires_action",
+        transactionId,
+        challenge: {
+          kind: "pay360-3ds",
+          version: Number(json.threeDSecure?.version),
+          url: json.clientRedirect.url,
+          pareq: json.clientRedirect.pareq,
+          threeDSServerTransId: json.clientRedirect.threeDSServerTransId,
+        },
+      };
+    }
+    if (transactionId && json.transaction?.status === "SUCCESS") return { status: "paid", transactionId };
+    return { status: "declined", reason: DECLINED_MESSAGE };
+  },
+
+  async resumeThreeDS(input: ResumeThreeDSInput) {
+    const config = await getPaymentConfig();
+    const json = await postToPay360(
+      config,
+      `${input.transactionId}/resume`,
+      input.paRes ? { threeDSecureResponse: { pares: input.paRes } } : {}
     );
+    const transactionStatus = json.transaction?.status;
+    if (json.threeDSecure?.status === "AUTHENTICATED" && (!transactionStatus || transactionStatus === "SUCCESS")) {
+      return { status: "paid", transactionId: input.transactionId };
+    }
+    return { status: "failed", reason: "Your bank couldn't confirm the payment, so you haven't been charged." };
   },
 
   async authoriseSale(input: AuthoriseSaleInput) {
