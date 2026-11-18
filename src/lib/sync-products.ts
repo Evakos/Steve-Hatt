@@ -96,9 +96,17 @@ interface SyncResult {
  * the moment a row changes, so an edit is live straight away. Callers must authenticate first.
  */
 export async function runProductSync(request: Request, options: { recordId?: string } = {}) {
+  // Read the products sheet, the shop and the sizes sheet at the same time rather than one after
+  // another. Each is awaited below; the catch here just stops an early return from leaving the
+  // others as unhandled rejections.
+  const productRowsRead = readProductRows("Products");
+  const shopRead = Promise.all([listAllWooProducts(), listWooCategories()]);
+  const variationRowsRead = readProductRows("Variations");
+  for (const read of [productRowsRead, shopRead, variationRowsRead]) read.catch(() => undefined);
+
   let rows: Record<string, string>[];
   try {
-    rows = await readProductRows("Products");
+    rows = await productRowsRead;
   } catch (err) {
     return NextResponse.json({ error: err instanceof Error ? err.message : "Failed to read the sheet" }, { status: 502 });
   }
@@ -107,7 +115,7 @@ export async function runProductSync(request: Request, options: { recordId?: str
   let existingProducts: Map<number, WooProduct>;
   let categoryByName: Map<string, { id: number; name: string }>;
   try {
-    const [products, categories] = await Promise.all([listAllWooProducts(), listWooCategories()]);
+    const [products, categories] = await shopRead;
     existingProducts = new Map(products.map((p) => [p.id, p]));
     categoryByName = new Map(categories.map((c) => [c.name.toLowerCase(), c]));
   } catch (err) {
@@ -136,7 +144,7 @@ export async function runProductSync(request: Request, options: { recordId?: str
   let variationRows: Record<string, string>[] = [];
   let variationReadError: string | undefined;
   try {
-    variationRows = await readProductRows("Variations");
+    variationRows = await variationRowsRead;
   } catch (err) {
     variationReadError = err instanceof Error ? err.message : "Failed to read the Variations tab";
   }
