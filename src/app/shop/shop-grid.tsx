@@ -101,7 +101,8 @@ export default function ShopGrid({ products }: Props) {
               )}
             </div>
             <h3 className="font-serif text-lg font-semibold text-navy">{p.name}</h3>
-            <p className="mt-1 min-h-[45px] text-sm text-text-light">{p.weight}</p>
+            <p className="mt-1 min-h-10 line-clamp-2 text-sm text-text-light">{p.description}</p>
+            <p className="mt-1 min-h-[45px] text-sm font-medium text-navy">{p.weight}</p>
             <div className="mt-3 flex items-center justify-between">
               <span className="text-base font-semibold text-navy">{p.priceLabel}</span>
               <span
