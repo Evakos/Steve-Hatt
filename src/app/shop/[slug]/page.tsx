@@ -70,7 +70,7 @@ export default async function ProductPage({
               <Link href="/shop" className="mb-4 inline-block text-sm text-text-light underline underline-offset-2 hover:text-navy">
                 Back to shop
               </Link>
-              <span className="text-xs tracking-widest text-text-light uppercase">{product.category}</span>
+              <span className="block text-xs tracking-widest text-text-light uppercase">{product.category}</span>
               <h1 className="mt-1.5 font-serif text-4xl font-bold text-navy">{product.name}</h1>
 
               <div className="mt-4 flex items-baseline gap-3">
