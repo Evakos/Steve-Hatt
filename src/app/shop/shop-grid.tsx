@@ -27,7 +27,7 @@ const categoryIcons: Record<string, (props: SVGProps<SVGSVGElement>) => React.Re
   Smoked: SmokedCategoryIcon,
   Shellfish: ShellfishCategoryIcon,
   Oysters: OystersCategoryIcon,
-  Uncategorized: UncategorizedCategoryIcon,
+  Uncategorised: UncategorizedCategoryIcon,
 };
 
 export default function ShopGrid({ products }: Props) {

@@ -104,7 +104,8 @@ export function mapWooProductToProduct(wooProduct: WooProduct, variations: WooPr
     wooId: wooProduct.id,
     slug: wooProduct.slug,
     name: removeLongDashes(wooProduct.name),
-    category: wooProduct.categories[0]?.name ?? "",
+    // WooCommerce's built-in fallback category is spelt the American way.
+    category: (wooProduct.categories[0]?.name ?? "").replace(/^Uncategorized$/, "Uncategorised"),
     price: Number.parseFloat(wooProduct.price || wooProduct.regular_price) || 0,
     priceLabel: "",
     pricePerKg: Number.parseFloat(readMeta(wooProduct.meta_data, META_KEYS.pricePerKg)) || 0,
