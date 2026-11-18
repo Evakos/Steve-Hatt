@@ -744,10 +744,11 @@ export async function runProductSync(request: Request, options: { recordId?: str
     });
   }
 
-  // Product pages are ISR-cached under this tag (see woocommerce/products.ts) - without this,
-  // the sheet edit wouldn't show up on the live site for up to 2 minutes. Next 16 requires a
-  // stale-window profile as the second argument; "max" is the docs' recommended default.
-  revalidateTag(PRODUCTS_TAG, "max");
+  // Product pages and the shop grid are ISR-cached under this tag (see woocommerce/products.ts).
+  // Expiring it straight away, rather than the stale-while-revalidate "max" profile, means the very
+  // next visitor sees the edit instead of one more stale page. Next's docs recommend { expire: 0 }
+  // for exactly this: an outside service (Airtable) calling a route handler.
+  revalidateTag(PRODUCTS_TAG, { expire: 0 });
 
   return NextResponse.json({
     created: results.filter((r) => r.status === "created").length,
