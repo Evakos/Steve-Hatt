@@ -19,8 +19,6 @@ export default async function ShopPage() {
             Fresh fish and shellfish from our counter at 88 Essex Road, ready for collection or delivery. Prices are
             by weight where noted, and the price shown is the price you pay.
           </p>
-          <p className="mt-2 text-sm text-text-light">{products.length} products</p>
-
           <ShopGrid products={products} />
         </div>
       </section>

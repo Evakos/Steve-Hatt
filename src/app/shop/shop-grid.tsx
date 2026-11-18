@@ -72,6 +72,9 @@ export default function ShopGrid({ products }: Props) {
               </button>
             );
           })}
+          <span className="ml-auto self-center text-sm text-text-light">
+            {visible.length} product{visible.length === 1 ? "" : "s"}
+          </span>
         </div>
       )}
 
