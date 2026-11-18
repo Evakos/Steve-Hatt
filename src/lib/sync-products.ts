@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import { revalidateTag } from "next/cache";
 import { readProductRows } from "@/lib/product-source";
 import { parseAttachmentCell } from "@/lib/airtable";
@@ -8,6 +8,7 @@ import {
   getWooProduct,
   listAllWooProducts,
   listWooCategories,
+  getAllProducts,
   listWooVariations,
   updateWooProduct,
   updateWooProductVariation,
@@ -757,6 +758,18 @@ export async function runProductSync(request: Request, options: { recordId?: str
   // next visitor sees the edit instead of one more stale page. Next's docs recommend { expire: 0 }
   // for exactly this: an outside service (Airtable) calling a route handler.
   revalidateTag(PRODUCTS_TAG, { expire: 0 });
+
+  // Rebuild what visitors are about to ask for once this response has gone, so the first person to
+  // open the shop after an edit doesn't wait on WooCommerce (that rebuild takes several seconds).
+  // Nothing here can fail the sync.
+  after(async () => {
+    try {
+      await getAllProducts();
+      await Promise.all([fetch(`${photoOrigin}/shop`), fetch(photoOrigin)]);
+    } catch {
+      // Warming is best effort: the next visitor just rebuilds the page themselves.
+    }
+  });
 
   return NextResponse.json({
     created: results.filter((r) => r.status === "created").length,
