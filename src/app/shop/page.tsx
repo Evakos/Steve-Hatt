@@ -15,9 +15,11 @@ export default async function ShopPage() {
         <div className="mx-auto max-w-6xl px-6 py-16">
           <p className="text-xs tracking-widest text-text-light uppercase">Fresh today</p>
           <h1 className="mt-2 font-serif text-4xl font-bold text-navy">Shop All Fish</h1>
-          <p className="mt-3 text-lg leading-relaxed text-text-light lg:whitespace-nowrap">
-            {products.length} products, priced by weight where noted. The price shown is the price you pay.
+          <p className="mt-3 max-w-2xl text-lg leading-relaxed text-text-light">
+            Fresh fish and shellfish from our counter at 88 Essex Road, ready for collection or delivery. Prices are
+            by weight where noted, and the price shown is the price you pay.
           </p>
+          <p className="mt-2 text-sm text-text-light">{products.length} products</p>
 
           <ShopGrid products={products} />
         </div>
