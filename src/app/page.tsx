@@ -11,6 +11,8 @@ import Header from "@/components/header";
 import PostcodeCheck from "@/components/postcode-check";
 import AnnouncementBanner from "@/components/announcement-banner";
 import Footer from "@/components/footer";
+import HeroSlider from "@/components/hero-slider";
+import ChristmasHeroSlide from "@/components/christmas-hero-slide";
 import Reveal from "@/components/reveal";
 
 const howItWorks = [
@@ -116,7 +118,9 @@ export default async function Home() {
 
       {/* Hero - text overlaid on the photo, matching a traditional hero banner */}
       <section className="bg-white">
-        <div className="relative bg-navy sm:h-[50vh]">
+        <HeroSlider
+          slides={[
+        <div key="main" className="relative bg-navy sm:h-[50vh]">
           <div
             className="absolute inset-y-0 right-0 w-full sm:w-[80%]"
             style={{
@@ -161,7 +165,12 @@ export default async function Home() {
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+            ...(christmasActive
+              ? [<ChristmasHeroSlide key="christmas" when={christmasWhen} lastOrder={LAST_ORDER_LABEL} />]
+              : []),
+          ]}
+        />
 
         {/* Trust strip - full width, directly attached with no gap */}
         <div className="border-b border-border/50 bg-navy">

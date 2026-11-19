@@ -1,0 +1,47 @@
+import Image from "next/image";
+import { Snowflake } from "lucide-react";
+
+/**
+ * The Christmas photo for the homepage hero. Until one is supplied the slide uses a plain green
+ * background. To use it: add the file to /public (for example /public/hero-christmas.jpg) and set this
+ * to "/hero-christmas.jpg".
+ */
+const CHRISTMAS_HERO_IMAGE: string | null = null;
+
+/** The second hero slide, shown only while Christmas pre-ordering is on. */
+export default function ChristmasHeroSlide({ when, lastOrder }: { when: string; lastOrder: string }) {
+  return (
+    <div className="relative overflow-hidden bg-[#1a3a2a] sm:h-[50vh]">
+      {CHRISTMAS_HERO_IMAGE ? (
+        <div className="absolute inset-0">
+          <Image src={CHRISTMAS_HERO_IMAGE} alt="" fill sizes="100vw" className="object-cover" />
+          <div className="absolute inset-0 bg-[#1a3a2a]/60 sm:bg-[#1a3a2a]/45" />
+        </div>
+      ) : (
+        <Snowflake className="pointer-events-none absolute -right-10 -top-10 h-80 w-80 text-white/5" aria-hidden />
+      )}
+      <div className="relative flex h-full sm:items-center">
+        <div className="mx-auto w-full max-w-6xl px-6 py-12 pb-14 sm:py-0">
+          <div className="max-w-2xl">
+            <p className="mb-3 text-[11px] font-medium tracking-widest text-white/80 uppercase sm:mb-4 sm:text-xs">Christmas pre-orders now open</p>
+            <h2 className="font-serif text-4xl font-bold leading-[1.1] text-white sm:text-5xl md:text-6xl lg:text-7xl">
+              Your Christmas fish, ordered ahead.
+            </h2>
+            <p className="mt-4 max-w-lg text-base leading-relaxed text-white/90 sm:mt-6 sm:text-lg">
+              Reserve fresh fish and shellfish for the festive table, then choose delivery or collection {when}. Christmas
+              pre-orders close on {lastOrder}.
+            </p>
+            <div className="mt-4 flex flex-col gap-3 sm:mt-6 sm:flex-row sm:items-center sm:gap-4">
+              <a href="#christmas" className="bg-lobster px-6 py-3 text-center text-sm font-medium text-white transition-colors hover:bg-lobster/90" style={{ borderRadius: "6px" }}>
+                Order for Christmas
+              </a>
+              <a href="/shop" className="border border-white/40 px-6 py-3 text-center text-sm font-medium text-white transition-colors hover:bg-white/10" style={{ borderRadius: "6px" }}>
+                Shop all fish
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
