@@ -54,7 +54,10 @@ export default function ChristmasProductNote({ excluded }: { excluded: boolean }
         pre-orders close on {LAST_ORDER_LABEL}.
       </p>
       {dates.length > 0 && (
-        <ul className="relative mt-3 flex flex-wrap gap-2" aria-label="Christmas delivery and collection dates">
+        <p className="relative mt-3 text-sm font-semibold text-[#1a3a2a]">Xmas delivery or collection dates are:</p>
+      )}
+      {dates.length > 0 && (
+        <ul className="relative mt-2 flex flex-wrap gap-2" aria-label="Christmas delivery and collection dates">
           {dates.map((d) => (
             <li
               key={d.toISOString()}
