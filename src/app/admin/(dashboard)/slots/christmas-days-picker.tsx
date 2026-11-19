@@ -62,7 +62,7 @@ export default function ChristmasDaysPicker({ initialDays, year, christmasOn, on
   }
 
   return (
-    <div id="christmas-days" className="mt-4 max-w-3xl scroll-mt-6 border border-border bg-cream p-5" style={{ borderRadius: "14px" }}>
+    <div id="christmas-days" className="mt-4 max-w-5xl scroll-mt-6 border border-border bg-cream p-5" style={{ borderRadius: "14px" }}>
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-sm font-medium text-navy">Christmas delivery and collection days</p>
