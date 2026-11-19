@@ -270,6 +270,13 @@ export default function AdminGuidePage() {
             a normal one.
           </p>
           <p>
+            If the shop does not deliver on the Christmas days, switch{" "}
+            <strong className="text-navy">Delivery, morning</strong> and <strong className="text-navy">Delivery, afternoon</strong>{" "}
+            off for each of them and leave <strong className="text-navy">Collection</strong> on, then Save changes. A customer
+            who picks Christmas and then Delivery is told there are no Christmas delivery days and is pointed to Click &amp;
+            Collect.
+          </p>
+          <p>
             Sundays, Mondays and the Christmas break (25 December to 3 January) are never offered, so they are not
             listed. Customers can only book about three weeks ahead, plus the Christmas dates once Christmas is on, so
             switching off a later day simply closes it in advance. Good Friday is still listed, so switch it off if you
@@ -415,7 +422,8 @@ export default function AdminGuidePage() {
           </p>
           <p>
             Almost every product can be pre-ordered for Christmas by default. A few can be marked as excluded (see the
-            product sync). Customers choose Standard or Christmas in the basket (checkout shows the same choice), and the
+            product sync). Customers choose Standard or Christmas in the basket (checkout shows the same choice) and are asked to confirm when they
+            switch between the two, because it changes the prices and the days. The
             basket, mini-cart and checkout all show the Christmas price once they pick Christmas. While Christmas ordering
             is on, a product that has a Christmas price also shows it in grey beside the normal price on its page. Either
             way the booked date has the final say: one of the Christmas days you picked is always a Christmas order and any other date never is. If the basket has an excluded

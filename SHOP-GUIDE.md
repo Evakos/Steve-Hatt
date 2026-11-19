@@ -82,7 +82,7 @@ Everything happens in **`/admin`** (one shared staff login).
 
 **Switching on**
 - Products page, **Christmas ordering** switch on, **Save changes**. It is instant and not tied to a date, so it goes on the day you flip it.
-- The days customers can book are the Christmas days you pick on the **Delivery slots** page (**Choose days**, then **Save changes**). Pick them again each year. They are only offered for Christmas orders, never for a normal one.
+- The days customers can book are the Christmas days you pick on the **Delivery slots** page (**Choose days**, then **Save changes**). Pick them again each year. They are only offered for Christmas orders, never for a normal one. If the shop doesn't deliver on those days, switch **Delivery, morning** and **Delivery, afternoon** off for each of them and leave **Collection** on.
 
 **What happens to an order**
 1. The customer pays in full at checkout and gets a confirmation email.
