@@ -28,6 +28,7 @@ beforeEach(() => {
   repricedResult.deliveryFee = 0;
   flags.areOnlineOrdersClosed.mockResolvedValue(false);
   flags.getDisabledSlots.mockResolvedValue([]);
+  flags.getSlotsEnabled.mockResolvedValue(true);
   flags.isChristmasShopActive.mockResolvedValue(true);
 });
 
@@ -36,6 +37,7 @@ const flags = {
   getChristmasDepositAmount: vi.fn(),
   areOnlineOrdersClosed: vi.fn(),
   getDisabledSlots: vi.fn(),
+  getSlotsEnabled: vi.fn(),
   isChristmasShopActive: vi.fn(),
 };
 vi.mock("@/lib/feature-flags", () => flags);

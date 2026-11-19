@@ -26,7 +26,7 @@ import {
 import Header from "@/components/header";
 import AnnouncementBanner from "@/components/announcement-banner";
 import { LAST_ORDER_LABEL, ORDERS_CLOSED_REASON } from "@/lib/ordering-window";
-import { SLOT_WINDOWS, getAvailableDates, isSlotDisabled, toSlotInstant } from "@/lib/slots";
+import { NO_SLOT_LABEL, SLOT_WINDOWS, getAvailableDates, isSlotDisabled, toSlotInstant } from "@/lib/slots";
 import ContactAddressForm, { EMPTY_CONTACT_ADDRESS, type ContactAddressValue } from "@/components/checkout/contact-address-form";
 import PaymentPanel from "@/components/checkout/payment-panel";
 import SandboxNotice from "@/components/checkout/sandbox-notice";
@@ -129,16 +129,20 @@ export default function CheckoutPage() {
   const [ordersClosed, setOrdersClosed] = useState(false);
   // Delivery/collection slots staff have switched off in /admin/slots - hidden from the picker.
   const [disabledSlots, setDisabledSlots] = useState<string[]>([]);
+  // The master switch in /admin/slots. When off, no time slot is chosen or required.
+  const [slotsEnabled, setSlotsEnabled] = useState(true);
   useEffect(() => {
     fetch("/api/feature-flags/christmas")
       .then((res) => (res.ok ? res.json() : null))
-      .then((data: { active: boolean; useDepositFlow?: boolean; ordersClosed?: boolean; disabledSlots?: string[] } | null) => {
+      .then((data: { active: boolean; useDepositFlow?: boolean; ordersClosed?: boolean; disabledSlots?: string[]; slotsEnabled?: boolean } | null) => {
         setOrdersClosed(data?.ordersClosed === true);
+        setSlotsEnabled(data?.slotsEnabled !== false);
         setDisabledSlots(data?.disabledSlots ?? []);
         // Christmas is only offered while fulfilment dates are actually bookable (Dec 20-24
         // still ahead). If the switch is on those dates exist year-round, so the flow works
         // for testing/setup outside the November-December season too.
-        const active = (data?.active ?? false) && hasUpcomingChristmasDates();
+        // Christmas orders are booked by date, so they pause while time slots are switched off.
+        const active = (data?.active ?? false) && hasUpcomingChristmasDates() && data?.slotsEnabled !== false;
         setChristmasShopActive(active);
         setChristmasUseDepositFlow(data?.useDepositFlow ?? false);
         if (!active) setOrderType("standard");
@@ -245,7 +249,7 @@ export default function CheckoutPage() {
   }
 
   const postcodeChecked = postcodeStatus === "valid" || postcodeStatus === "out-of-zone";
-  const showSlots = !!slotType && postcodeChecked;
+  const showSlots = slotsEnabled && !!slotType && postcodeChecked;
 
   const slots = useMemo(() => {
     if (!slotType || !orderType) return [];
@@ -269,13 +273,19 @@ export default function CheckoutPage() {
   // Guard rail: a delivery order has to reach the minimum before it can go to payment. It only applies
   // once delivery is the chosen option, so collection orders are never held up by it.
   const shortfall = deliveryShortfall(displayEstimatedTotal, slotType ?? "collection");
-  const canProceedToPayment = !!selectedSlot && shortfall === 0;
+  const canProceedToPayment = (slotsEnabled ? !!selectedSlot : !!slotType) && shortfall === 0;
+  // What the review boxes show: the chosen slot, or just delivery/collection when slots are off.
+  const summarySlot: { type: SlotType; label: string } | null = slotsEnabled
+    ? selectedSlot
+    : slotType
+      ? { type: slotType, label: `${slotType === "delivery" ? "Delivery" : "Collection"}, ${NO_SLOT_LABEL.toLowerCase()}` }
+      : null;
   // The address step is done once the contact details (and, for delivery, the address) are complete.
   const detailsComplete = readyToPay(buildCheckoutRequest());
   const deliveryCost = slotType === "delivery" ? 5 : 0;
 
   function buildCheckoutRequest(): CheckoutRequest | null {
-    if (!selectedSlot || !slotType) return null;
+    if (!slotType || (slotsEnabled && !selectedSlot)) return null;
     return {
       items: items.map((item) => ({
         wooProductId: item.product.wooId,
@@ -287,7 +297,10 @@ export default function CheckoutPage() {
       })),
       fulfilment: {
         type: slotType,
-        slot: { date: toSlotInstant(selectedSlot.date).toISOString(), label: selectedSlot.label, isChristmas: selectedSlot.isChristmas },
+        slot:
+          slotsEnabled && selectedSlot
+            ? { date: toSlotInstant(selectedSlot.date).toISOString(), label: selectedSlot.label, isChristmas: selectedSlot.isChristmas }
+            : { date: new Date().toISOString(), label: NO_SLOT_LABEL, isChristmas: false },
         postcode: slotType === "delivery" ? postcode : undefined,
       },
       customer: {
@@ -310,11 +323,12 @@ export default function CheckoutPage() {
   }
 
   function handleToken(token: string, card?: CardDetails) {
-    if (!selectedSlot) return;
     const request = buildCheckoutRequest();
-    if (!request) return;
+    if (!request || !slotType) return;
     pendingTokenRef.current = token;
-    setConfirmedOrder({ itemCount: items.length, slot: selectedSlot, isChristmas: isChristmasOrder });
+    const bookedSlot: Slot =
+      slotsEnabled && selectedSlot ? selectedSlot : { date: new Date(), label: NO_SLOT_LABEL, type: slotType, isChristmas: false };
+    setConfirmedOrder({ itemCount: items.length, slot: bookedSlot, isChristmas: isChristmasOrder });
     submit({ ...request, payment: { token, ...(card ? { card } : {}) } });
   }
 
@@ -781,10 +795,10 @@ export default function CheckoutPage() {
                     Change delivery slot
                   </button>
 
-                  {selectedSlot && (
+                  {summarySlot && (
                     <div className="mb-6 flex items-center gap-3 border border-border bg-card px-4 py-3" style={{ borderRadius: "5px" }}>
-                      {selectedSlot.type === "delivery" ? <Truck className="h-4 w-4 text-teal" /> : <Store className="h-4 w-4 text-teal" />}
-                      <span className="text-sm text-navy">{selectedSlot.label}</span>
+                      {summarySlot.type === "delivery" ? <Truck className="h-4 w-4 text-teal" /> : <Store className="h-4 w-4 text-teal" />}
+                      <span className="text-sm text-navy">{summarySlot.label}</span>
                       {isChristmasOrder && (
                         <span className="bg-[#1a3a2a] px-1.5 py-0.5 text-[10px] font-medium text-white" style={{ borderRadius: "2px" }}>
                           Christmas Pre-Order
@@ -841,10 +855,10 @@ export default function CheckoutPage() {
                     Change details
                   </button>
 
-                  {selectedSlot && (
+                  {summarySlot && (
                     <div className="mb-6 flex items-center gap-3 border border-border bg-card px-4 py-3" style={{ borderRadius: "5px" }}>
-                      {selectedSlot.type === "delivery" ? <Truck className="h-4 w-4 text-teal" /> : <Store className="h-4 w-4 text-teal" />}
-                      <span className="text-sm text-navy">{selectedSlot.label}</span>
+                      {summarySlot.type === "delivery" ? <Truck className="h-4 w-4 text-teal" /> : <Store className="h-4 w-4 text-teal" />}
+                      <span className="text-sm text-navy">{summarySlot.label}</span>
                       {isChristmasOrder && (
                         <span className="bg-[#1a3a2a] px-1.5 py-0.5 text-[10px] font-medium text-white" style={{ borderRadius: "2px" }}>
                           Christmas Pre-Order

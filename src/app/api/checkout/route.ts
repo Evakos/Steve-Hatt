@@ -16,11 +16,12 @@ import {
   getChristmasDepositAmount,
   getChristmasUseDepositFlow,
   getDisabledSlots,
+  getSlotsEnabled,
   areOnlineOrdersClosed,
   isChristmasShopActive,
 } from "@/lib/feature-flags";
 import { ORDERS_CLOSED_REASON } from "@/lib/ordering-window";
-import { isSlotDisabled, slotWindowFromLabel } from "@/lib/slots";
+import { NO_SLOT_LABEL, isSlotDisabled, slotWindowFromLabel } from "@/lib/slots";
 
 export async function POST(request: Request) {
   if (await areOnlineOrdersClosed()) {
@@ -39,20 +40,26 @@ export async function POST(request: Request) {
   // The booked date alone decides whether this is a Christmas order (20th-24th December) and
   // whether it can be booked at all. The browser's own isChristmas flag is overwritten, so a stale
   // page or an altered request can't get Christmas prices or the Christmas flow on a normal date.
-  const slotCheck = checkBookedSlot(checkout.fulfilment.slot.date, { christmasShopActive: await isChristmasShopActive() });
-  if (!slotCheck.ok) {
-    return NextResponse.json({ status: "slot_unavailable", reason: slotCheck.reason }, { status: 409 });
-  }
-  checkout.fulfilment.slot.isChristmas = slotCheck.isChristmas;
+  // Time slots are switched off in /admin/slots: nothing is booked or checked, the order just
+  // records that a time is still to be arranged.
+  if (!(await getSlotsEnabled())) {
+    checkout.fulfilment.slot = { date: new Date().toISOString(), label: NO_SLOT_LABEL, isChristmas: false };
+  } else {
+    const slotCheck = checkBookedSlot(checkout.fulfilment.slot.date, { christmasShopActive: await isChristmasShopActive() });
+    if (!slotCheck.ok) {
+      return NextResponse.json({ status: "slot_unavailable", reason: slotCheck.reason }, { status: 409 });
+    }
+    checkout.fulfilment.slot.isChristmas = slotCheck.isChristmas;
 
-  // A slot staff have switched off in /admin/slots can't be booked, even from a page that was
-  // opened before they switched it off.
-  const slotWindow = slotWindowFromLabel(checkout.fulfilment.slot.label, checkout.fulfilment.type);
-  if (slotWindow && isSlotDisabled(await getDisabledSlots(), new Date(checkout.fulfilment.slot.date), slotWindow)) {
-    return NextResponse.json(
-      { status: "slot_unavailable", reason: "Sorry, that time slot is no longer available. Please go back and choose another." },
-      { status: 409 }
-    );
+    // A slot staff have switched off in /admin/slots can't be booked, even from a page that was
+    // opened before they switched it off.
+    const slotWindow = slotWindowFromLabel(checkout.fulfilment.slot.label, checkout.fulfilment.type);
+    if (slotWindow && isSlotDisabled(await getDisabledSlots(), new Date(checkout.fulfilment.slot.date), slotWindow)) {
+      return NextResponse.json(
+        { status: "slot_unavailable", reason: "Sorry, that time slot is no longer available. Please go back and choose another." },
+        { status: 409 }
+      );
+    }
   }
 
   const customerId = await getCustomerSession();
