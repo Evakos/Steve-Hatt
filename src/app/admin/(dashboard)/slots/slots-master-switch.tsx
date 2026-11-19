@@ -46,11 +46,11 @@ export default function SlotsMasterSwitch({ initialEnabled }: Props) {
         style={{ borderRadius: "5px" }}
       >
         <span>
-          <span id="slots-switch-label" className="block text-sm font-medium text-navy">Customers choose a time slot at checkout</span>
+          <span id="slots-switch-label" className="block text-sm font-medium text-navy">Customers choose a time window at checkout</span>
           <span className="mt-0.5 block text-sm text-text-light">
             {enabled
-              ? "On: customers pick a delivery or collection slot, as set up below."
-              : "Off: checkout does not ask for a slot. Customers still choose delivery or collection, and the order says the time is to be arranged. Christmas pre-orders still ask for one of the Christmas days, picked below."}
+              ? "On: customers pick a date and a time window (morning or afternoon delivery, or collection), as set up below."
+              : "Off: customers still pick a delivery or collection date, but not a time window. A date is offered unless all its slots are switched off below. Christmas orders still pick one of the Christmas days, picked below."}
           </span>
         </span>
         <button

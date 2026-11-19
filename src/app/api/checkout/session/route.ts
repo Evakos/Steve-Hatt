@@ -9,7 +9,7 @@ import { deliveryMinimumMessage, deliveryShortfall } from "@/lib/checkout/delive
 import { getCustomerSession } from "@/lib/customer-auth";
 import { areOnlineOrdersClosed, getChristmasDates, getDisabledSlots, getSlotsEnabled, isChristmasShopActive } from "@/lib/feature-flags";
 import { ORDERS_CLOSED_REASON } from "@/lib/ordering-window";
-import { NO_SLOT_LABEL, isSlotDisabled, slotWindowFromLabel } from "@/lib/slots";
+import { isDateBookableWithoutWindow, isSlotDisabled, slotWindowFromLabel } from "@/lib/slots";
 import { getWooOrder, updateWooOrder } from "@/lib/woocommerce/orders";
 
 // The card form reopens when the customer changes their details; it names the earlier unpaid order so
@@ -54,27 +54,30 @@ export async function POST(request: Request) {
 
   // Same rules as the older card route: the booked date decides Christmas, the slot must be
   // bookable and switched on, and nothing opted out of Christmas can be on a Christmas order.
-  // Time slots are switched off in /admin/slots: a standard order books nothing and is not checked, it just
-  // records that a time is still to be arranged. A Christmas order still books and is checked as a Christmas day.
-  if (!(await getSlotsEnabled()) && checkout.fulfilment.slot.label === NO_SLOT_LABEL) {
-    checkout.fulfilment.slot = { date: new Date().toISOString(), label: NO_SLOT_LABEL, isChristmas: false };
-  } else {
-    const slotCheck = checkBookedSlot(checkout.fulfilment.slot.date, {
-      christmasShopActive: await isChristmasShopActive(),
-      christmasDays: await getChristmasDates(),
-    });
-    if (!slotCheck.ok) {
-      return NextResponse.json({ status: "slot_unavailable", reason: slotCheck.reason }, { status: 409 });
-    }
-    checkout.fulfilment.slot.isChristmas = slotCheck.isChristmas;
+  const slotCheck = checkBookedSlot(checkout.fulfilment.slot.date, {
+    christmasShopActive: await isChristmasShopActive(),
+    christmasDays: await getChristmasDates(),
+  });
+  if (!slotCheck.ok) {
+    return NextResponse.json({ status: "slot_unavailable", reason: slotCheck.reason }, { status: 409 });
+  }
+  checkout.fulfilment.slot.isChristmas = slotCheck.isChristmas;
 
-    const slotWindow = slotWindowFromLabel(checkout.fulfilment.slot.label, checkout.fulfilment.type);
-    if (slotWindow && isSlotDisabled(await getDisabledSlots(), new Date(checkout.fulfilment.slot.date), slotWindow)) {
-      return NextResponse.json(
-        { status: "slot_unavailable", reason: "Sorry, that time slot is no longer available. Please go back and choose another." },
-        { status: 409 }
-      );
-    }
+  const slotWindow = slotWindowFromLabel(checkout.fulfilment.slot.label, checkout.fulfilment.type);
+  if (slotWindow && isSlotDisabled(await getDisabledSlots(), new Date(checkout.fulfilment.slot.date), slotWindow)) {
+    return NextResponse.json(
+      { status: "slot_unavailable", reason: "Sorry, that time slot is no longer available. Please go back and choose another." },
+      { status: 409 }
+    );
+  }
+
+  // With time windows switched off the label has no window, so check the date still has one on.
+  if (
+    !slotWindowFromLabel(checkout.fulfilment.slot.label, checkout.fulfilment.type) &&
+    !(await getSlotsEnabled()) &&
+    !isDateBookableWithoutWindow(await getDisabledSlots(), new Date(checkout.fulfilment.slot.date), checkout.fulfilment.type)
+  ) {
+    return NextResponse.json({ status: "slot_unavailable", reason: "Sorry, that date is no longer available. Please go back and choose another." }, { status: 409 });
   }
 
   const repriced = await repriceCheckoutRequest(checkout);

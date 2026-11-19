@@ -27,7 +27,7 @@ import {
 import Header from "@/components/header";
 import AnnouncementBanner from "@/components/announcement-banner";
 import { ORDERS_CLOSED_REASON } from "@/lib/ordering-window";
-import { NO_SLOT_LABEL, SLOT_WINDOWS, getAvailableDates, isSlotDisabled, toSlotInstant } from "@/lib/slots";
+import { SLOT_WINDOWS, getAvailableDates, isDateBookableWithoutWindow, isSlotDisabled, toSlotInstant } from "@/lib/slots";
 import ContactAddressForm, { EMPTY_CONTACT_ADDRESS, type ContactAddressValue } from "@/components/checkout/contact-address-form";
 import PaymentPanel from "@/components/checkout/payment-panel";
 import SandboxNotice from "@/components/checkout/sandbox-notice";
@@ -257,9 +257,7 @@ export default function CheckoutPage() {
   }
 
   const postcodeChecked = postcodeStatus === "valid" || postcodeStatus === "out-of-zone";
-  // With slots switched off, standard orders need no slot, but a Christmas order still books one of the Christmas days.
-  const slotRequired = slotsEnabled || orderType === "christmas";
-  const showSlots = slotRequired && !!slotType && postcodeChecked;
+  const showSlots = !!slotType && postcodeChecked;
 
   const slots = useMemo(() => {
     if (!slotType || !orderType) return [];
@@ -271,6 +269,14 @@ export default function CheckoutPage() {
       if (orderType === "christmas" && !christmas) return;
       if (orderType === "standard" && christmas) return;
 
+      // With time windows switched off in /admin/slots, each date is one choice with no morning or afternoon.
+      if (!slotsEnabled) {
+        if (isDateBookableWithoutWindow(disabledSlots, toSlotInstant(date), slotType)) {
+          result.push({ date, label: formatDate(date), type: slotType, isChristmas: christmas });
+        }
+        return;
+      }
+
       // Each date offers the windows in SLOT_WINDOWS for this slot type, minus any staff have
       // switched off (/admin/slots).
       SLOT_WINDOWS.filter((w) => w.type === slotType && !isSlotDisabled(disabledSlots, toSlotInstant(date), w.id)).forEach((w) => {
@@ -278,24 +284,19 @@ export default function CheckoutPage() {
       });
     });
     return result;
-  }, [slotType, orderType, disabledSlots, christmasDates]);
+  }, [slotType, orderType, disabledSlots, christmasDates, slotsEnabled]);
 
   // Guard rail: a delivery order has to reach the minimum before it can go to payment. It only applies
   // once delivery is the chosen option, so collection orders are never held up by it.
   const shortfall = deliveryShortfall(displayEstimatedTotal, slotType ?? "collection");
-  const canProceedToPayment = (slotRequired ? !!selectedSlot : !!slotType) && shortfall === 0;
-  // What the review boxes show: the chosen slot, or just delivery/collection when slots are off.
-  const summarySlot: { type: SlotType; label: string } | null = slotRequired
-    ? selectedSlot
-    : slotType
-      ? { type: slotType, label: `${slotType === "delivery" ? "Delivery" : "Collection"}, ${NO_SLOT_LABEL.toLowerCase()}` }
-      : null;
+  const canProceedToPayment = !!selectedSlot && shortfall === 0;
+  const summarySlot: { type: SlotType; label: string } | null = selectedSlot;
   // The address step is done once the contact details (and, for delivery, the address) are complete.
   const detailsComplete = readyToPay(buildCheckoutRequest());
   const deliveryCost = slotType === "delivery" ? 5 : 0;
 
   function buildCheckoutRequest(): CheckoutRequest | null {
-    if (!slotType || (slotRequired && !selectedSlot)) return null;
+    if (!selectedSlot || !slotType) return null;
     return {
       items: items.map((item) => ({
         wooProductId: item.product.wooId,
@@ -307,10 +308,7 @@ export default function CheckoutPage() {
       })),
       fulfilment: {
         type: slotType,
-        slot:
-          slotRequired && selectedSlot
-            ? { date: toSlotInstant(selectedSlot.date).toISOString(), label: selectedSlot.label, isChristmas: selectedSlot.isChristmas }
-            : { date: new Date().toISOString(), label: NO_SLOT_LABEL, isChristmas: false },
+        slot: { date: toSlotInstant(selectedSlot.date).toISOString(), label: selectedSlot.label, isChristmas: selectedSlot.isChristmas },
         postcode: slotType === "delivery" ? postcode : undefined,
       },
       customer: {
@@ -333,12 +331,11 @@ export default function CheckoutPage() {
   }
 
   function handleToken(token: string, card?: CardDetails) {
+    if (!selectedSlot) return;
     const request = buildCheckoutRequest();
-    if (!request || !slotType) return;
+    if (!request) return;
     pendingTokenRef.current = token;
-    const bookedSlot: Slot =
-      slotRequired && selectedSlot ? selectedSlot : { date: new Date(), label: NO_SLOT_LABEL, type: slotType, isChristmas: false };
-    setConfirmedOrder({ itemCount: items.length, slot: bookedSlot, isChristmas: isChristmasOrder });
+    setConfirmedOrder({ itemCount: items.length, slot: selectedSlot, isChristmas: isChristmasOrder });
     submit({ ...request, payment: { token, ...(card ? { card } : {}) } });
   }
 
@@ -707,13 +704,15 @@ export default function CheckoutPage() {
                   {showSlots && (
                     <>
                       <h2 className="mt-8 font-serif text-2xl font-bold text-navy">
-                        {orderType === "christmas" ? "Choose your Christmas slot" : "Choose your slot"}
+                        {orderType === "christmas" ? (slotsEnabled ? "Choose your Christmas slot" : "Choose your Christmas day") : slotsEnabled ? "Choose your slot" : "Choose your date"}
                       </h2>
                       <p className="mt-1 text-sm text-text-light">
                         {orderType === "christmas"
                           ? "Select your preferred delivery or collection date for Christmas."
                           : slotType === "delivery"
+                            ? slotsEnabled
                             ? "Select a delivery date and time."
+                            : "Select a delivery date."
                             : "Select a collection date."}
                       </p>
                       {orderType === "christmas" && (

@@ -255,11 +255,11 @@ export default function AdminGuidePage() {
             already placed for it are not cancelled.
           </p>
           <p>
-            At the top of the page, <strong className="text-navy">Customers choose a time slot at checkout</strong> is the
-            master switch. Slide it off and click <strong className="text-navy">Save changes</strong> to turn slots off for
-            everyone: checkout stops asking for a slot, customers still choose delivery or collection, and the order says
-            the time is to be arranged. A Christmas pre-order still books one of the Christmas days you picked. Slide
-            it on again to bring slots back.
+            At the top of the page, <strong className="text-navy">Customers choose a time window at checkout</strong> is the
+            master switch. Slide it off and click <strong className="text-navy">Save changes</strong> to take away the morning,
+            afternoon and collection windows for everyone: customers still pick a delivery or collection date, but not a
+            time. A date is still offered unless all of its slots are switched off below. Christmas orders still pick one of
+            the Christmas days. Slide it on again to bring the windows back.
           </p>
           <p>
             Sundays, Mondays and the Christmas break (25 December to 3 January) are never offered, so they are not

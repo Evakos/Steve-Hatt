@@ -54,8 +54,10 @@ export function isSlotDisabled(disabled: readonly string[], date: Date, windowId
   return disabled.includes(slotKey(date, windowId));
 }
 
-/** What an order records when time slots are switched off in /admin/slots. */
-export const NO_SLOT_LABEL = "Time to be arranged";
+/** With time windows switched off, a date is offered unless every window for this kind of order is off. */
+export function isDateBookableWithoutWindow(disabled: readonly string[], date: Date, type: "delivery" | "collection"): boolean {
+  return SLOT_WINDOWS.some((w) => w.type === type && !isSlotDisabled(disabled, date, w.id));
+}
 
 /** Works out which window a booked slot belongs to from its label ("... · Morning (9am-12pm)"),
  * for the server-side check at checkout. Null if it can't be told. */
