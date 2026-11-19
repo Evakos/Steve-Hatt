@@ -123,13 +123,17 @@ export async function getProductForPricing(
     const sizeChristmasMeta = variation.meta_data?.find((m) => m.key === "_steve_hatt_christmas_price");
     const sizeOptionChristmasPrice =
       typeof sizeChristmasMeta?.value === "string" ? Number.parseFloat(sizeChristmasMeta.value) || undefined : undefined;
+    const sizeDepositMeta = variation.meta_data?.find((m) => m.key === "_steve_hatt_christmas_deposit");
+    const sizeChristmasDeposit =
+      typeof sizeDepositMeta?.value === "string" ? Number.parseFloat(sizeDepositMeta.value) || undefined : undefined;
     return {
       pricePerKg,
       price: Number.parseFloat(wooProduct.price || wooProduct.regular_price) || 0,
       sizeOptionPrice: Number.parseFloat(variation.price) || 0,
       sizeOptionChristmasPrice,
       christmasPrice,
-      christmasDeposit,
+      // A size's own deposit, else the product's.
+      christmasDeposit: sizeChristmasDeposit ?? christmasDeposit,
       excludedFromChristmas,
     };
   }

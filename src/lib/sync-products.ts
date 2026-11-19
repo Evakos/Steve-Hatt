@@ -612,6 +612,27 @@ export async function runProductSync(request: Request, options: { recordId?: str
       }
       sizeChristmasPrice = parsedSizeChristmas.toFixed(2);
     }
+    // The deposit taken per unit of this size on a Christmas pre-order. Blank means the product's own deposit.
+    const sizeDepositRaw = row["Christmas deposit"]?.trim();
+    let sizeChristmasDeposit: string | undefined;
+    if (sizeDepositRaw) {
+      const parsedSizeDeposit = Number(sizeDepositRaw);
+      if (!Number.isFinite(parsedSizeDeposit) || parsedSizeDeposit < 0) {
+        results.push({
+          kind: "variation",
+          productId: NaN,
+          title,
+          status: "error",
+          message: `"Christmas deposit" column isn't a valid non-negative number, got: ${sizeDepositRaw}`,
+        });
+        continue;
+      }
+      sizeChristmasDeposit = parsedSizeDeposit.toFixed(2);
+    }
+    const sizeMeta = [
+      { key: META_KEYS.christmasPrice, value: sizeChristmasPrice ?? "" },
+      { key: META_KEYS.christmasDeposit, value: sizeChristmasDeposit ?? "" },
+    ];
 
     if (!Number.isFinite(parentProductId) || parentProductId <= 0) {
       results.push({
@@ -662,7 +683,7 @@ export async function runProductSync(request: Request, options: { recordId?: str
             regular_price: newPrice.toFixed(2),
             status: sizeStatus ?? "publish",
             attributes: [{ name: attributeName, option: newSize }],
-            ...(sizeChristmasPrice !== undefined ? { meta_data: [{ key: META_KEYS.christmasPrice, value: sizeChristmasPrice }] } : {}),
+            meta_data: sizeMeta,
           });
           siblings.push(made);
           await goLive(parentProductId);
@@ -735,7 +756,7 @@ export async function runProductSync(request: Request, options: { recordId?: str
         regular_price: regularPrice,
         attributes,
         status: sizeStatus,
-        meta_data: [{ key: META_KEYS.christmasPrice, value: sizeChristmasPrice ?? "" }],
+        meta_data: sizeMeta,
       });
       if (rename) renames.push(rename);
       await goLive(parentProductId);
