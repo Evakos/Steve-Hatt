@@ -347,8 +347,9 @@ export default function AdminGuidePage() {
           <p>
             On the <strong className="text-navy">Products</strong> page, under Christmas ordering, turn the switch on
             and click <strong className="text-navy">Save changes</strong>. It takes effect straight away on the live
-            site, with no redeploy. It goes on the day you flip it (for example 1 November). Christmas ordering can only
-            run from 1 October to 17 December, so a switch left on can never bring it back in January.
+            site, with no redeploy. It goes on the day you flip it, but Christmas ordering only opens from 15 November and
+            runs to the last order day (17 December unless you set another), so a switch flipped earlier waits until then, and
+            one left on can never bring it back in January.
           </p>
           <p>
             Customers can then choose a Christmas order at checkout. The slots are{" "}
@@ -428,8 +429,8 @@ export default function AdminGuidePage() {
             <strong className="text-navy">Use the default (4th January)</strong> puts it back.
           </p>
           <p>
-            You do not need to remember to switch Christmas off. Christmas ordering only runs from 1 October to
-            17 December, so a switch left on cannot bring it back in January.
+            You do not need to remember to switch Christmas off. Christmas ordering only runs from 15 November to
+            the last order day (17 December by default), so a switch left on cannot bring it back in January.
           </p>
         </Section>
       </Group>

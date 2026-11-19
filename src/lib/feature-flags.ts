@@ -82,7 +82,7 @@ export async function areOnlineOrdersClosed(): Promise<boolean> {
  * option is never presented with no bookable dates behind it.
  */
 export async function isChristmasShopActive(): Promise<boolean> {
-  // Christmas ordering only exists from 1st October to 17th December (see ordering-window.ts), so
+  // Christmas ordering only exists from 15th November to 17th December (see ordering-window.ts), so
   // the switch can be left on after the season: it closes itself after the 17th and stays off
   // through January, when next year's dates would otherwise count as "upcoming".
   const now = currentDate();

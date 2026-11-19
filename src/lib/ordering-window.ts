@@ -22,9 +22,10 @@ export const LAST_ORDER_LABEL = "17th December";
 export const ORDERS_CLOSED_REASON =
   "Online ordering is closed for the Christmas break, due to the shortage of fish and staff holidays. We will take orders again in the new year.";
 
-/** First month (0-based, so 9 = October) in which Christmas pre-ordering can be live. Before this
- * the Christmas switch is ignored, so it can never be left on and reappear in January. */
-export const CHRISTMAS_SEASON_START_MONTH = 9;
+/** The default opening day: Christmas pre-ordering can be live from this month (0-based, so 10 = November)
+ * and day. Before it the Christmas switch is ignored, so it can never be left on and reappear in January. */
+export const CHRISTMAS_SEASON_START_MONTH = 10;
+export const CHRISTMAS_SEASON_START_DAY = 15;
 
 /**
  * The current moment, or the date in ORDERING_SIMULATE_DATE (YYYY-MM-DD) so the closing window can
@@ -92,11 +93,14 @@ export function isOnlineOrderingClosed(from: Date = currentDate(), reopenDate?: 
   return false;
 }
 
-/** True from 1st October to 17th December (UK time) - the only stretch in which Christmas
+/** True from 15th November to 17th December (UK time) - the only stretch in which Christmas
  * pre-ordering can be live. Outside it the Christmas switch has no effect. */
 export function isChristmasSeason(from: Date = currentDate(), lastOrderDate?: string | null): boolean {
   const { year, month, day } = ukDateParts(from);
-  return (month >= CHRISTMAS_SEASON_START_MONTH && month <= 10) || (month === 11 && day <= (lastOrderDayFor(lastOrderDate, year) ?? LAST_ORDER_DAY));
+  return (
+    (month === CHRISTMAS_SEASON_START_MONTH && day >= CHRISTMAS_SEASON_START_DAY) ||
+    (month === 11 && day <= (lastOrderDayFor(lastOrderDate, year) ?? LAST_ORDER_DAY))
+  );
 }
 
 /** True for fulfilment dates inside the Christmas break (25th December to 3rd January) - the shop
