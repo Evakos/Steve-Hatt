@@ -140,7 +140,7 @@ export default async function Home() {
                   From Sea, to Shop, to You.
                 </h1>
                 <p className="animate-fade-up mt-4 max-w-lg text-base leading-relaxed text-white/90 sm:mt-6 sm:text-lg" style={{ animationDelay: "1780ms" }}>
-                  The <strong className="font-semibold text-white">freshest fish from the British coastline</strong>, prepared by hand and delivered to your door. Order online for next-day local delivery or click &amp; collect.
+                  The <strong className="font-medium text-white">freshest fish from the British coastline</strong>, prepared by hand and delivered to your door. Order online for next-day local delivery or click &amp; collect.
                 </p>
                 <div className="animate-fade-up mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 sm:mt-6" style={{ animationDelay: "1870ms" }}>
                   <GoogleRating data={googleReview} />
