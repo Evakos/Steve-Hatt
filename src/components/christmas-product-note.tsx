@@ -48,17 +48,12 @@ export default function ChristmasProductNote({ excluded }: { excluded: boolean }
       style={{ borderRadius: "8px" }}
     >
       <Snowflake className="pointer-events-none absolute -right-5 -top-5 h-28 w-28 text-[#1a3a2a]/5" aria-hidden />
-      <div className="relative flex items-start gap-3">
-        <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-[#1a3a2a] shadow-sm">
-          <Snowflake className="h-4 w-4" aria-hidden />
-        </span>
-        <div>
-          <p className="font-serif text-lg font-semibold leading-tight text-[#1a3a2a]">Available for Christmas pre-order</p>
-          <p className="mt-1 text-sm leading-relaxed text-[#1a3a2a]/80">
-            Reserve it now for the festive table, then choose your delivery or collection day at checkout. Christmas
-            pre-orders close on {LAST_ORDER_LABEL}.
-          </p>
-        </div>
+      <div className="relative">
+        <p className="font-serif text-lg font-semibold leading-tight text-[#1a3a2a]">Available for Christmas pre-order</p>
+        <p className="mt-1 text-sm leading-relaxed text-[#1a3a2a]/80">
+          Reserve it now for the festive table, then choose your delivery or collection day at checkout. Christmas
+          pre-orders close on {LAST_ORDER_LABEL}.
+        </p>
       </div>
       {dates.length > 0 && (
         <div className="relative mt-4 border-t border-[#1a3a2a]/10 pt-4">
