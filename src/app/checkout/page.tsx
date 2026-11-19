@@ -562,7 +562,7 @@ export default function CheckoutPage() {
                           {orderType === "christmas" && <Check className="ml-auto h-4 w-4 text-[#1a3a2a]" />}
                         </button>
                       </div>
-                      {items.some((item) => orderUnitPrice(item, true) !== orderUnitPrice(item, false)) && (
+                      {orderType !== "standard" && items.some((item) => orderUnitPrice(item, true) !== orderUnitPrice(item, false)) && (
                         <div className="relative mt-3 overflow-hidden border border-[#1a3a2a]/20 bg-[#e8f5ed]/50 px-4 py-3" style={{ borderRadius: "5px" }}>
                           <Snowflake className="pointer-events-none absolute -right-4 -top-4 h-24 w-24 text-[#1a3a2a]/5" aria-hidden />
                           <p className="relative text-sm text-[#1a3a2a]/80">
