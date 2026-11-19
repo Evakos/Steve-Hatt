@@ -54,20 +54,10 @@ export default function ChristmasProductNote({ excluded }: { excluded: boolean }
         pre-orders close on {LAST_ORDER_LABEL}.
       </p>
       {dates.length > 0 && (
-        <p className="relative mt-3 text-sm font-semibold text-[#1a3a2a]">Xmas delivery or collection dates are:</p>
-      )}
-      {dates.length > 0 && (
-        <ul className="relative mt-2 flex flex-wrap gap-2" aria-label="Christmas delivery and collection dates">
-          {dates.map((d) => (
-            <li
-              key={d.toISOString()}
-              className="bg-white px-3 py-1 text-xs font-medium text-[#1a3a2a] shadow-sm"
-              style={{ borderRadius: "4px" }}
-            >
-              {dateFormat.format(d)}
-            </li>
-          ))}
-        </ul>
+        <p className="relative mt-3 text-sm font-semibold text-[#1a3a2a]">
+          Xmas delivery or collection dates are:{" "}
+          <span className="font-normal">{dates.map((d) => dateFormat.format(d)).join(" · ")}</span>
+        </p>
       )}
       <p className="relative mt-3 text-xs font-bold text-[#1a3a2a]/60">The shop is closed on Sunday and Monday.</p>
     </div>
