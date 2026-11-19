@@ -2,14 +2,31 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Trash2, ShoppingBag } from "lucide-react";
-import { useCart, lineTotal } from "@/lib/cart-context";
+import { useState } from "react";
+import { Trash2, ShoppingBag, Truck, Gift, Check } from "lucide-react";
+import { useCart, orderLineTotal, christmasBlockedMessage, type OrderType } from "@/lib/cart-context";
 import Header from "@/components/header";
 import AnnouncementBanner from "@/components/announcement-banner";
 import { DELIVERY_MINIMUM, deliveryShortfall } from "@/lib/checkout/delivery-minimum";
 
 export default function CartPage() {
-  const { items, removeItem, updateQuantity, clearCart, estimatedTotal } = useCart();
+  const { items, removeItem, updateQuantity, clearCart, estimatedTotal, orderType, setOrderType, christmasAvailable } = useCart();
+  const isChristmasOrder = orderType === "christmas";
+  const [blockedReason, setBlockedReason] = useState<string | null>(null);
+  // Anything in the basket that is opted out of Christmas, shown whenever the order is a Christmas one.
+  const christmasProblem = isChristmasOrder ? christmasBlockedMessage(items) : null;
+
+  function chooseOrderType(next: OrderType) {
+    if (next === "christmas") {
+      const message = christmasBlockedMessage(items);
+      if (message) {
+        setBlockedReason(message);
+        return;
+      }
+    }
+    setBlockedReason(null);
+    setOrderType(next);
+  }
 
   return (
     <main className="flex flex-1 flex-col">
@@ -43,6 +60,41 @@ export default function CartPage() {
             <div className="mt-8 grid gap-8 lg:grid-cols-3">
               {/* Items list */}
               <div className="space-y-4 lg:col-span-2">
+                {christmasAvailable && (
+                  <div className="border border-border bg-white p-5" style={{ borderRadius: "14px" }}>
+                    <p className="text-sm font-medium text-navy">When is this order for?</p>
+                    <p className="mt-0.5 text-xs text-text-light">Christmas orders can be priced differently, so the prices below follow your choice.</p>
+                    <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                      <button
+                        type="button"
+                        onClick={() => chooseOrderType("standard")}
+                        className={`flex items-center gap-3 border p-4 text-left transition-colors ${orderType === "standard" ? "border-navy bg-navy/5" : "border-border bg-white hover:border-navy/30"}`}
+                        style={{ borderRadius: "5px" }}
+                      >
+                        <Truck className={`h-5 w-5 ${orderType === "standard" ? "text-navy" : "text-text-light"}`} />
+                        <div>
+                          <p className="text-sm font-medium text-navy">Standard order</p>
+                          <p className="text-xs text-text-light">Next available delivery or collection</p>
+                        </div>
+                        {orderType === "standard" && <Check className="ml-auto h-4 w-4 text-navy" />}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => chooseOrderType("christmas")}
+                        className={`flex items-center gap-3 border p-4 text-left transition-colors ${isChristmasOrder ? "border-[#1a3a2a] bg-[#e8f5ed]" : "border-[#1a3a2a]/20 bg-[#e8f5ed]/30 hover:border-[#1a3a2a]/40"}`}
+                        style={{ borderRadius: "5px" }}
+                      >
+                        <Gift className={`h-5 w-5 ${isChristmasOrder ? "text-[#1a3a2a]" : "text-[#1a3a2a]/50"}`} />
+                        <div>
+                          <p className={`text-sm font-medium ${isChristmasOrder ? "text-[#1a3a2a]" : "text-navy"}`}>For Christmas</p>
+                          <p className={`text-xs ${isChristmasOrder ? "text-[#1a3a2a]/70" : "text-text-light"}`}>Delivery or collection, 20th-24th December</p>
+                        </div>
+                        {isChristmasOrder && <Check className="ml-auto h-4 w-4 text-[#1a3a2a]" />}
+                      </button>
+                    </div>
+                    {(blockedReason || christmasProblem) && <p className="mt-3 text-sm text-red-600">{blockedReason ?? christmasProblem}</p>}
+                  </div>
+                )}
                 {items.map((item) => {
                   return (
                     <div
@@ -100,7 +152,7 @@ export default function CartPage() {
                             </button>
                           </div>
                           <span className="text-base font-semibold text-navy">
-                            £{lineTotal(item).toFixed(2)}
+                            £{orderLineTotal(item, isChristmasOrder).toFixed(2)}
                           </span>
                         </div>
                       </div>

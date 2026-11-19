@@ -2,8 +2,13 @@
 
 import { createContext, useContext, useState, useCallback, useRef, useEffect, type ReactNode } from "react";
 import type { Product } from "./products";
+import { computeUnitPriceForOrder } from "./pricing";
+import { hasUpcomingChristmasDates } from "./christmas-dates";
 
 const STORAGE_KEY = "steve-hatt-cart";
+const ORDER_TYPE_KEY = "steve-hatt-order-type";
+
+export type OrderType = "standard" | "christmas";
 
 function loadStoredItems(): CartItem[] {
   try {
@@ -33,6 +38,37 @@ export function lineTotal(item: CartItem): number {
   return item.unitPrice * item.quantity;
 }
 
+/**
+ * The per-unit price for an order of the given kind. The same rules the server uses at checkout
+ * (computeUnitPriceForOrder): on a Christmas order a product or size's manual Christmas price
+ * replaces the normal one where it has one. Shop and product pages always show the normal price.
+ */
+export function orderUnitPrice(item: CartItem, isChristmas: boolean): number {
+  const size = item.wooVariationId ? item.product.sizeOptions?.find((s) => s.wooVariationId === item.wooVariationId) : undefined;
+  return computeUnitPriceForOrder(
+    {
+      pricePerKg: item.product.pricePerKg,
+      price: item.product.price,
+      sizeOptionPrice: item.wooVariationId ? item.unitPrice : undefined,
+      sizeOptionChristmasPrice: size?.christmasPrice,
+      christmasPrice: item.product.christmasPrice,
+    },
+    item.weight,
+    isChristmas
+  );
+}
+
+export function orderLineTotal(item: CartItem, isChristmas: boolean): number {
+  return Math.round(orderUnitPrice(item, isChristmas) * item.quantity * 100) / 100;
+}
+
+/** Why the basket can't be a Christmas order, if something in it is opted out of Christmas. */
+export function christmasBlockedMessage(items: CartItem[]): string | null {
+  const ineligible = items.filter((item) => item.product.excludedFromChristmas);
+  if (ineligible.length === 0) return null;
+  return `${ineligible.map((item) => item.product.name).join(", ")} ${ineligible.length === 1 ? "isn't" : "aren't"} available for Christmas delivery, please remove ${ineligible.length === 1 ? "it" : "them"} to order for Christmas.`;
+}
+
 interface CartContextValue {
   items: CartItem[];
   addItem: (item: Omit<CartItem, "id">) => void;
@@ -41,6 +77,11 @@ interface CartContextValue {
   clearCart: () => void;
   itemCount: number;
   estimatedTotal: number;
+  /** Standard or Christmas, chosen in the basket or at checkout. Null until chosen while Christmas ordering is on. */
+  orderType: OrderType | null;
+  setOrderType: (type: OrderType | null) => void;
+  /** Whether Christmas pre-ordering is on right now, so the choice is offered at all. */
+  christmasAvailable: boolean;
   miniCartOpen: boolean;
   setMiniCartOpen: (open: boolean) => void;
 }
@@ -52,12 +93,44 @@ export function CartProvider({ children }: { children: ReactNode }) {
   // SSR) - the real cart loads in immediately after mount, in the effect below.
   const [items, setItems] = useState<CartItem[]>([]);
   const [hydrated, setHydrated] = useState(false);
+  const [orderType, setOrderTypeState] = useState<OrderType | null>(null);
+  const [christmasAvailable, setChristmasAvailable] = useState(false);
   const [miniCartOpen, setMiniCartOpen] = useState(false);
   const miniCartTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     setItems(loadStoredItems());
+    try {
+      const stored = localStorage.getItem(ORDER_TYPE_KEY);
+      if (stored === "standard" || stored === "christmas") setOrderTypeState(stored);
+    } catch {}
     setHydrated(true);
+  }, []);
+
+  // Whether Christmas ordering is on, the same rule the checkout uses. When it isn't, every order is
+  // a standard one and any earlier Christmas choice is dropped, so old prices can't linger.
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/feature-flags/christmas")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: { active?: boolean; slotsEnabled?: boolean } | null) => {
+        if (cancelled) return;
+        const available = (data?.active ?? false) && hasUpcomingChristmasDates() && data?.slotsEnabled !== false;
+        setChristmasAvailable(available);
+        if (!available) setOrderTypeState("standard");
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const setOrderType = useCallback((type: OrderType | null) => {
+    setOrderTypeState(type);
+    try {
+      if (type) localStorage.setItem(ORDER_TYPE_KEY, type);
+      else localStorage.removeItem(ORDER_TYPE_KEY);
+    } catch {}
   }, []);
 
   // `hydrated` (state, not a ref) is what makes this safe: on the mount render this effect sees
@@ -90,10 +163,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
-  const estimatedTotal = items.reduce((sum, item) => sum + lineTotal(item), 0);
+  const isChristmasOrder = orderType === "christmas";
+  const estimatedTotal = items.reduce((sum, item) => sum + orderLineTotal(item, isChristmasOrder), 0);
 
   return (
-    <CartContext value={{ items, addItem, removeItem, updateQuantity, clearCart, itemCount, estimatedTotal, miniCartOpen, setMiniCartOpen }}>
+    <CartContext value={{ items, addItem, removeItem, updateQuantity, clearCart, itemCount, estimatedTotal, orderType, setOrderType, christmasAvailable, miniCartOpen, setMiniCartOpen }}>
       {children}
     </CartContext>
   );

@@ -3,10 +3,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { X, Trash2 } from "lucide-react";
-import { useCart, lineTotal } from "@/lib/cart-context";
+import { useCart, orderLineTotal } from "@/lib/cart-context";
 
 export default function MiniCart() {
-  const { items, removeItem, miniCartOpen, setMiniCartOpen, estimatedTotal } = useCart();
+  const { items, removeItem, miniCartOpen, setMiniCartOpen, estimatedTotal, orderType } = useCart();
 
   if (!miniCartOpen) return null;
 
@@ -37,7 +37,7 @@ export default function MiniCart() {
                     <div className="flex-1 min-w-0">
                       <p className="truncate text-sm font-medium text-navy">{item.product.name}</p>
                       <p className="text-sm text-text-light">{item.preparation}</p>
-                      <p className="mt-0.5 text-sm font-medium text-navy">£{lineTotal(item).toFixed(2)}</p>
+                      <p className="mt-0.5 text-sm font-medium text-navy">£{orderLineTotal(item, orderType === "christmas").toFixed(2)}</p>
                     </div>
                     <button
                       onClick={() => removeItem(item.id)}

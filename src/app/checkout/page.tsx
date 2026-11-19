@@ -16,8 +16,7 @@ import {
   AlertCircle,
   Loader2,
 } from "lucide-react";
-import { useCart } from "@/lib/cart-context";
-import { computeUnitPriceForOrder } from "@/lib/pricing";
+import { useCart, orderUnitPrice } from "@/lib/cart-context";
 import {
   normalisePostcode,
   extractOutcode,
@@ -70,7 +69,8 @@ function formatDate(date: Date): string {
 }
 
 export default function CheckoutPage() {
-  const { items, clearCart } = useCart();
+  // The standard/Christmas choice lives in the cart, so the basket and checkout always agree.
+  const { items, clearCart, orderType, setOrderType } = useCart();
   const { state: submitState, submit, confirmThreeDS, reset: resetSubmit } = useCheckoutSubmit();
 
   // Snapshot the slot/christmas-ness at the moment of payment, so the confirmation screen can
@@ -116,7 +116,6 @@ export default function CheckoutPage() {
   // of shop is this" mode chosen while browsing - the different payment treatment (verify now vs
   // authorise now) falls out of how far away the date is, and isn't something a customer should
   // have to reason about upfront.
-  const [orderType, setOrderType] = useState<"standard" | "christmas" | null>(null);
   const [christmasBlockedReason, setChristmasBlockedReason] = useState<string | null>(null);
 
   // Whether Christmas pre-ordering is being offered at all right now (site-wide admin toggle -
@@ -155,18 +154,7 @@ export default function CheckoutPage() {
   // (see repriceCheckoutRequest / computeUnitPriceForOrder) - each item's manual Christmas price
   // is applied here per-product, the same priority logic the server uses, never a blanket
   // percentage and never shown anywhere outside checkout.
-  const displayUnitPrice = (item: (typeof items)[number]) =>
-    computeUnitPriceForOrder(
-      {
-        pricePerKg: item.product.pricePerKg,
-        price: item.product.price,
-        sizeOptionPrice: item.wooVariationId ? item.unitPrice : undefined,
-        sizeOptionChristmasPrice: item.product.sizeOptions?.find((s) => s.wooVariationId === item.wooVariationId)?.christmasPrice,
-        christmasPrice: item.product.christmasPrice,
-      },
-      item.weight,
-      isChristmasOrder
-    );
+  const displayUnitPrice = (item: (typeof items)[number]) => orderUnitPrice(item, isChristmasOrder);
   const displayEstimatedTotal =
     Math.round(items.reduce((sum, item) => sum + displayUnitPrice(item) * item.quantity, 0) * 100) / 100;
 
@@ -213,7 +201,6 @@ export default function CheckoutPage() {
           slotType?: unknown;
           contact?: unknown;
         };
-        if (saved.orderType === "standard" || saved.orderType === "christmas") setOrderType(saved.orderType);
         if (typeof saved.postcode === "string") setPostcode(saved.postcode);
         if (saved.postcodeStatus === "valid" || saved.postcodeStatus === "out-of-zone") setPostcodeStatus(saved.postcodeStatus);
         if (saved.slotType === "delivery" || saved.slotType === "collection") setSlotType(saved.slotType);
