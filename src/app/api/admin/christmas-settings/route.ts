@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { isStaffAuthenticated } from "@/lib/staff-auth";
-import { getChristmasShopActiveRaw, getChristmasPremiumPercent, getChristmasDepositAmount, getChristmasUseDepositFlow, getOrdersReopenDate, getLastOrderDate, getChristmasOpenDate } from "@/lib/feature-flags";
+import { getChristmasShopActiveRaw, getChristmasPremiumPercent, getChristmasDepositAmount, getChristmasUseDepositFlow, getOrdersReopenDate, getLastOrderDate, getChristmasOpenDate, getChristmasDates } from "@/lib/feature-flags";
 import { updateChristmasSettings } from "@/lib/edge-config-admin";
 
 const updateSchema = z.object({
@@ -11,6 +11,8 @@ const updateSchema = z.object({
   christmasUseDepositFlow: z.boolean(),
   // A January day (YYYY-MM-DD) or "" for the default 4th January.
   ordersReopenDate: z.string().regex(/^(\d{4}-01-(0[1-9]|[12]\d|3[01]))?$/).optional(),
+  // The Christmas delivery and collection days: December dates up to the 24th, [] for none.
+  christmasSlotDates: z.array(z.string().regex(/^\d{4}-12-(0[1-9]|1\d|2[0-4])$/)).max(24).optional(),
   // A date from October to December (YYYY-MM-DD) or "" for none.
   christmasOpenDate: z.string().regex(/^(\d{4}-(10|11|12)-(0[1-9]|[12]\d|3[01]))?$/).optional(),
   // A December day up to the 24th (YYYY-12-DD) or "" for none.
@@ -21,7 +23,7 @@ export async function GET() {
   if (!(await isStaffAuthenticated())) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  const [active, premiumPercent, christmasDepositAmount, christmasUseDepositFlow, ordersReopenDate, lastOrderDate, christmasOpenDate] = await Promise.all([
+  const [active, premiumPercent, christmasDepositAmount, christmasUseDepositFlow, ordersReopenDate, lastOrderDate, christmasOpenDate, christmasSlotDates] = await Promise.all([
     getChristmasShopActiveRaw(),
     getChristmasPremiumPercent(),
     getChristmasDepositAmount(),
@@ -29,8 +31,9 @@ export async function GET() {
     getOrdersReopenDate(),
     getLastOrderDate(),
     getChristmasOpenDate(),
+    getChristmasDates(),
   ]);
-  return NextResponse.json({ active, premiumPercent, christmasDepositAmount, christmasUseDepositFlow, ordersReopenDate, lastOrderDate, christmasOpenDate });
+  return NextResponse.json({ active, premiumPercent, christmasDepositAmount, christmasUseDepositFlow, ordersReopenDate, lastOrderDate, christmasOpenDate, christmasSlotDates });
 }
 
 export async function POST(request: Request) {

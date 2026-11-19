@@ -35,6 +35,17 @@ export async function getChristmasOpenDate(): Promise<string> {
   }
 }
 
+/** The Christmas delivery and collection days staff picked (YYYY-MM-DD), from Edge Config. Empty when
+ * none are picked: there are no default days, and without any Christmas ordering is not offered. */
+export async function getChristmasDates(): Promise<string[]> {
+  try {
+    const value = await get("christmasSlotDates");
+    return Array.isArray(value) ? value.filter((v): v is string => typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v)) : [];
+  } catch {
+    return [];
+  }
+}
+
 /** The last order day as customers see it, e.g. "16th December", or null when none is set. */
 export async function getLastOrderLabel(): Promise<string | null> {
   return lastOrderLabelFor(await getLastOrderDate());
@@ -96,7 +107,7 @@ export async function isChristmasShopActive(): Promise<boolean> {
   // the switch can be left on after the season: it closes itself after the 17th and stays off
   // through January, when next year's dates would otherwise count as "upcoming".
   const now = currentDate();
-  if (!isChristmasSeason(now, await getLastOrderDate(), await getChristmasOpenDate()) || !hasUpcomingChristmasDates(now)) return false;
+  if (!isChristmasSeason(now, await getLastOrderDate(), await getChristmasOpenDate()) || !hasUpcomingChristmasDates(now, await getChristmasDates())) return false;
   return getChristmasShopActiveRaw();
 }
 

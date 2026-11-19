@@ -10,7 +10,7 @@ import { sendOrderConfirmation, sendAdminNewOrderNotification } from "@/lib/emai
 import { getCustomerSession } from "@/lib/customer-auth";
 import { getChristmasDepositAmount, getChristmasUseDepositFlow } from "@/lib/feature-flags";
 import { ORDERS_CLOSED_REASON } from "@/lib/ordering-window";
-import { areOnlineOrdersClosed } from "@/lib/feature-flags";
+import { areOnlineOrdersClosed, getChristmasDates } from "@/lib/feature-flags";
 
 export async function POST(request: Request) {
   if (await areOnlineOrdersClosed()) {
@@ -24,7 +24,7 @@ export async function POST(request: Request) {
   const { transactionId, orderRef, threeDSResponse, checkout } = parsed.data;
   // Same rule as the first step: the booked date decides Christmas, not the browser's flag. Not
   // refused here, the card has already been through 3-D Secure; the first step did the checking.
-  checkout.fulfilment.slot.isChristmas = isChristmasSlotDate(checkout.fulfilment.slot.date);
+  checkout.fulfilment.slot.isChristmas = isChristmasSlotDate(checkout.fulfilment.slot.date, await getChristmasDates());
   const customerId = await getCustomerSession();
 
   const cardstream = getCardstreamClient();

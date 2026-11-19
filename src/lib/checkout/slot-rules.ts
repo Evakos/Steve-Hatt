@@ -1,4 +1,5 @@
 import { getAvailableDates, slotDateKey } from "@/lib/slots";
+import type { ChristmasDays } from "@/lib/christmas-dates";
 import type { RepricedOrder } from "./reprice";
 
 /**
@@ -12,11 +13,14 @@ import type { RepricedOrder } from "./reprice";
 const NOT_AVAILABLE = "Sorry, that date is no longer available. Please go back and choose another.";
 const CHRISTMAS_CLOSED = "Christmas orders aren't open right now. Please go back and choose another date.";
 
-/** True when the booked date is 20th-24th December (UK date). False for anything unreadable. */
-export function isChristmasSlotDate(slotDate: string): boolean {
+/** True when the booked date is one of the Christmas days staff picked (UK date). When no list is given
+ * (the unit tests) it is 20th-24th December. False for anything unreadable. */
+export function isChristmasSlotDate(slotDate: string, christmasDays?: ChristmasDays): boolean {
   const date = new Date(slotDate);
   if (Number.isNaN(date.getTime())) return false;
-  const [, month, day] = slotDateKey(date).split("-").map(Number);
+  const key = slotDateKey(date);
+  if (christmasDays) return christmasDays.includes(key);
+  const [, month, day] = key.split("-").map(Number);
   return month === 12 && day >= 20 && day <= 24;
 }
 
@@ -25,12 +29,12 @@ export type BookedSlotCheck = { ok: true; isChristmas: boolean } | { ok: false; 
 /** Whether the date can be booked right now: one of the days the checkout offers (Tue-Sat, next
  * 21 days, outside the Christmas break, plus the upcoming Christmas dates), and a Christmas date
  * only while the Christmas shop is switched on. */
-export function checkBookedSlot(slotDate: string, options: { christmasShopActive: boolean; now?: Date }): BookedSlotCheck {
+export function checkBookedSlot(slotDate: string, options: { christmasShopActive: boolean; now?: Date; christmasDays?: ChristmasDays }): BookedSlotCheck {
   const date = new Date(slotDate);
   if (Number.isNaN(date.getTime())) return { ok: false, reason: NOT_AVAILABLE };
   const key = slotDateKey(date);
-  if (!getAvailableDates(options.now).some((d) => slotDateKey(d) === key)) return { ok: false, reason: NOT_AVAILABLE };
-  const isChristmas = isChristmasSlotDate(slotDate);
+  if (!getAvailableDates(options.now, undefined, options.christmasDays).some((d) => slotDateKey(d) === key)) return { ok: false, reason: NOT_AVAILABLE };
+  const isChristmas = isChristmasSlotDate(slotDate, options.christmasDays);
   if (isChristmas && !options.christmasShopActive) return { ok: false, reason: CHRISTMAS_CLOSED };
   return { ok: true, isChristmas };
 }

@@ -1,4 +1,4 @@
-import { getDisabledSlots, getSlotsEnabled } from "@/lib/feature-flags";
+import { getChristmasDates, getDisabledSlots, getSlotsEnabled } from "@/lib/feature-flags";
 import { isChristmasFulfilmentDate } from "@/lib/christmas-dates";
 import { getAvailableDates, slotDateKey } from "@/lib/slots";
 import SlotsGrid from "./slots-grid";
@@ -9,12 +9,12 @@ import SlotsMasterSwitch from "./slots-master-switch";
 const ADMIN_DAYS_AHEAD = 150;
 
 export default async function AdminSlotsPage() {
-  const [disabled, slotsEnabled] = await Promise.all([getDisabledSlots(), getSlotsEnabled()]);
-  const dates = getAvailableDates(new Date(), ADMIN_DAYS_AHEAD).map((d) => ({
+  const [disabled, slotsEnabled, christmasDates] = await Promise.all([getDisabledSlots(), getSlotsEnabled(), getChristmasDates()]);
+  const dates = getAvailableDates(new Date(), ADMIN_DAYS_AHEAD, christmasDates).map((d) => ({
     key: slotDateKey(d),
     label: d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "long", timeZone: "Europe/London" }),
     month: d.toLocaleDateString("en-GB", { month: "long", year: "numeric", timeZone: "Europe/London" }),
-    isChristmas: isChristmasFulfilmentDate(d),
+    isChristmas: isChristmasFulfilmentDate(d, christmasDates),
   }));
 
   return (

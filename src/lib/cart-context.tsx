@@ -113,9 +113,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
     let cancelled = false;
     fetch("/api/feature-flags/christmas")
       .then((res) => (res.ok ? res.json() : null))
-      .then((data: { active?: boolean; slotsEnabled?: boolean } | null) => {
+      .then((data: { active?: boolean; slotsEnabled?: boolean; christmasDates?: string[] } | null) => {
         if (cancelled) return;
-        const available = (data?.active ?? false) && hasUpcomingChristmasDates() && data?.slotsEnabled !== false;
+        const available = (data?.active ?? false) && hasUpcomingChristmasDates(new Date(), data?.christmasDates ?? []) && data?.slotsEnabled !== false;
         setChristmasAvailable(available);
         if (!available) setOrderTypeState("standard");
       })

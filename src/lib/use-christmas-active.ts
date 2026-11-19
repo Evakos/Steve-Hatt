@@ -11,8 +11,8 @@ function loadChristmasActive(): Promise<boolean> {
   if (!cached) {
     cached = fetch("/api/feature-flags/christmas")
       .then((res) => (res.ok ? res.json() : null))
-      .then((data: { active?: boolean; slotsEnabled?: boolean } | null) =>
-        (data?.active ?? false) && hasUpcomingChristmasDates() && data?.slotsEnabled !== false
+      .then((data: { active?: boolean; slotsEnabled?: boolean; christmasDates?: string[] } | null) =>
+        (data?.active ?? false) && hasUpcomingChristmasDates(new Date(), data?.christmasDates ?? []) && data?.slotsEnabled !== false
       )
       .catch(() => {
         cached = null;

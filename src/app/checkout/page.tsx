@@ -129,13 +129,16 @@ export default function CheckoutPage() {
   // Delivery/collection slots staff have switched off in /admin/slots - hidden from the picker.
   const [disabledSlots, setDisabledSlots] = useState<string[]>([]);
   const [lastOrderLabel, setLastOrderLabel] = useState<string | null>(null);
+  // The Christmas days staff picked in the admin (YYYY-MM-DD).
+  const [christmasDates, setChristmasDates] = useState<string[]>([]);
   // The master switch in /admin/slots. When off, no time slot is chosen or required.
   const [slotsEnabled, setSlotsEnabled] = useState(true);
   useEffect(() => {
     fetch("/api/feature-flags/christmas")
       .then((res) => (res.ok ? res.json() : null))
-      .then((data: { active: boolean; useDepositFlow?: boolean; ordersClosed?: boolean; disabledSlots?: string[]; slotsEnabled?: boolean; lastOrderLabel?: string | null } | null) => {
+      .then((data: { active: boolean; useDepositFlow?: boolean; ordersClosed?: boolean; disabledSlots?: string[]; slotsEnabled?: boolean; lastOrderLabel?: string | null; christmasDates?: string[] } | null) => {
         setLastOrderLabel(data?.lastOrderLabel ?? null);
+        setChristmasDates(data?.christmasDates ?? []);
         setOrdersClosed(data?.ordersClosed === true);
         setSlotsEnabled(data?.slotsEnabled !== false);
         setDisabledSlots(data?.disabledSlots ?? []);
@@ -143,7 +146,7 @@ export default function CheckoutPage() {
         // still ahead). If the switch is on those dates exist year-round, so the flow works
         // for testing/setup outside the November-December season too.
         // Christmas orders are booked by date, so they pause while time slots are switched off.
-        const active = (data?.active ?? false) && hasUpcomingChristmasDates() && data?.slotsEnabled !== false;
+        const active = (data?.active ?? false) && hasUpcomingChristmasDates(new Date(), data?.christmasDates ?? []) && data?.slotsEnabled !== false;
         setChristmasShopActive(active);
         setChristmasUseDepositFlow(data?.useDepositFlow ?? false);
         if (!active) setOrderType("standard");
@@ -243,11 +246,11 @@ export default function CheckoutPage() {
 
   const slots = useMemo(() => {
     if (!slotType || !orderType) return [];
-    const dates = getAvailableDates();
+    const dates = getAvailableDates(undefined, undefined, christmasDates);
     const result: Slot[] = [];
 
     dates.forEach((date) => {
-      const christmas = isChristmasFulfilmentDate(date);
+      const christmas = isChristmasFulfilmentDate(date, christmasDates);
       if (orderType === "christmas" && !christmas) return;
       if (orderType === "standard" && christmas) return;
 
@@ -258,7 +261,7 @@ export default function CheckoutPage() {
       });
     });
     return result;
-  }, [slotType, orderType, disabledSlots]);
+  }, [slotType, orderType, disabledSlots, christmasDates]);
 
   // Guard rail: a delivery order has to reach the minimum before it can go to payment. It only applies
   // once delivery is the chosen option, so collection orders are never held up by it.

@@ -28,6 +28,8 @@ export interface ChristmasSettings {
   lastOrderDate?: string;
   /** Date (YYYY-MM-DD, October to December) Christmas orders open. "" means none is set. */
   christmasOpenDate?: string;
+  /** The Christmas delivery and collection days (YYYY-12-DD). [] means none picked. */
+  christmasSlotDates?: string[];
 }
 
 export async function updateChristmasSettings(input: ChristmasSettings): Promise<void> {
@@ -62,6 +64,9 @@ export async function updateChristmasSettings(input: ChristmasSettings): Promise
           : []),
         ...(input.christmasOpenDate !== undefined
           ? [{ operation: "upsert", key: "christmasOpenDate", value: input.christmasOpenDate }]
+          : []),
+        ...(input.christmasSlotDates !== undefined
+          ? [{ operation: "upsert", key: "christmasSlotDates", value: input.christmasSlotDates }]
           : []),
       ],
     }),

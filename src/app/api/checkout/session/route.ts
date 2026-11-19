@@ -7,7 +7,7 @@ import { sessionRequestSchema, type CheckoutRequest } from "@/lib/checkout/schem
 import { checkBookedSlot, christmasExclusionReason } from "@/lib/checkout/slot-rules";
 import { deliveryMinimumMessage, deliveryShortfall } from "@/lib/checkout/delivery-minimum";
 import { getCustomerSession } from "@/lib/customer-auth";
-import { areOnlineOrdersClosed, getDisabledSlots, getSlotsEnabled, isChristmasShopActive } from "@/lib/feature-flags";
+import { areOnlineOrdersClosed, getChristmasDates, getDisabledSlots, getSlotsEnabled, isChristmasShopActive } from "@/lib/feature-flags";
 import { ORDERS_CLOSED_REASON } from "@/lib/ordering-window";
 import { NO_SLOT_LABEL, isSlotDisabled, slotWindowFromLabel } from "@/lib/slots";
 import { getWooOrder, updateWooOrder } from "@/lib/woocommerce/orders";
@@ -59,7 +59,10 @@ export async function POST(request: Request) {
   if (!(await getSlotsEnabled())) {
     checkout.fulfilment.slot = { date: new Date().toISOString(), label: NO_SLOT_LABEL, isChristmas: false };
   } else {
-    const slotCheck = checkBookedSlot(checkout.fulfilment.slot.date, { christmasShopActive: await isChristmasShopActive() });
+    const slotCheck = checkBookedSlot(checkout.fulfilment.slot.date, {
+      christmasShopActive: await isChristmasShopActive(),
+      christmasDays: await getChristmasDates(),
+    });
     if (!slotCheck.ok) {
       return NextResponse.json({ status: "slot_unavailable", reason: slotCheck.reason }, { status: 409 });
     }

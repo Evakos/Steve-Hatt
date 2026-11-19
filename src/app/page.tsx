@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getAllProducts } from "@/lib/products";
-import { isChristmasShopActive, getLastOrderLabel } from "@/lib/feature-flags";
+import { isChristmasShopActive, getLastOrderLabel, getChristmasDates } from "@/lib/feature-flags";
 import { getUpcomingChristmasDates } from "@/lib/christmas-dates";
 import { Truck, Fish, Scaling, Leaf, Anchor, Recycle, ShoppingBag, Search, Snowflake, CalendarDays, CreditCard, type LucideIcon } from "lucide-react";
 import GoogleRating from "@/components/google-rating";
@@ -70,11 +70,12 @@ const CHRISTMAS_STEPS: { title: string; text: string; icon: LucideIcon; image?: 
 ];
 
 export default async function Home() {
-  const [products, christmasActive, googleReview, lastOrderLabel] = await Promise.all([
+  const [products, christmasActive, googleReview, lastOrderLabel, christmasDates] = await Promise.all([
     getAllProducts(),
     isChristmasShopActive(),
     getGoogleReviewData(),
     getLastOrderLabel(),
+    getChristmasDates(),
   ]);
   const todaysCatch = pickRandom(products, 6);
   // Curated festive picks for the Christmas section - only products whose slug is in the
@@ -101,7 +102,7 @@ export default async function Home() {
   const anyChristmasPricing = christmasFeatured.some((p) => !!p.christmasPrice);
   // The Christmas dates come from the same rules as checkout (Tue-Sat, 20th-24th December), so the
   // wording is right every year without anyone editing it.
-  const christmasDays = getUpcomingChristmasDates().map((d) => d.getDate());
+  const christmasDays = getUpcomingChristmasDates(new Date(), christmasDates).map((d) => d.getDate());
   const christmasWhen =
     christmasDays.length > 1
       ? `between ${ordinal(christmasDays[0])} and ${ordinal(christmasDays[christmasDays.length - 1])} December`

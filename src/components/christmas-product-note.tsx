@@ -16,6 +16,7 @@ const dateFormat = new Intl.DateTimeFormat("en-GB", { weekday: "short", day: "nu
 export default function ChristmasProductNote({ excluded }: { excluded: boolean }) {
   const [active, setActive] = useState(false);
   const [lastOrder, setLastOrder] = useState<string | null>(null);
+  const [christmasDates, setChristmasDates] = useState<string[]>([]);
 
   useEffect(() => {
     let cancelled = false;
@@ -25,6 +26,7 @@ export default function ChristmasProductNote({ excluded }: { excluded: boolean }
         if (cancelled) return;
         setActive(data.active === true);
         setLastOrder(typeof data.lastOrderLabel === "string" ? data.lastOrderLabel : null);
+        setChristmasDates(Array.isArray(data.christmasDates) ? data.christmasDates : []);
       })
       .catch(() => {});
     return () => {
@@ -42,7 +44,7 @@ export default function ChristmasProductNote({ excluded }: { excluded: boolean }
     );
   }
 
-  const dates = getUpcomingChristmasDates();
+  const dates = getUpcomingChristmasDates(new Date(), christmasDates);
 
   return (
     <div

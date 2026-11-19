@@ -18,11 +18,24 @@ function dayLabel(isoDate: string): string {
 
 /** A small month calendar for picking a date between `min` and `max` (both YYYY-MM-DD). No date is
  * chosen until staff click one. */
-function DateCalendar({ value, min, max, onChange }: { value: string; min: string; max: string; onChange: (value: string) => void }) {
+function DateCalendar({
+  value,
+  min,
+  max,
+  onChange,
+  values,
+}: {
+  value: string;
+  min: string;
+  max: string;
+  onChange: (value: string) => void;
+  /** When given, several days can be picked: clicking a day adds or removes it (via onChange). */
+  values?: string[];
+}) {
   const pad = (n: number) => String(n).padStart(2, "0");
   const today = new Date();
   const todayIso = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
-  const start = value || (todayIso >= min && todayIso <= max ? todayIso : min);
+  const start = value || values?.[0] || (todayIso >= min && todayIso <= max ? todayIso : min);
   const [view, setView] = useState({ year: Number(start.slice(0, 4)), month: Number(start.slice(5, 7)) - 1 });
   const monthIndex = (year: number, month: number) => year * 12 + month;
   const minM = monthIndex(Number(min.slice(0, 4)), Number(min.slice(5, 7)) - 1);
@@ -58,7 +71,7 @@ function DateCalendar({ value, min, max, onChange }: { value: string; min: strin
           if (day === null) return <span key={`blank-${i}`} />;
           const date = iso(day);
           const disabled = date < min || date > max;
-          const selected = date === value;
+          const selected = values ? values.includes(date) : date === value;
           return (
             <button
               key={day}
@@ -96,35 +109,39 @@ export default function ChristmasSettingsPanel() {
   // "" means no date is set. There are no default dates.
   const [lastOrderDate, setLastOrderDate] = useState("");
   const [openDate, setOpenDate] = useState("");
+  // The Christmas delivery and collection days picked (YYYY-MM-DD). None until staff pick some.
+  const [slotDates, setSlotDates] = useState<string[]>([]);
   // Tracks the last-saved values so "Save" can be disabled when there's nothing new to apply,
   // and so a failed save doesn't leave the UI claiming a value that was never actually stored.
-  const [saved, setSaved] = useState<{ active: boolean; premiumPercent: number; depositAmount: number; useDepositFlow: boolean; reopenDate: string; lastOrderDate: string; openDate: string } | null>(null);
+  const [saved, setSaved] = useState<{ active: boolean; premiumPercent: number; depositAmount: number; useDepositFlow: boolean; reopenDate: string; lastOrderDate: string; openDate: string; slotDates: string[] } | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/admin/christmas-settings")
       .then((res) => (res.ok ? res.json() : Promise.reject(res)))
-      .then((data: { active: boolean; premiumPercent: number; christmasDepositAmount: number; christmasUseDepositFlow: boolean; ordersReopenDate?: string; lastOrderDate?: string; christmasOpenDate?: string }) => {
+      .then((data: { active: boolean; premiumPercent: number; christmasDepositAmount: number; christmasUseDepositFlow: boolean; ordersReopenDate?: string; lastOrderDate?: string; christmasOpenDate?: string; christmasSlotDates?: string[] }) => {
         // A stored date from a previous year is stale (the server ignores it too), so show the default.
         const storedReopen = data.ordersReopenDate?.startsWith(`${BREAK_JANUARY_YEAR}-`) ? data.ordersReopenDate : "";
         const storedLastOrder = data.lastOrderDate?.startsWith(`${ORDER_DECEMBER_YEAR}-`) ? data.lastOrderDate : "";
         setLastOrderDate(storedLastOrder);
         const storedOpen = data.christmasOpenDate?.startsWith(`${ORDER_DECEMBER_YEAR}-`) ? data.christmasOpenDate : "";
         setOpenDate(storedOpen);
+        const storedSlots = (data.christmasSlotDates ?? []).filter((d) => d.startsWith(`${ORDER_DECEMBER_YEAR}-`)).sort();
+        setSlotDates(storedSlots);
         setActive(data.active);
         setPremiumPercent(data.premiumPercent);
         setDepositAmount(data.christmasDepositAmount ?? 0);
         setUseDepositFlow(data.christmasUseDepositFlow ?? false);
         setReopenDate(storedReopen);
-        setSaved({ active: data.active, premiumPercent: data.premiumPercent, depositAmount: data.christmasDepositAmount ?? 0, useDepositFlow: data.christmasUseDepositFlow ?? false, reopenDate: storedReopen, lastOrderDate: storedLastOrder, openDate: storedOpen });
+        setSaved({ active: data.active, premiumPercent: data.premiumPercent, depositAmount: data.christmasDepositAmount ?? 0, useDepositFlow: data.christmasUseDepositFlow ?? false, reopenDate: storedReopen, lastOrderDate: storedLastOrder, openDate: storedOpen, slotDates: storedSlots });
       })
       .catch(() => setError("Couldn't load current settings."))
       .finally(() => setLoading(false));
   }, []);
 
   const dirty =
-    !saved || saved.active !== active || saved.premiumPercent !== premiumPercent || saved.depositAmount !== depositAmount || saved.useDepositFlow !== useDepositFlow || saved.reopenDate !== reopenDate || saved.lastOrderDate !== lastOrderDate || saved.openDate !== openDate;
+    !saved || saved.active !== active || saved.premiumPercent !== premiumPercent || saved.depositAmount !== depositAmount || saved.useDepositFlow !== useDepositFlow || saved.reopenDate !== reopenDate || saved.lastOrderDate !== lastOrderDate || saved.openDate !== openDate || saved.slotDates.join(",") !== slotDates.join(",");
 
   async function handleSave() {
     setSaving(true);
@@ -133,14 +150,14 @@ export default function ChristmasSettingsPanel() {
       const res = await fetch("/api/admin/christmas-settings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ active, premiumPercent, christmasDepositAmount: depositAmount, christmasUseDepositFlow: useDepositFlow, ordersReopenDate: reopenDate, lastOrderDate, christmasOpenDate: openDate }),
+        body: JSON.stringify({ active, premiumPercent, christmasDepositAmount: depositAmount, christmasUseDepositFlow: useDepositFlow, ordersReopenDate: reopenDate, lastOrderDate, christmasOpenDate: openDate, christmasSlotDates: slotDates }),
       });
       const data = await res.json();
       if (!res.ok) {
         setError(data.error ?? "Save failed");
         return;
       }
-      setSaved({ active, premiumPercent, depositAmount, useDepositFlow, reopenDate, lastOrderDate, openDate });
+      setSaved({ active, premiumPercent, depositAmount, useDepositFlow, reopenDate, lastOrderDate, openDate, slotDates });
     } catch {
       setError("Network error. Please try again.");
     } finally {
@@ -228,6 +245,41 @@ export default function ChristmasSettingsPanel() {
         </div>
       </div>
       )}
+
+      <div className="mt-4 border border-border bg-cream p-5" style={{ borderRadius: "14px" }}>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-sm font-medium text-navy">Christmas delivery and collection days</p>
+            <p className="mt-1 text-sm text-text-light">
+              Click the days customers can book for Christmas. Click a picked day again to remove it. Nothing is picked
+              for you, and until some days are picked Christmas ordering can&apos;t be offered. Each day has the same
+              delivery and collection slots as any other, which you can switch off on the Delivery slots page.
+            </p>
+            <p className="mt-2 text-sm font-medium text-navy">
+              {slotDates.length > 0 ? `Picked: ${slotDates.map(dayLabel).join(", ")}` : "No days picked yet."}
+            </p>
+            {active && slotDates.length === 0 && (
+              <p className="mt-2 text-sm text-amber-600">
+                The Christmas switch is on, but no days are picked, so customers won&apos;t see Christmas ordering.
+              </p>
+            )}
+          </div>
+          <div className="flex shrink-0 flex-col items-end gap-1">
+            <DateCalendar
+              value=""
+              values={slotDates}
+              min={`${ORDER_DECEMBER_YEAR}-12-01`}
+              max={`${ORDER_DECEMBER_YEAR}-12-24`}
+              onChange={(date) => setSlotDates((prev) => (prev.includes(date) ? prev.filter((d) => d !== date) : [...prev, date].sort()))}
+            />
+            {slotDates.length > 0 && (
+              <button type="button" onClick={() => setSlotDates([])} className="text-xs text-text-light underline">
+                Clear all days
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
 
       <div className="mt-4 border border-border bg-cream p-5" style={{ borderRadius: "14px" }}>
         <div className="flex items-start justify-between gap-4">

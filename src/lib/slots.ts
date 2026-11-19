@@ -1,4 +1,4 @@
-import { getUpcomingChristmasDates, isTueToSat } from "./christmas-dates";
+import { getUpcomingChristmasDates, isTueToSat, type ChristmasDays } from "./christmas-dates";
 import { isInChristmasBreak } from "./ordering-window";
 
 /**
@@ -73,7 +73,7 @@ export const BOOKING_WINDOW_DAYS = 21;
  * break) plus any upcoming Christmas fulfilment dates (20th-24th December), in date order.
  * Customers get the default 21 days; the admin asks for longer so slots can be switched off well
  * in advance. */
-export function getAvailableDates(from: Date = new Date(), days: number = BOOKING_WINDOW_DAYS): Date[] {
+export function getAvailableDates(from: Date = new Date(), days: number = BOOKING_WINDOW_DAYS, christmasDays?: ChristmasDays): Date[] {
   const dates: Date[] = [];
   const today = new Date(from);
   today.setHours(0, 0, 0, 0);
@@ -89,7 +89,7 @@ export function getAvailableDates(from: Date = new Date(), days: number = BOOKIN
 
   // Christmas pre-order dates (Dec 20-24), de-duped against the 21-day window above for the
   // late-November/December overlap.
-  for (const d of getUpcomingChristmasDates(from)) {
+  for (const d of getUpcomingChristmasDates(from, christmasDays)) {
     if (!dates.some((existing) => existing.getTime() === d.getTime())) {
       dates.push(d);
     }

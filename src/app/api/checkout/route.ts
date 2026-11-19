@@ -17,6 +17,7 @@ import {
   getChristmasUseDepositFlow,
   getDisabledSlots,
   getSlotsEnabled,
+  getChristmasDates,
   areOnlineOrdersClosed,
   isChristmasShopActive,
 } from "@/lib/feature-flags";
@@ -45,7 +46,10 @@ export async function POST(request: Request) {
   if (!(await getSlotsEnabled())) {
     checkout.fulfilment.slot = { date: new Date().toISOString(), label: NO_SLOT_LABEL, isChristmas: false };
   } else {
-    const slotCheck = checkBookedSlot(checkout.fulfilment.slot.date, { christmasShopActive: await isChristmasShopActive() });
+    const slotCheck = checkBookedSlot(checkout.fulfilment.slot.date, {
+      christmasShopActive: await isChristmasShopActive(),
+      christmasDays: await getChristmasDates(),
+    });
     if (!slotCheck.ok) {
       return NextResponse.json({ status: "slot_unavailable", reason: slotCheck.reason }, { status: 409 });
     }
