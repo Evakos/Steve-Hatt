@@ -24,7 +24,7 @@ import {
 } from "@/lib/delivery-zones";
 import Header from "@/components/header";
 import AnnouncementBanner from "@/components/announcement-banner";
-import { LAST_ORDER_LABEL, ORDERS_CLOSED_REASON } from "@/lib/ordering-window";
+import { ORDERS_CLOSED_REASON } from "@/lib/ordering-window";
 import { NO_SLOT_LABEL, SLOT_WINDOWS, getAvailableDates, isSlotDisabled, toSlotInstant } from "@/lib/slots";
 import ContactAddressForm, { EMPTY_CONTACT_ADDRESS, type ContactAddressValue } from "@/components/checkout/contact-address-form";
 import PaymentPanel from "@/components/checkout/payment-panel";
@@ -128,14 +128,14 @@ export default function CheckoutPage() {
   const [ordersClosed, setOrdersClosed] = useState(false);
   // Delivery/collection slots staff have switched off in /admin/slots - hidden from the picker.
   const [disabledSlots, setDisabledSlots] = useState<string[]>([]);
-  const [lastOrderLabel, setLastOrderLabel] = useState(LAST_ORDER_LABEL);
+  const [lastOrderLabel, setLastOrderLabel] = useState<string | null>(null);
   // The master switch in /admin/slots. When off, no time slot is chosen or required.
   const [slotsEnabled, setSlotsEnabled] = useState(true);
   useEffect(() => {
     fetch("/api/feature-flags/christmas")
       .then((res) => (res.ok ? res.json() : null))
-      .then((data: { active: boolean; useDepositFlow?: boolean; ordersClosed?: boolean; disabledSlots?: string[]; slotsEnabled?: boolean; lastOrderLabel?: string } | null) => {
-        if (data?.lastOrderLabel) setLastOrderLabel(data.lastOrderLabel);
+      .then((data: { active: boolean; useDepositFlow?: boolean; ordersClosed?: boolean; disabledSlots?: string[]; slotsEnabled?: boolean; lastOrderLabel?: string | null } | null) => {
+        setLastOrderLabel(data?.lastOrderLabel ?? null);
         setOrdersClosed(data?.ordersClosed === true);
         setSlotsEnabled(data?.slotsEnabled !== false);
         setDisabledSlots(data?.disabledSlots ?? []);
@@ -692,9 +692,8 @@ export default function CheckoutPage() {
                           style={{ borderRadius: "10px" }}
                         >
                           <strong>Christmas closing times:</strong> please collect, or be available for delivery,
-                          within the time shown for your slot. The shop is closed on Sunday and Monday. Christmas
-                          pre-orders close on {lastOrderLabel}, and online ordering stays closed until the new
-                          year.
+                          within the time shown for your slot. The shop is closed on Sunday and Monday.
+                          {lastOrderLabel ? ` Christmas pre-orders close on ${lastOrderLabel}, and online ordering stays closed until the new year.` : ""}
                         </p>
                       )}
 

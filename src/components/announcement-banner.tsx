@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { X, Snowflake, Info } from "lucide-react";
 import Link from "next/link";
-import { LAST_ORDER_LABEL, ORDERS_CLOSED_REASON } from "@/lib/ordering-window";
+import { ORDERS_CLOSED_REASON } from "@/lib/ordering-window";
 
 type BannerVariant = "christmas" | "easter" | "summer" | "generic";
 
@@ -17,11 +17,17 @@ interface BannerConfig {
   ctaHref: string;
 }
 
-function christmasMessage(lastOrder: string) {
+function christmasMessage(lastOrder: string | null) {
   return (
     <>
-      Christmas pre-orders are now open! <strong className="font-semibold">Order by {lastOrder}</strong> to
-      reserve your festive feast.
+      Christmas pre-orders are now open!{" "}
+      {lastOrder ? (
+        <>
+          <strong className="font-semibold">Order by {lastOrder}</strong> to reserve your festive feast.
+        </>
+      ) : (
+        "Reserve your festive feast."
+      )}
     </>
   );
 }
@@ -32,7 +38,7 @@ const banners: Record<string, BannerConfig> = {
     bg: "bg-lobster",
     textColor: "text-white",
     accent: "text-white",
-    message: christmasMessage(LAST_ORDER_LABEL),
+    message: christmasMessage(null),
     cta: "Pre-order now",
     ctaHref: "/shop",
   },
@@ -59,7 +65,7 @@ export default function AnnouncementBanner({
   // Christmas break (after 17th December until the new year): the whole shop is closed to online
   // orders, so this banner switches to a closure notice with the reason, and can't be dismissed.
   const [ordersClosed, setOrdersClosed] = useState(false);
-  const [lastOrder, setLastOrder] = useState(LAST_ORDER_LABEL);
+  const [lastOrder, setLastOrder] = useState<string | null>(null);
   const config = banners[variant] || banners.christmas;
 
   useEffect(() => {
@@ -71,7 +77,7 @@ export default function AnnouncementBanner({
         if (cancelled) return;
         setChristmasActive(data.active === true);
         setOrdersClosed(data.ordersClosed === true);
-        if (typeof data.lastOrderLabel === "string") setLastOrder(data.lastOrderLabel);
+        setLastOrder(typeof data.lastOrderLabel === "string" ? data.lastOrderLabel : null);
       })
       .catch(() => {});
     return () => {

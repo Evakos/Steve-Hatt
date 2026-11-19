@@ -14,8 +14,8 @@ export async function getOrdersReopenDate(): Promise<string> {
   }
 }
 
-/** Staff-set last day for Christmas orders (YYYY-12-DD) from Edge Config, or "" to use the default
- * 17th December. Only honoured in its own year, see ordering-window.ts. */
+/** Staff-set last day for Christmas orders (YYYY-12-DD) from Edge Config, or "" when none is set (there
+ * is no default). Only honoured in its own year, see ordering-window.ts. */
 export async function getLastOrderDate(): Promise<string> {
   try {
     const value = await get("lastOrderDate");
@@ -25,8 +25,18 @@ export async function getLastOrderDate(): Promise<string> {
   }
 }
 
-/** The last order day as customers see it, e.g. "17th December". */
-export async function getLastOrderLabel(): Promise<string> {
+/** Staff-set first day for Christmas orders (YYYY-MM-DD) from Edge Config, or "" when none is set. */
+export async function getChristmasOpenDate(): Promise<string> {
+  try {
+    const value = await get("christmasOpenDate");
+    return typeof value === "string" ? value : "";
+  } catch {
+    return "";
+  }
+}
+
+/** The last order day as customers see it, e.g. "16th December", or null when none is set. */
+export async function getLastOrderLabel(): Promise<string | null> {
   return lastOrderLabelFor(await getLastOrderDate());
 }
 
@@ -82,11 +92,11 @@ export async function areOnlineOrdersClosed(): Promise<boolean> {
  * option is never presented with no bookable dates behind it.
  */
 export async function isChristmasShopActive(): Promise<boolean> {
-  // Christmas ordering only exists from 15th November to 17th December (see ordering-window.ts), so
+  // Christmas ordering only exists between the opening and last order days set in the admin (see ordering-window.ts), so
   // the switch can be left on after the season: it closes itself after the 17th and stays off
   // through January, when next year's dates would otherwise count as "upcoming".
   const now = currentDate();
-  if (!isChristmasSeason(now, await getLastOrderDate()) || !hasUpcomingChristmasDates(now)) return false;
+  if (!isChristmasSeason(now, await getLastOrderDate(), await getChristmasOpenDate()) || !hasUpcomingChristmasDates(now)) return false;
   return getChristmasShopActiveRaw();
 }
 

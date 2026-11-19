@@ -160,7 +160,7 @@ export default function AdminGuidePage() {
             },
             {
               tag: "Closed",
-              text: "Anything after 17th December. Online ordering is closed, whatever date they want.",
+              text: "Anything after the last order day you set. Online ordering is closed, whatever date they want.",
             },
           ].map((e) => (
             <li key={e.tag} className="flex items-start gap-3 bg-white/70 p-3" style={{ borderRadius: "10px" }}>
@@ -347,9 +347,8 @@ export default function AdminGuidePage() {
           <p>
             On the <strong className="text-navy">Products</strong> page, under Christmas ordering, turn the switch on
             and click <strong className="text-navy">Save changes</strong>. It takes effect straight away on the live
-            site, with no redeploy. It goes on the day you flip it, but Christmas ordering only opens from 15 November and
-            runs to the last order day (17 December unless you set another), so a switch flipped earlier waits until then, and
-            one left on can never bring it back in January.
+            site, with no redeploy. It goes on the day you flip it, or on the first day you have set for Christmas orders if that is
+            later, and it stops after the last order day you set.
           </p>
           <p>
             Customers can then choose a Christmas order at checkout. The slots are{" "}
@@ -378,8 +377,8 @@ export default function AdminGuidePage() {
 
           <h3 className="pt-1 font-medium text-navy">5. Switching it off</h3>
           <p>
-            Turn the switch off on the Products page at any time. It also switches itself off after 17 December, when
-            online ordering closes (see Closing for Christmas and reopening).
+            Turn the switch off on the Products page at any time. It also switches itself off after the last order day you set, when
+            online ordering closes (see Opening, closing and reopening for Christmas).
           </p>
         </Section>
 
@@ -413,24 +412,31 @@ export default function AdminGuidePage() {
           </p>
         </Section>
 
-        <Section icon={CalendarOff} title="Closing for Christmas and reopening" blurb="Automatic, with an optional reopen date.">
+        <Section icon={CalendarOff} title="Opening, closing and reopening for Christmas" blurb="You set the dates, there are no defaults.">
           <p>
-            Online ordering <strong className="text-navy">closes by itself after 17 December</strong> (UK time, or the{" "}
-            <strong className="text-navy">Last day for Christmas orders</strong> you set on the Products page, any December
-            date up to the 24th) and{" "}
-            <strong className="text-navy">reopens by itself on 4 January</strong>. There is nothing to switch. While it is
-            closed the website shows a banner explaining why, add to basket and checkout are blocked, and the order
-            system refuses anything that slips through.
+            Three dates are set on the <strong className="text-navy">Products</strong> page, each with a calendar. Nothing
+            is filled in for you, so set them each year:
           </p>
+          <ol className="list-decimal space-y-2 pl-5">
+            <li>
+              <strong className="text-navy">First day for Christmas orders:</strong> Christmas ordering shows from this day,
+              as long as the Christmas switch is on. Leave it blank and it shows as soon as the switch is on.
+            </li>
+            <li>
+              <strong className="text-navy">Last day for Christmas orders:</strong> any date up to 24 December. Online
+              ordering stops after it. The date shows in the banner, on the homepage, on product pages, at checkout and in
+              order emails. Leave it blank and ordering never closes for Christmas.
+            </li>
+            <li>
+              <strong className="text-navy">Reopening after Christmas:</strong> a date in January. After a last order day,
+              the shop stays closed until this date, so always set it. Orders can&apos;t be placed before it.
+            </li>
+          </ol>
           <p>
-            To reopen on a different day, go to the <strong className="text-navy">Products</strong> page, find{" "}
-            <strong className="text-navy">Reopening after Christmas</strong>, pick a date in January and click{" "}
-            <strong className="text-navy">Save changes</strong>. It applies to that January only, and{" "}
-            <strong className="text-navy">Use the default (4th January)</strong> puts it back.
-          </p>
-          <p>
-            You do not need to remember to switch Christmas off. Christmas ordering only runs from 15 November to
-            the last order day (17 December by default), so a switch left on cannot bring it back in January.
+            While ordering is closed the website shows a banner explaining why, add to basket and checkout are blocked, and
+            the order system refuses anything that slips through. Click <strong className="text-navy">Save changes</strong>{" "}
+            and it applies straight away. Christmas ordering can never show before October or after Christmas Eve, and a
+            date saved for one year is ignored the next, so last year&apos;s dates can&apos;t linger.
           </p>
         </Section>
       </Group>

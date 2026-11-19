@@ -84,7 +84,7 @@ export async function sendOrderConfirmation(input: OrderConfirmationInput) {
     ${
       repriced.isChristmas
         ? emailNotice(
-            `<strong>Christmas closing times.</strong> Please ${fulfilmentType === "delivery" ? "be available for delivery" : "collect your order"} within the time shown above. The shop is closed on Sunday and Monday, and online ordering is closed from ${lastOrderLabel} until the new year.`
+            `<strong>Christmas closing times.</strong> Please ${fulfilmentType === "delivery" ? "be available for delivery" : "collect your order"} within the time shown above. The shop is closed on Sunday and Monday${lastOrderLabel ? `, and online ordering is closed from ${lastOrderLabel} until the new year` : ""}.`
           )
         : ""
     }

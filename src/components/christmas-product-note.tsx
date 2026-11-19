@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { Snowflake } from "lucide-react";
 import { getUpcomingChristmasDates } from "@/lib/christmas-dates";
-import { LAST_ORDER_LABEL } from "@/lib/ordering-window";
 
 const dateFormat = new Intl.DateTimeFormat("en-GB", { weekday: "short", day: "numeric", month: "short" });
 
@@ -16,7 +15,7 @@ const dateFormat = new Intl.DateTimeFormat("en-GB", { weekday: "short", day: "nu
  */
 export default function ChristmasProductNote({ excluded }: { excluded: boolean }) {
   const [active, setActive] = useState(false);
-  const [lastOrder, setLastOrder] = useState(LAST_ORDER_LABEL);
+  const [lastOrder, setLastOrder] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -25,7 +24,7 @@ export default function ChristmasProductNote({ excluded }: { excluded: boolean }
       .then((data) => {
         if (cancelled) return;
         setActive(data.active === true);
-        if (typeof data.lastOrderLabel === "string") setLastOrder(data.lastOrderLabel);
+        setLastOrder(typeof data.lastOrderLabel === "string" ? data.lastOrderLabel : null);
       })
       .catch(() => {});
     return () => {
@@ -54,8 +53,8 @@ export default function ChristmasProductNote({ excluded }: { excluded: boolean }
       <div className="relative">
         <p className="font-serif text-lg font-semibold leading-tight text-[#1a3a2a]">Available for Christmas pre-order</p>
         <p className="mt-1 text-sm leading-relaxed text-[#1a3a2a]/80">
-          Reserve it now for the festive table, then choose your delivery or collection day at checkout. Christmas
-          pre-orders close on {lastOrder}.
+          Reserve it now for the festive table, then choose your delivery or collection day at checkout.
+          {lastOrder ? ` Christmas pre-orders close on ${lastOrder}.` : ""}
         </p>
       </div>
       {dates.length > 0 && (
