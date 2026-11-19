@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { DateCalendar, dayLabel } from "@/components/date-calendar";
 
 // The January the next (or current) Christmas break ends in: from July onwards that's next year's.
@@ -82,6 +83,9 @@ export default function ChristmasSettingsPanel() {
         <div>
           <p className="text-sm font-medium text-navy">Christmas ordering</p>
           <p className="mt-1 text-sm text-text-light">Shows the Christmas option to customers site-wide when on.</p>
+          <Link href="/admin/slots#christmas-days" className="mt-1 inline-block text-sm font-medium text-navy underline hover:text-lobster">
+            Choose Christmas delivery days &rarr;
+          </Link>
         </div>
         <button
           type="button"
