@@ -763,11 +763,15 @@ export default function CheckoutPage() {
                       ) : (
                         <div className="mt-4 border border-border bg-card p-6 text-center" style={{ borderRadius: "5px" }}>
                           <p className="text-sm font-medium text-navy">
-                            No {orderType === "christmas" ? "Christmas" : "delivery or collection"} dates are available.
+                            {orderType === "christmas" && slotType === "delivery"
+                              ? "No Christmas delivery days are available."
+                              : `No ${orderType === "christmas" ? "Christmas" : "delivery or collection"} dates are available.`}
                           </p>
                           <p className="mt-1 text-xs text-text-light">
                             {orderType === "christmas"
-                              ? "Christmas pre-orders run from 1st November for 20th-24th December. Please check back then."
+                              ? slotType === "delivery"
+                                ? "Christmas orders can be collected from 88 Essex Road. Please choose Click & Collect above."
+                                : "Please check back soon, or contact the shop for help."
                               : "Please try again shortly, or contact the shop for help."}
                           </p>
                         </div>
