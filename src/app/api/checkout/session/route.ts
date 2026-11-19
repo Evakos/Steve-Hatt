@@ -54,9 +54,9 @@ export async function POST(request: Request) {
 
   // Same rules as the older card route: the booked date decides Christmas, the slot must be
   // bookable and switched on, and nothing opted out of Christmas can be on a Christmas order.
-  // Time slots are switched off in /admin/slots: nothing is booked or checked, the order just
-  // records that a time is still to be arranged.
-  if (!(await getSlotsEnabled())) {
+  // Time slots are switched off in /admin/slots: a standard order books nothing and is not checked, it just
+  // records that a time is still to be arranged. A Christmas order still books and is checked as a Christmas day.
+  if (!(await getSlotsEnabled()) && checkout.fulfilment.slot.label === NO_SLOT_LABEL) {
     checkout.fulfilment.slot = { date: new Date().toISOString(), label: NO_SLOT_LABEL, isChristmas: false };
   } else {
     const slotCheck = checkBookedSlot(checkout.fulfilment.slot.date, {

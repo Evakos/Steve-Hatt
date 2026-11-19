@@ -47,7 +47,7 @@ Everything happens in **`/admin`** (one shared staff login).
 - Customers choose **Standard** or **For Christmas** in the basket. The basket, mini-cart and checkout then show the Christmas prices. While Christmas is on, a product with a Christmas price also shows it in grey beside the normal price on its page.
 
 **Delivery slots page → master switch**
-- **Customers choose a time slot at checkout** - slide it off and **Save changes** to turn time slots off for everyone. Checkout stops asking for a slot (customers still choose delivery or collection) and the order says the time is to be arranged. Christmas pre-orders pause while it is off, because they are booked by date.
+- **Customers choose a time slot at checkout** - slide it off and **Save changes** to turn time slots off for everyone. Checkout stops asking for a slot (customers still choose delivery or collection) and the order says the time is to be arranged. A Christmas pre-order still books one of the Christmas days.
 
 **Airtable columns (Website Products)**
 | Column | What it does |

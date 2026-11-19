@@ -258,7 +258,7 @@ export default function AdminGuidePage() {
             At the top of the page, <strong className="text-navy">Customers choose a time slot at checkout</strong> is the
             master switch. Slide it off and click <strong className="text-navy">Save changes</strong> to turn slots off for
             everyone: checkout stops asking for a slot, customers still choose delivery or collection, and the order says
-            the time is to be arranged. Christmas pre-orders pause while it is off, because they are booked by date. Slide
+            the time is to be arranged. A Christmas pre-order still books one of the Christmas days you picked. Slide
             it on again to bring slots back.
           </p>
           <p>

@@ -146,8 +146,8 @@ export default function CheckoutPage() {
         // Christmas is only offered while fulfilment dates are actually bookable (Dec 20-24
         // still ahead). If the switch is on those dates exist year-round, so the flow works
         // for testing/setup outside the November-December season too.
-        // Christmas orders are booked by date, so they pause while time slots are switched off.
-        const active = (data?.active ?? false) && hasUpcomingChristmasDates(new Date(), data?.christmasDates ?? []) && data?.slotsEnabled !== false;
+        // Christmas orders are always booked by date, whether or not everyday time slots are switched off.
+        const active = (data?.active ?? false) && hasUpcomingChristmasDates(new Date(), data?.christmasDates ?? []);
         setChristmasShopActive(active);
         setChristmasUseDepositFlow(data?.useDepositFlow ?? false);
         if (!active) setOrderType("standard");
@@ -256,7 +256,9 @@ export default function CheckoutPage() {
   }
 
   const postcodeChecked = postcodeStatus === "valid" || postcodeStatus === "out-of-zone";
-  const showSlots = slotsEnabled && !!slotType && postcodeChecked;
+  // With slots switched off, standard orders need no slot, but a Christmas order still books one of the Christmas days.
+  const slotRequired = slotsEnabled || orderType === "christmas";
+  const showSlots = slotRequired && !!slotType && postcodeChecked;
 
   const slots = useMemo(() => {
     if (!slotType || !orderType) return [];
@@ -280,9 +282,9 @@ export default function CheckoutPage() {
   // Guard rail: a delivery order has to reach the minimum before it can go to payment. It only applies
   // once delivery is the chosen option, so collection orders are never held up by it.
   const shortfall = deliveryShortfall(displayEstimatedTotal, slotType ?? "collection");
-  const canProceedToPayment = (slotsEnabled ? !!selectedSlot : !!slotType) && shortfall === 0;
+  const canProceedToPayment = (slotRequired ? !!selectedSlot : !!slotType) && shortfall === 0;
   // What the review boxes show: the chosen slot, or just delivery/collection when slots are off.
-  const summarySlot: { type: SlotType; label: string } | null = slotsEnabled
+  const summarySlot: { type: SlotType; label: string } | null = slotRequired
     ? selectedSlot
     : slotType
       ? { type: slotType, label: `${slotType === "delivery" ? "Delivery" : "Collection"}, ${NO_SLOT_LABEL.toLowerCase()}` }
@@ -292,7 +294,7 @@ export default function CheckoutPage() {
   const deliveryCost = slotType === "delivery" ? 5 : 0;
 
   function buildCheckoutRequest(): CheckoutRequest | null {
-    if (!slotType || (slotsEnabled && !selectedSlot)) return null;
+    if (!slotType || (slotRequired && !selectedSlot)) return null;
     return {
       items: items.map((item) => ({
         wooProductId: item.product.wooId,
@@ -305,7 +307,7 @@ export default function CheckoutPage() {
       fulfilment: {
         type: slotType,
         slot:
-          slotsEnabled && selectedSlot
+          slotRequired && selectedSlot
             ? { date: toSlotInstant(selectedSlot.date).toISOString(), label: selectedSlot.label, isChristmas: selectedSlot.isChristmas }
             : { date: new Date().toISOString(), label: NO_SLOT_LABEL, isChristmas: false },
         postcode: slotType === "delivery" ? postcode : undefined,
@@ -334,7 +336,7 @@ export default function CheckoutPage() {
     if (!request || !slotType) return;
     pendingTokenRef.current = token;
     const bookedSlot: Slot =
-      slotsEnabled && selectedSlot ? selectedSlot : { date: new Date(), label: NO_SLOT_LABEL, type: slotType, isChristmas: false };
+      slotRequired && selectedSlot ? selectedSlot : { date: new Date(), label: NO_SLOT_LABEL, type: slotType, isChristmas: false };
     setConfirmedOrder({ itemCount: items.length, slot: bookedSlot, isChristmas: isChristmasOrder });
     submit({ ...request, payment: { token, ...(card ? { card } : {}) } });
   }

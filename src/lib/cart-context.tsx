@@ -120,7 +120,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       .then((res) => (res.ok ? res.json() : null))
       .then((data: { active?: boolean; slotsEnabled?: boolean; christmasDates?: string[]; lastOrderLabel?: string | null } | null) => {
         if (cancelled) return;
-        const available = (data?.active ?? false) && hasUpcomingChristmasDates(new Date(), data?.christmasDates ?? []) && data?.slotsEnabled !== false;
+        const available = (data?.active ?? false) && hasUpcomingChristmasDates(new Date(), data?.christmasDates ?? []);
         setChristmasAvailable(available);
         setChristmasDates(data?.christmasDates ?? []);
         setLastOrderLabel(data?.lastOrderLabel ?? null);

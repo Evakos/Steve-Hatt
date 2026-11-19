@@ -50,7 +50,7 @@ export default function SlotsMasterSwitch({ initialEnabled }: Props) {
           <span className="mt-0.5 block text-sm text-text-light">
             {enabled
               ? "On: customers pick a delivery or collection slot, as set up below."
-              : "Off: checkout does not ask for a slot. Customers still choose delivery or collection, and the order says the time is to be arranged. Christmas pre-orders are paused while this is off, because they are booked by date."}
+              : "Off: checkout does not ask for a slot. Customers still choose delivery or collection, and the order says the time is to be arranged. Christmas pre-orders still ask for one of the Christmas days, picked below."}
           </span>
         </span>
         <button
