@@ -5,10 +5,10 @@ Plain-terms guide for the shop team.
 ## The three parts (one-way flow)
 
 1. **WordPress + WooCommerce** - the real "back shop". Products, prices and orders actually live here. It's the source of truth.
-2. **Airtable** - a friendly front window over WordPress. Edit products in the **Steve Hatt Website** base, press **Sync now** in the admin, and it writes into WordPress. It's an *addition* to WordPress, not a replacement - nothing in WordPress becomes obsolete.
+2. **Airtable** - a friendly front window over WordPress. Edit products in the **Steve Hatt Website** base and the shop updates by itself within a few seconds (the **Sync now** button in the admin is a backup). It's an *addition* to WordPress, not a replacement - nothing in WordPress becomes obsolete.
 3. **The website** - the shopfront customers see. It *reads* from WordPress and displays the shop. This fast front end is simply **hosted on Vercel** - not a separate system you ever log into or manage.
 
-So the loop is: **edit in Airtable → Sync → WordPress → the website shows it.** One direction, one button.
+So the loop is: **edit in Airtable → automatic sync → WordPress → the website shows it.** One direction, no button to press.
 
 ## How a payment works
 
@@ -26,9 +26,11 @@ So the loop is: **edit in Airtable → Sync → WordPress → the website shows 
 
 Everything happens in **`/admin`** (one shared staff login).
 
-**Products page → "Sync now"**
-- Change names, prices, descriptions, prep, origin, sustainability, storage → edit the **Website Products** table in Airtable → **Sync now**.
-- Weight/size products (whole salmon, lobster, halibut, turbot, crab) → edit the **Website Variations** table. Each size is linked to its product, so you can also open a product and edit its sizes from inside it. Then **Sync now**.
+**Editing products (Airtable updates the shop by itself)**
+- Change names, prices, descriptions, prep, origin, sustainability, storage → edit the **Website Products** table in Airtable. It is live within a few seconds.
+- Weight/size products (whole salmon, lobster, halibut, turbot, crab) → edit the **Website Variations** table. Each size is linked to its product, so you can also open a product and edit its sizes from inside it.
+- It works through an Airtable automation on each table. If a change doesn't appear, open **Automations → History** in Airtable and look for an error (a missing photo, a price that isn't a number). Errors show there, not on the row.
+- **Products page → Sync now** re-sends everything and is still there as a backup.
 - Sync only changes what you filled in. A blank cell leaves that field on the shop untouched.
 - Rows or sizes with a problem (for example a price that isn't a number) are skipped and listed as errors after the sync, so nothing half-applied reaches the shop.
 
@@ -37,11 +39,15 @@ Everything happens in **`/admin`** (one shared staff login).
 - **Never edit** `product_id`, `variation_id` or `slug`. They link each row to the right product on the shop.
 - Price, stock and Christmas fields can be edited freely. Status controls whether a product is visible: `publish` is live, `draft` is hidden.
 - To hide a product without deleting it, set its `status` to `draft` and sync.
-- New products: for now they are created in WordPress first, and their `product_id` is then added to Airtable. Creating them straight from Airtable is planned.
+- New products: add a row in **Website Products** and leave `product_id` blank. It is added to the shop once it has a title, a price (or sizes), a category and a photo. New sizes work the same way in **Website Variations**.
 
 **Products page → Christmas controls**
 - **Christmas ordering** - a switch you flip on/off when you choose; the 20-24 December slots appear automatically (closed Sun/Mon).
 - **Default deposit (£)** - a blanket deposit, used only for products with no deposit of their own.
+- Customers choose **Standard** or **For Christmas** in the basket. The basket, mini-cart and checkout then show the Christmas prices. While Christmas is on, a product with a Christmas price also shows it in grey beside the normal price on its page.
+
+**Delivery slots page → master switch**
+- **Customers choose a time slot at checkout** - untick it and **Save changes** to turn time slots off for everyone. Checkout stops asking for a slot (customers still choose delivery or collection) and the order says the time is to be arranged. Christmas pre-orders pause while it is off, because they are booked by date.
 
 **Airtable columns (Website Products)**
 | Column | What it does |
@@ -61,6 +67,8 @@ Everything happens in **`/admin`** (one shared staff login).
 | Column | What it does |
 |---|---|
 | `price` | price for that size |
+| `Christmas price` | what that size costs on a Christmas order (blank = the normal price) |
+| `Christmas deposit` | deposit per unit of that size on a Christmas pre-order (blank = the product's deposit) |
 | `variation_id`, `parent_product_id`, `Product` | link each size to its product, do not edit |
 
 ## Switching Christmas on (step by step)
@@ -68,8 +76,8 @@ Everything happens in **`/admin`** (one shared staff login).
 **Before**
 1. In Airtable (**Website Products**), fill in `Christmas price` for products that cost more at Christmas. Blank means the normal price.
 2. Set `Excluded from Christmas?` to `Excluded` for anything that can't be held until December.
-3. Check `Stock` and `status`, then press **Sync now** on the Products page. It should report no errors.
-4. Size products (whole salmon, lobsters, halibut, turbot, dressed crab) use their normal size prices at Christmas for now.
+3. Check `Stock` and `status`. Edits go live on their own, and **Sync now** on the Products page re-sends everything and should report no errors.
+4. Size products (whole salmon, lobsters, halibut, turbot, dressed crab): fill in `Christmas price` on each size in **Website Variations**. A blank size keeps its normal price.
 5. Place one test order and check the emails and the Orders page.
 
 **Switching on**

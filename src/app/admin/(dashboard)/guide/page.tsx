@@ -255,6 +255,13 @@ export default function AdminGuidePage() {
             already placed for it are not cancelled.
           </p>
           <p>
+            At the top of the page, <strong className="text-navy">Customers choose a time slot at checkout</strong> is the
+            master switch. Untick it and click <strong className="text-navy">Save changes</strong> to turn slots off for
+            everyone: checkout stops asking for a slot, customers still choose delivery or collection, and the order says
+            the time is to be arranged. Christmas pre-orders pause while it is off, because they are booked by date. Tick
+            it again to bring slots back.
+          </p>
+          <p>
             Sundays, Mondays and the Christmas break (25 December to 3 January) are never offered, so they are not
             listed. Customers can only book about three weeks ahead, plus the Christmas dates once Christmas is on, so
             switching off a later day simply closes it in advance. Good Friday is still listed, so switch it off if you
@@ -322,12 +329,16 @@ export default function AdminGuidePage() {
               right (<code className="text-[0.9em]">publish</code> is live, <code className="text-[0.9em]">draft</code> is hidden).
             </li>
             <li>
-              Go to the <strong className="text-navy">Products</strong> page and click{" "}
-              <strong className="text-navy">Sync now</strong>. It should report no errors.
+              Edits in Airtable go live on their own within a few seconds. If you want to be sure, the{" "}
+              <strong className="text-navy">Sync now</strong> button on the <strong className="text-navy">Products</strong>{" "}
+              page re-sends everything and should report no errors.
             </li>
             <li>
-              Size products (whole salmon, lobsters, halibut, turbot, dressed crab) always use their normal size
-              prices at Christmas. A Christmas price isn&apos;t supported for sizes yet.
+              Size products (whole salmon, lobsters, halibut, turbot, dressed crab) have their Christmas price on each
+              size: open <strong className="text-navy">{source.variationsTable}</strong> and fill in{" "}
+              <code className="text-[0.9em]">Christmas price</code> on the sizes that cost more. Blank means the size
+              keeps its normal price. An optional <code className="text-[0.9em]">Christmas deposit</code> per size works the
+              same way, falling back to the product&apos;s deposit.
             </li>
             <li>Place one test order and check the confirmation email arrives and the order shows in Orders.</li>
           </ol>
@@ -388,8 +399,10 @@ export default function AdminGuidePage() {
           </p>
           <p>
             Almost every product can be pre-ordered for Christmas by default. A few can be marked as excluded (see the
-            product sync). Customers choose Standard or Christmas at checkout. Either way the booked date has the final
-            say: 20 to 24 December is always a Christmas order and any other date never is. If the basket has an excluded
+            product sync). Customers choose Standard or Christmas in the basket (checkout shows the same choice), and the
+            basket, mini-cart and checkout all show the Christmas price once they pick Christmas. While Christmas ordering
+            is on, a product that has a Christmas price also shows it in grey beside the normal price on its page. Either
+            way the booked date has the final say: 20 to 24 December is always a Christmas order and any other date never is. If the basket has an excluded
             item, Christmas is blocked with a message telling them to remove it.
           </p>
           <p>
@@ -420,20 +433,29 @@ export default function AdminGuidePage() {
       </Group>
 
       <Group label="Products">
-        <Section icon={RefreshCw} title="Product sync" blurb="Edit in Airtable, press Sync now.">
+        <Section icon={RefreshCw} title="Product sync" blurb="Edit in Airtable, it updates the shop by itself.">
           <p>
             Product details (title, price, stock, status, description, tag, preparation, origin, sustainability, storage,
             Christmas price, Christmas deposit) can be edited in the{" "}
             <a href={source.url} target="_blank" rel="noopener noreferrer" className="text-navy underline hover:text-lobster">
               {source.name}
             </a>{" "}
-            rather than logging into WordPress. On the <strong className="text-navy">Products</strong> page, click{" "}
-            <strong className="text-navy">Sync now</strong> to pull the &quot;{source.productsTable}&quot; table and
-            push any changes to the shop.
+            rather than logging into WordPress. A change goes live on the shop within a few seconds of you editing the
+            row, with no button to press. The <strong className="text-navy">Sync now</strong> button on the{" "}
+            <strong className="text-navy">Products</strong> page pulls the whole &quot;{source.productsTable}&quot; table
+            and is still there as a backup.
           </p>
           <p>
-            Each row needs a <code className="text-[0.9em]">product_id</code> to match against, rows without one, or
-            with malformed data (e.g. a non-numeric price, an invalid status), are skipped and listed as errors
+            This works through an Airtable automation on each table, which tells the shop which row changed. If a change
+            does not appear, open <strong className="text-navy">Automations</strong> in Airtable and check{" "}
+            <strong className="text-navy">History</strong> for an error, such as a missing photo or a price that is not a
+            number: errors show there, not on the row. The sync only goes one way, from Airtable to the shop. Editing a
+            product in WordPress does not change Airtable.
+          </p>
+          <p>
+            A row with a <code className="text-[0.9em]">product_id</code> updates that product. A row without one is a
+            new product and is added to the shop, as long as it has a title, a price (or sizes), a category and a photo.
+            Rows with malformed data (e.g. a non-numeric price, an invalid status) are skipped and reported as errors
             rather than silently applied. The sync also refreshes the site&apos;s product cache automatically, so
             changes show up on the shop straight away rather than waiting for the normal cache window.
           </p>
@@ -443,7 +465,9 @@ export default function AdminGuidePage() {
             separate WooCommerce variation. These live in the{" "}
             <strong className="text-navy">&quot;{source.variationsTable}&quot;</strong> table instead, matched by{" "}
             <code className="text-[0.9em]">variation_id</code> (not <code className="text-[0.9em]">product_id</code>).
-            Sync now pulls both tables in one go.
+            Sync now pulls both tables in one go. A size row with no <code className="text-[0.9em]">variation_id</code>{" "}
+            is a new size and is added to its product. Each size can also have its own{" "}
+            <code className="text-[0.9em]">Christmas price</code> and <code className="text-[0.9em]">Christmas deposit</code>.
           </p>
         </Section>
       </Group>
