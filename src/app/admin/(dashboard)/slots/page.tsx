@@ -1,15 +1,21 @@
-import { getChristmasDates, getDisabledSlots, getSlotsEnabled } from "@/lib/feature-flags";
+import { getChristmasDates, getChristmasShopActiveRaw, getDisabledSlots, getSlotsEnabled } from "@/lib/feature-flags";
 import { isChristmasFulfilmentDate } from "@/lib/christmas-dates";
 import { getAvailableDates, slotDateKey } from "@/lib/slots";
 import SlotsGrid from "./slots-grid";
 import SlotsMasterSwitch from "./slots-master-switch";
+import ChristmasDaysPicker from "./christmas-days-picker";
 
 // About five months ahead, which runs into next year and past Easter, so closures can be set up
 // well in advance. Customers can still only book about three weeks ahead.
 const ADMIN_DAYS_AHEAD = 150;
 
 export default async function AdminSlotsPage() {
-  const [disabled, slotsEnabled, christmasDates] = await Promise.all([getDisabledSlots(), getSlotsEnabled(), getChristmasDates()]);
+  const [disabled, slotsEnabled, christmasDates, christmasOn] = await Promise.all([
+    getDisabledSlots(),
+    getSlotsEnabled(),
+    getChristmasDates(),
+    getChristmasShopActiveRaw(),
+  ]);
   const dates = getAvailableDates(new Date(), ADMIN_DAYS_AHEAD, christmasDates).map((d) => ({
     key: slotDateKey(d),
     label: d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "long", timeZone: "Europe/London" }),
@@ -28,6 +34,7 @@ export default async function AdminSlotsPage() {
         simply closes it in advance.
       </p>
       <SlotsMasterSwitch initialEnabled={slotsEnabled} />
+      <ChristmasDaysPicker initialDays={christmasDates} year={new Date().getFullYear()} christmasOn={christmasOn} />
       <SlotsGrid dates={dates} initialDisabled={disabled} />
     </div>
   );
