@@ -4,6 +4,8 @@ import { useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import type { Product } from "@/lib/products";
+import { christmasAmount } from "@/components/christmas-price-line";
+import { useChristmasActive } from "@/lib/use-christmas-active";
 import type { SVGProps } from "react";
 import {
   AllCategoryIcon,
@@ -33,6 +35,7 @@ const categoryIcons: Record<string, (props: SVGProps<SVGSVGElement>) => React.Re
 export default function ShopGrid({ products }: Props) {
   const categories = useMemo(() => [...new Set(products.map((p) => p.category))].sort(), [products]);
   const [selected, setSelected] = useState<string | null>(null);
+  const christmasActive = useChristmasActive();
 
   const visible = selected ? products.filter((p) => p.category === selected) : products;
 
@@ -107,7 +110,12 @@ export default function ShopGrid({ products }: Props) {
             <p className="mt-1 min-h-10 line-clamp-2 text-sm text-text-light">{p.description}</p>
             <p className="mt-1 min-h-[45px] text-sm font-medium text-navy">{p.weight}</p>
             <div className="mt-3 flex items-center justify-between">
-              <span className="text-base font-semibold text-navy">{p.priceLabel}</span>
+              <div>
+                <span className="block text-base font-semibold text-navy">{p.priceLabel}</span>
+                {christmasActive && christmasAmount(p) && (
+                  <span className="block text-xs font-medium text-[#1a3a2a]">Christmas {christmasAmount(p)}</span>
+                )}
+              </div>
               <span
                 className="bg-navy px-3 py-1.5 text-xs font-medium text-white transition-colors group-hover:bg-navy/90"
                 style={{ borderRadius: "3px" }}

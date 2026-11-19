@@ -1,3 +1,4 @@
+import ChristmasPriceLine from "@/components/christmas-price-line";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -77,6 +78,7 @@ export default async function ProductPage({
                 <span className="font-serif text-3xl font-bold text-navy">{product.priceLabel}</span>
                 <span className="text-sm text-text-light">{product.weight}</span>
               </div>
+              <ChristmasPriceLine product={product} />
 
               <p className="mt-4 leading-relaxed text-foreground">{product.description}</p>
 

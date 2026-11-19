@@ -1,5 +1,6 @@
 "use client";
 
+import { useChristmasActive } from "@/lib/use-christmas-active";
 import { useEffect, useState } from "react";
 import { Check, Info } from "lucide-react";
 import type { Product } from "@/lib/products";
@@ -65,6 +66,7 @@ export default function AddToCart({ product }: Props) {
   const unavailable = outOfStock || ordersClosed;
 
   const selectedSizeOption = product.sizeOptions?.find((s) => s.label === selectedSize);
+  const christmasActive = useChristmasActive();
 
   const unitPrice = computeUnitPrice(
     { pricePerKg: product.pricePerKg, price: product.price, sizeOptionPrice: selectedSizeOption?.price },
@@ -141,6 +143,13 @@ export default function AddToCart({ product }: Props) {
           </div>
         </div>
       )}
+
+      {christmasActive &&
+        !product.excludedFromChristmas &&
+        selectedSizeOption?.christmasPrice &&
+        selectedSizeOption.christmasPrice !== selectedSizeOption.price && (
+          <p className="mt-3 text-sm font-medium text-[#1a3a2a]">£{selectedSizeOption.christmasPrice.toFixed(2)} for Christmas orders</p>
+        )}
 
       {/* Weight selector (per-kg items like hot smoked salmon) */}
       {product.priceType === "per-kg" && (
