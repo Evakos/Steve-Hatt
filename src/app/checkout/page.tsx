@@ -8,6 +8,7 @@ import {
   Store,
   Check,
   Gift,
+  Snowflake,
   CreditCard,
   ChevronLeft,
   MapPin,
@@ -565,9 +566,9 @@ export default function CheckoutPage() {
                         </button>
                       </div>
                       {items.some((item) => orderUnitPrice(item, true) !== orderUnitPrice(item, false)) && (
-                        <div className="mt-3 flex items-start gap-2 border border-[#1a3a2a]/20 bg-[#e8f5ed]/50 px-4 py-3" style={{ borderRadius: "5px" }}>
-                          <Gift className="mt-0.5 h-4 w-4 shrink-0 text-[#1a3a2a]" />
-                          <p className="text-sm text-[#1a3a2a]/80">
+                        <div className="relative mt-3 overflow-hidden border border-[#1a3a2a]/20 bg-[#e8f5ed]/50 px-4 py-3" style={{ borderRadius: "5px" }}>
+                          <Snowflake className="pointer-events-none absolute -right-4 -top-4 h-24 w-24 text-[#1a3a2a]/5" aria-hidden />
+                          <p className="relative text-sm text-[#1a3a2a]/80">
                             Some items in your basket have a different price for Christmas, reflecting higher
                             market prices over the festive period. Prices shown elsewhere on the site are
                             unaffected, this only applies once you choose to order for Christmas, and is reflected
