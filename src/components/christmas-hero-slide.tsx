@@ -12,7 +12,7 @@ const CHRISTMAS_HERO_IMAGE: string | null = null;
 /** The second hero slide, shown only while Christmas pre-ordering is on. */
 export default function ChristmasHeroSlide({ when, lastOrder, proof }: { when: string; lastOrder: string; proof?: ReactNode }) {
   return (
-    <div className="relative overflow-hidden bg-[#1a3a2a] sm:h-[50vh]">
+    <div className="relative overflow-hidden bg-[#1a3a2a] sm:h-[40vh] sm:min-h-[400px]">
       {CHRISTMAS_HERO_IMAGE ? (
         <div className="absolute inset-0">
           <Image src={CHRISTMAS_HERO_IMAGE} alt="" fill sizes="100vw" className="object-cover" />
@@ -22,10 +22,10 @@ export default function ChristmasHeroSlide({ when, lastOrder, proof }: { when: s
         <Snowflake className="pointer-events-none absolute -right-10 -top-10 h-80 w-80 text-white/5" aria-hidden />
       )}
       <div className="relative flex h-full sm:items-center">
-        <div className="mx-auto w-full max-w-6xl px-6 py-12 pb-14 sm:py-0">
+        <div className="mx-auto w-full max-w-6xl px-6 py-9 pb-12 sm:py-0">
           <div className="max-w-2xl">
             <p className="mb-3 text-[11px] font-medium tracking-widest text-white/80 uppercase sm:mb-4 sm:text-xs">Christmas pre-orders now open</p>
-            <h2 className="font-serif text-4xl font-bold leading-[1.1] text-white sm:text-5xl md:text-6xl lg:text-7xl">
+            <h2 className="font-serif text-4xl font-bold leading-[1.1] text-white sm:text-5xl md:text-5xl lg:text-6xl">
               Your Christmas fish, ordered ahead.
             </h2>
             <p className="mt-4 max-w-lg text-base leading-relaxed text-white/90 sm:mt-6 sm:text-lg">
