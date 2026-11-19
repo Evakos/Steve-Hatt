@@ -16,11 +16,13 @@ interface DateRow {
 interface Props {
   dates: DateRow[];
   initialDisabled: string[];
+  /** The Christmas days staff picked (YYYY-MM-DD), which carry the snowflake and Christmas tag. */
+  christmasDays: string[];
 }
 
 const COLUMNS = "grid-cols-[minmax(9.5rem,1.5fr)_repeat(3,minmax(5.5rem,1fr))]";
 
-export default function SlotsGrid({ dates, initialDisabled }: Props) {
+export default function SlotsGrid({ dates, initialDisabled, christmasDays }: Props) {
   const [disabled, setDisabled] = useState<string[]>(initialDisabled);
   const [saved, setSaved] = useState<string[]>(initialDisabled);
   const [saving, setSaving] = useState(false);
@@ -163,13 +165,13 @@ export default function SlotsGrid({ dates, initialDisabled }: Props) {
               <div
                 key={d.key}
                 className={`grid ${COLUMNS} items-center gap-2 border-b border-border px-4 py-2.5 last:border-b-0 ${
-                  d.isChristmas ? "bg-[#e8f5ed]/50" : ""
+                  christmasDays.includes(d.key) ? "bg-[#e8f5ed]/50" : ""
                 }`}
               >
                 <div>
                   <p className="text-sm font-medium text-navy">{d.label}</p>
                   <div className="flex items-center gap-2">
-                    {d.isChristmas && (
+                    {christmasDays.includes(d.key) && (
                       <span className="inline-flex items-center gap-1 text-xs font-medium text-[#1a3a2a]">
                         <Snowflake className="h-3 w-3" /> Christmas
                       </span>

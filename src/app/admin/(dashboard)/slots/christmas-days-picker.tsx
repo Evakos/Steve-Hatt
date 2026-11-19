@@ -10,6 +10,8 @@ interface Props {
   year: number;
   /** Whether the Christmas switch is on, to warn when it is on with no days picked. */
   christmasOn: boolean;
+  /** Called with the saved days after a successful save. */
+  onSaved?: (days: string[]) => void;
 }
 
 /**
@@ -17,7 +19,7 @@ interface Props {
  * line with a "Choose days" button, and opens the calendar when asked (or when the page is opened with
  * #christmas-days, which the Products page links to).
  */
-export default function ChristmasDaysPicker({ initialDays, year, christmasOn }: Props) {
+export default function ChristmasDaysPicker({ initialDays, year, christmasOn, onSaved }: Props) {
   const [days, setDays] = useState<string[]>(initialDays);
   const [saved, setSaved] = useState<string[]>(initialDays);
   const [open, setOpen] = useState(false);
@@ -45,6 +47,7 @@ export default function ChristmasDaysPicker({ initialDays, year, christmasOn }: 
       }
       setSaved(data.days);
       setDays(data.days);
+      onSaved?.(data.days);
     } catch {
       setError("Network error. Please try again.");
     } finally {
