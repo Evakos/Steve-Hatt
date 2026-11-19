@@ -55,8 +55,8 @@ export default function ChristmasProductNote({ excluded }: { excluded: boolean }
       </p>
       {dates.length > 0 && (
         <p className="relative mt-3 text-sm font-semibold text-[#1a3a2a]">
-          Xmas delivery or collection dates are:{" "}
-          <span className="font-normal">{dates.map((d) => dateFormat.format(d)).join(" · ")}</span>
+          Xmas delivery or collection dates are:
+          <span className="mt-1 block font-normal">{dates.map((d) => dateFormat.format(d)).join(" · ")}</span>
         </p>
       )}
       <p className="relative mt-3 text-xs font-bold text-[#1a3a2a]/60">The shop is closed on Sunday and Monday.</p>
