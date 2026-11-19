@@ -4,6 +4,9 @@ export interface PricingInput {
   price: number;
   /** Price of the selected size variation, if the product has size options. */
   sizeOptionPrice?: number;
+  /** Christmas price of the selected size, from the Variations sheet's "Christmas price" column.
+   * Used instead of sizeOptionPrice on a Christmas order; blank or 0 means the normal size price. */
+  sizeOptionChristmasPrice?: number;
   /**
    * Manual per-product Christmas override, set via the Products sheet's `christmas_price`
    * column (staff fill this in directly, same as previous years' separate Christmas price
@@ -12,8 +15,8 @@ export interface PricingInput {
    * flat price otherwise. Undefined or 0 means no Christmas price is set for this product, the
    * normal price applies even on a Christmas order.
    *
-   * Not supported yet for weight/size-tiered (variation) products - sizeOptionPrice always wins
-   * if present, see computeUnitPriceForOrder.
+   * Not used for products with sizes: each size has its own sizeOptionChristmasPrice instead,
+   * see computeUnitPriceForOrder.
    */
   christmasPrice?: number;
   /** Per-product deposit for a Christmas order (£ per unit), from the sheet's "Christmas deposit"
@@ -41,6 +44,9 @@ export function computeUnitPrice({ pricePerKg, price, sizeOptionPrice }: Pricing
  * checkout repricing, once a customer has actually chosen a Christmas order (see reprice.ts).
  */
 export function computeUnitPriceForOrder(input: PricingInput, weight: number, isChristmas: boolean): number {
+  if (isChristmas && input.sizeOptionPrice !== undefined && !!input.sizeOptionChristmasPrice && input.sizeOptionChristmasPrice > 0) {
+    return input.sizeOptionChristmasPrice;
+  }
   const hasChristmasPrice = isChristmas && input.sizeOptionPrice === undefined && !!input.christmasPrice && input.christmasPrice > 0;
   if (!hasChristmasPrice) return computeUnitPrice(input, weight);
   return input.pricePerKg > 0 ? input.christmasPrice! * weight : input.christmasPrice!;

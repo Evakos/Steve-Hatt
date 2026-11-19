@@ -77,12 +77,19 @@ function readMetaJsonArray(metaData: WooProduct["meta_data"], key: string): stri
   }
 }
 
+/** The size's manual Christmas price, if one is set (blank or 0 means none). */
+function readChristmasPrice(meta: { key: string; value: unknown }[] | undefined): number | undefined {
+  const value = meta?.find((m) => m.key === META_KEYS.christmasPrice)?.value;
+  return typeof value === "string" ? Number.parseFloat(value) || undefined : undefined;
+}
+
 export function mapWooVariationToSizeOption(variation: WooProductVariation): SizeOption {
   const label = variation.attributes.map((a) => a.option).join(" ") || `Variation ${variation.id}`;
   return {
     label,
     price: Number.parseFloat(variation.price) || 0,
     wooVariationId: variation.id,
+    christmasPrice: readChristmasPrice(variation.meta_data),
   };
 }
 

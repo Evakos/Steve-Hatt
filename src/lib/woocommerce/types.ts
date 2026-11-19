@@ -72,6 +72,8 @@ export interface WooProductVariationInput {
   regular_price?: string;
   /** "private" hides the size from the shop without deleting it. */
   status?: "publish" | "private";
+  /** Per-size extras such as the Christmas price ("" clears one). */
+  meta_data?: { key: string; value: string }[];
   /** Renames the size: the attribute's name stays, only its option (the label customers see) changes. */
   attributes?: { name: string; option: string }[];
 }

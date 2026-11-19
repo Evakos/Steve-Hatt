@@ -161,6 +161,7 @@ export default function CheckoutPage() {
         pricePerKg: item.product.pricePerKg,
         price: item.product.price,
         sizeOptionPrice: item.wooVariationId ? item.unitPrice : undefined,
+        sizeOptionChristmasPrice: item.product.sizeOptions?.find((s) => s.wooVariationId === item.wooVariationId)?.christmasPrice,
         christmasPrice: item.product.christmasPrice,
       },
       item.weight,

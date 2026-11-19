@@ -9,6 +9,8 @@ export interface SizeOption {
   price: number;
   /** WooCommerce variation id for this size, needed to reference it at checkout. */
   wooVariationId?: number;
+  /** Christmas price for this size, only ever applied at checkout on a Christmas order. */
+  christmasPrice?: number;
 }
 
 export type Product = {

@@ -594,6 +594,25 @@ export async function runProductSync(request: Request, options: { recordId?: str
       }
     }
 
+    // Manual Christmas price for this size, same idea as the product's "Christmas price" column. Only
+    // used at checkout on a Christmas order, never shown on the shop. A blank cell clears it.
+    const sizeChristmasRaw = row["Christmas price"]?.trim();
+    let sizeChristmasPrice: string | undefined;
+    if (sizeChristmasRaw) {
+      const parsedSizeChristmas = Number(sizeChristmasRaw);
+      if (!Number.isFinite(parsedSizeChristmas) || parsedSizeChristmas < 0) {
+        results.push({
+          kind: "variation",
+          productId: NaN,
+          title,
+          status: "error",
+          message: `"Christmas price" column isn't a valid non-negative number, got: ${sizeChristmasRaw}`,
+        });
+        continue;
+      }
+      sizeChristmasPrice = parsedSizeChristmas.toFixed(2);
+    }
+
     if (!Number.isFinite(parentProductId) || parentProductId <= 0) {
       results.push({
         kind: "variation",
@@ -643,6 +662,7 @@ export async function runProductSync(request: Request, options: { recordId?: str
             regular_price: newPrice.toFixed(2),
             status: sizeStatus ?? "publish",
             attributes: [{ name: attributeName, option: newSize }],
+            ...(sizeChristmasPrice !== undefined ? { meta_data: [{ key: META_KEYS.christmasPrice, value: sizeChristmasPrice }] } : {}),
           });
           siblings.push(made);
           await goLive(parentProductId);
@@ -711,7 +731,12 @@ export async function runProductSync(request: Request, options: { recordId?: str
     }
 
     try {
-      await updateWooProductVariation(parentProductId, variationId, { regular_price: regularPrice, attributes, status: sizeStatus });
+      await updateWooProductVariation(parentProductId, variationId, {
+        regular_price: regularPrice,
+        attributes,
+        status: sizeStatus,
+        meta_data: [{ key: META_KEYS.christmasPrice, value: sizeChristmasPrice ?? "" }],
+      });
       if (rename) renames.push(rename);
       await goLive(parentProductId);
       results.push({ kind: "variation", productId: variationId, title, status: "updated" });

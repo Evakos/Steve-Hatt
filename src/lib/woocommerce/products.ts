@@ -118,12 +118,16 @@ export async function getProductForPricing(
     const variation = await wooFetch<WooProductVariation>(`products/${wooProductId}/variations/${wooVariationId}`, {
       next: { revalidate: 0 },
     });
-    // Christmas pricing isn't supported for weight/size-tiered products yet - sizeOptionPrice
-    // being set is what tells computeUnitPriceForOrder to skip the christmasPrice override.
+    // A sized product is priced by its size. On a Christmas order the size's own Christmas price
+    // replaces it (computeUnitPriceForOrder); the product-level christmasPrice is not used.
+    const sizeChristmasMeta = variation.meta_data?.find((m) => m.key === "_steve_hatt_christmas_price");
+    const sizeOptionChristmasPrice =
+      typeof sizeChristmasMeta?.value === "string" ? Number.parseFloat(sizeChristmasMeta.value) || undefined : undefined;
     return {
       pricePerKg,
       price: Number.parseFloat(wooProduct.price || wooProduct.regular_price) || 0,
       sizeOptionPrice: Number.parseFloat(variation.price) || 0,
+      sizeOptionChristmasPrice,
       christmasPrice,
       christmasDeposit,
       excludedFromChristmas,
