@@ -31,12 +31,12 @@ export async function wooFetch<T>(path: string, options: WooFetchOptions = {}): 
     });
 
   let res = await request();
-  // WordPress answers 502/503/504 for a few moments while it updates itself ("Briefly unavailable for
-  // scheduled maintenance"). Reads are safe to repeat, so wait and try again rather than failing a build or a page.
+  // WordPress answers 500/502/503/504 for a few moments while it updates itself or its database is busy ("Briefly
+  // unavailable for scheduled maintenance", "Error establishing a database connection"). Reads are safe to repeat, so wait and try again rather than failing a build or a page.
   // Writes are never repeated.
   if ((options.method ?? "GET") === "GET") {
     for (const waitMs of [1500, 4000, 8000]) {
-      if (![502, 503, 504].includes(res.status)) break;
+      if (![500, 502, 503, 504].includes(res.status)) break;
       await new Promise((resolve) => setTimeout(resolve, waitMs));
       res = await request();
     }
