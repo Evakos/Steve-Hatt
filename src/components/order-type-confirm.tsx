@@ -72,7 +72,7 @@ export default function OrderTypeConfirm({ target, christmasDates, lastOrder, on
             type="button"
             autoFocus
             onClick={onConfirm}
-            className={`px-5 py-2.5 text-sm font-medium text-white transition-colors ${isChristmas ? "bg-[#1a3a2a] hover:bg-[#1a3a2a]/90" : "bg-navy hover:bg-navy/90"}`}
+            className="bg-navy px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-navy/90"
             style={{ borderRadius: "6px" }}
           >
             {isChristmas ? "Yes, it's for Christmas" : "Yes, standard order"}
