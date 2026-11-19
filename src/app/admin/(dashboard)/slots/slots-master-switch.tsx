@@ -4,10 +4,12 @@ import { useState } from "react";
 
 interface Props {
   initialEnabled: boolean;
+  /** Called with the saved value after a successful save. */
+  onSaved?: (enabled: boolean) => void;
 }
 
 /** The master switch: with time slots off, checkout doesn't ask for a slot at all. */
-export default function SlotsMasterSwitch({ initialEnabled }: Props) {
+export default function SlotsMasterSwitch({ initialEnabled, onSaved }: Props) {
   const [enabled, setEnabled] = useState(initialEnabled);
   const [saved, setSaved] = useState(initialEnabled);
   const [saving, setSaving] = useState(false);
@@ -29,6 +31,7 @@ export default function SlotsMasterSwitch({ initialEnabled }: Props) {
         return;
       }
       setSaved(data.enabled);
+      onSaved?.(data.enabled);
       setEnabled(data.enabled);
     } catch {
       setError("Network error. Please try again.");

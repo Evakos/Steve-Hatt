@@ -2,7 +2,6 @@ import { getChristmasDates, getChristmasShopActiveRaw, getDisabledSlots, getSlot
 import { isChristmasFulfilmentDate } from "@/lib/christmas-dates";
 import { getAvailableDates, slotDateKey } from "@/lib/slots";
 import SlotsAdmin from "./slots-admin";
-import SlotsMasterSwitch from "./slots-master-switch";
 
 // About five months ahead, which runs into next year and past Easter, so closures can be set up
 // well in advance. Customers can still only book about three weeks ahead.
@@ -32,11 +31,11 @@ export default async function AdminSlotsPage() {
         offered, so they are not listed. Customers can only book about three weeks ahead, so switching a later day off
         simply closes it in advance.
       </p>
-      <SlotsMasterSwitch initialEnabled={slotsEnabled} />
       <SlotsAdmin
         dates={dates}
         initialDisabled={disabled}
         initialChristmasDays={christmasDates}
+        initialSlotsEnabled={slotsEnabled}
         year={new Date().getFullYear()}
         christmasOn={christmasOn}
       />

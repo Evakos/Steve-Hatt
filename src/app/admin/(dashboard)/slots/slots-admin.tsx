@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import ChristmasDaysPicker from "./christmas-days-picker";
+import SlotsMasterSwitch from "./slots-master-switch";
 import SlotsGrid from "./slots-grid";
 
 type GridProps = Parameters<typeof SlotsGrid>[0];
@@ -11,6 +12,8 @@ interface Props {
   dates: GridProps["dates"];
   initialDisabled: string[];
   initialChristmasDays: string[];
+  /** Whether customers pick a time window, as saved. */
+  initialSlotsEnabled: boolean;
   year: number;
   christmasOn: boolean;
 }
@@ -19,12 +22,14 @@ interface Props {
  * The Christmas days picker and the slots grid together, so a day picked and saved shows its snowflake in
  * the grid straight away instead of only after the page is reloaded.
  */
-export default function SlotsAdmin({ dates, initialDisabled, initialChristmasDays, year, christmasOn }: Props) {
+export default function SlotsAdmin({ dates, initialDisabled, initialChristmasDays, initialSlotsEnabled, year, christmasOn }: Props) {
   const router = useRouter();
   const [christmasDays, setChristmasDays] = useState<string[]>(initialChristmasDays);
+  const [windowsOn, setWindowsOn] = useState(initialSlotsEnabled);
 
   return (
     <>
+      <SlotsMasterSwitch initialEnabled={initialSlotsEnabled} onSaved={setWindowsOn} />
       <ChristmasDaysPicker
         initialDays={initialChristmasDays}
         year={year}
@@ -35,7 +40,7 @@ export default function SlotsAdmin({ dates, initialDisabled, initialChristmasDay
           router.refresh();
         }}
       />
-      <SlotsGrid dates={dates} initialDisabled={initialDisabled} christmasDays={christmasDays} />
+      <SlotsGrid dates={dates} initialDisabled={initialDisabled} christmasDays={christmasDays} windowsOn={windowsOn} />
     </>
   );
 }

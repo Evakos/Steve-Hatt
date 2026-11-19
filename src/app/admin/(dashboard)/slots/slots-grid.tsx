@@ -18,11 +18,24 @@ interface Props {
   initialDisabled: string[];
   /** The Christmas days staff picked (YYYY-MM-DD), which carry the snowflake and Christmas tag. */
   christmasDays: string[];
+  /** Whether customers pick a time window. When off, each day is just Delivery or Collection. */
+  windowsOn: boolean;
 }
 
-const COLUMNS = "grid-cols-[minmax(9.5rem,1.5fr)_repeat(3,minmax(5.5rem,1fr))]";
+const COLUMNS_WITH_WINDOWS = "grid-cols-[minmax(9.5rem,1.5fr)_repeat(3,minmax(5.5rem,1fr))]";
+const COLUMNS_DATE_ONLY = "grid-cols-[minmax(9.5rem,1.5fr)_repeat(2,minmax(5.5rem,1fr))]";
 
-export default function SlotsGrid({ dates, initialDisabled, christmasDays }: Props) {
+interface Column {
+  key: string;
+  type: "delivery" | "collection";
+  title: string;
+  /** The time range, shown under the title when time windows are on. */
+  sub: string;
+  /** The slot windows this column switches together. */
+  ids: SlotWindowId[];
+}
+
+export default function SlotsGrid({ dates, initialDisabled, christmasDays, windowsOn }: Props) {
   const [disabled, setDisabled] = useState<string[]>(initialDisabled);
   const [saved, setSaved] = useState<string[]>(initialDisabled);
   const [saving, setSaving] = useState(false);
@@ -41,6 +54,22 @@ export default function SlotsGrid({ dates, initialDisabled, christmasDays }: Pro
       return on ? without : [...without, ...keys];
     });
   }
+
+  // With time windows on there is a column per window. With them off a day is just Delivery or Collection, and
+  // Delivery switches both delivery windows together (a delivery date is offered if either is on).
+  const columns: Column[] = windowsOn
+    ? SLOT_WINDOWS.map((w) => ({
+        key: w.id,
+        type: w.type,
+        title: w.type === "delivery" ? `Delivery, ${w.name.toLowerCase()}` : "Collection",
+        sub: w.time,
+        ids: [w.id],
+      }))
+    : [
+        { key: "delivery", type: "delivery", title: "Delivery", sub: "", ids: ["delivery-am", "delivery-pm"] },
+        { key: "collection", type: "collection", title: "Collection", sub: "", ids: ["collection"] },
+      ];
+  const COLUMNS = windowsOn ? COLUMNS_WITH_WINDOWS : COLUMNS_DATE_ONLY;
 
   const dayKeys = (d: DateRow) => SLOT_WINDOWS.map((w) => keyFor(d.key, w.id));
   const monthKeys = (month: string) => dates.filter((x) => x.month === month).flatMap(dayKeys);
@@ -144,17 +173,15 @@ export default function SlotsGrid({ dates, initialDisabled, christmasDays }: Pro
           {/* Column headings */}
           <div className={`grid ${COLUMNS} items-end gap-2 border-b border-border bg-cream px-4 py-3`}>
             <p className="text-[11px] font-semibold uppercase tracking-wider text-text-light">Day</p>
-            {SLOT_WINDOWS.map((w) => {
-              return (
-                <div key={w.id}>
-                  <p className="flex items-center gap-1 text-xs font-semibold text-navy">
-                    {w.type === "delivery" ? <Truck className="h-3.5 w-3.5" /> : <Store className="h-3.5 w-3.5" />}
-                    {w.type === "delivery" ? `Delivery, ${w.name.toLowerCase()}` : "Collection"}
-                  </p>
-                  <p className="text-xs text-text-light">{w.time}</p>
-                </div>
-              );
-            })}
+            {columns.map((col) => (
+              <div key={col.key}>
+                <p className="flex items-center gap-1 text-xs font-semibold text-navy">
+                  {col.type === "delivery" ? <Truck className="h-3.5 w-3.5" /> : <Store className="h-3.5 w-3.5" />}
+                  {col.title}
+                </p>
+                {col.sub && <p className="text-xs text-text-light">{col.sub}</p>}
+              </div>
+            ))}
           </div>
 
           {dates.length === 0 && <p className="px-4 py-6 text-sm text-text-light">There are no bookable days right now.</p>}
@@ -185,15 +212,15 @@ export default function SlotsGrid({ dates, initialDisabled, christmasDays }: Pro
                     </button>
                   </div>
                 </div>
-                {SLOT_WINDOWS.map((w) => {
-                  const on = isOn(d.key, w.id);
+                {columns.map((col) => {
+                  const on = col.ids.some((id) => isOn(d.key, id));
                   return (
                     <button
-                      key={w.id}
+                      key={col.key}
                       type="button"
                       aria-pressed={on}
-                      aria-label={`${d.label}, ${w.name} ${w.time}: ${on ? "on" : "off"}`}
-                      onClick={() => setMany([keyFor(d.key, w.id)], !on)}
+                      aria-label={`${d.label}, ${col.title}${col.sub ? ` ${col.sub}` : ""}: ${on ? "on" : "off"}`}
+                      onClick={() => setMany(col.ids.map((id) => keyFor(d.key, id)), !on)}
                       className={`w-full px-2 py-2 text-xs font-semibold transition-colors ${
                         on ? "bg-teal text-white hover:bg-teal/90" : "border border-dashed border-border bg-sand text-text-light hover:bg-sand/70"
                       }`}
