@@ -14,6 +14,59 @@ function dayLabel(isoDate: string): string {
   return `${n}${suffix} December`;
 }
 
+/** A small December calendar for picking the last order day. Days after the 24th can't be chosen. */
+function DecemberCalendar({
+  year,
+  value,
+  defaultDay,
+  onChange,
+}: {
+  year: number;
+  value: string;
+  defaultDay: number;
+  onChange: (value: string) => void;
+}) {
+  const offset = (new Date(year, 11, 1).getDay() + 6) % 7; // Monday first
+  const selectedDay = value ? Number(value.slice(8, 10)) : null;
+  const cells: (number | null)[] = [...Array<null>(offset).fill(null), ...Array.from({ length: 31 }, (_, i) => i + 1)];
+  return (
+    <div className="w-56 border border-border bg-white p-3" style={{ borderRadius: "8px" }}>
+      <p className="mb-2 text-center text-sm font-medium text-navy">December {year}</p>
+      <div className="grid grid-cols-7 gap-1 text-center text-[11px] text-text-light">
+        {["M", "T", "W", "T", "F", "S", "S"].map((d, i) => (
+          <span key={i}>{d}</span>
+        ))}
+        {cells.map((day, i) => {
+          if (day === null) return <span key={`blank-${i}`} />;
+          const disabled = day > 24;
+          const selected = selectedDay === day;
+          const isDefault = selectedDay === null && day === defaultDay;
+          return (
+            <button
+              key={day}
+              type="button"
+              disabled={disabled}
+              aria-pressed={selected}
+              onClick={() => onChange(`${year}-12-${String(day).padStart(2, "0")}`)}
+              className={`h-7 rounded text-xs transition-colors ${
+                selected
+                  ? "bg-navy font-medium text-white"
+                  : isDefault
+                    ? "border border-navy text-navy"
+                    : disabled
+                      ? "cursor-not-allowed text-text-light/40"
+                      : "text-navy hover:bg-sand"
+              }`}
+            >
+              {day}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export default function ChristmasSettingsPanel() {
   const [loading, setLoading] = useState(true);
   const [active, setActive] = useState(false);
@@ -166,15 +219,7 @@ export default function ChristmasSettingsPanel() {
             </p>
           </div>
           <div className="flex shrink-0 flex-col items-end gap-1">
-            <input
-              type="date"
-              min={`${ORDER_DECEMBER_YEAR}-12-01`}
-              max={`${ORDER_DECEMBER_YEAR}-12-24`}
-              value={lastOrderDate}
-              onChange={(e) => setLastOrderDate(e.target.value)}
-              className="border border-border px-2 py-1 text-sm"
-              style={{ borderRadius: "4px" }}
-            />
+            <DecemberCalendar year={ORDER_DECEMBER_YEAR} value={lastOrderDate} defaultDay={17} onChange={setLastOrderDate} />
             {lastOrderDate && (
               <button type="button" onClick={() => setLastOrderDate("")} className="text-xs text-text-light underline">
                 Use the default (17th December)
