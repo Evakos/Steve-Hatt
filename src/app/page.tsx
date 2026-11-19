@@ -167,7 +167,25 @@ export default async function Home() {
           </div>
         </div>,
             ...(christmasActive
-              ? [<ChristmasHeroSlide key="christmas" when={christmasWhen} lastOrder={LAST_ORDER_LABEL} />]
+              ? [<ChristmasHeroSlide
+                  key="christmas"
+                  when={christmasWhen}
+                  lastOrder={LAST_ORDER_LABEL}
+                  proof={
+                    <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 sm:mt-6">
+                      <GoogleRating data={googleReview} />
+                      <span className="hidden h-4 w-px bg-white/30 sm:block" aria-hidden />
+                      <a
+                        href="https://www.timeout.com/london/shopping/steve-hatt"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-white/85 transition-colors hover:text-white"
+                      >
+                        <strong className="font-medium text-white">Time Out London:</strong> <em>&ldquo;...first class fresh fish&rdquo;</em>
+                      </a>
+                    </div>
+                  }
+                />]
               : []),
           ]}
         />

@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import Image from "next/image";
 import { Snowflake } from "lucide-react";
 
@@ -9,7 +10,7 @@ import { Snowflake } from "lucide-react";
 const CHRISTMAS_HERO_IMAGE: string | null = null;
 
 /** The second hero slide, shown only while Christmas pre-ordering is on. */
-export default function ChristmasHeroSlide({ when, lastOrder }: { when: string; lastOrder: string }) {
+export default function ChristmasHeroSlide({ when, lastOrder, proof }: { when: string; lastOrder: string; proof?: ReactNode }) {
   return (
     <div className="relative overflow-hidden bg-[#1a3a2a] sm:h-[50vh]">
       {CHRISTMAS_HERO_IMAGE ? (
@@ -31,6 +32,7 @@ export default function ChristmasHeroSlide({ when, lastOrder }: { when: string; 
               Reserve fresh fish and shellfish for the festive table, then choose delivery or collection {when}. Christmas
               pre-orders close on {lastOrder}.
             </p>
+            {proof}
             <div className="mt-4 flex flex-col gap-3 sm:mt-6 sm:flex-row sm:items-center sm:gap-4">
               <a href="#christmas" className="bg-lobster px-6 py-3 text-center text-sm font-medium text-white transition-colors hover:bg-lobster/90" style={{ borderRadius: "6px" }}>
                 Order for Christmas
