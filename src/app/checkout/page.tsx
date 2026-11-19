@@ -17,6 +17,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { useCart, orderUnitPrice } from "@/lib/cart-context";
+import OrderTypeConfirm from "@/components/order-type-confirm";
 import {
   normalisePostcode,
   extractOutcode,
@@ -163,6 +164,9 @@ export default function CheckoutPage() {
   const displayEstimatedTotal =
     Math.round(items.reduce((sum, item) => sum + displayUnitPrice(item) * item.quantity, 0) * 100) / 100;
 
+  // The standard/Christmas choice waiting for the customer to confirm it.
+  const [pendingOrderType, setPendingOrderType] = useState<"standard" | "christmas" | null>(null);
+
   function chooseOrderType(next: "standard" | "christmas") {
     if (next === "christmas") {
       const ineligible = items.filter((item) => item.product.excludedFromChristmas);
@@ -174,6 +178,16 @@ export default function CheckoutPage() {
       }
     }
     setChristmasBlockedReason(null);
+    if (next === orderType) return;
+    // Switching to or from Christmas changes prices and days, so it is confirmed first.
+    if (next === "christmas" || orderType === "christmas") {
+      setPendingOrderType(next);
+      return;
+    }
+    applyOrderType(next);
+  }
+
+  function applyOrderType(next: "standard" | "christmas") {
     setOrderType(next);
     setSlotType(null);
     setSelectedSlot(null);
@@ -548,7 +562,7 @@ export default function CheckoutPage() {
                           {orderType === "christmas" && <Check className="ml-auto h-4 w-4 text-[#1a3a2a]" />}
                         </button>
                       </div>
-                      {items.some((item) => !item.wooVariationId && item.product.christmasPrice) && (
+                      {items.some((item) => orderUnitPrice(item, true) !== orderUnitPrice(item, false)) && (
                         <div className="mt-3 flex items-start gap-2 border border-[#1a3a2a]/20 bg-[#e8f5ed]/50 px-4 py-3" style={{ borderRadius: "5px" }}>
                           <Gift className="mt-0.5 h-4 w-4 shrink-0 text-[#1a3a2a]" />
                           <p className="text-sm text-[#1a3a2a]/80">
@@ -559,6 +573,16 @@ export default function CheckoutPage() {
                           </p>
                         </div>
                       )}
+                      <OrderTypeConfirm
+                        target={pendingOrderType}
+                        christmasDates={christmasDates}
+                        lastOrder={lastOrderLabel}
+                        onConfirm={() => {
+                          if (pendingOrderType) applyOrderType(pendingOrderType);
+                          setPendingOrderType(null);
+                        }}
+                        onCancel={() => setPendingOrderType(null)}
+                      />
                       {christmasBlockedReason && (
                         <p className="mt-3 text-sm text-red-600">{christmasBlockedReason}</p>
                       )}

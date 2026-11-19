@@ -82,6 +82,9 @@ interface CartContextValue {
   setOrderType: (type: OrderType | null) => void;
   /** Whether Christmas pre-ordering is on right now, so the choice is offered at all. */
   christmasAvailable: boolean;
+  /** The Christmas days staff picked (YYYY-MM-DD) and the last order day as text, for the confirmation. */
+  christmasDates: string[];
+  lastOrderLabel: string | null;
   miniCartOpen: boolean;
   setMiniCartOpen: (open: boolean) => void;
 }
@@ -95,6 +98,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [hydrated, setHydrated] = useState(false);
   const [orderType, setOrderTypeState] = useState<OrderType | null>(null);
   const [christmasAvailable, setChristmasAvailable] = useState(false);
+  const [christmasDates, setChristmasDates] = useState<string[]>([]);
+  const [lastOrderLabel, setLastOrderLabel] = useState<string | null>(null);
   const [miniCartOpen, setMiniCartOpen] = useState(false);
   const miniCartTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -113,10 +118,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
     let cancelled = false;
     fetch("/api/feature-flags/christmas")
       .then((res) => (res.ok ? res.json() : null))
-      .then((data: { active?: boolean; slotsEnabled?: boolean; christmasDates?: string[] } | null) => {
+      .then((data: { active?: boolean; slotsEnabled?: boolean; christmasDates?: string[]; lastOrderLabel?: string | null } | null) => {
         if (cancelled) return;
         const available = (data?.active ?? false) && hasUpcomingChristmasDates(new Date(), data?.christmasDates ?? []) && data?.slotsEnabled !== false;
         setChristmasAvailable(available);
+        setChristmasDates(data?.christmasDates ?? []);
+        setLastOrderLabel(data?.lastOrderLabel ?? null);
         if (!available) setOrderTypeState("standard");
       })
       .catch(() => {});
@@ -167,7 +174,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const estimatedTotal = items.reduce((sum, item) => sum + orderLineTotal(item, isChristmasOrder), 0);
 
   return (
-    <CartContext value={{ items, addItem, removeItem, updateQuantity, clearCart, itemCount, estimatedTotal, orderType, setOrderType, christmasAvailable, miniCartOpen, setMiniCartOpen }}>
+    <CartContext value={{ items, addItem, removeItem, updateQuantity, clearCart, itemCount, estimatedTotal, orderType, setOrderType, christmasAvailable, christmasDates, lastOrderLabel, miniCartOpen, setMiniCartOpen }}>
       {children}
     </CartContext>
   );

@@ -5,12 +5,14 @@ import Link from "next/link";
 import { useState } from "react";
 import { Trash2, ShoppingBag, Truck, Gift, Check } from "lucide-react";
 import { useCart, orderLineTotal, christmasBlockedMessage, type OrderType } from "@/lib/cart-context";
+import OrderTypeConfirm from "@/components/order-type-confirm";
 import Header from "@/components/header";
 import AnnouncementBanner from "@/components/announcement-banner";
 import { DELIVERY_MINIMUM, deliveryShortfall } from "@/lib/checkout/delivery-minimum";
 
 export default function CartPage() {
-  const { items, removeItem, updateQuantity, clearCart, estimatedTotal, orderType, setOrderType, christmasAvailable } = useCart();
+  const { items, removeItem, updateQuantity, clearCart, estimatedTotal, orderType, setOrderType, christmasAvailable, christmasDates, lastOrderLabel } = useCart();
+  const [pendingType, setPendingType] = useState<OrderType | null>(null);
   const isChristmasOrder = orderType === "christmas";
   const [blockedReason, setBlockedReason] = useState<string | null>(null);
   // Anything in the basket that is opted out of Christmas, shown whenever the order is a Christmas one.
@@ -25,6 +27,12 @@ export default function CartPage() {
       }
     }
     setBlockedReason(null);
+    if (next === orderType) return;
+    // Switching to or from Christmas changes prices and days, so it is confirmed first.
+    if (next === "christmas" || orderType === "christmas") {
+      setPendingType(next);
+      return;
+    }
     setOrderType(next);
   }
 
@@ -92,6 +100,16 @@ export default function CartPage() {
                         {isChristmasOrder && <Check className="ml-auto h-4 w-4 text-[#1a3a2a]" />}
                       </button>
                     </div>
+                    <OrderTypeConfirm
+                      target={pendingType}
+                      christmasDates={christmasDates}
+                      lastOrder={lastOrderLabel}
+                      onConfirm={() => {
+                        if (pendingType) setOrderType(pendingType);
+                        setPendingType(null);
+                      }}
+                      onCancel={() => setPendingType(null)}
+                    />
                     {(blockedReason || christmasProblem) && <p className="mt-3 text-sm text-red-600">{blockedReason ?? christmasProblem}</p>}
                   </div>
                 )}
