@@ -74,7 +74,7 @@ export default function SlotsGrid({ dates, initialDisabled }: Props) {
   }
 
   return (
-    <div className="mt-6">
+    <div className="mt-4 max-w-3xl border border-border bg-cream p-5" style={{ borderRadius: "14px" }}>
       <div className="flex flex-wrap items-center gap-3">
         <button
           type="button"
