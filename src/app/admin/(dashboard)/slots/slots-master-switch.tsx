@@ -39,27 +39,33 @@ export default function SlotsMasterSwitch({ initialEnabled }: Props) {
 
   return (
     <div className="mt-4 max-w-3xl border border-border bg-cream p-5" style={{ borderRadius: "14px" }}>
-      <label
-        className={`flex cursor-pointer items-start gap-3 border p-4 transition-colors ${
+      <div
+        className={`flex items-start justify-between gap-4 border p-4 transition-colors ${
           enabled ? "border-border bg-white" : "border-amber-500 bg-amber-50"
         }`}
         style={{ borderRadius: "5px" }}
       >
-        <input
-          type="checkbox"
-          checked={enabled}
-          onChange={(e) => setEnabled(e.target.checked)}
-          className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer accent-navy"
-        />
         <span>
-          <span className="block text-sm font-medium text-navy">Customers choose a time slot at checkout</span>
+          <span id="slots-switch-label" className="block text-sm font-medium text-navy">Customers choose a time slot at checkout</span>
           <span className="mt-0.5 block text-sm text-text-light">
             {enabled
               ? "On: customers pick a delivery or collection slot, as set up below."
               : "Off: checkout does not ask for a slot. Customers still choose delivery or collection, and the order says the time is to be arranged. Christmas pre-orders are paused while this is off, because they are booked by date."}
           </span>
         </span>
-      </label>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={enabled}
+          aria-labelledby="slots-switch-label"
+          onClick={() => setEnabled(!enabled)}
+          className={`relative mt-0.5 h-6 w-11 shrink-0 cursor-pointer rounded-full transition-colors ${enabled ? "bg-teal" : "bg-gray-300"}`}
+        >
+          <span
+            className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${enabled ? "translate-x-5" : "translate-x-0"}`}
+          />
+        </button>
+      </div>
 
       <div className="mt-4 flex flex-wrap items-center gap-3">
         <button

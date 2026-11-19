@@ -256,10 +256,10 @@ export default function AdminGuidePage() {
           </p>
           <p>
             At the top of the page, <strong className="text-navy">Customers choose a time slot at checkout</strong> is the
-            master switch. Untick it and click <strong className="text-navy">Save changes</strong> to turn slots off for
+            master switch. Slide it off and click <strong className="text-navy">Save changes</strong> to turn slots off for
             everyone: checkout stops asking for a slot, customers still choose delivery or collection, and the order says
-            the time is to be arranged. Christmas pre-orders pause while it is off, because they are booked by date. Tick
-            it again to bring slots back.
+            the time is to be arranged. Christmas pre-orders pause while it is off, because they are booked by date. Slide
+            it on again to bring slots back.
           </p>
           <p>
             Sundays, Mondays and the Christmas break (25 December to 3 January) are never offered, so they are not
