@@ -44,22 +44,29 @@ export default function ChristmasProductNote({ excluded }: { excluded: boolean }
 
   return (
     <div
-      className="relative mt-4 overflow-hidden bg-[#e8f5ed] p-5 shadow-sm"
-      style={{ borderRadius: "5px" }}
+      className="relative mt-4 overflow-hidden border border-[#1a3a2a]/10 bg-[#e8f5ed] p-5"
+      style={{ borderRadius: "8px" }}
     >
-      <Snowflake className="pointer-events-none absolute -right-4 -top-4 h-24 w-24 text-[#1a3a2a]/5" aria-hidden />
-      <p className="relative font-serif text-lg font-semibold leading-tight text-[#1a3a2a]">Available for Christmas pre-order</p>
-      <p className="relative mt-1 text-sm leading-relaxed text-[#1a3a2a]/80">
-        Reserve it now for the festive table, then choose your delivery or collection day at checkout. Christmas
-        pre-orders close on {LAST_ORDER_LABEL}.
-      </p>
+      <Snowflake className="pointer-events-none absolute -right-5 -top-5 h-28 w-28 text-[#1a3a2a]/5" aria-hidden />
+      <div className="relative flex items-start gap-3">
+        <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-[#1a3a2a] shadow-sm">
+          <Snowflake className="h-4 w-4" aria-hidden />
+        </span>
+        <div>
+          <p className="font-serif text-lg font-semibold leading-tight text-[#1a3a2a]">Available for Christmas pre-order</p>
+          <p className="mt-1 text-sm leading-relaxed text-[#1a3a2a]/80">
+            Reserve it now for the festive table, then choose your delivery or collection day at checkout. Christmas
+            pre-orders close on {LAST_ORDER_LABEL}.
+          </p>
+        </div>
+      </div>
       {dates.length > 0 && (
-        <p className="relative mt-3 text-sm font-semibold text-[#1a3a2a]">
-          Xmas delivery or collection dates are:
-          <span className="mt-1 block font-normal">{dates.map((d) => dateFormat.format(d)).join(" · ")}</span>
-        </p>
+        <div className="relative mt-4 border-t border-[#1a3a2a]/10 pt-4">
+          <p className="text-sm font-medium text-[#1a3a2a]/70">Xmas delivery or collection dates are:</p>
+          <p className="mt-1 font-serif text-lg font-semibold text-[#1a3a2a]">{dates.map((d) => dateFormat.format(d)).join(" · ")}</p>
+        </div>
       )}
-      <p className="relative mt-3 text-xs font-bold text-[#1a3a2a]/60">The shop is closed on Sunday and Monday.</p>
+      <p className="relative mt-3 text-xs text-[#1a3a2a]/60">The shop is closed on Sunday and Monday.</p>
     </div>
   );
 }
