@@ -148,7 +148,7 @@ export default function AddToCart({ product }: Props) {
         !product.excludedFromChristmas &&
         selectedSizeOption?.christmasPrice &&
         selectedSizeOption.christmasPrice !== selectedSizeOption.price && (
-          <p className="mt-3 text-sm font-medium text-[#1a3a2a]">£{selectedSizeOption.christmasPrice.toFixed(2)} for Christmas orders</p>
+          <p className="mt-3 text-sm text-text-light">£{selectedSizeOption.christmasPrice.toFixed(2)} for Christmas orders</p>
         )}
 
       {/* Weight selector (per-kg items like hot smoked salmon) */}

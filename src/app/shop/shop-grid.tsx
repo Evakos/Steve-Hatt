@@ -113,7 +113,7 @@ export default function ShopGrid({ products }: Props) {
               <div>
                 <span className="block text-base font-semibold text-navy">{p.priceLabel}</span>
                 {christmasActive && christmasAmount(p) && (
-                  <span className="block text-xs font-medium text-[#1a3a2a]">Christmas {christmasAmount(p)}</span>
+                  <span className="block text-xs text-text-light">Christmas {christmasAmount(p)}</span>
                 )}
               </div>
               <span

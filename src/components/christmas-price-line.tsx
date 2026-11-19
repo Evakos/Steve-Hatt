@@ -15,10 +15,10 @@ export function christmasAmount(product: Product): string | null {
   return `£${christmasPrice.toFixed(2)}${suffix}`;
 }
 
-/** Under a product's price on its page: "£x for Christmas orders", only while Christmas ordering is on. */
+/** Beside a product's price on its page: "£x for Christmas orders", only while Christmas ordering is on. */
 export default function ChristmasPriceLine({ product }: { product: Product }) {
   const active = useChristmasActive();
   const amount = christmasAmount(product);
   if (!active || !amount) return null;
-  return <p className="mt-1 text-sm font-medium text-[#1a3a2a]">{amount} for Christmas orders</p>;
+  return <span className="text-sm text-text-light">{amount} for Christmas orders</span>;
 }

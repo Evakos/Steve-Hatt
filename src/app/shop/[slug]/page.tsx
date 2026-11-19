@@ -74,11 +74,11 @@ export default async function ProductPage({
               <span className="block text-xs tracking-widest text-text-light uppercase">{product.category}</span>
               <h1 className="mt-1.5 font-serif text-4xl font-bold text-navy">{product.name}</h1>
 
-              <div className="mt-4 flex items-baseline gap-3">
+              <div className="mt-4 flex flex-wrap items-baseline gap-x-3 gap-y-1">
                 <span className="font-serif text-3xl font-bold text-navy">{product.priceLabel}</span>
+                <ChristmasPriceLine product={product} />
                 <span className="text-sm text-text-light">{product.weight}</span>
               </div>
-              <ChristmasPriceLine product={product} />
 
               <p className="mt-4 leading-relaxed text-foreground">{product.description}</p>
 
