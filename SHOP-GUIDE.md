@@ -42,7 +42,7 @@ Everything happens in **`/admin`** (one shared staff login).
 - New products: add a row in **Website Products** and leave `product_id` blank. It is added to the shop once it has a title, a price (or sizes), a category and a photo. New sizes work the same way in **Website Variations**.
 
 **Products page → Christmas controls**
-- **Christmas ordering** - a switch you flip on/off when you choose; the 20-24 December slots appear automatically (closed Sun/Mon).
+- **Christmas ordering** - a switch you flip on/off when you choose. It also needs the Christmas days picked on the **Delivery slots** page (**Choose days**); nothing is picked for you, and Christmas ordering isn't offered until some are.
 - **Default deposit (£)** - a blanket deposit, used only for products with no deposit of their own.
 - Customers choose **Standard** or **For Christmas** in the basket. The basket, mini-cart and checkout then show the Christmas prices. While Christmas is on, a product with a Christmas price also shows it in grey beside the normal price on its page.
 
@@ -82,7 +82,7 @@ Everything happens in **`/admin`** (one shared staff login).
 
 **Switching on**
 - Products page, **Christmas ordering** switch on, **Save changes**. It is instant and not tied to a date, so it goes on the day you flip it.
-- Slots are Tuesday to Saturday between 20 and 24 December (the shop is closed Sunday and Monday).
+- The days customers can book are the Christmas days you pick on the **Delivery slots** page (**Choose days**, then **Save changes**). Pick them again each year. They are only offered for Christmas orders, never for a normal one.
 
 **What happens to an order**
 1. The customer pays in full at checkout and gets a confirmation email.

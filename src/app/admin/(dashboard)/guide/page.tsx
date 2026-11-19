@@ -66,8 +66,9 @@ function DateRuleNote() {
     <p className="flex items-start gap-2 bg-[#e8f5ed] px-3 py-2.5 text-[#1a3a2a]" style={{ borderRadius: "10px" }}>
       <Snowflake className="mt-0.5 h-4 w-4 shrink-0" />
       <span>
-        <strong>The date decides.</strong> Only a delivery or collection date from 20th to 24th December makes a
-        Christmas order. The day the customer places the order makes no difference.
+        <strong>The date decides.</strong> Only a delivery or collection date on one of the Christmas days you pick makes
+        a Christmas order. Those days are never offered for a normal order, and normal dates are never offered for a
+        Christmas one. The day the customer places the order makes no difference.
       </span>
     </p>
   );
@@ -126,7 +127,7 @@ export default function AdminGuidePage() {
             </ul>
           </div>
           <div className="p-5 text-white" style={{ borderRadius: "14px", backgroundColor: GREEN }}>
-            <p className="text-xs font-medium tracking-widest text-white/60 uppercase">20th to 24th December, Tuesday to Saturday</p>
+            <p className="text-xs font-medium tracking-widest text-white/60 uppercase">The Christmas days you pick</p>
             <p className="mt-1 flex items-center gap-2 font-serif text-lg font-bold">
               <Snowflake className="h-4 w-4" />
               A Christmas order
@@ -156,7 +157,7 @@ export default function AdminGuidePage() {
             },
             {
               tag: "Christmas",
-              text: "Ordered on 19 November for a date from 20th to 24th December. A Christmas order at Christmas prices. The day they order changes nothing.",
+              text: "Ordered on 19 November for one of the Christmas days you picked. A Christmas order at Christmas prices. The day they order changes nothing.",
             },
             {
               tag: "Closed",
@@ -262,6 +263,13 @@ export default function AdminGuidePage() {
             the Christmas days. Slide it on again to bring the windows back.
           </p>
           <p>
+            Below it, <strong className="text-navy">Christmas delivery and collection days</strong> shows the days that are
+            picked. Click <strong className="text-navy">Choose days</strong> to open a December calendar, click the days
+            customers can book, and <strong className="text-navy">Save changes</strong>. Those days carry a snowflake in the
+            list below, where you can still switch individual slots off. They are only offered for Christmas orders, never for
+            a normal one.
+          </p>
+          <p>
             Sundays, Mondays and the Christmas break (25 December to 3 January) are never offered, so they are not
             listed. Customers can only book about three weeks ahead, plus the Christmas dates once Christmas is on, so
             switching off a later day simply closes it in advance. Good Friday is still listed, so switch it off if you
@@ -329,6 +337,12 @@ export default function AdminGuidePage() {
               right (<code className="text-[0.9em]">publish</code> is live, <code className="text-[0.9em]">draft</code> is hidden).
             </li>
             <li>
+              Go to <strong className="text-navy">Delivery slots</strong>, click{" "}
+              <strong className="text-navy">Choose days</strong> and pick the Christmas delivery and collection days, then{" "}
+              <strong className="text-navy">Save changes</strong>. You pick them again each year, and Christmas ordering is
+              not offered until at least one day is picked.
+            </li>
+            <li>
               Edits in Airtable go live on their own within a few seconds. If you want to be sure, the{" "}
               <strong className="text-navy">Sync now</strong> button on the <strong className="text-navy">Products</strong>{" "}
               page re-sends everything and should report no errors.
@@ -351,10 +365,12 @@ export default function AdminGuidePage() {
             later, and it stops after the last order day you set.
           </p>
           <p>
-            Customers can then choose a Christmas order at checkout. The slots are{" "}
-            <strong className="text-navy">Tuesday to Saturday between 20 and 24 December</strong>, because the shop is
-            closed on Sunday and Monday. The booked date decides: any of those dates is a Christmas order with Christmas
-            prices, and any other date is a normal order. A basket containing an excluded product can&apos;t be booked
+            Customers can then choose a Christmas order in the basket or at checkout. The days they can book are the{" "}
+            <strong className="text-navy">Christmas days you pick</strong> on the Delivery slots page (click{" "}
+            <strong className="text-navy">Choose days</strong>). Nothing is picked for you, and until some days are picked
+            Christmas ordering is not offered. The booked date decides: any picked day is a Christmas order with Christmas
+            prices, and any other date is a normal order. A standard order never lists the Christmas days, and a Christmas
+            order lists only them. A basket containing an excluded product can&apos;t be booked
             for a Christmas date, and the customer is told which item to remove.
           </p>
 
@@ -402,7 +418,7 @@ export default function AdminGuidePage() {
             product sync). Customers choose Standard or Christmas in the basket (checkout shows the same choice), and the
             basket, mini-cart and checkout all show the Christmas price once they pick Christmas. While Christmas ordering
             is on, a product that has a Christmas price also shows it in grey beside the normal price on its page. Either
-            way the booked date has the final say: 20 to 24 December is always a Christmas order and any other date never is. If the basket has an excluded
+            way the booked date has the final say: one of the Christmas days you picked is always a Christmas order and any other date never is. If the basket has an excluded
             item, Christmas is blocked with a message telling them to remove it.
           </p>
           <p>
