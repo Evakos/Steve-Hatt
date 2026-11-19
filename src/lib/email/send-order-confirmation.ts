@@ -5,7 +5,7 @@ import type { RepricedOrder } from "@/lib/checkout/reprice";
 import type { DeliveryDetails } from "@/lib/checkout/delivery-address";
 import { COLORS, SITE_URL, emailOrderBadges, emailShell, emailHeading, emailNotice, emailAlert, emailButton, emailLineItemsTable } from "./layout";
 
-import { LAST_ORDER_LABEL } from "@/lib/ordering-window";
+import { getLastOrderLabel } from "@/lib/feature-flags";
 
 const FROM_ADDRESS = "orders@stevehattfishmongers.co.uk";
 
@@ -33,6 +33,7 @@ export interface OrderConfirmationInput {
  * otherwise-successful order.
  */
 export async function sendOrderConfirmation(input: OrderConfirmationInput) {
+  const lastOrderLabel = await getLastOrderLabel();
   const { to, customerName, orderNumber, repriced, slotLabel, fulfilmentType, depositAmount, paidInFull } = input;
   const isPaidInFull = paidInFull === true;
   const deposit = depositAmount ?? 0;
@@ -83,7 +84,7 @@ export async function sendOrderConfirmation(input: OrderConfirmationInput) {
     ${
       repriced.isChristmas
         ? emailNotice(
-            `<strong>Christmas closing times.</strong> Please ${fulfilmentType === "delivery" ? "be available for delivery" : "collect your order"} within the time shown above. The shop is closed on Sunday and Monday, and online ordering is closed from ${LAST_ORDER_LABEL} until the new year.`
+            `<strong>Christmas closing times.</strong> Please ${fulfilmentType === "delivery" ? "be available for delivery" : "collect your order"} within the time shown above. The shop is closed on Sunday and Monday, and online ordering is closed from ${lastOrderLabel} until the new year.`
           )
         : ""
     }

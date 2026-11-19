@@ -128,12 +128,14 @@ export default function CheckoutPage() {
   const [ordersClosed, setOrdersClosed] = useState(false);
   // Delivery/collection slots staff have switched off in /admin/slots - hidden from the picker.
   const [disabledSlots, setDisabledSlots] = useState<string[]>([]);
+  const [lastOrderLabel, setLastOrderLabel] = useState(LAST_ORDER_LABEL);
   // The master switch in /admin/slots. When off, no time slot is chosen or required.
   const [slotsEnabled, setSlotsEnabled] = useState(true);
   useEffect(() => {
     fetch("/api/feature-flags/christmas")
       .then((res) => (res.ok ? res.json() : null))
-      .then((data: { active: boolean; useDepositFlow?: boolean; ordersClosed?: boolean; disabledSlots?: string[]; slotsEnabled?: boolean } | null) => {
+      .then((data: { active: boolean; useDepositFlow?: boolean; ordersClosed?: boolean; disabledSlots?: string[]; slotsEnabled?: boolean; lastOrderLabel?: string } | null) => {
+        if (data?.lastOrderLabel) setLastOrderLabel(data.lastOrderLabel);
         setOrdersClosed(data?.ordersClosed === true);
         setSlotsEnabled(data?.slotsEnabled !== false);
         setDisabledSlots(data?.disabledSlots ?? []);
@@ -691,7 +693,7 @@ export default function CheckoutPage() {
                         >
                           <strong>Christmas closing times:</strong> please collect, or be available for delivery,
                           within the time shown for your slot. The shop is closed on Sunday and Monday. Christmas
-                          pre-orders close on {LAST_ORDER_LABEL}, and online ordering stays closed until the new
+                          pre-orders close on {lastOrderLabel}, and online ordering stays closed until the new
                           year.
                         </p>
                       )}

@@ -1,7 +1,7 @@
 import "server-only";
 import { get } from "@vercel/edge-config";
 import { hasUpcomingChristmasDates } from "./christmas-dates";
-import { currentDate, isChristmasSeason, isOnlineOrderingClosed } from "./ordering-window";
+import { currentDate, isChristmasSeason, isOnlineOrderingClosed, lastOrderLabelFor } from "./ordering-window";
 
 /** Staff-set reopen date (YYYY-MM-DD, a January day) from Edge Config, or "" to use the default
  * 4th January. Only honoured in its own year, see ordering-window.ts. */
@@ -12,6 +12,22 @@ export async function getOrdersReopenDate(): Promise<string> {
   } catch {
     return "";
   }
+}
+
+/** Staff-set last day for Christmas orders (YYYY-12-DD) from Edge Config, or "" to use the default
+ * 17th December. Only honoured in its own year, see ordering-window.ts. */
+export async function getLastOrderDate(): Promise<string> {
+  try {
+    const value = await get("lastOrderDate");
+    return typeof value === "string" ? value : "";
+  } catch {
+    return "";
+  }
+}
+
+/** The last order day as customers see it, e.g. "17th December". */
+export async function getLastOrderLabel(): Promise<string> {
+  return lastOrderLabelFor(await getLastOrderDate());
 }
 
 /** Slot keys staff have switched off in /admin/slots ("YYYY-MM-DD|window-id", see lib/slots.ts).
@@ -51,7 +67,7 @@ export async function isPaymentSandboxMode(): Promise<boolean> {
 /** Whether online ordering is closed right now: the automatic Christmas break (18th December to
  * the reopen day), honouring a staff-set reopen date. Use this on the server, not the sync helper. */
 export async function areOnlineOrdersClosed(): Promise<boolean> {
-  return isOnlineOrderingClosed(currentDate(), await getOrdersReopenDate());
+  return isOnlineOrderingClosed(currentDate(), await getOrdersReopenDate(), await getLastOrderDate());
 }
 
 /**
@@ -70,7 +86,7 @@ export async function isChristmasShopActive(): Promise<boolean> {
   // the switch can be left on after the season: it closes itself after the 17th and stays off
   // through January, when next year's dates would otherwise count as "upcoming".
   const now = currentDate();
-  if (!isChristmasSeason(now) || !hasUpcomingChristmasDates(now)) return false;
+  if (!isChristmasSeason(now, await getLastOrderDate()) || !hasUpcomingChristmasDates(now)) return false;
   return getChristmasShopActiveRaw();
 }
 

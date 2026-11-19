@@ -17,18 +17,22 @@ interface BannerConfig {
   ctaHref: string;
 }
 
+function christmasMessage(lastOrder: string) {
+  return (
+    <>
+      Christmas pre-orders are now open! <strong className="font-semibold">Order by {lastOrder}</strong> to
+      reserve your festive feast.
+    </>
+  );
+}
+
 const banners: Record<string, BannerConfig> = {
   christmas: {
     icon: <Snowflake className="h-4 w-4" />,
     bg: "bg-lobster",
     textColor: "text-white",
     accent: "text-white",
-    message: (
-      <>
-        Christmas pre-orders are now open! <strong className="font-semibold">Order by {LAST_ORDER_LABEL}</strong> to
-        reserve your festive feast.
-      </>
-    ),
+    message: christmasMessage(LAST_ORDER_LABEL),
     cta: "Pre-order now",
     ctaHref: "/shop",
   },
@@ -55,6 +59,7 @@ export default function AnnouncementBanner({
   // Christmas break (after 17th December until the new year): the whole shop is closed to online
   // orders, so this banner switches to a closure notice with the reason, and can't be dismissed.
   const [ordersClosed, setOrdersClosed] = useState(false);
+  const [lastOrder, setLastOrder] = useState(LAST_ORDER_LABEL);
   const config = banners[variant] || banners.christmas;
 
   useEffect(() => {
@@ -66,6 +71,7 @@ export default function AnnouncementBanner({
         if (cancelled) return;
         setChristmasActive(data.active === true);
         setOrdersClosed(data.ordersClosed === true);
+        if (typeof data.lastOrderLabel === "string") setLastOrder(data.lastOrderLabel);
       })
       .catch(() => {});
     return () => {
@@ -94,7 +100,7 @@ export default function AnnouncementBanner({
         <div className="flex items-center gap-2 text-center text-xs md:text-sm">
           <span className={config.accent}>{config.icon}</span>
           <span>
-            {message || config.message}{" "}
+            {message || (variant === "christmas" ? christmasMessage(lastOrder) : config.message)}{" "}
             <Link
               href={config.ctaHref}
               className={`inline-block underline underline-offset-2 transition-opacity hover:opacity-80 ${config.accent}`}

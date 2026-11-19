@@ -62,21 +62,41 @@ function reopenDayFor(reopenDate: string | null | undefined, year: number): numb
   return day >= 1 && day <= 31 ? day : null;
 }
 
+/** The December day a staff-set last-order date (YYYY-12-DD) points to, or null if it is blank,
+ * malformed, for a different year, or after the 24th - so last year's date can never linger. */
+function lastOrderDayFor(lastOrderDate: string | null | undefined, year: number): number | null {
+  const m = /^(\d{4})-12-(\d{2})$/.exec(lastOrderDate ?? "");
+  if (!m || Number(m[1]) !== year) return null;
+  const day = Number(m[2]);
+  return day >= 1 && day <= 24 ? day : null;
+}
+
+function ordinal(n: number): string {
+  if (n % 100 >= 11 && n % 100 <= 13) return `${n}th`;
+  return `${n}${["th", "st", "nd", "rd"][n % 10] ?? "th"}`;
+}
+
+/** "17th December" by default, or the staff-set last order day, for showing to customers. */
+export function lastOrderLabelFor(lastOrderDate?: string | null, now: Date = currentDate()): string {
+  const { year } = ukDateParts(now);
+  return `${ordinal(lastOrderDayFor(lastOrderDate, year) ?? LAST_ORDER_DAY)} December`;
+}
+
 /** True from 18th December until the reopen day (3rd January inclusive by default) - no online
  * orders can be placed. It closes and reopens by itself every year: orders open again from 4th
  * January (UK time) unless staff set a different January `reopenDate` in the admin. */
-export function isOnlineOrderingClosed(from: Date = currentDate(), reopenDate?: string | null): boolean {
+export function isOnlineOrderingClosed(from: Date = currentDate(), reopenDate?: string | null, lastOrderDate?: string | null): boolean {
   const { year, month, day } = ukDateParts(from);
-  if (month === 11) return day > LAST_ORDER_DAY;
+  if (month === 11) return day > (lastOrderDayFor(lastOrderDate, year) ?? LAST_ORDER_DAY);
   if (month === 0) return day < (reopenDayFor(reopenDate, year) ?? REOPEN_DAY);
   return false;
 }
 
 /** True from 1st October to 17th December (UK time) - the only stretch in which Christmas
  * pre-ordering can be live. Outside it the Christmas switch has no effect. */
-export function isChristmasSeason(from: Date = currentDate()): boolean {
-  const { month, day } = ukDateParts(from);
-  return (month >= CHRISTMAS_SEASON_START_MONTH && month <= 10) || (month === 11 && day <= LAST_ORDER_DAY);
+export function isChristmasSeason(from: Date = currentDate(), lastOrderDate?: string | null): boolean {
+  const { year, month, day } = ukDateParts(from);
+  return (month >= CHRISTMAS_SEASON_START_MONTH && month <= 10) || (month === 11 && day <= (lastOrderDayFor(lastOrderDate, year) ?? LAST_ORDER_DAY));
 }
 
 /** True for fulfilment dates inside the Christmas break (25th December to 3rd January) - the shop

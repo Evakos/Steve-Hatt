@@ -24,6 +24,8 @@ export interface ChristmasSettings {
    * the default, 4th January. Left untouched when undefined. See src/lib/ordering-window.ts.
    */
   ordersReopenDate?: string;
+  /** December date (YYYY-12-DD) of the last day for Christmas orders. "" means the default, 17th December. */
+  lastOrderDate?: string;
 }
 
 export async function updateChristmasSettings(input: ChristmasSettings): Promise<void> {
@@ -52,6 +54,9 @@ export async function updateChristmasSettings(input: ChristmasSettings): Promise
         { operation: "upsert", key: "christmasUseDepositFlow", value: input.christmasUseDepositFlow },
         ...(input.ordersReopenDate !== undefined
           ? [{ operation: "upsert", key: "ordersReopenDate", value: input.ordersReopenDate }]
+          : []),
+        ...(input.lastOrderDate !== undefined
+          ? [{ operation: "upsert", key: "lastOrderDate", value: input.lastOrderDate }]
           : []),
       ],
     }),

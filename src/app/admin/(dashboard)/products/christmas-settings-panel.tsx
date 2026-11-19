@@ -5,6 +5,14 @@ import { useState, useEffect } from "react";
 // The January the next (or current) Christmas break ends in: from July onwards that's next year's.
 const now = new Date();
 const BREAK_JANUARY_YEAR = now.getMonth() >= 6 ? now.getFullYear() + 1 : now.getFullYear();
+// The December the last order day falls in: this year's.
+const ORDER_DECEMBER_YEAR = now.getFullYear();
+
+function dayLabel(isoDate: string): string {
+  const n = Number(isoDate.slice(8, 10));
+  const suffix = n % 100 >= 11 && n % 100 <= 13 ? "th" : (["th", "st", "nd", "rd"][n % 10] ?? "th");
+  return `${n}${suffix} December`;
+}
 
 export default function ChristmasSettingsPanel() {
   const [loading, setLoading] = useState(true);
@@ -14,31 +22,35 @@ export default function ChristmasSettingsPanel() {
   const [useDepositFlow, setUseDepositFlow] = useState(false);
   // "" means the default reopen date (4th January).
   const [reopenDate, setReopenDate] = useState("");
+  // "" means the default last order day (17th December).
+  const [lastOrderDate, setLastOrderDate] = useState("");
   // Tracks the last-saved values so "Save" can be disabled when there's nothing new to apply,
   // and so a failed save doesn't leave the UI claiming a value that was never actually stored.
-  const [saved, setSaved] = useState<{ active: boolean; premiumPercent: number; depositAmount: number; useDepositFlow: boolean; reopenDate: string } | null>(null);
+  const [saved, setSaved] = useState<{ active: boolean; premiumPercent: number; depositAmount: number; useDepositFlow: boolean; reopenDate: string; lastOrderDate: string } | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/admin/christmas-settings")
       .then((res) => (res.ok ? res.json() : Promise.reject(res)))
-      .then((data: { active: boolean; premiumPercent: number; christmasDepositAmount: number; christmasUseDepositFlow: boolean; ordersReopenDate?: string }) => {
+      .then((data: { active: boolean; premiumPercent: number; christmasDepositAmount: number; christmasUseDepositFlow: boolean; ordersReopenDate?: string; lastOrderDate?: string }) => {
         // A stored date from a previous year is stale (the server ignores it too), so show the default.
         const storedReopen = data.ordersReopenDate?.startsWith(`${BREAK_JANUARY_YEAR}-`) ? data.ordersReopenDate : "";
+        const storedLastOrder = data.lastOrderDate?.startsWith(`${ORDER_DECEMBER_YEAR}-`) ? data.lastOrderDate : "";
+        setLastOrderDate(storedLastOrder);
         setActive(data.active);
         setPremiumPercent(data.premiumPercent);
         setDepositAmount(data.christmasDepositAmount ?? 0);
         setUseDepositFlow(data.christmasUseDepositFlow ?? false);
         setReopenDate(storedReopen);
-        setSaved({ active: data.active, premiumPercent: data.premiumPercent, depositAmount: data.christmasDepositAmount ?? 0, useDepositFlow: data.christmasUseDepositFlow ?? false, reopenDate: storedReopen });
+        setSaved({ active: data.active, premiumPercent: data.premiumPercent, depositAmount: data.christmasDepositAmount ?? 0, useDepositFlow: data.christmasUseDepositFlow ?? false, reopenDate: storedReopen, lastOrderDate: storedLastOrder });
       })
       .catch(() => setError("Couldn't load current settings."))
       .finally(() => setLoading(false));
   }, []);
 
   const dirty =
-    !saved || saved.active !== active || saved.premiumPercent !== premiumPercent || saved.depositAmount !== depositAmount || saved.useDepositFlow !== useDepositFlow || saved.reopenDate !== reopenDate;
+    !saved || saved.active !== active || saved.premiumPercent !== premiumPercent || saved.depositAmount !== depositAmount || saved.useDepositFlow !== useDepositFlow || saved.reopenDate !== reopenDate || saved.lastOrderDate !== lastOrderDate;
 
   async function handleSave() {
     setSaving(true);
@@ -47,14 +59,14 @@ export default function ChristmasSettingsPanel() {
       const res = await fetch("/api/admin/christmas-settings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ active, premiumPercent, christmasDepositAmount: depositAmount, christmasUseDepositFlow: useDepositFlow, ordersReopenDate: reopenDate }),
+        body: JSON.stringify({ active, premiumPercent, christmasDepositAmount: depositAmount, christmasUseDepositFlow: useDepositFlow, ordersReopenDate: reopenDate, lastOrderDate }),
       });
       const data = await res.json();
       if (!res.ok) {
         setError(data.error ?? "Save failed");
         return;
       }
-      setSaved({ active, premiumPercent, depositAmount, useDepositFlow, reopenDate });
+      setSaved({ active, premiumPercent, depositAmount, useDepositFlow, reopenDate, lastOrderDate });
     } catch {
       setError("Network error. Please try again.");
     } finally {
@@ -146,9 +158,38 @@ export default function ChristmasSettingsPanel() {
       <div className="mt-4 border border-border bg-cream p-5" style={{ borderRadius: "14px" }}>
         <div className="flex items-center justify-between gap-3">
           <div>
+            <p className="text-sm font-medium text-navy">Last day for Christmas orders</p>
+            <p className="mt-1 text-sm text-text-light">
+              Christmas pre-orders, and all online ordering, stop after{" "}
+              {lastOrderDate ? dayLabel(lastOrderDate) : "17th December (the default)"}. It shows on the site, in the banner and in
+              order emails. Pick a December date (up to the 24th) only if the cut-off needs to be different this year.
+            </p>
+          </div>
+          <div className="flex shrink-0 flex-col items-end gap-1">
+            <input
+              type="date"
+              min={`${ORDER_DECEMBER_YEAR}-12-01`}
+              max={`${ORDER_DECEMBER_YEAR}-12-24`}
+              value={lastOrderDate}
+              onChange={(e) => setLastOrderDate(e.target.value)}
+              className="border border-border px-2 py-1 text-sm"
+              style={{ borderRadius: "4px" }}
+            />
+            {lastOrderDate && (
+              <button type="button" onClick={() => setLastOrderDate("")} className="text-xs text-text-light underline">
+                Use the default (17th December)
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-4 border border-border bg-cream p-5" style={{ borderRadius: "14px" }}>
+        <div className="flex items-center justify-between gap-3">
+          <div>
             <p className="text-sm font-medium text-navy">Reopening after Christmas</p>
             <p className="mt-1 text-sm text-text-light">
-              Online ordering closes by itself after 17th December and reopens by itself on{" "}
+              Online ordering closes by itself after {lastOrderDate ? dayLabel(lastOrderDate) : "17th December"} and reopens by itself on{" "}
               {reopenDate ? "the date chosen here" : "4th January (the default)"}. Nothing needs switching on or off.
               Only pick a date if the shop needs to reopen on a different day in January, for example if fish
               supply isn&apos;t ready. Orders can&apos;t be placed before it.

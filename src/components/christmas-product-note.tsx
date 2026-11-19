@@ -16,13 +16,16 @@ const dateFormat = new Intl.DateTimeFormat("en-GB", { weekday: "short", day: "nu
  */
 export default function ChristmasProductNote({ excluded }: { excluded: boolean }) {
   const [active, setActive] = useState(false);
+  const [lastOrder, setLastOrder] = useState(LAST_ORDER_LABEL);
 
   useEffect(() => {
     let cancelled = false;
     fetch("/api/feature-flags/christmas")
       .then((res) => (res.ok ? res.json() : { active: false }))
       .then((data) => {
-        if (!cancelled) setActive(data.active === true);
+        if (cancelled) return;
+        setActive(data.active === true);
+        if (typeof data.lastOrderLabel === "string") setLastOrder(data.lastOrderLabel);
       })
       .catch(() => {});
     return () => {
@@ -52,7 +55,7 @@ export default function ChristmasProductNote({ excluded }: { excluded: boolean }
         <p className="font-serif text-lg font-semibold leading-tight text-[#1a3a2a]">Available for Christmas pre-order</p>
         <p className="mt-1 text-sm leading-relaxed text-[#1a3a2a]/80">
           Reserve it now for the festive table, then choose your delivery or collection day at checkout. Christmas
-          pre-orders close on {LAST_ORDER_LABEL}.
+          pre-orders close on {lastOrder}.
         </p>
       </div>
       {dates.length > 0 && (

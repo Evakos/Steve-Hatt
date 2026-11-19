@@ -414,7 +414,9 @@ export default function AdminGuidePage() {
 
         <Section icon={CalendarOff} title="Closing for Christmas and reopening" blurb="Automatic, with an optional reopen date.">
           <p>
-            Online ordering <strong className="text-navy">closes by itself after 17 December</strong> (UK time) and{" "}
+            Online ordering <strong className="text-navy">closes by itself after 17 December</strong> (UK time, or the{" "}
+            <strong className="text-navy">Last day for Christmas orders</strong> you set on the Products page, any December
+            date up to the 24th) and{" "}
             <strong className="text-navy">reopens by itself on 4 January</strong>. There is nothing to switch. While it is
             closed the website shows a banner explaining why, add to basket and checkout are blocked, and the order
             system refuses anything that slips through.
