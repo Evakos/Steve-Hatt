@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import Image from "next/image";
-import { Snowflake } from "lucide-react";
 
 /**
  * The Christmas photo for the homepage hero. Until one is supplied the slide uses a plain green
@@ -19,7 +18,17 @@ export default function ChristmasHeroSlide({ when, lastOrder, proof }: { when: s
           <div className="absolute inset-0 bg-[#1a3a2a]/60 sm:bg-[#1a3a2a]/45" />
         </div>
       ) : (
-        <Snowflake className="pointer-events-none absolute -right-10 -top-10 h-80 w-80 text-white/5" aria-hidden />
+        // Until a Christmas photo is supplied: the hand-drawn Christmas pattern, in white and faint so the text stays clear.
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-[0.12]"
+          style={{
+            backgroundImage: "url(/christmas-pattern.svg)",
+            backgroundRepeat: "repeat-x",
+            backgroundSize: "auto 100%",
+            backgroundPosition: "center",
+          }}
+        />
       )}
       <div className="relative flex h-full sm:items-center">
         <div className="mx-auto w-full max-w-6xl px-6 py-9 pb-12 sm:py-0">
