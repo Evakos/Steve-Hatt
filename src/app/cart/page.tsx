@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Trash2, ShoppingBag, Truck, Gift, Check } from "lucide-react";
 import { useCart, orderLineTotal, christmasBlockedMessage, type OrderType } from "@/lib/cart-context";
 import OrderTypeConfirm from "@/components/order-type-confirm";
+import { christmasFulfilmentPhrase, christmasRangeLabel } from "@/lib/christmas-fulfilment";
 import Header from "@/components/header";
 import AnnouncementBanner from "@/components/announcement-banner";
 import { DELIVERY_MINIMUM, deliveryShortfall } from "@/lib/checkout/delivery-minimum";
