@@ -37,8 +37,9 @@ export function proxy(request: NextRequest) {
     }
     // Staff sign in once, at the WordPress login. From there the shop admin signs them in automatically
     // (see /admin/sso), landing on the page they asked for. /admin/login stays as a fallback.
+    // Only once the shared sign-in secret is set, otherwise the detour through WordPress would lead nowhere.
     const backend = process.env.WOOCOMMERCE_URL?.replace(/\/$/, "");
-    if (backend) {
+    if (backend && process.env.SHOP_SSO_SECRET) {
       const back = `${backend}/wp-admin/admin-post.php?action=sh_open_shop_admin&to=${encodeURIComponent(pathname)}`;
       return NextResponse.redirect(`${backend}/wp-login.php?redirect_to=${encodeURIComponent(back)}`);
     }

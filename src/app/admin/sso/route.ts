@@ -1,12 +1,11 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
-import { getServerEnv } from "@/lib/env";
 import { createSessionCookieValue, STAFF_COOKIE_NAME, STAFF_SESSION_TTL_MS } from "@/lib/staff-auth";
 
 /**
  * Signs a staff member in from WordPress. The "Shop admin" menu in wp-admin sends the logged-in
  * administrator here with a short-lived signed token (p = base64url JSON {u, exp, to, n}, s = HMAC-SHA256
- * of "wp-sso:" + p, keyed with the staff session secret the WordPress plugin also holds). If it checks out the normal staff session
+ * of "wp-sso:" + p, keyed with SHOP_SSO_SECRET, which the WordPress plugin also holds). If it checks out the normal staff session
  * cookie is set and they land on the page they asked for, with no second password.
  *
  * The token lasts 60 seconds and only /admin pages can be the destination. SHOP_SSO_ALLOWED_USERS
@@ -18,7 +17,7 @@ function toLogin(origin: string): NextResponse {
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
-  const secret = getServerEnv().STAFF_SESSION_SECRET;
+  const secret = process.env.SHOP_SSO_SECRET;
   const payload = url.searchParams.get("p") ?? "";
   const signature = url.searchParams.get("s") ?? "";
   if (!secret || !payload || !signature) return toLogin(url.origin);
