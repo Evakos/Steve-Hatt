@@ -132,6 +132,29 @@ export default async function Home() {
       <section className="bg-white">
         <HeroSlider
           slides={[
+            // While Christmas ordering is on, its slide comes first.
+            ...(christmasActive
+              ? [<ChristmasHeroSlide
+                  key="christmas"
+                  when={christmasWhen}
+                  fulfilment={fulfilment}
+                  lastDay={lastDay}
+                  proof={
+                    <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 sm:mt-6">
+                      <GoogleRating data={googleReview} />
+                      <span className="hidden h-4 w-px bg-white/30 sm:block" aria-hidden />
+                      <a
+                        href="https://www.timeout.com/london/shopping/steve-hatt"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-white/85 transition-colors hover:text-white"
+                      >
+                        <strong className="font-medium text-white">Time Out London:</strong> <em>&ldquo;...first class fresh fish&rdquo;</em>
+                      </a>
+                    </div>
+                  }
+                />]
+              : []),
         <div key="main" className="relative bg-navy sm:h-[40vh] sm:min-h-[400px]">
           <div
             className="absolute inset-y-0 right-0 w-full sm:w-[80%]"
@@ -178,28 +201,6 @@ export default async function Home() {
             </div>
           </div>
         </div>,
-            ...(christmasActive
-              ? [<ChristmasHeroSlide
-                  key="christmas"
-                  when={christmasWhen}
-                  fulfilment={fulfilment}
-                  lastDay={lastDay}
-                  proof={
-                    <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 sm:mt-6">
-                      <GoogleRating data={googleReview} />
-                      <span className="hidden h-4 w-px bg-white/30 sm:block" aria-hidden />
-                      <a
-                        href="https://www.timeout.com/london/shopping/steve-hatt"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm text-white/85 transition-colors hover:text-white"
-                      >
-                        <strong className="font-medium text-white">Time Out London:</strong> <em>&ldquo;...first class fresh fish&rdquo;</em>
-                      </a>
-                    </div>
-                  }
-                />]
-              : []),
           ]}
         />
 
