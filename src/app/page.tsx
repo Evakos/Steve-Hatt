@@ -156,7 +156,7 @@ export default async function Home() {
                   }
                 />]
               : []),
-        <div key="main" className="relative bg-navy sm:h-[40vh] sm:min-h-[400px]">
+        <div key="main" className="relative bg-navy sm:h-[46vh] sm:min-h-[440px]">
           <div
             className="absolute inset-y-0 right-0 w-full sm:w-[80%]"
             style={{

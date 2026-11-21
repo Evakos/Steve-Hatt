@@ -10,7 +10,7 @@ const FOLK_ART = { src: "/christmas-folk-rooster.png", alt: "Folk-art cockerel w
 /** The second hero slide, shown only while Christmas pre-ordering is on. */
 export default function ChristmasHeroSlide({ when, fulfilment, lastDay, proof }: { when: string; fulfilment: string; lastDay: string; proof?: ReactNode }) {
   return (
-    <div className="relative overflow-hidden bg-navy sm:h-[40vh] sm:min-h-[400px]">
+    <div className="relative overflow-hidden bg-navy sm:h-[46vh] sm:min-h-[440px]">
       <div className="relative flex h-full sm:items-center">
         <div className="mx-auto w-full max-w-6xl px-6 py-9 pb-12 sm:py-0">
           <div className="max-w-2xl lg:max-w-[min(42rem,calc(100%-22rem))]">
