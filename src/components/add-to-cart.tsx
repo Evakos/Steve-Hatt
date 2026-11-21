@@ -51,12 +51,15 @@ export default function AddToCart({ product }: Props) {
   // disabled. Product pages are static, so this asks the server in the browser (same endpoint as
   // the banner) and reacts the moment the window opens, with no rebuild.
   const [ordersClosed, setOrdersClosed] = useState(false);
+  const [reopenLabel, setReopenLabel] = useState<string | null>(null);
   useEffect(() => {
     let cancelled = false;
     fetch("/api/feature-flags/christmas")
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
-        if (!cancelled) setOrdersClosed(data?.ordersClosed === true);
+        if (cancelled) return;
+        setOrdersClosed(data?.ordersClosed === true);
+        setReopenLabel(typeof data?.reopenLabel === "string" ? data.reopenLabel : null);
       })
       .catch(() => {});
     return () => {
@@ -207,7 +210,7 @@ export default function AddToCart({ product }: Props) {
         {outOfStock ? (
           "Out of stock"
         ) : ordersClosed ? (
-          "Online ordering closed until the new year"
+          `Closed for orders until ${reopenLabel ?? "the new year"}`
         ) : added ? (
           <>
             <Check className="h-4 w-4" />

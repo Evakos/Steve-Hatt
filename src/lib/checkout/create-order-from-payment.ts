@@ -1,5 +1,5 @@
 import { dayNoteFor } from "./closing-note";
-import { getDayNotes } from "@/lib/site-settings";
+import { getDayNotes, getOpeningDays } from "@/lib/site-settings";
 import "server-only";
 import { createWooOrder } from "@/lib/woocommerce/orders";
 import { findOrCreateCustomerByEmail, updateCustomer } from "@/lib/woocommerce/customers";
@@ -28,7 +28,7 @@ export async function createOrderFromPayment(
   const repriced = await repriceCheckoutRequest(checkout);
   const { customer, fulfilment } = checkout;
   // A note staff attached to this date in the admin, such as an early closing time.
-  const dayNote = dayNoteFor(fulfilment.slot.date, await getDayNotes());
+  const dayNote = dayNoteFor(fulfilment.slot.date, await getDayNotes(), await getOpeningDays());
 
   const billing = {
     first_name: customer.firstName,

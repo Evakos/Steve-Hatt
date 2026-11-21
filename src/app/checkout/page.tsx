@@ -28,7 +28,8 @@ import {
 import Header from "@/components/header";
 import AnnouncementBanner from "@/components/announcement-banner";
 import { ordersClosedReason } from "@/lib/ordering-window";
-import { SLOT_WINDOWS, getAvailableDates, isDateBookableWithoutWindow, isSlotDisabled, toSlotInstant } from "@/lib/slots";
+import { SLOT_WINDOWS, getAvailableDates, isDateBookableWithoutWindow, isSlotDisabled, slotDateKey, toSlotInstant } from "@/lib/slots";
+import { closedDateKeys, collectionTimeFor, type OpeningDay } from "@/lib/opening-hours";
 import ContactAddressForm, { EMPTY_CONTACT_ADDRESS, type ContactAddressValue } from "@/components/checkout/contact-address-form";
 import PaymentPanel from "@/components/checkout/payment-panel";
 import SandboxNotice from "@/components/checkout/sandbox-notice";
@@ -136,6 +137,8 @@ export default function CheckoutPage() {
   const [closedTemplate, setClosedTemplate] = useState("");
   // Notes staff attached to dates (such as an early closing time), shown beside those dates.
   const [dayNotes, setDayNotes] = useState<DateNote[]>([]);
+  // The shop's opening hours by date: closed days aren't offered, and each date shows its own collection hours.
+  const [openingDays, setOpeningDays] = useState<OpeningDay[]>([]);
   // The Christmas days staff picked in the admin (YYYY-MM-DD).
   const [christmasDates, setChristmasDates] = useState<string[]>([]);
   // The master switch in /admin/slots. When off, no time slot is chosen or required.
@@ -143,11 +146,12 @@ export default function CheckoutPage() {
   useEffect(() => {
     fetch("/api/feature-flags/christmas")
       .then((res) => (res.ok ? res.json() : null))
-      .then((data: { active: boolean; useDepositFlow?: boolean; ordersClosed?: boolean; disabledSlots?: string[]; slotsEnabled?: boolean; lastOrderLabel?: string | null; reopenLabel?: string | null; closedMessage?: string; dayNotes?: DateNote[]; christmasDates?: string[] } | null) => {
+      .then((data: { active: boolean; useDepositFlow?: boolean; ordersClosed?: boolean; disabledSlots?: string[]; slotsEnabled?: boolean; lastOrderLabel?: string | null; reopenLabel?: string | null; closedMessage?: string; dayNotes?: DateNote[]; openingDays?: OpeningDay[]; christmasDates?: string[] } | null) => {
         setLastOrderLabel(data?.lastOrderLabel ?? null);
         setReopenLabel(data?.reopenLabel ?? null);
         setClosedTemplate(data?.closedMessage ?? "");
         setDayNotes(data?.dayNotes ?? []);
+        setOpeningDays(data?.openingDays ?? []);
         setChristmasDates(data?.christmasDates ?? []);
         setOrdersClosed(data?.ordersClosed === true);
         setSlotsEnabled(data?.slotsEnabled !== false);
@@ -269,7 +273,7 @@ export default function CheckoutPage() {
 
   const slots = useMemo(() => {
     if (!slotType || !orderType) return [];
-    const dates = getAvailableDates(undefined, undefined, christmasDates);
+    const dates = getAvailableDates(undefined, undefined, christmasDates, closedDateKeys(openingDays));
     const result: Slot[] = [];
 
     dates.forEach((date) => {
@@ -288,11 +292,13 @@ export default function CheckoutPage() {
       // Each date offers the windows in SLOT_WINDOWS for this slot type, minus any staff have
       // switched off (/admin/slots).
       SLOT_WINDOWS.filter((w) => w.type === slotType && !isSlotDisabled(disabledSlots, toSlotInstant(date), w.id)).forEach((w) => {
-        result.push({ date, label: `${formatDate(date)} · ${w.name} (${w.time})`, type: w.type, isChristmas: christmas });
+        // Collection shows that day's real hours when the opening hours set them, else the usual window.
+        const time = w.type === "collection" ? collectionTimeFor(slotDateKey(toSlotInstant(date)), openingDays) ?? w.time : w.time;
+        result.push({ date, label: `${formatDate(date)} · ${w.name} (${time})`, type: w.type, isChristmas: christmas });
       });
     });
     return result;
-  }, [slotType, orderType, disabledSlots, christmasDates, slotsEnabled]);
+  }, [slotType, orderType, disabledSlots, christmasDates, slotsEnabled, openingDays]);
 
   // Guard rail: a delivery order has to reach the minimum before it can go to payment. It only applies
   // once delivery is the chosen option, so collection orders are never held up by it.
@@ -762,8 +768,8 @@ export default function CheckoutPage() {
                                   <span className={isSelected ? (isXmas ? "text-[#1a3a2a]" : "text-navy") : (isXmas ? "text-[#1a3a2a]/70" : "text-text-light")}>
                                     {slot.label}
                                   </span>
-                                  {dayNoteFor(toSlotInstant(slot.date).toISOString(), dayNotes) && (
-                                    <span className="text-xs font-bold text-lobster">{dayNoteFor(toSlotInstant(slot.date).toISOString(), dayNotes)}</span>
+                                  {dayNoteFor(toSlotInstant(slot.date).toISOString(), dayNotes, openingDays) && (
+                                    <span className="text-xs font-bold text-lobster">{dayNoteFor(toSlotInstant(slot.date).toISOString(), dayNotes, openingDays)}</span>
                                   )}
                                 </div>
                                 {isSelected && <Check className={`h-4 w-4 ${isXmas ? "text-[#1a3a2a]" : "text-navy"}`} />}

@@ -1,6 +1,8 @@
 import { getChristmasDates, getChristmasShopActiveRaw, getDisabledSlots, getSlotsEnabled } from "@/lib/feature-flags";
 import { isChristmasFulfilmentDate } from "@/lib/christmas-dates";
 import { getAvailableDates, slotDateKey } from "@/lib/slots";
+import { getOpeningDays } from "@/lib/site-settings";
+import { closedDateKeys } from "@/lib/opening-hours";
 import SlotsAdmin from "./slots-admin";
 
 // About five months ahead, which runs into next year and past Easter, so closures can be set up
@@ -8,13 +10,14 @@ import SlotsAdmin from "./slots-admin";
 const ADMIN_DAYS_AHEAD = 150;
 
 export default async function AdminSlotsPage() {
-  const [disabled, slotsEnabled, christmasDates, christmasOn] = await Promise.all([
+  const [disabled, slotsEnabled, christmasDates, christmasOn, openingDays] = await Promise.all([
     getDisabledSlots(),
     getSlotsEnabled(),
     getChristmasDates(),
     getChristmasShopActiveRaw(),
+    getOpeningDays(),
   ]);
-  const dates = getAvailableDates(new Date(), ADMIN_DAYS_AHEAD, christmasDates).map((d) => ({
+  const dates = getAvailableDates(new Date(), ADMIN_DAYS_AHEAD, christmasDates, closedDateKeys(openingDays)).map((d) => ({
     key: slotDateKey(d),
     label: d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "long", timeZone: "Europe/London" }),
     month: d.toLocaleDateString("en-GB", { month: "long", year: "numeric", timeZone: "Europe/London" }),

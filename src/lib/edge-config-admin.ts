@@ -191,7 +191,12 @@ export interface SiteSettingsInput {
   bannerText: string;
   closedMessage: string;
   dayNotes: { date: string; note: string }[];
-  openingHours: { title: string; rows: { day: string; hours: string }[]; footnote: string };
+  openingHours: {
+    title: string;
+    intro: string;
+    footnote: string;
+    days: { date: string; closed: boolean; opens: string; closes: string }[];
+  };
 }
 
 /** Saves the wording, notes, opening hours and notification addresses edited under Messages and hours in the admin. */

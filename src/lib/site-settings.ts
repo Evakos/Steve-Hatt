@@ -1,6 +1,9 @@
 import "server-only";
 import { get } from "@vercel/edge-config";
 import { getServerEnv } from "@/lib/env";
+import type { OpeningDay, OpeningHours } from "@/lib/opening-hours";
+
+export type { OpeningDay, OpeningHours };
 
 /**
  * Wording and hours the shop edits in the admin (Messages and hours), stored in Vercel's settings store like the
@@ -10,15 +13,6 @@ export interface DayNote {
   /** YYYY-MM-DD: orders booked for this date carry the note. */
   date: string;
   note: string;
-}
-export interface OpeningHoursRow {
-  day: string;
-  hours: string;
-}
-export interface OpeningHours {
-  title: string;
-  rows: OpeningHoursRow[];
-  footnote: string;
 }
 export interface SiteSettings {
   notificationEmails: string[];
@@ -64,13 +58,26 @@ export async function getDayNotes(): Promise<DayNote[]> {
   );
 }
 
-/** The opening hours table shown on the homepage. No rows means it isn't shown. */
+/** The opening hours by date. They decide which dates can be booked, the collection hours shown, and the home page card. */
 export async function getOpeningHours(): Promise<OpeningHours> {
   const value = (await read("openingHours")) as Partial<OpeningHours> | undefined;
-  const rows = Array.isArray(value?.rows)
-    ? value.rows.filter((r): r is OpeningHoursRow => !!r && typeof r.day === "string" && typeof r.hours === "string" && r.day.trim() !== "")
+  const time = /^([01]\d|2[0-3]):[0-5]\d$/;
+  const days = Array.isArray(value?.days)
+    ? value.days
+        .filter((d): d is OpeningDay => !!d && typeof d.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(d.date))
+        .map((d) => ({
+          date: d.date,
+          closed: d.closed === true,
+          opens: typeof d.opens === "string" && time.test(d.opens) ? d.opens : "09:00",
+          closes: typeof d.closes === "string" && time.test(d.closes) ? d.closes : "17:00",
+        }))
+        .sort((x, y) => x.date.localeCompare(y.date))
     : [];
-  return { title: text(value?.title), rows, footnote: text(value?.footnote) };
+  return { title: text(value?.title), intro: text(value?.intro), footnote: text(value?.footnote), days };
+}
+
+export async function getOpeningDays(): Promise<OpeningDay[]> {
+  return (await getOpeningHours()).days;
 }
 
 export async function getSiteSettings(): Promise<SiteSettings> {

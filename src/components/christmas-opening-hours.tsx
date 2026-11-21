@@ -1,66 +1,52 @@
-import type { OpeningHours } from "@/lib/site-settings";
+import { USUAL_CLOSING, closedName, formatClock, type OpeningHours } from "@/lib/opening-hours";
 
-const isClosed = (hours: string) => /^closed/i.test(hours.trim());
-const isEarlyClose = (day: string) => /christmas eve/i.test(day);
+const weekday = new Intl.DateTimeFormat("en-GB", { timeZone: "UTC", weekday: "long", day: "numeric", month: "long" });
+const atNoon = (key: string) => new Date(`${key}T12:00:00Z`);
 
 /**
- * The shop's opening days and times over Christmas and the New Year, edited in the admin under Messages and hours.
- * A first row such as "Opening hours as usual" becomes a banner across the top, and the other days split into two columns.
+ * The shop's opening days and times over Christmas and the New Year, drawn from the opening hours set in the admin under
+ * Messages and hours: one card per open day in the same style as the "How a Christmas order works" cards, and one card
+ * listing the closed days. The same hours decide which dates can be booked, so this card can't disagree with checkout.
  */
 export default function ChristmasOpeningHours({ hours }: { hours: OpeningHours }) {
-  if (hours.rows.length === 0) return null;
-
-  // A first row that carries no times (just says hours are as usual) reads best as an intro banner.
-  const [first, ...rest] = hours.rows;
-  const hasIntro = /as usual/i.test(first.hours);
-  const days = hasIntro ? rest : hours.rows;
-  const half = Math.ceil(days.length / 2);
-  const columns = [days.slice(0, half), days.slice(half)];
+  const open = hours.days.filter((d) => !d.closed);
+  const closed = hours.days.filter((d) => d.closed);
+  if (open.length === 0 && closed.length === 0) return null;
 
   return (
-    <div className="border border-border bg-card p-6 md:p-8" style={{ borderRadius: "14px" }}>
-      <h3 className="text-center font-serif text-2xl font-bold text-navy">{hours.title || "Opening hours"}</h3>
+    <div>
+      <h3 className="font-serif text-3xl font-bold text-navy">{hours.title || "Opening hours"}</h3>
+      {hours.intro && <p className="mt-3 text-base text-text-light">{hours.intro}</p>}
 
-      {hasIntro && (
-        <p className="mx-auto mt-5 max-w-fit bg-sand px-4 py-2 text-center text-sm text-navy" style={{ borderRadius: "999px" }}>
-          <span className="font-medium">{first.day}:</span> {first.hours.toLowerCase()}
-        </p>
-      )}
+      <ol className="mt-8 grid gap-4 sm:grid-cols-2 md:grid-cols-4">
+        {open.map((day) => {
+          const early = day.closes < USUAL_CLOSING;
+          return (
+            <li
+              key={day.date}
+              className={`h-full border p-6 md:min-h-[10rem] ${early ? "border-lobster/40 bg-lobster-light" : "border-border bg-card"}`}
+              style={{ borderRadius: "5px" }}
+            >
+              <span className="font-serif text-2xl font-light text-lobster/40">{day.date.slice(8)}</span>
+              <h4 className="mt-3 font-serif text-base font-semibold text-navy">{weekday.format(atNoon(day.date))}</h4>
+              <p className={`mt-2 text-sm leading-relaxed ${early ? "font-bold text-lobster" : "text-text-light"}`}>
+                {formatClock(day.opens)} to {formatClock(day.closes)}
+              </p>
+              {early && <p className="mt-1 text-xs font-medium text-navy">We close early</p>}
+            </li>
+          );
+        })}
 
-      <div className="mt-6 grid gap-x-12 md:grid-cols-2">
-        {columns.map((rows, c) => (
-          <dl key={c} className="text-sm">
-            {rows.map((row) => {
-              const closed = isClosed(row.hours);
-              const early = isEarlyClose(row.day) && !closed;
-              return (
-                <div
-                  key={row.day}
-                  className={`flex items-baseline justify-between gap-4 border-b border-border/70 py-2.5 ${early ? "bg-lobster-light px-3 -mx-3" : ""}`}
-                  style={early ? { borderRadius: "6px" } : undefined}
-                >
-                  <dt className={early ? "font-medium text-navy" : closed ? "text-text-light" : "text-navy"}>{row.day}</dt>
-                  <dd
-                    className={
-                      closed
-                        ? "text-xs tracking-wide text-text-light uppercase"
-                        : early
-                          ? "font-bold text-lobster"
-                          : "font-semibold text-navy"
-                    }
-                  >
-                    {row.hours}
-                  </dd>
-                </div>
-              );
-            })}
-          </dl>
-        ))}
-      </div>
+        {closed.length > 0 && (
+          <li className="h-full border border-border bg-card p-6 md:min-h-[10rem]" style={{ borderRadius: "5px" }}>
+            <span className="font-serif text-2xl font-light text-lobster/40">&times;</span>
+            <h4 className="mt-3 font-serif text-base font-semibold text-navy">Closed</h4>
+            <p className="mt-2 text-sm leading-relaxed text-text-light">{closed.map((d) => closedName(d.date)).join(", ")}</p>
+          </li>
+        )}
+      </ol>
 
-      {hours.footnote && (
-        <p className="mt-6 border-t border-border pt-4 text-center text-xs leading-relaxed text-text-light">{hours.footnote}</p>
-      )}
+      {hours.footnote && <p className="mt-4 text-xs leading-relaxed text-text-light">{hours.footnote}</p>}
     </div>
   );
 }

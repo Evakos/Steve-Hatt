@@ -29,11 +29,18 @@ export type BookedSlotCheck = { ok: true; isChristmas: boolean } | { ok: false; 
 /** Whether the date can be booked right now: one of the days the checkout offers (Tue-Sat, next
  * 21 days, outside the Christmas break, plus the upcoming Christmas dates), and a Christmas date
  * only while the Christmas shop is switched on. */
-export function checkBookedSlot(slotDate: string, options: { christmasShopActive: boolean; now?: Date; christmasDays?: ChristmasDays }): BookedSlotCheck {
+export function checkBookedSlot(slotDate: string, options: {
+    christmasShopActive: boolean;
+    now?: Date;
+    christmasDays?: ChristmasDays;
+    /** Dates the shop is closed (from the opening hours): refused even if asked for directly. */
+    closedDates?: readonly string[];
+  }
+): BookedSlotCheck {
   const date = new Date(slotDate);
   if (Number.isNaN(date.getTime())) return { ok: false, reason: NOT_AVAILABLE };
   const key = slotDateKey(date);
-  if (!getAvailableDates(options.now, undefined, options.christmasDays).some((d) => slotDateKey(d) === key)) return { ok: false, reason: NOT_AVAILABLE };
+  if (!getAvailableDates(options.now, undefined, options.christmasDays, options.closedDates).some((d) => slotDateKey(d) === key)) return { ok: false, reason: NOT_AVAILABLE };
   const isChristmas = isChristmasSlotDate(slotDate, options.christmasDays);
   if (isChristmas && !options.christmasShopActive) return { ok: false, reason: CHRISTMAS_CLOSED };
   return { ok: true, isChristmas };

@@ -75,7 +75,13 @@ export const BOOKING_WINDOW_DAYS = 21;
  * break) plus any upcoming Christmas fulfilment dates (20th-24th December), in date order.
  * Customers get the default 21 days; the admin asks for longer so slots can be switched off well
  * in advance. */
-export function getAvailableDates(from: Date = new Date(), days: number = BOOKING_WINDOW_DAYS, christmasDays?: ChristmasDays): Date[] {
+export function getAvailableDates(
+  from: Date = new Date(),
+  days: number = BOOKING_WINDOW_DAYS,
+  christmasDays?: ChristmasDays,
+  /** Dates (YYYY-MM-DD) the shop is closed, from the opening hours. Never offered. */
+  closedDates?: readonly string[]
+): Date[] {
   const dates: Date[] = [];
   const today = new Date(from);
   today.setHours(0, 0, 0, 0);
@@ -98,5 +104,6 @@ export function getAvailableDates(from: Date = new Date(), days: number = BOOKIN
   }
 
   dates.sort((a, b) => a.getTime() - b.getTime());
+  if (closedDates && closedDates.length > 0) return dates.filter((d) => !closedDates.includes(slotDateKey(d)));
   return dates;
 }

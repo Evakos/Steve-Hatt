@@ -3,12 +3,19 @@
 import { useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 
+interface OpeningDay {
+  date: string;
+  closed: boolean;
+  opens: string;
+  closes: string;
+}
+
 interface Settings {
   notificationEmails: string[];
   bannerText: string;
   closedMessage: string;
   dayNotes: { date: string; note: string }[];
-  openingHours: { title: string; rows: { day: string; hours: string }[]; footnote: string };
+  openingHours: { title: string; intro: string; footnote: string; days: OpeningDay[] };
 }
 
 const card = "mt-4 border border-border bg-cream p-5";
@@ -22,7 +29,8 @@ export default function SiteSettingsForm({ initial }: { initial: Settings }) {
   const [closedMessage, setClosedMessage] = useState(initial.closedMessage);
   const [dayNotes, setDayNotes] = useState(initial.dayNotes);
   const [title, setTitle] = useState(initial.openingHours.title);
-  const [rows, setRows] = useState(initial.openingHours.rows);
+  const [intro, setIntro] = useState(initial.openingHours.intro);
+  const [days, setDays] = useState<OpeningDay[]>(initial.openingHours.days);
   const [footnote, setFootnote] = useState(initial.openingHours.footnote);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
@@ -39,7 +47,12 @@ export default function SiteSettingsForm({ initial }: { initial: Settings }) {
           bannerText: bannerText.trim(),
           closedMessage: closedMessage.trim(),
           dayNotes: dayNotes.filter((n) => n.date && n.note.trim()),
-          openingHours: { title: title.trim(), rows: rows.filter((r) => r.day.trim()), footnote: footnote.trim() },
+          openingHours: {
+            title: title.trim(),
+            intro: intro.trim(),
+            footnote: footnote.trim(),
+            days: days.filter((d) => d.date).sort((a, b) => a.date.localeCompare(b.date)),
+          },
         }),
       });
       const data = await res.json();
@@ -117,41 +130,71 @@ export default function SiteSettingsForm({ initial }: { initial: Settings }) {
       </div>
 
       <div className={card} style={{ borderRadius: "14px" }}>
-        <p className={label}>Opening hours table</p>
-        <p className={hint}>Shown in the Christmas section of the home page. Leave it with no rows to hide it. Update it for next Christmas.</p>
+        <p className={label}>Opening hours by date</p>
+        <p className={hint}>
+          The single source for the shop&apos;s hours. It draws the opening hours cards on the home page, and the same days decide
+          what customers can book: a <strong>closed</strong> day is never offered, collection shows that day&apos;s real hours, and
+          a day that closes before 5pm adds an early-closing note to its orders automatically. A day that isn&apos;t listed here
+          keeps the usual hours.
+        </p>
         <label className="mt-3 block text-xs text-text-light" htmlFor="hours-title">Heading</label>
         <input id="hours-title" value={title} onChange={(e) => setTitle(e.target.value)} maxLength={100} className={`${input} mt-1`} style={{ borderRadius: "6px" }} />
-        <ul className="mt-3 space-y-2">
-          {rows.map((r, i) => (
-            <li key={i} className="flex items-center gap-2">
+        <label className="mt-3 block text-xs text-text-light" htmlFor="hours-intro">Line under the heading</label>
+        <input id="hours-intro" value={intro} onChange={(e) => setIntro(e.target.value)} maxLength={200} placeholder="Tuesday 15th to Saturday 19th December: opening hours as usual" className={`${input} mt-1`} style={{ borderRadius: "6px" }} />
+
+        <ul className="mt-4 space-y-2">
+          {days.map((d, i) => (
+            <li key={i} className="flex flex-wrap items-center gap-2">
               <input
-                value={r.day}
-                onChange={(e) => setRows((prev) => prev.map((x, j) => (j === i ? { ...x, day: e.target.value } : x)))}
-                maxLength={80}
-                placeholder="Monday 21st"
-                className={`${input} min-w-0 flex-[3]`}
+                type="date"
+                value={d.date}
+                onChange={(e) => setDays((prev) => prev.map((x, j) => (j === i ? { ...x, date: e.target.value } : x)))}
+                className={`${input} w-auto`}
                 style={{ borderRadius: "6px" }}
-                aria-label="Day"
+                aria-label="Date"
               />
+              <label className="flex items-center gap-1.5 text-sm text-navy">
+                <input
+                  type="checkbox"
+                  checked={d.closed}
+                  onChange={(e) => setDays((prev) => prev.map((x, j) => (j === i ? { ...x, closed: e.target.checked } : x)))}
+                  className="h-4 w-4 accent-navy"
+                />
+                Closed
+              </label>
               <input
-                value={r.hours}
-                onChange={(e) => setRows((prev) => prev.map((x, j) => (j === i ? { ...x, hours: e.target.value } : x)))}
-                maxLength={60}
-                placeholder="8am to 7pm, or Closed"
-                className={`${input} min-w-0 flex-[2]`}
+                type="time"
+                value={d.opens}
+                disabled={d.closed}
+                onChange={(e) => setDays((prev) => prev.map((x, j) => (j === i ? { ...x, opens: e.target.value } : x)))}
+                className={`${input} w-auto disabled:opacity-40`}
                 style={{ borderRadius: "6px" }}
-                aria-label="Hours"
+                aria-label="Opens"
               />
-              <button type="button" onClick={() => setRows((prev) => prev.filter((_, j) => j !== i))} className="p-2 text-text-light hover:text-red-600" aria-label="Remove row">
+              <span className="text-sm text-text-light">to</span>
+              <input
+                type="time"
+                value={d.closes}
+                disabled={d.closed}
+                onChange={(e) => setDays((prev) => prev.map((x, j) => (j === i ? { ...x, closes: e.target.value } : x)))}
+                className={`${input} w-auto disabled:opacity-40`}
+                style={{ borderRadius: "6px" }}
+                aria-label="Closes"
+              />
+              <button type="button" onClick={() => setDays((prev) => prev.filter((_, j) => j !== i))} className="p-2 text-text-light hover:text-red-600" aria-label="Remove day">
                 <Trash2 className="h-4 w-4" />
               </button>
             </li>
           ))}
         </ul>
-        <button type="button" onClick={() => setRows((prev) => [...prev, { day: "", hours: "" }])} className="mt-3 flex items-center gap-1 text-sm font-medium text-navy underline">
-          <Plus className="h-4 w-4" /> Add a row
+        <button
+          type="button"
+          onClick={() => setDays((prev) => [...prev, { date: "", closed: false, opens: "09:00", closes: "17:00" }])}
+          className="mt-3 flex items-center gap-1 text-sm font-medium text-navy underline"
+        >
+          <Plus className="h-4 w-4" /> Add a day
         </button>
-        <label className="mt-4 block text-xs text-text-light" htmlFor="hours-foot">Note under the table</label>
+        <label className="mt-4 block text-xs text-text-light" htmlFor="hours-foot">Note under the cards</label>
         <textarea id="hours-foot" rows={2} value={footnote} onChange={(e) => setFootnote(e.target.value)} maxLength={300} className={`${input} mt-1`} style={{ borderRadius: "6px" }} />
       </div>
 

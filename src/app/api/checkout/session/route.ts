@@ -1,4 +1,5 @@
-import { getClosedMessage } from "@/lib/site-settings";
+import { getClosedMessage, getOpeningDays } from "@/lib/site-settings";
+import { closedDateKeys } from "@/lib/opening-hours";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getCardstreamClient } from "@/lib/cardstream/client";
@@ -58,6 +59,7 @@ export async function POST(request: Request) {
   const slotCheck = checkBookedSlot(checkout.fulfilment.slot.date, {
     christmasShopActive: await isChristmasShopActive(),
     christmasDays: await getChristmasDates(),
+    closedDates: closedDateKeys(await getOpeningDays()),
   });
   if (!slotCheck.ok) {
     return NextResponse.json({ status: "slot_unavailable", reason: slotCheck.reason }, { status: 409 });

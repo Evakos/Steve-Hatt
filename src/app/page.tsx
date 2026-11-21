@@ -13,6 +13,7 @@ import Footer from "@/components/footer";
 import HeroSlider from "@/components/hero-slider";
 import ChristmasHeroSlide from "@/components/christmas-hero-slide";
 import ChristmasOpeningHours from "@/components/christmas-opening-hours";
+import ClosedShopPopup from "@/components/closed-shop-popup";
 import { getOpeningHours } from "@/lib/site-settings";
 import Reveal from "@/components/reveal";
 
@@ -118,6 +119,7 @@ export default async function Home() {
       {/* Always rendered: it checks the flag itself, showing the Christmas message while pre-orders
           run and the closure notice during the Christmas break (when christmasActive is false). */}
       <AnnouncementBanner />
+      <ClosedShopPopup />
       <Header />
 
       {/* Hero - text overlaid on the photo, matching a traditional hero banner */}
@@ -426,7 +428,7 @@ export default async function Home() {
             </Reveal>
 
             <Reveal>
-              <div className="mt-12">
+              <div className="mt-14">
                 <ChristmasOpeningHours hours={openingHours} />
               </div>
             </Reveal>

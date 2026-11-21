@@ -3,7 +3,7 @@ import { sendEmail } from "./send";
 import type { RepricedOrder } from "@/lib/checkout/reprice";
 import type { DeliveryDetails } from "@/lib/checkout/delivery-address";
 import { dayNoteFor } from "@/lib/checkout/closing-note";
-import { getDayNotes, getNotificationEmails } from "@/lib/site-settings";
+import { getDayNotes, getNotificationEmails, getOpeningDays } from "@/lib/site-settings";
 import { COLORS, SITE_URL, emailOrderBadges, emailShell, emailHeading, emailNotice, emailAlert, emailButton, emailLineItemsTable } from "./layout";
 
 import { getLastOrderLabel } from "@/lib/feature-flags";
@@ -38,7 +38,7 @@ export interface OrderConfirmationInput {
 export async function sendOrderConfirmation(input: OrderConfirmationInput) {
   const lastOrderLabel = await getLastOrderLabel();
   const { to, customerName, orderNumber, repriced, slotLabel, slotDate, fulfilmentType, depositAmount, paidInFull } = input;
-  const closingNote = dayNoteFor(slotDate, await getDayNotes());
+  const closingNote = dayNoteFor(slotDate, await getDayNotes(), await getOpeningDays());
   const isPaidInFull = paidInFull === true;
   const deposit = depositAmount ?? 0;
   const hasDeposit = !isPaidInFull && deposit > 0;
@@ -213,7 +213,7 @@ export interface AdminNewOrderNotificationInput extends Partial<DeliveryDetails>
  */
 export async function sendAdminNewOrderNotification(input: AdminNewOrderNotificationInput) {
   const { orderNumber, customerName, customerEmail, repriced, slotLabel, slotDate, fulfilmentType, depositAmount, paidInFull, customerPhone, deliveryAddress } = input;
-  const closingNote = dayNoteFor(slotDate, await getDayNotes());
+  const closingNote = dayNoteFor(slotDate, await getDayNotes(), await getOpeningDays());
   const to = await getNotificationEmails();
   const isPaidInFull = paidInFull === true;
   const deposit = depositAmount ?? 0;
