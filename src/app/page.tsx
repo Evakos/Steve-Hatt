@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { getAllProducts } from "@/lib/products";
@@ -206,16 +207,23 @@ export default async function Home() {
 
         {/* Trust strip - full width, directly attached with no gap */}
         <div className="border-b border-border/50 bg-navy">
-          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-start gap-x-8 gap-y-3 px-6 py-4 sm:py-5">
+          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-5 gap-y-3 px-6 py-4 sm:py-5">
             {[
               { icon: <Truck className="h-4 w-4" />, text: "Local delivery across Islington" },
               { icon: <Leaf className="h-4 w-4" />, text: "Sustainably sourced" },
               { icon: <Fish className="h-4 w-4" />, text: "Prepared to order" },
-            ].map((item) => (
-              <div key={item.text} className="flex items-center gap-2 text-sm tracking-wide text-white/70">
-                <span className="text-teal">{item.icon}</span>
-                {item.text}
-              </div>
+            ].map((item, i) => (
+              <Fragment key={item.text}>
+                {i > 0 && (
+                  <span aria-hidden className="hidden text-white/30 sm:inline">
+                    |
+                  </span>
+                )}
+                <div className="flex items-center gap-2 text-sm tracking-wide text-white/70">
+                  <span className="text-teal">{item.icon}</span>
+                  {item.text}
+                </div>
+              </Fragment>
             ))}
           </div>
         </div>
