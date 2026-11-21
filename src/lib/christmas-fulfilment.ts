@@ -42,3 +42,9 @@ export function christmasRangeLabel(christmasDays: readonly string[], from: Date
   const month = new Intl.DateTimeFormat("en-GB", { month: "long" }).format(last);
   return dates.length === 1 ? `${ordinal(first.getDate())} ${month}` : `${ordinal(first.getDate())} to ${ordinal(last.getDate())} ${month}`;
 }
+
+/** What customers do on the Christmas days, as a verb phrase: "come and collect from the shop" when it is collection only. */
+export function fulfilmentAction(fulfilment: string, capital = false): string {
+  const text = fulfilment === "collection" ? "come and collect from the shop" : `choose ${fulfilment}`;
+  return capital ? text.charAt(0).toUpperCase() + text.slice(1) : text;
+}

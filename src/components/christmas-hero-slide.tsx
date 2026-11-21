@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import Image from "next/image";
+import { fulfilmentAction } from "@/lib/christmas-fulfilment";
 
 /**
  * The folk-art cockerel beside the text on wide screens: from the Illustrator EPS in the stock set, taken out of its card and
@@ -19,7 +20,7 @@ export default function ChristmasHeroSlide({ when, fulfilment, lastDay, proof }:
               Your Christmas fish,<br className="hidden sm:block" /> ordered ahead.
             </h2>
             <p className="mt-4 max-w-lg text-base leading-relaxed text-white/90 sm:mt-6 sm:text-lg">
-              Reserve fresh fish and shellfish for the festive table, then choose {fulfilment} {when}. {lastDay}
+              Reserve fresh fish and shellfish for the festive table, then {fulfilmentAction(fulfilment)} {when}. {lastDay}
             </p>
             {proof}
             <div className="mt-4 flex flex-col gap-3 sm:mt-6 sm:flex-row sm:items-center sm:gap-4">

@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { getAllProducts } from "@/lib/products";
 import { isChristmasShopActive, getLastOrderLabel, getChristmasDates, getDisabledSlots, getSlotsEnabled } from "@/lib/feature-flags";
-import { christmasFulfilmentPhrase, lastDaySentence } from "@/lib/christmas-fulfilment";
+import { christmasFulfilmentPhrase, fulfilmentAction, lastDaySentence } from "@/lib/christmas-fulfilment";
 import { getUpcomingChristmasDates } from "@/lib/christmas-dates";
 import { Truck, Fish, Scaling, Leaf, Anchor, Recycle, ShoppingBag, Search, Snowflake, CalendarDays, CreditCard, type LucideIcon } from "lucide-react";
 import GoogleRating from "@/components/google-rating";
@@ -383,7 +383,7 @@ export default async function Home() {
               <p className="text-xs tracking-widest text-text-light uppercase">Festive season</p>
               <h2 className="mt-2 font-serif text-3xl font-bold text-navy md:text-4xl">Christmas Pre-Orders</h2>
               <p className="mx-auto mt-4 max-w-3xl text-base leading-relaxed text-text-light md:text-lg">
-                Reserve your Christmas feast now. Choose {fulfilment} {christmasWhen}. {lastDay}
+                Reserve your Christmas feast now. {fulfilmentAction(fulfilment, true)} {christmasWhen}. {lastDay}
                 <br />
                 Every order prepared fresh by your fishmonger.
               </p>
