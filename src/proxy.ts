@@ -35,6 +35,13 @@ export function proxy(request: NextRequest) {
     if (pathname.startsWith("/api/admin")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+    // Staff sign in once, at the WordPress login. From there the shop admin signs them in automatically
+    // (see /admin/sso), landing on the page they asked for. /admin/login stays as a fallback.
+    const backend = process.env.WOOCOMMERCE_URL?.replace(/\/$/, "");
+    if (backend) {
+      const back = `${backend}/wp-admin/admin-post.php?action=sh_open_shop_admin&to=${encodeURIComponent(pathname)}`;
+      return NextResponse.redirect(`${backend}/wp-login.php?redirect_to=${encodeURIComponent(back)}`);
+    }
     return NextResponse.redirect(new URL("/admin/login", request.url));
   }
 
