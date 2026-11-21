@@ -16,7 +16,7 @@ export default function ChristmasHeroSlide({ when, fulfilment, lastDay, proof }:
           <div className="max-w-2xl lg:max-w-[min(42rem,calc(100%-22rem))]">
             <p className="mb-3 text-[11px] font-medium tracking-widest text-lobster uppercase sm:mb-4 sm:text-xs">Christmas pre-orders now open</p>
             <h2 className="font-serif text-4xl font-bold leading-[1.1] text-white sm:text-5xl lg:text-4xl xl:text-5xl 2xl:text-6xl">
-              Your Christmas fish, ordered ahead.
+              Your Christmas fish,<br className="hidden sm:block" /> ordered ahead.
             </h2>
             <p className="mt-4 max-w-lg text-base leading-relaxed text-white/90 sm:mt-6 sm:text-lg">
               Reserve fresh fish and shellfish for the festive table, then choose {fulfilment} {when}. {lastDay}
@@ -43,7 +43,7 @@ export default function ChristmasHeroSlide({ when, fulfilment, lastDay, proof }:
             height={FOLK_ART.height}
             sizes="400px"
             priority
-            className="h-[92%] max-h-[460px] w-auto"
+            className="h-[74%] max-h-[340px] w-auto"
           />
         </div>
       </div>
