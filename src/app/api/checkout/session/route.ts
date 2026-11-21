@@ -7,8 +7,8 @@ import { sessionRequestSchema, type CheckoutRequest } from "@/lib/checkout/schem
 import { checkBookedSlot, christmasExclusionReason } from "@/lib/checkout/slot-rules";
 import { deliveryMinimumMessage, deliveryShortfall } from "@/lib/checkout/delivery-minimum";
 import { getCustomerSession } from "@/lib/customer-auth";
-import { areOnlineOrdersClosed, getChristmasDates, getDisabledSlots, getSlotsEnabled, isChristmasShopActive } from "@/lib/feature-flags";
-import { ORDERS_CLOSED_REASON } from "@/lib/ordering-window";
+import { areOnlineOrdersClosed, getChristmasDates, getDisabledSlots, getSlotsEnabled, isChristmasShopActive, getReopenLabel } from "@/lib/feature-flags";
+import { ordersClosedReason } from "@/lib/ordering-window";
 import { isDateBookableWithoutWindow, isSlotDisabled, slotWindowFromLabel } from "@/lib/slots";
 import { getWooOrder, updateWooOrder } from "@/lib/woocommerce/orders";
 
@@ -42,7 +42,7 @@ async function cancelReplacedOrder(replaces: { orderId: number; orderRef: string
  */
 export async function POST(request: Request) {
   if (await areOnlineOrdersClosed()) {
-    return NextResponse.json({ status: "closed", reason: ORDERS_CLOSED_REASON }, { status: 403 });
+    return NextResponse.json({ status: "closed", reason: ordersClosedReason(await getReopenLabel()) }, { status: 403 });
   }
   const json = await request.json().catch(() => null);
   const parsed = bodySchema.safeParse(json);

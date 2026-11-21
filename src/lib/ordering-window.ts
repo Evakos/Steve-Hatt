@@ -15,9 +15,11 @@
  * 25th December to 3rd January, so no everyday slot is offered then. Not the online ordering dates. */
 export const REOPEN_DAY = 4;
 
-/** Shown in the banner and refused-order message while ordering is closed. */
-export const ORDERS_CLOSED_REASON =
-  "Online ordering is closed for the Christmas break, due to the shortage of fish and staff holidays. We will take orders again in the new year.";
+/** Shown in the banner and refused-order message while ordering is closed, with the reopening date when one is set. */
+export function ordersClosedReason(reopenLabel?: string | null): string {
+  const until = reopenLabel ? `The shop will be closed until ${reopenLabel}.` : "The shop is closed for the Christmas break.";
+  return `${until} During this period orders cannot be made due to staff holidays and fish supplies.`;
+}
 
 /** Christmas pre-ordering can only be live from this month (0-based, so 9 = October). This is not a date
  * staff see, just a guard so a Christmas switch left on can never bring it back in the spring. The real
@@ -131,4 +133,18 @@ export function isInChristmasBreak(date: Date): boolean {
   const month = date.getMonth();
   const day = date.getDate();
   return (month === 11 && day >= 25) || (month === 0 && day < REOPEN_DAY);
+}
+
+/** The day ordering closes, e.g. "18th December" when the last order day is the 17th. Null when none is set. */
+export function closingLabelFor(lastOrderDate?: string | null, now: Date = currentDate()): string | null {
+  const { year } = ukDateParts(now);
+  const day = lastOrderDayFor(lastOrderDate, year);
+  return day === null ? null : `${ordinal(day + 1)} December`;
+}
+
+/** The staff-set reopening day, e.g. "5th January", or null when none is set. Read in December it points to next January. */
+export function reopenLabelFor(reopenDate?: string | null, now: Date = currentDate()): string | null {
+  const { year, month } = ukDateParts(now);
+  const day = reopenDayFor(reopenDate, month === 11 ? year + 1 : year);
+  return day === null ? null : `${ordinal(day)} January`;
 }

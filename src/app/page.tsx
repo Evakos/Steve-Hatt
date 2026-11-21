@@ -12,6 +12,7 @@ import AnnouncementBanner from "@/components/announcement-banner";
 import Footer from "@/components/footer";
 import HeroSlider from "@/components/hero-slider";
 import ChristmasHeroSlide from "@/components/christmas-hero-slide";
+import ChristmasOpeningHours from "@/components/christmas-opening-hours";
 import Reveal from "@/components/reveal";
 
 const howItWorks = [
@@ -419,6 +420,12 @@ export default async function Home() {
                   *A few items can&apos;t be ordered for Christmas dates. If one is in your basket, checkout will tell you
                   which to remove.
                 </p>
+              </div>
+            </Reveal>
+
+            <Reveal>
+              <div className="mx-auto mt-12 max-w-xl">
+                <ChristmasOpeningHours />
               </div>
             </Reveal>
           </div>

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { X, Snowflake, Info } from "lucide-react";
 import Link from "next/link";
-import { ORDERS_CLOSED_REASON } from "@/lib/ordering-window";
+import { ordersClosedReason } from "@/lib/ordering-window";
 
 type BannerVariant = "christmas" | "easter" | "summer" | "generic";
 
@@ -17,14 +17,18 @@ interface BannerConfig {
   ctaHref: string;
 }
 
-function christmasMessage(lastOrder: string | null) {
+/** "18th December" as "the 18th of December", for the banner sentence. */
+function theDayOf(label: string): string {
+  const [day, month] = label.split(" ");
+  return month ? `the ${day} of ${month}` : label;
+}
+
+function christmasMessage(closing: string | null) {
   return (
     <>
       Christmas pre-orders are now open!{" "}
-      {lastOrder ? (
-        <>
-          <strong className="font-semibold">Order by {lastOrder}</strong> to reserve your festive feast.
-        </>
+      {closing ? (
+        <strong className="font-semibold">Please pre-order through the shop before {theDayOf(closing)}.</strong>
       ) : (
         "Reserve your festive feast."
       )}
@@ -65,7 +69,8 @@ export default function AnnouncementBanner({
   // Christmas break (after 17th December until the new year): the whole shop is closed to online
   // orders, so this banner switches to a closure notice with the reason, and can't be dismissed.
   const [ordersClosed, setOrdersClosed] = useState(false);
-  const [lastOrder, setLastOrder] = useState<string | null>(null);
+  const [closing, setClosing] = useState<string | null>(null);
+  const [reopen, setReopen] = useState<string | null>(null);
   const config = banners[variant] || banners.christmas;
 
   useEffect(() => {
@@ -77,7 +82,8 @@ export default function AnnouncementBanner({
         if (cancelled) return;
         setChristmasActive(data.active === true);
         setOrdersClosed(data.ordersClosed === true);
-        setLastOrder(typeof data.lastOrderLabel === "string" ? data.lastOrderLabel : null);
+        setClosing(typeof data.closingLabel === "string" ? data.closingLabel : null);
+        setReopen(typeof data.reopenLabel === "string" ? data.reopenLabel : null);
       })
       .catch(() => {});
     return () => {
@@ -92,7 +98,7 @@ export default function AnnouncementBanner({
       <div className="bg-navy text-white">
         <div className="mx-auto flex max-w-6xl items-center justify-center gap-2 px-6 py-2.5 text-center text-xs md:text-sm">
           <Info className="h-4 w-4 shrink-0" />
-          <span>{ORDERS_CLOSED_REASON}</span>
+          <span>{ordersClosedReason(reopen)}</span>
         </div>
       </div>
     );
@@ -106,7 +112,7 @@ export default function AnnouncementBanner({
         <div className="flex items-center gap-2 text-center text-xs md:text-sm">
           <span className={config.accent}>{config.icon}</span>
           <span>
-            {message || (variant === "christmas" ? christmasMessage(lastOrder) : config.message)}{" "}
+            {message || (variant === "christmas" ? christmasMessage(closing) : config.message)}{" "}
             <Link
               href={config.ctaHref}
               className={`inline-block underline underline-offset-2 transition-opacity hover:opacity-80 ${config.accent}`}

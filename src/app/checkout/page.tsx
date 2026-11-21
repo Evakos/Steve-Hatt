@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { useCart, orderUnitPrice } from "@/lib/cart-context";
 import OrderTypeConfirm from "@/components/order-type-confirm";
+import { closingNoteFor } from "@/lib/checkout/closing-note";
 import {
   normalisePostcode,
   extractOutcode,
@@ -26,7 +27,7 @@ import {
 } from "@/lib/delivery-zones";
 import Header from "@/components/header";
 import AnnouncementBanner from "@/components/announcement-banner";
-import { ORDERS_CLOSED_REASON } from "@/lib/ordering-window";
+import { ordersClosedReason } from "@/lib/ordering-window";
 import { SLOT_WINDOWS, getAvailableDates, isDateBookableWithoutWindow, isSlotDisabled, toSlotInstant } from "@/lib/slots";
 import ContactAddressForm, { EMPTY_CONTACT_ADDRESS, type ContactAddressValue } from "@/components/checkout/contact-address-form";
 import PaymentPanel from "@/components/checkout/payment-panel";
@@ -131,6 +132,7 @@ export default function CheckoutPage() {
   // Delivery/collection slots staff have switched off in /admin/slots - hidden from the picker.
   const [disabledSlots, setDisabledSlots] = useState<string[]>([]);
   const [lastOrderLabel, setLastOrderLabel] = useState<string | null>(null);
+  const [reopenLabel, setReopenLabel] = useState<string | null>(null);
   // The Christmas days staff picked in the admin (YYYY-MM-DD).
   const [christmasDates, setChristmasDates] = useState<string[]>([]);
   // The master switch in /admin/slots. When off, no time slot is chosen or required.
@@ -138,8 +140,9 @@ export default function CheckoutPage() {
   useEffect(() => {
     fetch("/api/feature-flags/christmas")
       .then((res) => (res.ok ? res.json() : null))
-      .then((data: { active: boolean; useDepositFlow?: boolean; ordersClosed?: boolean; disabledSlots?: string[]; slotsEnabled?: boolean; lastOrderLabel?: string | null; christmasDates?: string[] } | null) => {
+      .then((data: { active: boolean; useDepositFlow?: boolean; ordersClosed?: boolean; disabledSlots?: string[]; slotsEnabled?: boolean; lastOrderLabel?: string | null; reopenLabel?: string | null; christmasDates?: string[] } | null) => {
         setLastOrderLabel(data?.lastOrderLabel ?? null);
+        setReopenLabel(data?.reopenLabel ?? null);
         setChristmasDates(data?.christmasDates ?? []);
         setOrdersClosed(data?.ordersClosed === true);
         setSlotsEnabled(data?.slotsEnabled !== false);
@@ -356,7 +359,7 @@ export default function CheckoutPage() {
         <section className="flex-1 bg-cream">
           <div className="mx-auto max-w-xl px-6 py-20 text-center">
             <h1 className="font-serif text-3xl font-bold text-navy">Online ordering is closed</h1>
-            <p className="mt-4 text-sm leading-relaxed text-text-light">{ORDERS_CLOSED_REASON}</p>
+            <p className="mt-4 text-sm leading-relaxed text-text-light">{ordersClosedReason(reopenLabel)}</p>
             <Link
               href="/contact"
               className="mt-6 inline-block bg-lobster px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-lobster/90"
@@ -754,6 +757,9 @@ export default function CheckoutPage() {
                                   <span className={isSelected ? (isXmas ? "text-[#1a3a2a]" : "text-navy") : (isXmas ? "text-[#1a3a2a]/70" : "text-text-light")}>
                                     {slot.label}
                                   </span>
+                                  {closingNoteFor(toSlotInstant(slot.date).toISOString()) && (
+                                    <span className="text-xs font-bold text-lobster">We close at 2pm</span>
+                                  )}
                                 </div>
                                 {isSelected && <Check className={`h-4 w-4 ${isXmas ? "text-[#1a3a2a]" : "text-navy"}`} />}
                               </button>

@@ -1,7 +1,7 @@
 import "server-only";
 import { get } from "@vercel/edge-config";
 import { hasUpcomingChristmasDates } from "./christmas-dates";
-import { currentDate, isChristmasSeason, isOnlineOrderingClosed, lastOrderLabelFor } from "./ordering-window";
+import { closingLabelFor, currentDate, isChristmasSeason, isOnlineOrderingClosed, lastOrderLabelFor, reopenLabelFor } from "./ordering-window";
 
 /** Staff-set reopen date (YYYY-MM-DD, a January day) from Edge Config, or "" to use the default
  * 4th January. Only honoured in its own year, see ordering-window.ts. */
@@ -44,6 +44,16 @@ export async function getChristmasDates(): Promise<string[]> {
   } catch {
     return [];
   }
+}
+
+/** The day ordering closes as customers see it, e.g. "18th December", or null when no last order day is set. */
+export async function getClosingLabel(): Promise<string | null> {
+  return closingLabelFor(await getLastOrderDate());
+}
+
+/** The reopening day as customers see it, e.g. "5th January", or null when none is set. */
+export async function getReopenLabel(): Promise<string | null> {
+  return reopenLabelFor(await getOrdersReopenDate());
 }
 
 /** The last order day as customers see it, e.g. "16th December", or null when none is set. */

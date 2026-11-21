@@ -30,6 +30,7 @@ beforeEach(() => {
   flags.getDisabledSlots.mockResolvedValue([]);
   flags.getSlotsEnabled.mockResolvedValue(true);
   flags.getChristmasDates.mockResolvedValue([]);
+  flags.getReopenLabel.mockResolvedValue(null);
   flags.isChristmasShopActive.mockResolvedValue(true);
 });
 
@@ -40,6 +41,7 @@ const flags = {
   getDisabledSlots: vi.fn(),
   getSlotsEnabled: vi.fn(),
   getChristmasDates: vi.fn(),
+  getReopenLabel: vi.fn(),
   isChristmasShopActive: vi.fn(),
 };
 vi.mock("@/lib/feature-flags", () => flags);

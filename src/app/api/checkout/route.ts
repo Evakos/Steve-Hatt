@@ -20,13 +20,14 @@ import {
   getChristmasDates,
   areOnlineOrdersClosed,
   isChristmasShopActive,
+  getReopenLabel,
 } from "@/lib/feature-flags";
-import { ORDERS_CLOSED_REASON } from "@/lib/ordering-window";
+import { ordersClosedReason } from "@/lib/ordering-window";
 import { isDateBookableWithoutWindow, isSlotDisabled, slotWindowFromLabel } from "@/lib/slots";
 
 export async function POST(request: Request) {
   if (await areOnlineOrdersClosed()) {
-    return NextResponse.json({ status: "closed", reason: ORDERS_CLOSED_REASON }, { status: 403 });
+    return NextResponse.json({ status: "closed", reason: ordersClosedReason(await getReopenLabel()) }, { status: 403 });
   }
   const json = await request.json().catch(() => null);
   const parsed = checkoutRequestSchema.safeParse(json);
@@ -148,6 +149,7 @@ export async function POST(request: Request) {
         orderNumber: order.number,
         repriced,
         slotLabel: checkout.fulfilment.slot.label,
+        slotDate: checkout.fulfilment.slot.date,
         fulfilmentType: checkout.fulfilment.type,
         depositAmount,
       });
@@ -158,6 +160,7 @@ export async function POST(request: Request) {
         customerEmail: checkout.customer.email,
         repriced,
         slotLabel: checkout.fulfilment.slot.label,
+        slotDate: checkout.fulfilment.slot.date,
         fulfilmentType: checkout.fulfilment.type,
         depositAmount,
       });
@@ -190,6 +193,7 @@ export async function POST(request: Request) {
       orderNumber: order.number,
       repriced,
       slotLabel: checkout.fulfilment.slot.label,
+      slotDate: checkout.fulfilment.slot.date,
       fulfilmentType: checkout.fulfilment.type,
     });
     await sendAdminNewOrderNotification({
@@ -199,6 +203,7 @@ export async function POST(request: Request) {
       customerEmail: checkout.customer.email,
       repriced,
       slotLabel: checkout.fulfilment.slot.label,
+      slotDate: checkout.fulfilment.slot.date,
       fulfilmentType: checkout.fulfilment.type,
     });
 
@@ -268,6 +273,7 @@ export async function POST(request: Request) {
     orderNumber: order.number,
     repriced,
     slotLabel: checkout.fulfilment.slot.label,
+    slotDate: checkout.fulfilment.slot.date,
     fulfilmentType: checkout.fulfilment.type,
     paidInFull: true,
   });
@@ -278,6 +284,7 @@ export async function POST(request: Request) {
     customerEmail: checkout.customer.email,
     repriced,
     slotLabel: checkout.fulfilment.slot.label,
+    slotDate: checkout.fulfilment.slot.date,
     fulfilmentType: checkout.fulfilment.type,
     paidInFull: true,
   });

@@ -8,13 +8,13 @@ import { confirmRequestSchema } from "@/lib/checkout/schema";
 import { isChristmasSlotDate } from "@/lib/checkout/slot-rules";
 import { sendOrderConfirmation, sendAdminNewOrderNotification } from "@/lib/email/send-order-confirmation";
 import { getCustomerSession } from "@/lib/customer-auth";
-import { getChristmasDepositAmount, getChristmasUseDepositFlow } from "@/lib/feature-flags";
-import { ORDERS_CLOSED_REASON } from "@/lib/ordering-window";
+import { getChristmasDepositAmount, getChristmasUseDepositFlow, getReopenLabel } from "@/lib/feature-flags";
+import { ordersClosedReason } from "@/lib/ordering-window";
 import { areOnlineOrdersClosed, getChristmasDates } from "@/lib/feature-flags";
 
 export async function POST(request: Request) {
   if (await areOnlineOrdersClosed()) {
-    return NextResponse.json({ status: "closed", reason: ORDERS_CLOSED_REASON }, { status: 403 });
+    return NextResponse.json({ status: "closed", reason: ordersClosedReason(await getReopenLabel()) }, { status: 403 });
   }
   const json = await request.json().catch(() => null);
   const parsed = confirmRequestSchema.safeParse(json);
@@ -71,6 +71,7 @@ export async function POST(request: Request) {
         orderNumber: order.number,
         repriced,
         slotLabel: checkout.fulfilment.slot.label,
+        slotDate: checkout.fulfilment.slot.date,
         fulfilmentType: checkout.fulfilment.type,
         depositAmount,
       });
@@ -81,6 +82,7 @@ export async function POST(request: Request) {
         customerEmail: checkout.customer.email,
         repriced,
         slotLabel: checkout.fulfilment.slot.label,
+        slotDate: checkout.fulfilment.slot.date,
         fulfilmentType: checkout.fulfilment.type,
         depositAmount,
       });
@@ -104,6 +106,7 @@ export async function POST(request: Request) {
     orderNumber: order.number,
     repriced: rp,
     slotLabel: checkout.fulfilment.slot.label,
+    slotDate: checkout.fulfilment.slot.date,
     fulfilmentType: checkout.fulfilment.type,
     paidInFull: true,
   });
@@ -114,6 +117,7 @@ export async function POST(request: Request) {
     customerEmail: checkout.customer.email,
     repriced: rp,
     slotLabel: checkout.fulfilment.slot.label,
+    slotDate: checkout.fulfilment.slot.date,
     fulfilmentType: checkout.fulfilment.type,
     paidInFull: true,
   });

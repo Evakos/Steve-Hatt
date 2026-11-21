@@ -3,6 +3,7 @@ import { sendEmail } from "./send";
 import { getServerEnv } from "@/lib/env";
 import type { RepricedOrder } from "@/lib/checkout/reprice";
 import type { DeliveryDetails } from "@/lib/checkout/delivery-address";
+import { closingNoteFor } from "@/lib/checkout/closing-note";
 import { COLORS, SITE_URL, emailOrderBadges, emailShell, emailHeading, emailNotice, emailAlert, emailButton, emailLineItemsTable } from "./layout";
 
 import { getLastOrderLabel } from "@/lib/feature-flags";
@@ -16,6 +17,8 @@ export interface OrderConfirmationInput {
   orderNumber: string;
   repriced: RepricedOrder;
   slotLabel: string;
+  /** The booked date (ISO), used for the Christmas Eve closing-time note. */
+  slotDate?: string;
   fulfilmentType: "delivery" | "collection";
   /** Set when a deposit was captured at checkout (Christmas deposit model) - the confirmation then
    * says "deposit paid now, balance to settle on collection" instead of "you haven't been charged yet". */
@@ -34,7 +37,8 @@ export interface OrderConfirmationInput {
  */
 export async function sendOrderConfirmation(input: OrderConfirmationInput) {
   const lastOrderLabel = await getLastOrderLabel();
-  const { to, customerName, orderNumber, repriced, slotLabel, fulfilmentType, depositAmount, paidInFull } = input;
+  const { to, customerName, orderNumber, repriced, slotLabel, slotDate, fulfilmentType, depositAmount, paidInFull } = input;
+  const closingNote = closingNoteFor(slotDate);
   const isPaidInFull = paidInFull === true;
   const deposit = depositAmount ?? 0;
   const hasDeposit = !isPaidInFull && deposit > 0;
@@ -81,6 +85,7 @@ export async function sendOrderConfirmation(input: OrderConfirmationInput) {
     ${emailLineItemsTable(repriced.lineItems)}
     ${totalsTable}
     <p style="margin-top:20px;font-size:15px;"><strong>${fulfilmentType === "delivery" ? "Delivery" : "Collection"}:</strong> ${slotLabel}</p>
+    ${closingNote ? `<p style="margin:8px 0 0;font-size:15px;font-weight:700;color:${COLORS.navy};">${closingNote}</p>` : ""}
     ${
       repriced.isChristmas
         ? emailNotice(
@@ -190,6 +195,8 @@ export interface AdminNewOrderNotificationInput extends Partial<DeliveryDetails>
   customerEmail: string;
   repriced: RepricedOrder;
   slotLabel: string;
+  /** The booked date (ISO), used for the Christmas Eve closing-time note. */
+  slotDate?: string;
   fulfilmentType: "delivery" | "collection";
   /** Set when a deposit was captured at checkout - flags the order as deposit+balance rather than full-hold. */
   depositAmount?: number;
@@ -205,7 +212,8 @@ export interface AdminNewOrderNotificationInput extends Partial<DeliveryDetails>
  * doesn't fail the order.
  */
 export async function sendAdminNewOrderNotification(input: AdminNewOrderNotificationInput) {
-  const { orderNumber, customerName, customerEmail, repriced, slotLabel, fulfilmentType, depositAmount, paidInFull, customerPhone, deliveryAddress } = input;
+  const { orderNumber, customerName, customerEmail, repriced, slotLabel, slotDate, fulfilmentType, depositAmount, paidInFull, customerPhone, deliveryAddress } = input;
+  const closingNote = closingNoteFor(slotDate);
   const to = getServerEnv().ADMIN_NOTIFICATION_EMAIL;
   const isPaidInFull = paidInFull === true;
   const deposit = depositAmount ?? 0;
@@ -216,6 +224,7 @@ export async function sendAdminNewOrderNotification(input: AdminNewOrderNotifica
     ${emailHeading(`New order #${orderNumber} - needs preparing`)}
     ${emailOrderBadges({ fulfilmentType, isChristmas: repriced.isChristmas })}
     <p style="margin:0 0 4px;font-size:16px;font-weight:700;color:${COLORS.navy};">${fulfilmentType === "delivery" ? "Delivery" : "Collection"}: ${slotLabel}</p>
+    ${closingNote ? `<p style="margin:0 0 4px;font-size:15px;font-weight:700;color:${COLORS.lobster};">${closingNote}</p>` : ""}
     <p style="margin:0 0 4px;">${customerName} (${customerEmail})${customerPhone ? `, ${customerPhone}` : ""}</p>
     ${fulfilmentType === "delivery" && deliveryAddress
       ? `<div style="margin:12px 0 4px;padding:12px 14px;background:${COLORS.lobsterLight};border:1px solid ${COLORS.lobster}55;border-radius:5px;font-size:14px;color:${COLORS.navy};">
