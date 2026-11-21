@@ -50,13 +50,13 @@ export default function Header() {
 
   return (
     <header className="border-b border-border/50 bg-white sticky top-0 z-50">
-      <nav className="grid h-20 w-full grid-cols-2 items-center px-6 md:grid-cols-3">
+      <nav className="grid h-20 w-full grid-cols-2 items-center px-6 xl:grid-cols-3">
         <Link href="/" className="justify-self-start">
           <Image src="/logo.svg" alt="Steve Hatt Fishmongers" width={180} height={80} className="h-11 w-auto" priority />
         </Link>
 
         {/* Desktop nav - centered links */}
-        <div className="hidden items-center justify-self-center gap-8 md:flex">
+        <div className="hidden items-center justify-self-center gap-8 whitespace-nowrap xl:flex">
           {NAV_LINKS.map((l) => (
             <NavLink key={l.href} href={l.href} active={isCurrent(l.href, pathname)}>
               {l.label}
@@ -65,7 +65,7 @@ export default function Header() {
         </div>
 
         {/* Desktop actions */}
-        <div className="hidden items-center justify-self-end gap-8 md:flex">
+        <div className="hidden items-center justify-self-end gap-8 whitespace-nowrap xl:flex">
           {/* Account link - /account redirects to sign-in if not authenticated */}
           <Link
             href="/account"
@@ -91,7 +91,7 @@ export default function Header() {
 
         {/* Mobile toggle */}
         <button
-          className="justify-self-end md:hidden"
+          className="justify-self-end xl:hidden"
           onClick={() => setMobileOpen(!mobileOpen)}
           aria-label="Toggle menu"
         >
@@ -101,7 +101,7 @@ export default function Header() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="border-t border-border/50 bg-white px-6 pb-6 md:hidden">
+        <div className="border-t border-border/50 bg-white px-6 pb-6 xl:hidden">
           <div className="flex flex-col gap-4 pt-4">
             {NAV_LINKS.map((l) => {
               const active = isCurrent(l.href, pathname);
