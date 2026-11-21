@@ -746,7 +746,7 @@ export default function CheckoutPage() {
                       </h2>
                       <p className="mt-1 text-sm text-text-light">
                         {orderType === "christmas"
-                          ? "Select your preferred delivery or collection date for Christmas."
+                          ? christmasCollectionOnly ? "Select your preferred collection date for Christmas." : "Select your preferred delivery or collection date for Christmas."
                           : slotType === "delivery"
                             ? slotsEnabled
                             ? "Select a delivery date and time."
@@ -758,8 +758,8 @@ export default function CheckoutPage() {
                           className="mt-3 border border-[#1a3a2a]/15 bg-[#e8f5ed] px-4 py-3 text-xs leading-relaxed text-[#1a3a2a]"
                           style={{ borderRadius: "10px" }}
                         >
-                          <strong>Christmas closing times:</strong> please collect, or be available for delivery,
-                          within the time shown for your slot.
+                          <strong>Christmas closing times:</strong>{" "}
+                          {christmasCollectionOnly ? "please collect within the time shown for your slot." : "please collect, or be available for delivery, within the time shown for your slot."}
                           {lastOrderLabel ? ` ${lastDaySentence(lastOrderLabel).replace(/\.$/, "")}${reopenLabel ? `, and online ordering stays closed until ${reopenLabel}` : ""}.` : ""}
                         </p>
                       )}
