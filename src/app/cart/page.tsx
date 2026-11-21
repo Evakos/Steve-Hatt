@@ -29,8 +29,8 @@ export default function CartPage() {
     }
     setBlockedReason(null);
     if (next === orderType) return;
-    // Switching to or from Christmas changes prices and days, so it is confirmed first.
-    if (next === "christmas" || orderType === "christmas") {
+    // Choosing Christmas changes prices and days, so it is confirmed first. Going back to a standard order is not.
+    if (next === "christmas") {
       setPendingType(next);
       return;
     }
