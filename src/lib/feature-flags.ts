@@ -1,5 +1,5 @@
 import "server-only";
-import { readSetting } from "./shop-settings";
+import { get } from "@vercel/edge-config";
 import { hasUpcomingChristmasDates } from "./christmas-dates";
 import { currentDate, isChristmasSeason, isOnlineOrderingClosed, lastOrderLabelFor } from "./ordering-window";
 
@@ -7,7 +7,7 @@ import { currentDate, isChristmasSeason, isOnlineOrderingClosed, lastOrderLabelF
  * 4th January. Only honoured in its own year, see ordering-window.ts. */
 export async function getOrdersReopenDate(): Promise<string> {
   try {
-    const value = await readSetting("ordersReopenDate");
+    const value = await get("ordersReopenDate");
     return typeof value === "string" ? value : "";
   } catch {
     return "";
@@ -18,7 +18,7 @@ export async function getOrdersReopenDate(): Promise<string> {
  * is no default). Only honoured in its own year, see ordering-window.ts. */
 export async function getLastOrderDate(): Promise<string> {
   try {
-    const value = await readSetting("lastOrderDate");
+    const value = await get("lastOrderDate");
     return typeof value === "string" ? value : "";
   } catch {
     return "";
@@ -28,7 +28,7 @@ export async function getLastOrderDate(): Promise<string> {
 /** Staff-set first day for Christmas orders (YYYY-MM-DD) from Edge Config, or "" when none is set. */
 export async function getChristmasOpenDate(): Promise<string> {
   try {
-    const value = await readSetting("christmasOpenDate");
+    const value = await get("christmasOpenDate");
     return typeof value === "string" ? value : "";
   } catch {
     return "";
@@ -39,7 +39,7 @@ export async function getChristmasOpenDate(): Promise<string> {
  * none are picked: there are no default days, and without any Christmas ordering is not offered. */
 export async function getChristmasDates(): Promise<string[]> {
   try {
-    const value = await readSetting("christmasSlotDates");
+    const value = await get("christmasSlotDates");
     return Array.isArray(value) ? value.filter((v): v is string => typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v)) : [];
   } catch {
     return [];
@@ -55,7 +55,7 @@ export async function getLastOrderLabel(): Promise<string | null> {
  * Empty if nothing is switched off or Edge Config can't be reached, so slots default to on. */
 export async function getDisabledSlots(): Promise<string[]> {
   try {
-    const value = await readSetting("disabledSlots");
+    const value = await get("disabledSlots");
     return Array.isArray(value) ? value.filter((v): v is string => typeof v === "string") : [];
   } catch {
     return [];
@@ -67,7 +67,7 @@ export async function getDisabledSlots(): Promise<string[]> {
  * Edge Config outage leaves slots on. */
 export async function getSlotsEnabled(): Promise<boolean> {
   try {
-    return (await readSetting("slotsEnabled")) !== false;
+    return (await get("slotsEnabled")) !== false;
   } catch {
     return true;
   }
@@ -78,7 +78,7 @@ export async function getSlotsEnabled(): Promise<boolean> {
  * switched on explicitly, so a missing value or an Edge Config outage can never take real payments. */
 export async function isPaymentSandboxMode(): Promise<boolean> {
   try {
-    const value = await readSetting("paymentSandboxMode");
+    const value = await get("paymentSandboxMode");
     return value !== false;
   } catch {
     return true;
@@ -117,7 +117,7 @@ export async function isChristmasShopActive(): Promise<boolean> {
  * Year once this December's dates have passed. Everywhere else should use isChristmasShopActive. */
 export async function getChristmasShopActiveRaw(): Promise<boolean> {
   try {
-    return (await readSetting("christmasShopActive")) === true;
+    return (await get("christmasShopActive")) === true;
   } catch {
     return false;
   }
@@ -135,7 +135,7 @@ export async function getChristmasShopActiveRaw(): Promise<boolean> {
  */
 export async function getChristmasPremiumPercent(): Promise<number> {
   try {
-    const value = await readSetting("christmasPremiumPercent");
+    const value = await get("christmasPremiumPercent");
     return typeof value === "number" && value >= 0 ? value : 0;
   } catch {
     return 0;
@@ -151,7 +151,7 @@ export async function getChristmasPremiumPercent(): Promise<number> {
  */
 export async function getChristmasDepositAmount(): Promise<number> {
   try {
-    const value = await readSetting("christmasDepositAmount");
+    const value = await get("christmasDepositAmount");
     return typeof value === "number" && value > 0 ? value : 0;
   } catch {
     return 0;
@@ -169,7 +169,7 @@ export async function getChristmasDepositAmount(): Promise<number> {
  */
 export async function getChristmasUseDepositFlow(): Promise<boolean> {
   try {
-    return (await readSetting("christmasUseDepositFlow")) === true;
+    return (await get("christmasUseDepositFlow")) === true;
   } catch {
     return false;
   }
