@@ -6,6 +6,7 @@ import Link from "next/link";
 import type { Product } from "@/lib/products";
 import { christmasAmount } from "@/components/christmas-price-line";
 import { useChristmasActive } from "@/lib/use-christmas-active";
+import { Snowflake } from "lucide-react";
 import type { SVGProps } from "react";
 import {
   AllCategoryIcon,
@@ -32,12 +33,21 @@ const categoryIcons: Record<string, (props: SVGProps<SVGSVGElement>) => React.Re
   Uncategorised: UncategorizedCategoryIcon,
 };
 
+/** The "Christmas" chip: not a WooCommerce category, so it has its own key. */
+const CHRISTMAS_FILTER = "__christmas";
+
 export default function ShopGrid({ products }: Props) {
   const categories = useMemo(() => [...new Set(products.map((p) => p.category))].sort(), [products]);
   const [selected, setSelected] = useState<string | null>(null);
   const christmasActive = useChristmasActive();
 
-  const visible = selected ? products.filter((p) => p.category === selected) : products;
+  // Almost every product can be pre-ordered for Christmas: this lists those that can (not opted out, and in stock).
+  const visible =
+    selected === CHRISTMAS_FILTER
+      ? products.filter((p) => !p.excludedFromChristmas && p.stockStatus !== "outofstock")
+      : selected
+        ? products.filter((p) => p.category === selected)
+        : products;
 
   return (
     <>
@@ -56,6 +66,21 @@ export default function ShopGrid({ products }: Props) {
             <AllCategoryIcon className="h-[18px] w-[18px]" />
             All
           </button>
+          {christmasActive && (
+            <button
+              type="button"
+              onClick={() => setSelected(CHRISTMAS_FILTER)}
+              className={
+                selected === CHRISTMAS_FILTER
+                  ? "flex items-center gap-1.5 bg-[#1a3a2a] px-3 py-1.5 text-xs font-medium text-white transition-colors"
+                  : "flex items-center gap-1.5 border border-[#1a3a2a]/25 bg-[#e8f5ed]/60 px-3 py-1.5 text-xs font-medium text-[#1a3a2a] transition-colors hover:border-[#1a3a2a]/50"
+              }
+              style={{ borderRadius: "999px" }}
+            >
+              <Snowflake className="h-[18px] w-[18px]" />
+              Christmas
+            </button>
+          )}
           {categories.map((cat) => {
             const Icon = categoryIcons[cat];
             return (
