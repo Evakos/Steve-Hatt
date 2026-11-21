@@ -80,8 +80,8 @@ export default function SiteSettingsForm({ initial }: { initial: Settings }) {
         <label className={label} htmlFor="banner">Christmas banner</label>
         <input id="banner" value={bannerText} onChange={(e) => setBannerText(e.target.value)} maxLength={200} className={`${input} mt-2`} style={{ borderRadius: "6px" }} />
         <p className={hint}>
-          The sentence in the bar at the top of the site while Christmas ordering is on. Leave blank for: &quot;Please pre-order through
-          the shop before the 18th of December.&quot; (the date comes from the last order day).
+          The sentence in the bar at the top of the site while Christmas ordering is on. Leave blank for: &quot;The last day to pre-order
+          is the 17th of December.&quot; (the date comes from the last order day).
         </p>
 
         <label className={`${label} mt-5`} htmlFor="closed">Shop closed message</label>

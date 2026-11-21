@@ -23,14 +23,14 @@ function theDayOf(label: string): string {
   return month ? `the ${day} of ${month}` : label;
 }
 
-function christmasMessage(closing: string | null, custom?: string) {
+function christmasMessage(lastOrder: string | null, custom?: string) {
   // Wording staff wrote in the admin replaces the built-in sentence.
   if (custom) return <strong className="font-semibold">{custom}</strong>;
   return (
     <>
       Christmas pre-orders are now open!{" "}
-      {closing ? (
-        <strong className="font-semibold">Please pre-order through the shop before {theDayOf(closing)}.</strong>
+      {lastOrder ? (
+        <strong className="font-semibold">The last day to pre-order is {theDayOf(lastOrder)}.</strong>
       ) : (
         "Reserve your festive feast."
       )}
@@ -71,7 +71,7 @@ export default function AnnouncementBanner({
   // Christmas break (after 17th December until the new year): the whole shop is closed to online
   // orders, so this banner switches to a closure notice with the reason, and can't be dismissed.
   const [ordersClosed, setOrdersClosed] = useState(false);
-  const [closing, setClosing] = useState<string | null>(null);
+  const [lastOrder, setLastOrder] = useState<string | null>(null);
   const [reopen, setReopen] = useState<string | null>(null);
   const [custom, setCustom] = useState("");
   const [closedTemplate, setClosedTemplate] = useState("");
@@ -86,7 +86,7 @@ export default function AnnouncementBanner({
         if (cancelled) return;
         setChristmasActive(data.active === true);
         setOrdersClosed(data.ordersClosed === true);
-        setClosing(typeof data.closingLabel === "string" ? data.closingLabel : null);
+        setLastOrder(typeof data.lastOrderLabel === "string" ? data.lastOrderLabel : null);
         setReopen(typeof data.reopenLabel === "string" ? data.reopenLabel : null);
         setCustom(typeof data.bannerText === "string" ? data.bannerText : "");
         setClosedTemplate(typeof data.closedMessage === "string" ? data.closedMessage : "");
@@ -118,7 +118,7 @@ export default function AnnouncementBanner({
         <div className="flex items-center gap-2 text-center text-xs md:text-sm">
           <span className={config.accent}>{config.icon}</span>
           <span>
-            {message || (variant === "christmas" ? christmasMessage(closing, custom) : config.message)}{" "}
+            {message || (variant === "christmas" ? christmasMessage(lastOrder, custom) : config.message)}{" "}
             <Link
               href={config.ctaHref}
               className={`inline-block underline underline-offset-2 transition-opacity hover:opacity-80 ${config.accent}`}
