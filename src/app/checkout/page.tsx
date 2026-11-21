@@ -274,13 +274,14 @@ export default function CheckoutPage() {
 
   // Switching to a Christmas order, or restoring one, can leave delivery selected: move it to collection.
   useEffect(() => {
-    if (christmasCollectionOnly && slotType === "delivery") {
+    if (christmasCollectionOnly && slotType !== "collection") {
       setSlotType("collection");
       setSelectedSlot(null);
     }
   }, [christmasCollectionOnly, slotType]);
 
-  const postcodeChecked = postcodeStatus === "valid" || postcodeStatus === "out-of-zone";
+  // Collection-only Christmas orders need no postcode check and no delivery choice.
+  const postcodeChecked = christmasCollectionOnly || postcodeStatus === "valid" || postcodeStatus === "out-of-zone";
   const showSlots = !!slotType && postcodeChecked;
 
   const slots = useMemo(() => {
@@ -617,7 +618,16 @@ export default function CheckoutPage() {
                   )}
 
                   {/* 2. Postcode check */}
-                  {orderType && (
+                  {christmasCollectionOnly && (
+                    <div className="mt-8 flex items-center gap-3 border border-border bg-card p-5" style={{ borderRadius: "5px" }}>
+                      <Store className="h-5 w-5 text-navy" />
+                      <div>
+                        <p className="text-sm font-medium text-navy">Click & Collect · 88 Essex Road · Free</p>
+                        <p className="text-xs text-text-light">Christmas orders are collection only. There is no delivery over Christmas.</p>
+                      </div>
+                    </div>
+                  )}
+                  {orderType && !christmasCollectionOnly && (
                     <div className={`${christmasShopActive ? "mt-8" : ""} border border-border bg-card p-5`} style={{ borderRadius: "5px" }}>
                       <p className="mb-1 text-sm font-medium text-navy">Enter your postcode</p>
                       <p className="mb-3 text-xs text-text-light">We&apos;ll check if we can deliver to you, or you can collect from our shop.</p>
@@ -667,7 +677,7 @@ export default function CheckoutPage() {
                   )}
 
                   {/* 3. Delivery or collection (only if in zone - out of zone auto-sets collection) */}
-                  {postcodeStatus === "valid" && (
+                  {postcodeStatus === "valid" && !christmasCollectionOnly && (
                     <>
                       <h2 className="mt-8 font-serif text-2xl font-bold text-navy">
                         Delivery or collection?
@@ -700,9 +710,6 @@ export default function CheckoutPage() {
                           {slotType === "collection" && <Check className="ml-auto h-4 w-4 text-navy" />}
                         </button>
                       </div>
-                      {christmasCollectionOnly && (
-                        <p className="mt-3 text-sm text-text-light">Christmas orders are collection only. There is no delivery over Christmas.</p>
-                      )}
                     </>
                   )}
 
