@@ -202,7 +202,7 @@ export default function SiteSettingsForm({ initial }: { initial: Settings }) {
         <p className={label}>Preview the closed shop</p>
         <p className={hint}>
           See what customers see while the shop is closed for orders: the banner, the pop-up on the home page, Add to basket switched off
-          and the checkout message. It only changes what <strong>you</strong> see, in this browser, for an hour, and nothing changes on the
+          and the checkout message. It only changes what <strong>you</strong> see, in this browser, for 20 minutes, and nothing changes on the
           live shop. A bar at the bottom of the page lets you exit. Save any changes above first, as the preview uses the saved wording.
         </p>
         <a
