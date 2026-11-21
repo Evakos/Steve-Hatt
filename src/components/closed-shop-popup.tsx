@@ -33,11 +33,12 @@ export default function ClosedShopPopup() {
     let cancelled = false;
     fetch("/api/feature-flags/christmas")
       .then((res) => (res.ok ? res.json() : null))
-      .then((data: { ordersClosed?: boolean; reopenDate?: string } | null) => {
+      .then((data: { ordersClosed?: boolean; reopenDate?: string; preview?: boolean } | null) => {
         if (cancelled || data?.ordersClosed !== true) return;
         setReopen(typeof data.reopenDate === "string" ? reopenText(data.reopenDate) : null);
         try {
-          if (sessionStorage.getItem(SEEN_KEY)) return;
+          // A staff preview always shows it, even if it was closed earlier in this visit.
+          if (data.preview !== true && sessionStorage.getItem(SEEN_KEY)) return;
         } catch {}
         setOpen(true);
       })

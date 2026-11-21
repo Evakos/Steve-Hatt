@@ -198,6 +198,24 @@ export default function SiteSettingsForm({ initial }: { initial: Settings }) {
         <textarea id="hours-foot" rows={2} value={footnote} onChange={(e) => setFootnote(e.target.value)} maxLength={300} className={`${input} mt-1`} style={{ borderRadius: "6px" }} />
       </div>
 
+      <div className={card} style={{ borderRadius: "14px" }}>
+        <p className={label}>Preview the closed shop</p>
+        <p className={hint}>
+          See what customers see while the shop is closed for orders: the banner, the pop-up on the home page, Add to basket switched off
+          and the checkout message. It only changes what <strong>you</strong> see, in this browser, for an hour, and nothing changes on the
+          live shop. A bar at the bottom of the page lets you exit. Save any changes above first, as the preview uses the saved wording.
+        </p>
+        <a
+          href="/admin/preview-closed"
+          target="_blank"
+          rel="noopener"
+          className="mt-3 inline-block border border-navy px-4 py-2 text-sm font-medium text-navy transition-colors hover:bg-navy hover:text-white"
+          style={{ borderRadius: "6px" }}
+        >
+          Preview the closed shop
+        </a>
+      </div>
+
       <div className="mt-5 flex flex-wrap items-center gap-3">
         <button
           type="button"

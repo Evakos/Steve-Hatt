@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { DM_Sans, Playfair_Display } from "next/font/google";
 import { CartProvider } from "@/lib/cart-context";
 import CookieBanner from "@/components/cookie-banner";
+import ClosedPreviewBar from "@/components/closed-preview-bar";
 import Preloader from "@/components/preloader";
 import "./globals.css";
 
@@ -33,6 +34,7 @@ export default function RootLayout({
         <Preloader />
         <CartProvider>{children}</CartProvider>
         <CookieBanner />
+        <ClosedPreviewBar />
       </body>
     </html>
   );
