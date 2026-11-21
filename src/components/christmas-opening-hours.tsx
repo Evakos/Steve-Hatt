@@ -5,8 +5,8 @@ const monthShort = new Intl.DateTimeFormat("en-GB", { timeZone: "UTC", month: "s
 const atNoon = (key: string) => new Date(`${key}T12:00:00Z`);
 
 /**
- * The shop's opening hours over Christmas and the New Year: one card for every date. Every card is solid, with a coloured top
- * edge that shows its kind at a glance: teal for open, coral for closing early, grey for closed. Drawn from the opening hours
+ * The shop's opening hours over Christmas and the New Year: one card for every date. Every card looks the same, and a closed
+ * day is simply faded. Drawn from the opening hours
  * set in the admin under Messages and hours, the same data that decides which dates can be booked and which collection hours
  * are shown, so it can't disagree with checkout.
  */
@@ -22,21 +22,18 @@ export default function ChristmasOpeningHours({ hours }: { hours: OpeningHours }
         {hours.days.map((day) => {
           const early = !day.closed && day.closes < USUAL_CLOSING;
           const occasion = occasionName(day.date);
-          const tone = day.closed
-            ? "border-[#d6cdbd] border-t-[#b9ad98] bg-[#e6dfd3] opacity-80"
-            : early
-              ? "border-lobster/30 border-t-lobster bg-[#fef0ec]"
-              : "border-teal/40 border-t-teal bg-teal-light shadow-sm";
+          // Every card looks the same; a closed day is simply faded.
+          const tone = day.closed ? "opacity-50" : "";
           return (
-            <li key={day.date} className={`flex min-h-[11rem] flex-col border border-t-4 p-5 ${tone}`} style={{ borderRadius: "5px" }}>
+            <li key={day.date} className={`flex min-h-[11rem] flex-col border border-border bg-white p-5 ${tone}`} style={{ borderRadius: "5px" }}>
               <div className="flex items-start justify-between">
-                <span className={`font-serif text-3xl leading-none ${day.closed ? "font-light text-text-light/50" : "font-semibold text-navy"}`}>
+                <span className="font-serif text-3xl leading-none font-semibold text-navy">
                   {day.date.slice(8)}
                 </span>
                 <span className="text-xs tracking-wide text-text-light uppercase">{monthShort.format(atNoon(day.date))}</span>
               </div>
 
-              <h4 className={`mt-3 font-serif text-lg font-semibold ${day.closed ? "text-text-light" : "text-navy"}`}>{weekdayName.format(atNoon(day.date))}</h4>
+              <h4 className="mt-3 font-serif text-lg font-semibold text-navy">{weekdayName.format(atNoon(day.date))}</h4>
               {occasion && <p className="mt-0.5 text-xs font-medium text-lobster">{occasion}</p>}
 
               <div className="mt-auto border-t border-black/10 pt-3">
