@@ -156,7 +156,7 @@ export default async function Home() {
                   }
                 />]
               : []),
-        <div key="main" className="relative bg-navy sm:h-[46vh] sm:min-h-[440px]">
+        <div key="main" className="relative bg-navy sm:h-[max(500px,52vh)] 2xl:h-[46vh] 2xl:min-h-[440px]">
           <div
             className="absolute inset-y-0 right-0 w-full sm:w-[80%]"
             style={{
@@ -172,7 +172,7 @@ export default async function Home() {
             <div className="mx-auto w-full max-w-6xl px-6 py-9 sm:py-0">
               <div className="max-w-2xl">
                 <p className="animate-fade-up mb-3 text-[11px] font-medium tracking-widest text-white/80 uppercase sm:mb-4 sm:text-xs" style={{ animationDelay: "1600ms" }}>Est. 1895 · Essex Road, London</p>
-                <h1 className="animate-fade-up font-serif text-4xl font-bold leading-[1.1] text-white sm:text-5xl md:text-5xl lg:text-6xl" style={{ animationDelay: "1690ms" }}>
+                <h1 className="animate-fade-up font-serif text-4xl font-bold leading-[1.1] text-white sm:text-5xl md:text-5xl lg:text-5xl 2xl:text-6xl" style={{ animationDelay: "1690ms" }}>
                   From Sea, to Shop, to You.
                 </h1>
                 <p className="animate-fade-up mt-4 max-w-lg text-base leading-relaxed text-white/90 sm:mt-6 sm:text-lg" style={{ animationDelay: "1780ms" }}>

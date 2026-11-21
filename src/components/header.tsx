@@ -29,7 +29,7 @@ function NavLink({ href, active, children }: { href: string; active: boolean; ch
     <Link
       href={href}
       aria-current={active ? "page" : undefined}
-      className={`group relative py-1 text-base transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-lobster ${
+      className={`group relative py-1 text-sm transition-colors 2xl:text-base focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-lobster ${
         active ? "font-medium text-navy" : "text-text-light hover:text-navy"
       }`}
     >
@@ -50,13 +50,13 @@ export default function Header() {
 
   return (
     <header className="border-b border-border/50 bg-white sticky top-0 z-50">
-      <nav className="grid h-20 w-full grid-cols-2 items-center px-6 xl:grid-cols-3">
+      <nav className="grid h-[4.25rem] w-full grid-cols-2 items-center px-6 xl:grid-cols-3 2xl:h-20">
         <Link href="/" className="justify-self-start">
-          <Image src="/logo.svg" alt="Steve Hatt Fishmongers" width={180} height={80} className="h-11 w-auto" priority />
+          <Image src="/logo.svg" alt="Steve Hatt Fishmongers" width={180} height={80} className="h-9 w-auto 2xl:h-11" priority />
         </Link>
 
         {/* Desktop nav - centered links */}
-        <div className="hidden items-center justify-self-center gap-8 whitespace-nowrap xl:flex">
+        <div className="hidden items-center justify-self-center gap-6 whitespace-nowrap xl:flex 2xl:gap-8">
           {NAV_LINKS.map((l) => (
             <NavLink key={l.href} href={l.href} active={isCurrent(l.href, pathname)}>
               {l.label}
@@ -65,11 +65,11 @@ export default function Header() {
         </div>
 
         {/* Desktop actions */}
-        <div className="hidden items-center justify-self-end gap-8 whitespace-nowrap xl:flex">
+        <div className="hidden items-center justify-self-end gap-5 whitespace-nowrap xl:flex 2xl:gap-8">
           {/* Account link - /account redirects to sign-in if not authenticated */}
           <Link
             href="/account"
-            className="flex items-center gap-1.5 text-base text-text-light transition-colors hover:text-navy focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-lobster"
+            className="flex items-center gap-1.5 text-sm text-text-light transition-colors hover:text-navy focus-visible:outline-2 2xl:text-base focus-visible:outline-offset-4 focus-visible:outline-lobster"
           >
             <User className="h-4 w-4" />
             Account
@@ -82,7 +82,7 @@ export default function Header() {
 
           <Link
             href="/shop"
-            className="bg-lobster px-5 py-2.5 text-base font-medium text-white transition-all hover:-translate-y-px hover:bg-[#e2573b] hover:shadow-md active:translate-y-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lobster"
+            className="bg-lobster px-4 py-2 text-sm font-medium text-white transition-all 2xl:px-5 2xl:py-2.5 2xl:text-base hover:-translate-y-px hover:bg-[#e2573b] hover:shadow-md active:translate-y-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lobster"
             style={{ borderRadius: "6px" }}
           >
             Order Online
