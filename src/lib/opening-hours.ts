@@ -43,10 +43,35 @@ export function openingFor(dateKey: string, days: readonly OpeningDay[]): Openin
   return days.find((d) => d.date === dateKey && !d.closed);
 }
 
-/** Collection hours for a date as "8am-7pm", or null when the day has none set (the usual hours apply). */
+/**
+ * The shop's usual hours for a date, by weekday, as in the footer: Tuesday to Friday 8am to 7pm, Saturday 7am to 5pm, closed
+ * Sunday and Monday. Null on a day that is closed as usual.
+ */
+export function usualHoursFor(dateKey: string): { opens: string; closes: string } | null {
+  const weekday = new Date(`${dateKey}T12:00:00Z`).getUTCDay(); // 0 Sunday ... 6 Saturday
+  if (weekday >= 2 && weekday <= 5) return { opens: "08:00", closes: "19:00" };
+  if (weekday === 6) return { opens: "07:00", closes: "17:00" };
+  return null;
+}
+
+/** Collection hours for a date as "8am-7pm": the hours set for that date, else the usual hours. Null when closed. */
 export function collectionTimeFor(dateKey: string, days: readonly OpeningDay[]): string | null {
-  const day = openingFor(dateKey, days);
-  return day ? `${formatClock(day.opens)}-${formatClock(day.closes)}` : null;
+  const listed = days.find((d) => d.date === dateKey);
+  if (listed) return listed.closed ? null : `${formatClock(listed.opens)}-${formatClock(listed.closes)}`;
+  const usual = usualHoursFor(dateKey);
+  return usual ? `${formatClock(usual.opens)}-${formatClock(usual.closes)}` : null;
+}
+
+/** The occasion a date is known for, if any, e.g. "Christmas Eve". */
+export function occasionName(dateKey: string): string | null {
+  const names: Record<string, string> = {
+    "12-24": "Christmas Eve",
+    "12-25": "Christmas Day",
+    "12-26": "Boxing Day",
+    "12-31": "New Year's Eve",
+    "01-01": "New Year's Day",
+  };
+  return names[dateKey.slice(5)] ?? null;
 }
 
 const longDate = new Intl.DateTimeFormat("en-GB", { timeZone: "UTC", weekday: "long", day: "numeric", month: "long" });
