@@ -35,7 +35,7 @@ export default function ChristmasHeroSlide({ when, fulfilment, lastDay, proof }:
       </div>
 
       <div className="pointer-events-none absolute inset-y-0 right-0 left-0 hidden lg:block">
-        <div className="mx-auto flex h-full max-w-6xl items-center justify-end px-6">
+        <div className="mx-auto flex h-full max-w-6xl items-center justify-end px-6 lg:pr-12 xl:pr-24">
           <Image
             src={FOLK_ART.src}
             alt={FOLK_ART.alt}
@@ -43,7 +43,7 @@ export default function ChristmasHeroSlide({ when, fulfilment, lastDay, proof }:
             height={FOLK_ART.height}
             sizes="400px"
             priority
-            className="h-[56%] max-h-[260px] w-auto"
+            className="h-[66%] max-h-[310px] w-auto"
           />
         </div>
       </div>
