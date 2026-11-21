@@ -18,7 +18,7 @@ export default function ChristmasOpeningHours({ hours }: { hours: OpeningHours }
       <h3 className="font-serif text-3xl font-bold text-navy">{hours.title || "Opening hours"}</h3>
       {hours.intro && <p className="mt-3 text-base text-text-light">{hours.intro}</p>}
 
-      <ol className="mt-8 grid gap-4 sm:grid-cols-2 md:grid-cols-4">
+      <ol className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
         {hours.days.map((day) => {
           const early = !day.closed && day.closes < USUAL_CLOSING;
           const occasion = occasionName(day.date);
