@@ -1,12 +1,15 @@
 import "server-only";
+import { revalidateTag } from "next/cache";
 import { getServerEnv } from "@/lib/env";
+import { SHOP_SETTINGS_TAG } from "@/lib/shop-settings";
 
 /**
- * Writes to Edge Config via the Vercel REST API - a completely separate credential from the
- * EDGE_CONFIG connection string used everywhere else (see feature-flags.ts), which is read-only
- * by design. Only used by the staff-authenticated /admin/guide controls; every other read in the
- * app never touches this.
+ * Saves the shop's settings. WordPress is the source of truth: every change is posted to
+ * /wp-json/steve-hatt/v1/settings (Settings > Shop settings in wp-admin shows the same values). Vercel's
+ * Edge Config is kept as a mirror, updated best effort, so the shop still has the latest values if
+ * WordPress is briefly unreachable. Only used by the staff-authenticated /admin controls.
  */
+
 export interface ChristmasSettings {
   active: boolean;
   premiumPercent: number;
@@ -32,156 +35,72 @@ export interface ChristmasSettings {
   christmasSlotDates?: string[];
 }
 
-export async function updateChristmasSettings(input: ChristmasSettings): Promise<void> {
+/** Updates Vercel's settings store to match. Best effort: WordPress already has the change. */
+async function mirrorToEdgeConfig(changes: Record<string, unknown>): Promise<void> {
   const env = getServerEnv();
-  if (!env.VERCEL_API_TOKEN || !env.EDGE_CONFIG_ID) {
-    throw new Error(
-      "Christmas settings can't be saved - VERCEL_API_TOKEN and EDGE_CONFIG_ID aren't configured (see .env.example)."
-    );
+  if (!env.VERCEL_API_TOKEN || !env.EDGE_CONFIG_ID) return;
+  try {
+    const url = new URL(`https://api.vercel.com/v1/edge-config/${env.EDGE_CONFIG_ID}/items`);
+    if (env.VERCEL_TEAM_ID) url.searchParams.set("teamId", env.VERCEL_TEAM_ID);
+    await fetch(url, {
+      method: "PATCH",
+      headers: { Authorization: `Bearer ${env.VERCEL_API_TOKEN}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ items: Object.entries(changes).map(([key, value]) => ({ operation: "upsert", key, value })) }),
+    });
+  } catch {
+    // The mirror catches up on the next save.
   }
+}
 
-  const url = new URL(`https://api.vercel.com/v1/edge-config/${env.EDGE_CONFIG_ID}/items`);
-  if (env.VERCEL_TEAM_ID) url.searchParams.set("teamId", env.VERCEL_TEAM_ID);
-
-  const res = await fetch(url, {
-    method: "PATCH",
-    headers: {
-      Authorization: `Bearer ${env.VERCEL_API_TOKEN}`,
-      "Content-Type": "application/json",
-    },
-
-    body: JSON.stringify({
-      items: [
-        { operation: "upsert", key: "christmasShopActive", value: input.active },
-        { operation: "upsert", key: "christmasPremiumPercent", value: input.premiumPercent },
-        { operation: "upsert", key: "christmasDepositAmount", value: input.christmasDepositAmount },
-        { operation: "upsert", key: "christmasUseDepositFlow", value: input.christmasUseDepositFlow },
-        ...(input.ordersReopenDate !== undefined
-          ? [{ operation: "upsert", key: "ordersReopenDate", value: input.ordersReopenDate }]
-          : []),
-        ...(input.lastOrderDate !== undefined
-          ? [{ operation: "upsert", key: "lastOrderDate", value: input.lastOrderDate }]
-          : []),
-        ...(input.christmasOpenDate !== undefined
-          ? [{ operation: "upsert", key: "christmasOpenDate", value: input.christmasOpenDate }]
-          : []),
-        ...(input.christmasSlotDates !== undefined
-          ? [{ operation: "upsert", key: "christmasSlotDates", value: input.christmasSlotDates }]
-          : []),
-      ],
-    }),
+/** Posts the changes to WordPress, then mirrors them and refreshes what the shop has cached. */
+export async function saveShopSettings(changes: Record<string, unknown>): Promise<void> {
+  const secret = process.env.SHOP_SSO_SECRET;
+  if (!secret) {
+    throw new Error("Settings can't be saved: SHOP_SSO_SECRET isn't set in Vercel, so the shop can't talk to WordPress.");
+  }
+  const res = await fetch(`${getServerEnv().WOOCOMMERCE_URL}/wp-json/steve-hatt/v1/settings`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "x-shop-secret": secret },
+    body: JSON.stringify(changes),
+    cache: "no-store",
   });
-
   if (!res.ok) {
     const text = await res.text().catch(() => "");
-    throw new Error(`Vercel Edge Config update failed (${res.status}): ${text}`);
+    throw new Error(`WordPress settings update failed (${res.status}): ${text}`);
   }
+  await mirrorToEdgeConfig(changes);
+  revalidateTag(SHOP_SETTINGS_TAG, { expire: 0 });
+}
+
+export async function updateChristmasSettings(input: ChristmasSettings): Promise<void> {
+  await saveShopSettings({
+    christmasShopActive: input.active,
+    christmasPremiumPercent: input.premiumPercent,
+    christmasDepositAmount: input.christmasDepositAmount,
+    christmasUseDepositFlow: input.christmasUseDepositFlow,
+    ...(input.ordersReopenDate !== undefined ? { ordersReopenDate: input.ordersReopenDate } : {}),
+    ...(input.lastOrderDate !== undefined ? { lastOrderDate: input.lastOrderDate } : {}),
+    ...(input.christmasOpenDate !== undefined ? { christmasOpenDate: input.christmasOpenDate } : {}),
+    ...(input.christmasSlotDates !== undefined ? { christmasSlotDates: input.christmasSlotDates } : {}),
+  });
 }
 
 /** Saves the list of switched-off delivery/collection slots (see src/lib/slots.ts). */
 export async function updateDisabledSlots(slots: string[]): Promise<void> {
-  const env = getServerEnv();
-  if (!env.VERCEL_API_TOKEN || !env.EDGE_CONFIG_ID) {
-    throw new Error(
-      "Slots can't be saved - VERCEL_API_TOKEN and EDGE_CONFIG_ID aren't configured (see .env.example)."
-    );
-  }
-
-  const url = new URL(`https://api.vercel.com/v1/edge-config/${env.EDGE_CONFIG_ID}/items`);
-  if (env.VERCEL_TEAM_ID) url.searchParams.set("teamId", env.VERCEL_TEAM_ID);
-
-  const res = await fetch(url, {
-    method: "PATCH",
-    headers: {
-      Authorization: `Bearer ${env.VERCEL_API_TOKEN}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ items: [{ operation: "upsert", key: "disabledSlots", value: slots }] }),
-  });
-
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(`Vercel Edge Config update failed (${res.status}): ${text}`);
-  }
+  await saveShopSettings({ disabledSlots: slots });
 }
 
 /** Saves the admin "Payment mode" switch: true is Pay360 sandbox, false is live (see feature-flags.ts). */
 export async function updatePaymentSandboxMode(sandbox: boolean): Promise<void> {
-  const env = getServerEnv();
-  if (!env.VERCEL_API_TOKEN || !env.EDGE_CONFIG_ID) {
-    throw new Error(
-      "Payment mode can't be saved - VERCEL_API_TOKEN and EDGE_CONFIG_ID aren't configured (see .env.example)."
-    );
-  }
-
-  const url = new URL(`https://api.vercel.com/v1/edge-config/${env.EDGE_CONFIG_ID}/items`);
-  if (env.VERCEL_TEAM_ID) url.searchParams.set("teamId", env.VERCEL_TEAM_ID);
-
-  const res = await fetch(url, {
-    method: "PATCH",
-    headers: {
-      Authorization: `Bearer ${env.VERCEL_API_TOKEN}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ items: [{ operation: "upsert", key: "paymentSandboxMode", value: sandbox }] }),
-  });
-
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(`Vercel Edge Config update failed (${res.status}): ${text}`);
-  }
+  await saveShopSettings({ paymentSandboxMode: sandbox });
 }
 
-/** Saves the master "customers choose a time slot" switch (see feature-flags.ts getSlotsEnabled). */
+/** Saves the master "customers choose a time window" switch (see feature-flags.ts getSlotsEnabled). */
 export async function updateSlotsEnabled(enabled: boolean): Promise<void> {
-  const env = getServerEnv();
-  if (!env.VERCEL_API_TOKEN || !env.EDGE_CONFIG_ID) {
-    throw new Error(
-      "The slots switch can't be saved - VERCEL_API_TOKEN and EDGE_CONFIG_ID aren't configured (see .env.example)."
-    );
-  }
-
-  const url = new URL(`https://api.vercel.com/v1/edge-config/${env.EDGE_CONFIG_ID}/items`);
-  if (env.VERCEL_TEAM_ID) url.searchParams.set("teamId", env.VERCEL_TEAM_ID);
-
-  const res = await fetch(url, {
-    method: "PATCH",
-    headers: {
-      Authorization: `Bearer ${env.VERCEL_API_TOKEN}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ items: [{ operation: "upsert", key: "slotsEnabled", value: enabled }] }),
-  });
-
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(`Vercel Edge Config update failed (${res.status}): ${text}`);
-  }
+  await saveShopSettings({ slotsEnabled: enabled });
 }
 
 /** Saves the Christmas delivery and collection days (YYYY-MM-DD) staff picked on the Delivery slots page. */
 export async function updateChristmasSlotDates(days: string[]): Promise<void> {
-  const env = getServerEnv();
-  if (!env.VERCEL_API_TOKEN || !env.EDGE_CONFIG_ID) {
-    throw new Error(
-      "The Christmas days can't be saved - VERCEL_API_TOKEN and EDGE_CONFIG_ID aren't configured (see .env.example)."
-    );
-  }
-
-  const url = new URL(`https://api.vercel.com/v1/edge-config/${env.EDGE_CONFIG_ID}/items`);
-  if (env.VERCEL_TEAM_ID) url.searchParams.set("teamId", env.VERCEL_TEAM_ID);
-
-  const res = await fetch(url, {
-    method: "PATCH",
-    headers: {
-      Authorization: `Bearer ${env.VERCEL_API_TOKEN}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ items: [{ operation: "upsert", key: "christmasSlotDates", value: days }] }),
-  });
-
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(`Vercel Edge Config update failed (${res.status}): ${text}`);
-  }
+  await saveShopSettings({ christmasSlotDates: days });
 }
