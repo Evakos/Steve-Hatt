@@ -23,8 +23,9 @@ export function proxy(request: NextRequest) {
 
   if (pathname.startsWith("/admin") || pathname.startsWith("/api/admin")) {
     // Login must be reachable without a session; logout must also work when the cookie is
-    // missing or already expired, otherwise the user couldn't clear it.
-    if (pathname === "/admin/login" || pathname === "/api/admin/login" || pathname === "/api/admin/logout") {
+    // missing or already expired, otherwise the user couldn't clear it. /admin/sso is where WordPress
+    // sends a signed-in administrator, and checks its own signed token.
+    if (pathname === "/admin/login" || pathname === "/api/admin/login" || pathname === "/api/admin/logout" || pathname === "/admin/sso") {
       return NextResponse.next();
     }
     const cookie = request.cookies.get(STAFF_COOKIE_NAME)?.value;
