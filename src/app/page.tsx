@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getAllProducts } from "@/lib/products";
-import { isChristmasShopActive, getLastOrderLabel, getChristmasDates } from "@/lib/feature-flags";
+import { isChristmasShopActive, getLastOrderLabel, getChristmasDates, getDisabledSlots, getSlotsEnabled } from "@/lib/feature-flags";
+import { christmasFulfilmentPhrase, lastDaySentence } from "@/lib/christmas-fulfilment";
 import { getUpcomingChristmasDates } from "@/lib/christmas-dates";
 import { Truck, Fish, Scaling, Leaf, Anchor, Recycle, ShoppingBag, Search, Snowflake, CalendarDays, CreditCard, type LucideIcon } from "lucide-react";
 import GoogleRating from "@/components/google-rating";
@@ -73,14 +74,19 @@ const CHRISTMAS_STEPS: { title: string; text: string; icon: LucideIcon; image?: 
 ];
 
 export default async function Home() {
-  const [products, christmasActive, googleReview, lastOrderLabel, christmasDates, openingHours] = await Promise.all([
+  const [products, christmasActive, googleReview, lastOrderLabel, christmasDates, openingHours, disabledSlots, slotsEnabled] = await Promise.all([
     getAllProducts(),
     isChristmasShopActive(),
     getGoogleReviewData(),
     getLastOrderLabel(),
     getChristmasDates(),
     getOpeningHours(),
+    getDisabledSlots(),
+    getSlotsEnabled(),
   ]);
+  // What the Christmas days offer, from the settings: collection only once delivery is switched off on all of them.
+  const fulfilment = christmasFulfilmentPhrase(christmasDates, disabledSlots);
+  const lastDay = lastDaySentence(lastOrderLabel);
   const todaysCatch = pickRandom(products, 6);
   // Curated festive picks for the Christmas section - only products whose slug is in the
   // shortlist above are shown (each still needs the christmas tag to be eligible to order).
@@ -176,7 +182,8 @@ export default async function Home() {
               ? [<ChristmasHeroSlide
                   key="christmas"
                   when={christmasWhen}
-                  lastOrder={lastOrderLabel}
+                  fulfilment={fulfilment}
+                  lastDay={lastDay}
                   proof={
                     <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 sm:mt-6">
                       <GoogleRating data={googleReview} />
@@ -367,7 +374,7 @@ export default async function Home() {
               <p className="text-xs tracking-widest text-text-light uppercase">Festive season</p>
               <h2 className="mt-2 font-serif text-3xl font-bold text-navy md:text-4xl">Christmas Pre-Orders</h2>
               <p className="mx-auto mt-4 max-w-3xl text-base leading-relaxed text-text-light md:text-lg">
-                Reserve your Christmas feast now. {lastOrderLabel ? `Pre-order by ${lastOrderLabel} for` : "Pre-order for"} delivery or collection {christmasWhen}. Every order prepared fresh by your fishmonger.
+                Reserve your Christmas feast now. Choose {fulfilment} {christmasWhen}. {lastDay} Every order prepared fresh by your fishmonger.
               </p>
               {anyChristmasPricing && (
                 <p className="mx-auto mt-3 max-w-3xl text-sm text-text-light">
@@ -408,7 +415,12 @@ export default async function Home() {
                 <h3 className="mb-10 font-serif text-3xl font-bold text-navy">How a Christmas order works</h3>
                 {/* Same format as the How It Works section: four separate numbered cards */}
                 <ol className="grid gap-4 md:grid-cols-4">
-                  {CHRISTMAS_STEPS.map((step, i) => (
+                  {CHRISTMAS_STEPS.map((rawStep, i) => {
+                    const step =
+                      i === 1
+                        ? { ...rawStep, text: `At checkout, ${fulfilment === "collection" ? "choose collection" : "pick delivery or collection"}, then your date${slotsEnabled ? " and time slot" : ""}.` }
+                        : rawStep;
+                    return (
                     <li
                       key={step.title}
                       className="h-full border border-border bg-card p-6 md:min-h-[13rem]"
@@ -418,7 +430,8 @@ export default async function Home() {
                       <h3 className="mt-3 font-serif text-base font-semibold text-navy">{step.title}</h3>
                       <p className="mt-2 text-sm leading-relaxed text-text-light">{step.text}</p>
                     </li>
-                  ))}
+                    );
+                  })}
                 </ol>
                 <p className="mt-4 text-xs leading-relaxed text-text-light">
                   *A few items can&apos;t be ordered for Christmas dates. If one is in your basket, checkout will tell you

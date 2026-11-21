@@ -41,6 +41,7 @@ import { isBankRedirect } from "@/lib/checkout/three-ds-redirect";
 import type { CardDetails } from "@/lib/cardlock/tokenise";
 import { useCheckoutSubmit } from "@/components/checkout/use-checkout-submit";
 import { isChristmasFulfilmentDate, hasUpcomingChristmasDates } from "@/lib/christmas-dates";
+import { lastDaySentence } from "@/lib/christmas-fulfilment";
 import type { CheckoutRequest } from "@/lib/checkout/schema";
 
 type SlotType = "delivery" | "collection";
@@ -590,6 +591,7 @@ export default function CheckoutPage() {
                       <OrderTypeConfirm
                         target={pendingOrderType}
                         christmasDates={christmasDates}
+                        disabledSlots={disabledSlots}
                         lastOrder={lastOrderLabel}
                         onConfirm={() => {
                           if (pendingOrderType) applyOrderType(pendingOrderType);
@@ -736,7 +738,7 @@ export default function CheckoutPage() {
                         >
                           <strong>Christmas closing times:</strong> please collect, or be available for delivery,
                           within the time shown for your slot.
-                          {lastOrderLabel ? ` Christmas pre-orders close on ${lastOrderLabel}${reopenLabel ? `, and online ordering stays closed until ${reopenLabel}` : ""}.` : ""}
+                          {lastOrderLabel ? ` ${lastDaySentence(lastOrderLabel).replace(/\.$/, "")}${reopenLabel ? `, and online ordering stays closed until ${reopenLabel}` : ""}.` : ""}
                         </p>
                       )}
 

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Snowflake } from "lucide-react";
 import { getUpcomingChristmasDates } from "@/lib/christmas-dates";
+import { christmasFulfilmentPhrase, lastDaySentence } from "@/lib/christmas-fulfilment";
 
 const dateFormat = new Intl.DateTimeFormat("en-GB", { weekday: "short", day: "numeric", month: "short" });
 
@@ -17,6 +18,7 @@ export default function ChristmasProductNote({ excluded }: { excluded: boolean }
   const [active, setActive] = useState(false);
   const [lastOrder, setLastOrder] = useState<string | null>(null);
   const [christmasDates, setChristmasDates] = useState<string[]>([]);
+  const [disabledSlots, setDisabledSlots] = useState<string[]>([]);
 
   useEffect(() => {
     let cancelled = false;
@@ -27,6 +29,7 @@ export default function ChristmasProductNote({ excluded }: { excluded: boolean }
         setActive(data.active === true);
         setLastOrder(typeof data.lastOrderLabel === "string" ? data.lastOrderLabel : null);
         setChristmasDates(Array.isArray(data.christmasDates) ? data.christmasDates : []);
+        setDisabledSlots(Array.isArray(data.disabledSlots) ? data.disabledSlots : []);
       })
       .catch(() => {});
     return () => {
@@ -45,6 +48,7 @@ export default function ChristmasProductNote({ excluded }: { excluded: boolean }
   }
 
   const dates = getUpcomingChristmasDates(new Date(), christmasDates);
+  const fulfilment = christmasFulfilmentPhrase(christmasDates, disabledSlots);
 
   return (
     <div
@@ -55,13 +59,12 @@ export default function ChristmasProductNote({ excluded }: { excluded: boolean }
       <div className="relative">
         <p className="font-serif text-lg font-semibold leading-tight text-[#1a3a2a]">Available for Christmas pre-order</p>
         <p className="mt-1 text-sm leading-relaxed text-[#1a3a2a]/80">
-          Reserve it now for the festive table, then choose your delivery or collection day at checkout.
-          {lastOrder ? ` Christmas pre-orders close on ${lastOrder}.` : ""}
+          Reserve it now for the festive table, then choose your {fulfilment} day at checkout. {lastDaySentence(lastOrder)}
         </p>
       </div>
       {dates.length > 0 && (
         <div className="relative mt-4 border-t border-[#1a3a2a]/10 pt-4">
-          <p className="text-sm font-medium text-[#1a3a2a]/70">Xmas delivery or collection dates are:</p>
+          <p className="text-sm font-medium text-[#1a3a2a]/70">Xmas {fulfilment} dates are:</p>
           <p className="mt-1 font-serif text-lg font-semibold text-[#1a3a2a]">{dates.map((d) => dateFormat.format(d)).join(" · ")}</p>
         </div>
       )}

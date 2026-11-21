@@ -11,7 +11,7 @@ import AnnouncementBanner from "@/components/announcement-banner";
 import { DELIVERY_MINIMUM, deliveryShortfall } from "@/lib/checkout/delivery-minimum";
 
 export default function CartPage() {
-  const { items, removeItem, updateQuantity, clearCart, estimatedTotal, orderType, setOrderType, christmasAvailable, christmasDates, lastOrderLabel } = useCart();
+  const { items, removeItem, updateQuantity, clearCart, estimatedTotal, orderType, setOrderType, christmasAvailable, christmasDates, lastOrderLabel, disabledSlots } = useCart();
   const [pendingType, setPendingType] = useState<OrderType | null>(null);
   const isChristmasOrder = orderType === "christmas";
   const [blockedReason, setBlockedReason] = useState<string | null>(null);
@@ -103,6 +103,7 @@ export default function CartPage() {
                     <OrderTypeConfirm
                       target={pendingType}
                       christmasDates={christmasDates}
+                      disabledSlots={disabledSlots}
                       lastOrder={lastOrderLabel}
                       onConfirm={() => {
                         if (pendingType) setOrderType(pendingType);

@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { getUpcomingChristmasDates } from "@/lib/christmas-dates";
+import { christmasFulfilmentPhrase, lastDaySentence } from "@/lib/christmas-fulfilment";
 
 const dayFormat = new Intl.DateTimeFormat("en-GB", { weekday: "short", day: "numeric", month: "short" });
 
@@ -9,6 +10,8 @@ interface Props {
   /** The choice waiting to be confirmed, or null when nothing is. */
   target: "standard" | "christmas" | null;
   christmasDates: string[];
+  /** Slots switched off in the admin, so the wording says collection only when delivery is off on every Christmas day. */
+  disabledSlots?: string[];
   /** e.g. "16th December", or null when no last order day is set. */
   lastOrder: string | null;
   onConfirm: () => void;
@@ -19,7 +22,7 @@ interface Props {
  * "Are you sure?" shown when someone switches between a standard and a Christmas order. The choice
  * changes both the prices and which days can be booked, so it is confirmed before it takes effect.
  */
-export default function OrderTypeConfirm({ target, christmasDates, lastOrder, onConfirm, onCancel }: Props) {
+export default function OrderTypeConfirm({ target, christmasDates, disabledSlots = [], lastOrder, onConfirm, onCancel }: Props) {
   useEffect(() => {
     if (!target) return;
     const onKey = (e: KeyboardEvent) => {
@@ -31,6 +34,7 @@ export default function OrderTypeConfirm({ target, christmasDates, lastOrder, on
 
   if (!target) return null;
   const isChristmas = target === "christmas";
+  const fulfilment = christmasFulfilmentPhrase(christmasDates, disabledSlots);
   const days = getUpcomingChristmasDates(new Date(), christmasDates).map((d) => dayFormat.format(d));
 
   return (
@@ -48,9 +52,9 @@ export default function OrderTypeConfirm({ target, christmasDates, lastOrder, on
         <p className="mt-2 text-sm leading-relaxed text-text-light">
           {isChristmas ? (
             <>
-              You have chosen a Christmas order. Christmas prices apply where they differ, and delivery or collection will be on
+              You have chosen a Christmas order. Christmas prices apply where they differ, and {fulfilment} will be on
               {days.length > 0 ? ` ${days.join(", ")}` : " one of the Christmas days"} only.
-              {lastOrder ? ` Christmas pre-orders close on ${lastOrder}.` : ""} Is that right?
+              {lastOrder ? ` ${lastDaySentence(lastOrder)}` : ""} Is that right?
             </>
           ) : (
             <>
