@@ -43,7 +43,7 @@ export default function ChristmasHeroSlide({ when, fulfilment, lastDay, proof }:
             height={FOLK_ART.height}
             sizes="400px"
             priority
-            className="h-[74%] max-h-[340px] w-auto"
+            className="h-[56%] max-h-[260px] w-auto"
           />
         </div>
       </div>
