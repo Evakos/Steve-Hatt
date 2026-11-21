@@ -7,7 +7,7 @@ import type { NextRequest } from "next/server";
  * disabled Add to basket buttons and the checkout message can all be checked without closing the real shop. The cookie lasts
  * an hour, is readable by the page so the "Exit preview" bar can clear it, and never affects what the server accepts.
  */
-export const PREVIEW_CLOSED_COOKIE = "sh_preview_closed";
+const PREVIEW_CLOSED_COOKIE = "sh_preview_closed";
 
 export function GET(request: NextRequest) {
   const to = request.nextUrl.searchParams.get("to") ?? "/";
