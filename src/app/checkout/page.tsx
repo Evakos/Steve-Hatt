@@ -41,7 +41,7 @@ import { isBankRedirect } from "@/lib/checkout/three-ds-redirect";
 import type { CardDetails } from "@/lib/cardlock/tokenise";
 import { useCheckoutSubmit } from "@/components/checkout/use-checkout-submit";
 import { isChristmasFulfilmentDate, hasUpcomingChristmasDates } from "@/lib/christmas-dates";
-import { lastDaySentence } from "@/lib/christmas-fulfilment";
+import { lastDaySentence, christmasFulfilmentPhrase, christmasRangeLabel } from "@/lib/christmas-fulfilment";
 import type { CheckoutRequest } from "@/lib/checkout/schema";
 
 type SlotType = "delivery" | "collection";
@@ -170,6 +170,9 @@ export default function CheckoutPage() {
   }, []);
 
   const isChristmasOrder = orderType === "christmas";
+  // Delivery switched off on every Christmas day (Delivery slots page): Christmas orders are collection only.
+  const christmasFulfilment = christmasFulfilmentPhrase(christmasDates, disabledSlots);
+  const christmasCollectionOnly = isChristmasOrder && christmasDates.length > 0 && christmasFulfilment === "collection";
   // The price shown at checkout must match what actually gets authorised/verified server-side
   // (see repriceCheckoutRequest / computeUnitPriceForOrder) - each item's manual Christmas price
   // is applied here per-product, the same priority logic the server uses, never a blanket
@@ -265,9 +268,17 @@ export default function CheckoutPage() {
     if (!inZone) {
       setSlotType("collection");
     } else {
-      setSlotType(null);
+      setSlotType(christmasCollectionOnly ? "collection" : null);
     }
   }
+
+  // Switching to a Christmas order, or restoring one, can leave delivery selected: move it to collection.
+  useEffect(() => {
+    if (christmasCollectionOnly && slotType === "delivery") {
+      setSlotType("collection");
+      setSelectedSlot(null);
+    }
+  }, [christmasCollectionOnly, slotType]);
 
   const postcodeChecked = postcodeStatus === "valid" || postcodeStatus === "out-of-zone";
   const showSlots = !!slotType && postcodeChecked;
@@ -572,7 +583,7 @@ export default function CheckoutPage() {
                           <Gift className={`h-5 w-5 ${orderType === "christmas" ? "text-[#1a3a2a]" : "text-[#1a3a2a]/50"}`} />
                           <div>
                             <p className={`text-sm font-medium ${orderType === "christmas" ? "text-[#1a3a2a]" : "text-navy"}`}>For Christmas</p>
-                            <p className={`text-xs ${orderType === "christmas" ? "text-[#1a3a2a]/70" : "text-text-light"}`}>Delivery or collection, 20th-24th December</p>
+                            <p className={`text-xs ${orderType === "christmas" ? "text-[#1a3a2a]/70" : "text-text-light"}`}>{christmasFulfilment === "collection" ? "Collection" : "Delivery or collection"}, {christmasRangeLabel(christmasDates)}</p>
                           </div>
                           {orderType === "christmas" && <Check className="ml-auto h-4 w-4 text-[#1a3a2a]" />}
                         </button>
@@ -665,13 +676,14 @@ export default function CheckoutPage() {
                       <div className="mt-4 grid gap-3 sm:grid-cols-2">
                         <button
                           onClick={() => { setSlotType("delivery"); setSelectedSlot(null); }}
-                          className={`flex items-center gap-3 border p-4 text-left transition-colors ${slotType === "delivery" ? "border-navy bg-navy/5" : "border-border bg-white hover:border-navy/30"}`}
+                          disabled={christmasCollectionOnly}
+                          className={`flex items-center gap-3 border p-4 text-left transition-colors ${christmasCollectionOnly ? "cursor-not-allowed border-border bg-white opacity-50" : slotType === "delivery" ? "border-navy bg-navy/5" : "border-border bg-white hover:border-navy/30"}`}
                           style={{ borderRadius: "6px" }}
                         >
                           <Truck className={`h-5 w-5 ${slotType === "delivery" ? "text-navy" : "text-text-light"}`} />
                           <div>
                             <p className="text-sm font-medium text-navy">Delivery</p>
-                            <p className="text-xs text-text-light">To {postcode.toUpperCase()} · £5.00</p>
+                            <p className="text-xs text-text-light">{christmasCollectionOnly ? "Not available for Christmas" : `To ${postcode.toUpperCase()} · £5.00`}</p>
                           </div>
                           {slotType === "delivery" && <Check className="ml-auto h-4 w-4 text-navy" />}
                         </button>
@@ -688,6 +700,9 @@ export default function CheckoutPage() {
                           {slotType === "collection" && <Check className="ml-auto h-4 w-4 text-navy" />}
                         </button>
                       </div>
+                      {christmasCollectionOnly && (
+                        <p className="mt-3 text-sm text-text-light">Christmas orders are collection only. There is no delivery over Christmas.</p>
+                      )}
                     </>
                   )}
 

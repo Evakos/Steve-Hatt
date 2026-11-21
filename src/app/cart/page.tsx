@@ -95,7 +95,7 @@ export default function CartPage() {
                         <Gift className={`h-5 w-5 ${isChristmasOrder ? "text-[#1a3a2a]" : "text-[#1a3a2a]/50"}`} />
                         <div>
                           <p className={`text-sm font-medium ${isChristmasOrder ? "text-[#1a3a2a]" : "text-navy"}`}>For Christmas</p>
-                          <p className={`text-xs ${isChristmasOrder ? "text-[#1a3a2a]/70" : "text-text-light"}`}>Delivery or collection, 20th-24th December</p>
+                          <p className={`text-xs ${isChristmasOrder ? "text-[#1a3a2a]/70" : "text-text-light"}`}>{christmasFulfilmentPhrase(christmasDates, disabledSlots) === "collection" ? "Collection" : "Delivery or collection"}, {christmasRangeLabel(christmasDates)}</p>
                         </div>
                         {isChristmasOrder && <Check className="ml-auto h-4 w-4 text-[#1a3a2a]" />}
                       </button>

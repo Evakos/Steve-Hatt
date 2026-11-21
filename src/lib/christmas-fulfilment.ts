@@ -27,3 +27,18 @@ export function theDayOf(label: string): string {
 export function lastDaySentence(lastOrderLabel: string | null): string {
   return lastOrderLabel ? `The last day to pre-order is ${theDayOf(lastOrderLabel)}.` : "";
 }
+
+function ordinal(n: number): string {
+  if (n % 100 >= 11 && n % 100 <= 13) return `${n}th`;
+  return `${n}${["th", "st", "nd", "rd"][n % 10] ?? "th"}`;
+}
+
+/** "21st to 24th December" from the Christmas days staff have picked. */
+export function christmasRangeLabel(christmasDays: readonly string[], from: Date = new Date()): string {
+  const dates = getUpcomingChristmasDates(from, christmasDays);
+  if (dates.length === 0) return "Christmas week";
+  const first = dates[0];
+  const last = dates[dates.length - 1];
+  const month = new Intl.DateTimeFormat("en-GB", { month: "long" }).format(last);
+  return dates.length === 1 ? `${ordinal(first.getDate())} ${month}` : `${ordinal(first.getDate())} to ${ordinal(last.getDate())} ${month}`;
+}
