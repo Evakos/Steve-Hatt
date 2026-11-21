@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { ChevronDown } from "lucide-react";
 import SyncProductsPanel from "./sync-products-panel";
 import ChristmasSettingsPanel from "./christmas-settings-panel";
 import PaymentModePanel from "./payment-mode-panel";
@@ -8,16 +9,16 @@ import { isPaymentSandboxMode } from "@/lib/feature-flags";
 
 const code = "text-[0.9em]";
 
-/** One small information card in the notes grid. */
-function Note({ title, children, wide = false }: { title: string; children: ReactNode; wide?: boolean }) {
+/** One row of the notes accordion. Rows share a name, so opening one closes the others where the browser supports it. */
+function Note({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <div
-      className={`border border-border bg-cream p-5 ${wide ? "md:col-span-2" : ""}`}
-      style={{ borderRadius: "14px" }}
-    >
-      <h3 className="text-sm font-medium text-navy">{title}</h3>
-      <p className="mt-1.5 text-sm leading-relaxed text-text-light">{children}</p>
-    </div>
+    <details name="product-notes" className="group border-b border-border last:border-b-0">
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-5 py-4 text-sm font-medium text-navy transition-colors hover:bg-sand/50 [&::-webkit-details-marker]:hidden">
+        {title}
+        <ChevronDown className="h-4 w-4 shrink-0 text-text-light transition-transform group-open:rotate-180" aria-hidden />
+      </summary>
+      <p className="px-5 pb-5 text-sm leading-relaxed text-text-light">{children}</p>
+    </details>
   );
 }
 
@@ -34,7 +35,7 @@ export default async function AdminProductsPage() {
         Christmas pre-order eligibility on the live site.
       </p>
 
-      <div className="mt-5 grid gap-4 md:grid-cols-2">
+      <div className="mt-5 overflow-hidden border border-border bg-cream" style={{ borderRadius: "14px" }}>
         <Note title="Stock">
           Set a {source.rowWord}&apos;s <code className={code}>Stock</code> column to <code className={code}>In stock</code>{" "}
           or <code className={code}>Out of stock</code> to switch a product between available and sold out. Out-of-stock
@@ -47,8 +48,8 @@ export default async function AdminProductsPage() {
         </Note>
         <Note title="Christmas price">
           Set <code className={code}>Christmas price</code> to override a product&apos;s price for Christmas orders only.
-          Leave it blank to charge the normal price. It never shows as a second price in the shop, it is applied once a
-          customer has chosen to order for Christmas at checkout.
+          Leave it blank to charge the normal price. While Christmas ordering is on it shows in grey beside the normal
+          price, and it is charged once a customer has chosen to order for Christmas in the basket or at checkout.
         </Note>
         <Note title="Priced by weight">
           Set <code className={code}>Price type</code> to <code className={code}>per-kg</code> for a product sold by
@@ -64,18 +65,19 @@ export default async function AdminProductsPage() {
           Christmas section of the home page (up to 8, skipping anything out of stock or excluded).
         </Note>
         <Note title="Photos, category and page address">
-          <code className={code}>Photo</code> is the product photo: drop a new one in and Sync now puts it on the shop (the
-          first image is the main one). <code className={code}>category</code> must be one of the shop&apos;s categories
+          <code className={code}>Photo</code> is the product photo: drop a new one in and it goes on the shop within a few seconds
+          (the first image is the main one). <code className={code}>category</code> must be one of the shop&apos;s categories
           (Cured, Fresh, Oysters, Shellfish, Smoked), with several separated by <code className={code}>|</code> and the
           first one shown. <code className={code}>slug</code> is the web address of the page: lowercase letters, numbers and
           hyphens only, and changing it breaks any link already shared, so leave it alone unless there is a reason.
         </Note>
-        <Note title="Sizes" wide>
+        <Note title="Sizes">
           Weight and size products (Salmon Whole, Lobster, Halibut Steaks, Turbot, Crab | Dressed) have no single price,
           each size is its own WooCommerce variation. Sync also reads the &quot;{source.variationsTable}&quot; table and
           updates each size&apos;s <code className={code}>price</code> and <code className={code}>Size name</code> (the label
-          customers see, such as Medium 750g), matched by <code className={code}>variation_id</code>.
-          Christmas pricing isn&apos;t supported for sizes yet.
+          customers see, such as Medium 750g), matched by <code className={code}>variation_id</code>. Each size can also have
+          its own <code className={code}>Christmas price</code> and <code className={code}>Christmas deposit</code>; leave
+          them blank for the normal price.
         </Note>
       </div>
 
