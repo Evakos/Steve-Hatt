@@ -420,6 +420,16 @@ export default async function Home() {
               ))}
             </div>
 
+            <div className="mt-10 text-center">
+              <Link
+                href="/shop"
+                className="inline-block bg-navy px-8 py-3 text-sm font-medium text-white transition-colors hover:bg-navy/90"
+                style={{ borderRadius: "6px" }}
+              >
+                Shop all
+              </Link>
+            </div>
+
             {/* How a Christmas order works, below the products */}
             <Reveal>
               <div className="mt-10">
