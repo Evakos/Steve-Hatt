@@ -206,8 +206,8 @@ export default async function Home() {
         />
 
         {/* Trust strip - full width, directly attached with no gap */}
-        <div className="border-y border-white/40 bg-navy">
-          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-5 gap-y-3 px-6 py-4 sm:py-5">
+        <div className="border-y border-white/25 bg-navy">
+          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-5 gap-y-2 px-6 py-2.5 sm:py-3">
             {[
               { icon: <Truck className="h-4 w-4" />, text: "Local delivery across Islington" },
               { icon: <Leaf className="h-4 w-4" />, text: "Sustainably sourced" },
