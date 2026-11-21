@@ -426,7 +426,7 @@ export default async function Home() {
             </Reveal>
 
             <Reveal>
-              <div className="mx-auto mt-12 max-w-xl">
+              <div className="mx-auto mt-12 max-w-4xl">
                 <ChristmasOpeningHours hours={openingHours} />
               </div>
             </Reveal>
