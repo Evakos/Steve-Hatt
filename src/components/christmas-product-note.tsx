@@ -65,7 +65,9 @@ export default function ChristmasProductNote({ excluded }: { excluded: boolean }
           <p className="mt-1 font-serif text-lg font-semibold text-[#1a3a2a]">{dates.map((d) => dateFormat.format(d)).join(" · ")}</p>
         </div>
       )}
-      <p className="relative mt-3 text-xs text-[#1a3a2a]/60">The shop is closed on Sunday and Monday.</p>
+      <p className="relative mt-3 text-xs text-[#1a3a2a]/60">
+        Our opening hours over Christmas are on the <a href="/#christmas" className="underline">home page</a>.
+      </p>
     </div>
   );
 }

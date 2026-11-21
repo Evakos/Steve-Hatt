@@ -2,11 +2,11 @@ import "server-only";
 import { sendEmail } from "./send";
 import type { RepricedOrder } from "@/lib/checkout/reprice";
 import type { DeliveryDetails } from "@/lib/checkout/delivery-address";
-import { dayNoteFor } from "@/lib/checkout/closing-note";
+import { dayNoteFor, hoursLineFor } from "@/lib/checkout/closing-note";
+import { getClosingLabel, getReopenLabel } from "@/lib/feature-flags";
 import { getDayNotes, getNotificationEmails, getOpeningDays } from "@/lib/site-settings";
 import { COLORS, SITE_URL, emailOrderBadges, emailShell, emailHeading, emailNotice, emailAlert, emailButton, emailLineItemsTable } from "./layout";
 
-import { getLastOrderLabel } from "@/lib/feature-flags";
 
 const FROM_ADDRESS = "orders@stevehattfishmongers.co.uk";
 
@@ -36,9 +36,12 @@ export interface OrderConfirmationInput {
  * otherwise-successful order.
  */
 export async function sendOrderConfirmation(input: OrderConfirmationInput) {
-  const lastOrderLabel = await getLastOrderLabel();
   const { to, customerName, orderNumber, repriced, slotLabel, slotDate, fulfilmentType, depositAmount, paidInFull } = input;
-  const closingNote = dayNoteFor(slotDate, await getDayNotes(), await getOpeningDays());
+  const openingDays = await getOpeningDays();
+  const closingNote = dayNoteFor(slotDate, await getDayNotes(), openingDays);
+  const hoursLine = hoursLineFor(slotDate, openingDays);
+  const closingLabel = await getClosingLabel();
+  const reopenLabel = await getReopenLabel();
   const isPaidInFull = paidInFull === true;
   const deposit = depositAmount ?? 0;
   const hasDeposit = !isPaidInFull && deposit > 0;
@@ -89,7 +92,7 @@ export async function sendOrderConfirmation(input: OrderConfirmationInput) {
     ${
       repriced.isChristmas
         ? emailNotice(
-            `<strong>Christmas closing times.</strong> Please ${fulfilmentType === "delivery" ? "be available for delivery" : "collect your order"} within the time shown above. The shop is closed on Sunday and Monday${lastOrderLabel ? `, and online ordering is closed from ${lastOrderLabel} until the new year` : ""}.`
+            `<strong>Christmas closing times.</strong> Please ${fulfilmentType === "delivery" ? "be available for delivery" : "collect your order"} within the time shown above.${hoursLine ? ` ${hoursLine}` : ""}${closingLabel ? ` Online ordering is closed from ${closingLabel}${reopenLabel ? ` until ${reopenLabel}` : ""}.` : ""}`
           )
         : ""
     }

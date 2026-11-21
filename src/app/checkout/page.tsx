@@ -735,8 +735,8 @@ export default function CheckoutPage() {
                           style={{ borderRadius: "10px" }}
                         >
                           <strong>Christmas closing times:</strong> please collect, or be available for delivery,
-                          within the time shown for your slot. The shop is closed on Sunday and Monday.
-                          {lastOrderLabel ? ` Christmas pre-orders close on ${lastOrderLabel}, and online ordering stays closed until the new year.` : ""}
+                          within the time shown for your slot.
+                          {lastOrderLabel ? ` Christmas pre-orders close on ${lastOrderLabel}${reopenLabel ? `, and online ordering stays closed until ${reopenLabel}` : ""}.` : ""}
                         </p>
                       )}
 
