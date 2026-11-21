@@ -1,6 +1,6 @@
+import { getNotificationEmails } from "@/lib/site-settings";
 import "server-only";
 import { sendEmail } from "./send";
-import { getServerEnv } from "@/lib/env";
 import { emailShell, emailHeading } from "./layout";
 
 const FROM_ADDRESS = "orders@stevehattfishmongers.co.uk";
@@ -18,7 +18,7 @@ export interface ContactMessageInput {
  * if the email fails, so the caller needs to know and tell the customer to try again. */
 export async function sendContactMessage(input: ContactMessageInput): Promise<void> {
   const { name, email, message } = input;
-  const to = getServerEnv().ADMIN_NOTIFICATION_EMAIL;
+  const to = await getNotificationEmails();
 
   const html = emailShell(`
     ${emailHeading("New contact form message")}

@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
-import { ClipboardList, Package, BookOpen, CalendarDays, ExternalLink, LogOut } from "lucide-react";
+import { ClipboardList, Package, BookOpen, CalendarDays, MessageSquareText, ExternalLink, LogOut } from "lucide-react";
 
 const NAV_ITEMS = [
   { href: "/admin/orders", label: "Orders", icon: ClipboardList },
   { href: "/admin/slots", label: "Delivery slots", icon: CalendarDays },
   { href: "/admin/products", label: "Products", icon: Package },
+  { href: "/admin/site-settings", label: "Messages & hours", icon: MessageSquareText },
   { href: "/admin/guide", label: "Guide", icon: BookOpen },
 ] as const;
 

@@ -1,4 +1,5 @@
-import { closingNoteFor } from "./closing-note";
+import { dayNoteFor } from "./closing-note";
+import { getDayNotes } from "@/lib/site-settings";
 import "server-only";
 import { createWooOrder } from "@/lib/woocommerce/orders";
 import { findOrCreateCustomerByEmail, updateCustomer } from "@/lib/woocommerce/customers";
@@ -26,6 +27,8 @@ export async function createOrderFromPayment(
 ): Promise<{ order: WooOrder; repriced: RepricedOrder }> {
   const repriced = await repriceCheckoutRequest(checkout);
   const { customer, fulfilment } = checkout;
+  // A note staff attached to this date in the admin, such as an early closing time.
+  const dayNote = dayNoteFor(fulfilment.slot.date, await getDayNotes());
 
   const billing = {
     first_name: customer.firstName,
@@ -105,7 +108,7 @@ export async function createOrderFromPayment(
       { key: "_checkout_order_ref", value: orderRef },
       { key: "_checkout_slot_label", value: fulfilment.slot.label },
       { key: "_checkout_slot_date", value: fulfilment.slot.date },
-      ...(closingNoteFor(fulfilment.slot.date) ? [{ key: "Closing time", value: closingNoteFor(fulfilment.slot.date) as string }] : []),
+      ...(dayNote ? [{ key: "Closing time", value: dayNote }] : []),
       { key: "_checkout_is_christmas", value: String(fulfilment.slot.isChristmas) },
       { key: "_checkout_fulfilment_type", value: fulfilment.type },
       ...(awaiting ? [] : [{ key: "_cardstream_transaction_id", value: transactionId }]),

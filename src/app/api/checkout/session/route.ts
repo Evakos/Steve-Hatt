@@ -1,3 +1,4 @@
+import { getClosedMessage } from "@/lib/site-settings";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getCardstreamClient } from "@/lib/cardstream/client";
@@ -42,7 +43,7 @@ async function cancelReplacedOrder(replaces: { orderId: number; orderRef: string
  */
 export async function POST(request: Request) {
   if (await areOnlineOrdersClosed()) {
-    return NextResponse.json({ status: "closed", reason: ordersClosedReason(await getReopenLabel()) }, { status: 403 });
+    return NextResponse.json({ status: "closed", reason: ordersClosedReason(await getReopenLabel(), await getClosedMessage()) }, { status: 403 });
   }
   const json = await request.json().catch(() => null);
   const parsed = bodySchema.safeParse(json);

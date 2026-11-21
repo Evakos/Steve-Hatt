@@ -1,9 +1,9 @@
 import "server-only";
 import { sendEmail } from "./send";
-import { getServerEnv } from "@/lib/env";
 import type { RepricedOrder } from "@/lib/checkout/reprice";
 import type { DeliveryDetails } from "@/lib/checkout/delivery-address";
-import { closingNoteFor } from "@/lib/checkout/closing-note";
+import { dayNoteFor } from "@/lib/checkout/closing-note";
+import { getDayNotes, getNotificationEmails } from "@/lib/site-settings";
 import { COLORS, SITE_URL, emailOrderBadges, emailShell, emailHeading, emailNotice, emailAlert, emailButton, emailLineItemsTable } from "./layout";
 
 import { getLastOrderLabel } from "@/lib/feature-flags";
@@ -38,7 +38,7 @@ export interface OrderConfirmationInput {
 export async function sendOrderConfirmation(input: OrderConfirmationInput) {
   const lastOrderLabel = await getLastOrderLabel();
   const { to, customerName, orderNumber, repriced, slotLabel, slotDate, fulfilmentType, depositAmount, paidInFull } = input;
-  const closingNote = closingNoteFor(slotDate);
+  const closingNote = dayNoteFor(slotDate, await getDayNotes());
   const isPaidInFull = paidInFull === true;
   const deposit = depositAmount ?? 0;
   const hasDeposit = !isPaidInFull && deposit > 0;
@@ -213,8 +213,8 @@ export interface AdminNewOrderNotificationInput extends Partial<DeliveryDetails>
  */
 export async function sendAdminNewOrderNotification(input: AdminNewOrderNotificationInput) {
   const { orderNumber, customerName, customerEmail, repriced, slotLabel, slotDate, fulfilmentType, depositAmount, paidInFull, customerPhone, deliveryAddress } = input;
-  const closingNote = closingNoteFor(slotDate);
-  const to = getServerEnv().ADMIN_NOTIFICATION_EMAIL;
+  const closingNote = dayNoteFor(slotDate, await getDayNotes());
+  const to = await getNotificationEmails();
   const isPaidInFull = paidInFull === true;
   const deposit = depositAmount ?? 0;
   const hasDeposit = !isPaidInFull && deposit > 0;
@@ -312,7 +312,7 @@ export interface AdminPreOrderAuthFailedInput {
  * it won't move into the normal /admin/orders capture queue until payment is resolved. */
 export async function sendAdminPreOrderAuthFailedAlert(input: AdminPreOrderAuthFailedInput) {
   const { orderNumber, customerName, customerEmail, reason } = input;
-  const to = getServerEnv().ADMIN_NOTIFICATION_EMAIL;
+  const to = await getNotificationEmails();
 
   const html = emailShell(`
     ${emailHeading(`Pre-order #${orderNumber} needs attention`)}
@@ -346,7 +346,7 @@ export interface ExpiringAuthAlertInput {
  */
 export async function sendExpiringAuthAlert(input: ExpiringAuthAlertInput) {
   const { orders } = input;
-  const to = getServerEnv().ADMIN_NOTIFICATION_EMAIL;
+  const to = await getNotificationEmails();
 
   const rows = orders
     .map(

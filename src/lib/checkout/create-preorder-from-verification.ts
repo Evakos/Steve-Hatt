@@ -1,4 +1,5 @@
-import { closingNoteFor } from "./closing-note";
+import { dayNoteFor } from "./closing-note";
+import { getDayNotes } from "@/lib/site-settings";
 import "server-only";
 import { createWooOrder } from "@/lib/woocommerce/orders";
 import { findOrCreateCustomerByEmail, updateCustomer } from "@/lib/woocommerce/customers";
@@ -32,6 +33,8 @@ export async function createPreOrderFromVerification(
 ): Promise<{ order: WooOrder; repriced: RepricedOrder }> {
   const repriced = await repriceCheckoutRequest(checkout);
   const { customer, fulfilment } = checkout;
+  // A note staff attached to this date in the admin, such as an early closing time.
+  const dayNote = dayNoteFor(fulfilment.slot.date, await getDayNotes());
 
   const billing = {
     first_name: customer.firstName,
@@ -91,7 +94,7 @@ export async function createPreOrderFromVerification(
       // ISO date string - lets the cron job compute "days until delivery" per order instead of
       // hardcoding the 23rd/24th, so it generalises to whatever slot dates the storefront offers.
       { key: "_checkout_slot_date", value: fulfilment.slot.date },
-      ...(closingNoteFor(fulfilment.slot.date) ? [{ key: "Closing time", value: closingNoteFor(fulfilment.slot.date) as string }] : []),
+      ...(dayNote ? [{ key: "Closing time", value: dayNote }] : []),
       { key: "_checkout_is_christmas", value: String(fulfilment.slot.isChristmas) },
       { key: "_checkout_fulfilment_type", value: fulfilment.type },
       { key: "_cardstream_card_token", value: cardToken },

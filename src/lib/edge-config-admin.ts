@@ -185,3 +185,41 @@ export async function updateChristmasSlotDates(days: string[]): Promise<void> {
     throw new Error(`Vercel Edge Config update failed (${res.status}): ${text}`);
   }
 }
+
+export interface SiteSettingsInput {
+  notificationEmails: string[];
+  bannerText: string;
+  closedMessage: string;
+  dayNotes: { date: string; note: string }[];
+  openingHours: { title: string; rows: { day: string; hours: string }[]; footnote: string };
+}
+
+/** Saves the wording, notes, opening hours and notification addresses edited under Messages and hours in the admin. */
+export async function updateSiteSettings(input: SiteSettingsInput): Promise<void> {
+  const env = getServerEnv();
+  if (!env.VERCEL_API_TOKEN || !env.EDGE_CONFIG_ID) {
+    throw new Error("Settings can't be saved - VERCEL_API_TOKEN and EDGE_CONFIG_ID aren't configured (see .env.example).");
+  }
+
+  const url = new URL(`https://api.vercel.com/v1/edge-config/${env.EDGE_CONFIG_ID}/items`);
+  if (env.VERCEL_TEAM_ID) url.searchParams.set("teamId", env.VERCEL_TEAM_ID);
+
+  const res = await fetch(url, {
+    method: "PATCH",
+    headers: { Authorization: `Bearer ${env.VERCEL_API_TOKEN}`, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      items: [
+        { operation: "upsert", key: "notificationEmails", value: input.notificationEmails },
+        { operation: "upsert", key: "bannerText", value: input.bannerText },
+        { operation: "upsert", key: "closedMessage", value: input.closedMessage },
+        { operation: "upsert", key: "dayNotes", value: input.dayNotes },
+        { operation: "upsert", key: "openingHours", value: input.openingHours },
+      ],
+    }),
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`Vercel Edge Config update failed (${res.status}): ${text}`);
+  }
+}

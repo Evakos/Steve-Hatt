@@ -16,7 +16,9 @@
 export const REOPEN_DAY = 4;
 
 /** Shown in the banner and refused-order message while ordering is closed, with the reopening date when one is set. */
-export function ordersClosedReason(reopenLabel?: string | null): string {
+export function ordersClosedReason(reopenLabel?: string | null, template?: string | null): string {
+  // Wording staff wrote in the admin wins; {reopen} stands for the reopening day.
+  if (template && template.trim()) return template.replace(/\{reopen\}/g, reopenLabel ?? "the New Year");
   const until = reopenLabel ? `The shop will be closed until ${reopenLabel}.` : "The shop is closed for the Christmas break.";
   return `${until} During this period orders cannot be made due to staff holidays and fish supplies.`;
 }

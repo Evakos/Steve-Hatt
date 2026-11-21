@@ -13,6 +13,7 @@ import Footer from "@/components/footer";
 import HeroSlider from "@/components/hero-slider";
 import ChristmasHeroSlide from "@/components/christmas-hero-slide";
 import ChristmasOpeningHours from "@/components/christmas-opening-hours";
+import { getOpeningHours } from "@/lib/site-settings";
 import Reveal from "@/components/reveal";
 
 const howItWorks = [
@@ -71,12 +72,13 @@ const CHRISTMAS_STEPS: { title: string; text: string; icon: LucideIcon; image?: 
 ];
 
 export default async function Home() {
-  const [products, christmasActive, googleReview, lastOrderLabel, christmasDates] = await Promise.all([
+  const [products, christmasActive, googleReview, lastOrderLabel, christmasDates, openingHours] = await Promise.all([
     getAllProducts(),
     isChristmasShopActive(),
     getGoogleReviewData(),
     getLastOrderLabel(),
     getChristmasDates(),
+    getOpeningHours(),
   ]);
   const todaysCatch = pickRandom(products, 6);
   // Curated festive picks for the Christmas section - only products whose slug is in the
@@ -425,7 +427,7 @@ export default async function Home() {
 
             <Reveal>
               <div className="mx-auto mt-12 max-w-xl">
-                <ChristmasOpeningHours />
+                <ChristmasOpeningHours hours={openingHours} />
               </div>
             </Reveal>
           </div>

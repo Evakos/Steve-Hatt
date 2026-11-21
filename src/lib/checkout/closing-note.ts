@@ -1,12 +1,17 @@
 import { slotDateKey } from "@/lib/slots";
 
-/** The shop closes early on Christmas Eve, so orders for that day carry a bold note about it. */
-export const CHRISTMAS_EVE_NOTE = "Please note: we close early on Christmas Eve, at 2pm.";
+/** A note staff attach to a date (for example an early closing time), set in the admin under Messages and hours. */
+export interface DateNote {
+  /** YYYY-MM-DD */
+  date: string;
+  note: string;
+}
 
-/** The closing-time note for an order booked for this date (an ISO string), or null for any other day. */
-export function closingNoteFor(slotDate?: string | null): string | null {
+/** The note for an order booked on this date (an ISO string), or null when that date has none. */
+export function dayNoteFor(slotDate: string | null | undefined, notes: readonly DateNote[]): string | null {
   if (!slotDate) return null;
   const date = new Date(slotDate);
   if (Number.isNaN(date.getTime())) return null;
-  return slotDateKey(date).slice(5) === "12-24" ? CHRISTMAS_EVE_NOTE : null;
+  const key = slotDateKey(date);
+  return notes.find((n) => n.date === key)?.note ?? null;
 }

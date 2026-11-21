@@ -1,3 +1,4 @@
+import { getClosedMessage } from "@/lib/site-settings";
 import { NextResponse } from "next/server";
 import { getCardstreamClient } from "@/lib/cardstream/client";
 import { createOrderFromPayment } from "@/lib/checkout/create-order-from-payment";
@@ -14,7 +15,7 @@ import { areOnlineOrdersClosed, getChristmasDates } from "@/lib/feature-flags";
 
 export async function POST(request: Request) {
   if (await areOnlineOrdersClosed()) {
-    return NextResponse.json({ status: "closed", reason: ordersClosedReason(await getReopenLabel()) }, { status: 403 });
+    return NextResponse.json({ status: "closed", reason: ordersClosedReason(await getReopenLabel(), await getClosedMessage()) }, { status: 403 });
   }
   const json = await request.json().catch(() => null);
   const parsed = confirmRequestSchema.safeParse(json);
