@@ -2,39 +2,23 @@ import type { ReactNode } from "react";
 import Image from "next/image";
 
 /**
- * The Christmas photo for the homepage hero. Until one is supplied the slide uses a plain green
- * background. To use it: add the file to /public (for example /public/hero-christmas.jpg) and set this
- * to "/hero-christmas.jpg".
+ * The folk-art panels beside the text on wide screens: an Illustrator EPS from the stock set, recoloured to the shop's
+ * navy, coral and cream. Hidden on phones and tablets, where the text has the whole slide.
  */
-const CHRISTMAS_HERO_IMAGE: string | null = null;
+const FOLK_PANELS = [
+  { src: "/christmas-folk-rooster.png", alt: "Folk-art rooster with the words Merry Christmas" },
+  { src: "/christmas-folk-tree.png", alt: "Folk-art Christmas tree with the words Merry X-mas" },
+];
 
 /** The second hero slide, shown only while Christmas pre-ordering is on. */
 export default function ChristmasHeroSlide({ when, fulfilment, lastDay, proof }: { when: string; fulfilment: string; lastDay: string; proof?: ReactNode }) {
   return (
-    <div className="relative overflow-hidden bg-[#1a3a2a] sm:h-[40vh] sm:min-h-[400px]">
-      {CHRISTMAS_HERO_IMAGE ? (
-        <div className="absolute inset-0">
-          <Image src={CHRISTMAS_HERO_IMAGE} alt="" fill sizes="100vw" className="object-cover" />
-          <div className="absolute inset-0 bg-[#1a3a2a]/60 sm:bg-[#1a3a2a]/45" />
-        </div>
-      ) : (
-        // Until a Christmas photo is supplied: the hand-drawn Christmas pattern, in white and faint so the text stays clear.
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-[0.12]"
-          style={{
-            backgroundImage: "url(/christmas-pattern.svg)",
-            backgroundRepeat: "repeat-x",
-            backgroundSize: "auto 100%",
-            backgroundPosition: "center",
-          }}
-        />
-      )}
+    <div className="relative overflow-hidden bg-navy sm:h-[40vh] sm:min-h-[400px]">
       <div className="relative flex h-full sm:items-center">
         <div className="mx-auto w-full max-w-6xl px-6 py-9 pb-12 sm:py-0">
-          <div className="max-w-2xl">
-            <p className="mb-3 text-[11px] font-medium tracking-widest text-white/80 uppercase sm:mb-4 sm:text-xs">Christmas pre-orders now open</p>
-            <h2 className="font-serif text-4xl font-bold leading-[1.1] text-white sm:text-5xl md:text-5xl lg:text-6xl">
+          <div className="max-w-2xl lg:max-w-[min(42rem,calc(100%-26rem))]">
+            <p className="mb-3 text-[11px] font-medium tracking-widest text-lobster uppercase sm:mb-4 sm:text-xs">Christmas pre-orders now open</p>
+            <h2 className="font-serif text-4xl font-bold leading-[1.1] text-white sm:text-5xl lg:text-5xl xl:text-6xl">
               Your Christmas fish, ordered ahead.
             </h2>
             <p className="mt-4 max-w-lg text-base leading-relaxed text-white/90 sm:mt-6 sm:text-lg">
@@ -50,6 +34,23 @@ export default function ChristmasHeroSlide({ when, fulfilment, lastDay, proof }:
               </a>
             </div>
           </div>
+        </div>
+      </div>
+
+      <div className="pointer-events-none absolute inset-y-0 right-0 left-0 hidden lg:block">
+        <div className="mx-auto flex h-full max-w-6xl items-center justify-end gap-4 px-6">
+          {FOLK_PANELS.map((panel) => (
+            <Image
+              key={panel.src}
+              src={panel.src}
+              alt={panel.alt}
+              width={475}
+              height={756}
+              sizes="190px"
+              className="h-[300px] w-auto shadow-lg"
+              style={{ borderRadius: "10px" }}
+            />
+          ))}
         </div>
       </div>
     </div>
