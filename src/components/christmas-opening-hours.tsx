@@ -44,7 +44,7 @@ export default function ChristmasOpeningHours({ hours }: { hours: OpeningHours }
                     <p className={`text-xs font-semibold tracking-widest uppercase ${early ? "text-lobster" : "text-teal"}`}>
                       {early ? "Open, closes early" : "Open"}
                     </p>
-                    <p className={`mt-0.5 text-lg font-medium ${early ? "text-lobster" : "text-navy"}`}>
+                    <p className={`mt-0.5 text-sm font-medium ${early ? "text-lobster" : "text-navy"}`}>
                       {formatClock(day.opens)} to {formatClock(day.closes)}
                     </p>
                   </>
