@@ -47,6 +47,21 @@ html {
   font-size: 112.5%;
 }
 
+/* Laptops: the larger base size is too big on a laptop screen, so everything (text, spacing, buttons,
+ * the nav) steps down together. Big monitors and phones keep the larger size. Media queries are not
+ * affected by this, so layouts still switch at the same screen widths. */
+@media (min-width: 1280px) and (max-width: 1535px) {
+  html {
+    font-size: 100%;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1279px) {
+  html {
+    font-size: 93.75%;
+  }
+}
+
 body {
   background: var(--cream);
   color: var(--text);
