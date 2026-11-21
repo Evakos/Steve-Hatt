@@ -23,14 +23,14 @@ export default function ChristmasOpeningHours({ hours }: { hours: OpeningHours }
           const early = !day.closed && day.closes < USUAL_CLOSING;
           const occasion = occasionName(day.date);
           const tone = day.closed
-            ? "border-[#d6cdbd] border-t-[#b9ad98] bg-[#e6dfd3]"
+            ? "border-[#d6cdbd] border-t-[#b9ad98] bg-[#e6dfd3] opacity-80"
             : early
               ? "border-lobster/30 border-t-lobster bg-[#fef0ec]"
-              : "border-border border-t-teal bg-white";
+              : "border-teal/40 border-t-teal bg-teal-light shadow-sm";
           return (
-            <li key={day.date} className={`flex min-h-[10.5rem] flex-col border border-t-[3px] p-5 ${tone}`} style={{ borderRadius: "5px" }}>
+            <li key={day.date} className={`flex min-h-[11rem] flex-col border border-t-4 p-5 ${tone}`} style={{ borderRadius: "5px" }}>
               <div className="flex items-start justify-between">
-                <span className={`font-serif text-3xl leading-none font-light ${day.closed ? "text-text-light/50" : "text-lobster/60"}`}>
+                <span className={`font-serif text-3xl leading-none ${day.closed ? "font-light text-text-light/50" : "font-semibold text-navy"}`}>
                   {day.date.slice(8)}
                 </span>
                 <span className="text-xs tracking-wide text-text-light uppercase">{monthShort.format(atNoon(day.date))}</span>
@@ -44,10 +44,12 @@ export default function ChristmasOpeningHours({ hours }: { hours: OpeningHours }
                   <p className="text-xs font-medium tracking-widest text-text-light uppercase">Closed</p>
                 ) : (
                   <>
-                    <p className={`text-sm font-bold ${early ? "text-lobster" : "text-navy"}`}>
+                    <p className={`text-xs font-semibold tracking-widest uppercase ${early ? "text-lobster" : "text-teal"}`}>
+                      {early ? "Open, closes early" : "Open"}
+                    </p>
+                    <p className={`mt-0.5 text-xl font-bold ${early ? "text-lobster" : "text-navy"}`}>
                       {formatClock(day.opens)} to {formatClock(day.closes)}
                     </p>
-                    {early && <p className="mt-0.5 text-xs font-medium text-navy">We close early</p>}
                   </>
                 )}
               </div>
