@@ -40,7 +40,10 @@ interface Props {
 
 export default function AddToCart({ product }: Props) {
   const { addItem } = useCart();
-  const [selectedPrep, setSelectedPrep] = useState(product.preparation[0]);
+  // With a real choice to make (two or more options) nothing is pre-selected, so a customer can't add the wrong
+  // preparation by accident. A single option is selected for them, as there is nothing to choose.
+  const [selectedPrep, setSelectedPrep] = useState(product.preparation.length === 1 ? product.preparation[0] : "");
+  const needsPrep = product.preparation.length > 1 && !selectedPrep;
   const [selectedSize, setSelectedSize] = useState(product.sizeOptions?.[0]?.label ?? "");
   const [weight, setWeight] = useState(0.2);
   const [quantity, setQuantity] = useState(product.priceType === "per-piece" ? 6 : 1);
@@ -67,6 +70,7 @@ export default function AddToCart({ product }: Props) {
     };
   }, []);
   const unavailable = outOfStock || ordersClosed;
+  const blocked = unavailable || needsPrep;
 
   const selectedSizeOption = product.sizeOptions?.find((s) => s.label === selectedSize);
   const christmasActive = useChristmasActive();
@@ -77,6 +81,7 @@ export default function AddToCart({ product }: Props) {
   );
 
   const handleAdd = () => {
+    if (needsPrep) return;
     addItem({
       product,
       quantity,
@@ -93,7 +98,10 @@ export default function AddToCart({ product }: Props) {
     <>
       {/* Preparation options */}
       <div className="mt-8">
-        <p className="mb-3 text-sm font-medium text-navy">Preparation</p>
+        <p className="mb-3 text-sm font-medium text-navy">
+          Preparation
+          {needsPrep && !unavailable && <span className="ml-2 font-normal text-lobster">Please choose one</span>}
+        </p>
         <div className="flex flex-wrap gap-1.5">
           {product.preparation.map((opt) => (
             <div key={opt} className="group relative">
@@ -197,9 +205,9 @@ export default function AddToCart({ product }: Props) {
         </div>
         <button
           onClick={handleAdd}
-          disabled={unavailable}
+          disabled={blocked}
           className={`flex flex-1 items-center justify-center gap-2 px-6 py-3 text-sm font-medium tracking-wide transition-colors ${
-            unavailable
+            blocked
               ? "cursor-not-allowed bg-border text-text-light"
               : added
                 ? "bg-teal text-white"
@@ -211,6 +219,8 @@ export default function AddToCart({ product }: Props) {
           "Out of stock"
         ) : ordersClosed ? (
           `Closed for orders until ${reopenLabel ?? "the new year"}`
+        ) : needsPrep ? (
+          "Choose a preparation option"
         ) : added ? (
           <>
             <Check className="h-4 w-4" />
