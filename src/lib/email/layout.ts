@@ -156,10 +156,8 @@ export function emailOrderBadges(opts: { fulfilmentType: "delivery" | "collectio
     opts.fulfilmentType === "delivery"
       ? pill(COLORS.lobsterLight, COLORS.lobster, "Delivery")
       : pill(COLORS.oceanLight, COLORS.ocean, "Collection");
-  if (opts.isChristmas) {
-    // A full-width green band with snowflakes, so a Christmas order can't be missed at a glance.
-    return `<div style="background:#1f7a4d;color:#ffffff;font-family:Arial,Helvetica,sans-serif;font-size:20px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;text-align:center;padding:14px 16px;border-radius:6px;margin:0 0 12px;">&#10052;&#65038; Christmas order &#10052;&#65038;</div><p style="margin:0 0 14px;">${fulfilment}</p>`;
-  }
-  const occasion = pill(COLORS.sand, COLORS.textLight, "Standard order");
+  const occasion = opts.isChristmas
+    ? pill("#1f7a4d", "#ffffff", "&#10052;&#65038; Christmas order")
+    : pill(COLORS.sand, COLORS.textLight, "Standard order");
   return `<p style="margin:0 0 14px;">${fulfilment}${occasion}</p>`;
 }
