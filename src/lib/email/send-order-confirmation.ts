@@ -52,7 +52,7 @@ export async function sendOrderConfirmation(input: OrderConfirmationInput) {
     <table style="width:100%;border-collapse:collapse;margin-top:8px;font-size:13px;">
       <tr><td style="padding:4px 0;color:${COLORS.textLight};">Subtotal</td><td style="padding:4px 0;text-align:right;color:${COLORS.text};">&pound;${repriced.subtotal.toFixed(2)}</td></tr>
       ${fulfilmentType === "delivery" ? `<tr><td style="padding:4px 0;color:${COLORS.textLight};">Delivery</td><td style="padding:4px 0;text-align:right;color:${COLORS.text};">&pound;${repriced.deliveryFee.toFixed(2)}</td></tr>` : ""}
-      <tr><td style="padding:8px 0 0;font-weight:700;color:${COLORS.navy};border-top:1px solid ${COLORS.border};">Total paid</td><td style="padding:8px 0 0;text-align:right;font-weight:700;color:${COLORS.navy};border-top:1px solid ${COLORS.border};">&pound;${repriced.total.toFixed(2)}</td></tr>
+      <tr><td style="padding:8px 0 0;font-weight:700;color:${COLORS.navy};border-top:1px solid ${COLORS.border};">Total paid by card</td><td style="padding:8px 0 0;text-align:right;font-weight:700;color:${COLORS.navy};border-top:1px solid ${COLORS.border};">&pound;${repriced.total.toFixed(2)}</td></tr>
     </table>
   `
     : hasDeposit
@@ -77,7 +77,7 @@ export async function sendOrderConfirmation(input: OrderConfirmationInput) {
     <p>Hi ${customerName}, thanks for your order from Steve Hatt Fishmongers.</p>
     ${emailNotice(
       isPaidInFull
-        ? `<strong>Thank you, your payment of £${repriced.total.toFixed(2)} has been received.</strong> We'll be in touch if anything changes once your order is prepared.`
+        ? `<strong>&#10003; Paid by card: thank you, your payment of £${repriced.total.toFixed(2)} has been received.</strong> There is nothing more to pay. We'll be in touch if anything changes once your order is prepared.`
         : hasDeposit
         ? `<strong>Your £${deposit.toFixed(2)} deposit has been paid.</strong> The remaining balance
         (estimated £${balance.toFixed(2)}) will be confirmed and settled on collection, once your order has
@@ -241,12 +241,12 @@ export async function sendAdminNewOrderNotification(input: AdminNewOrderNotifica
       <tr><td style="padding:4px 0;color:${COLORS.textLight};">Delivery</td><td style="padding:4px 0;text-align:right;color:${COLORS.text};">&pound;${repriced.deliveryFee.toFixed(2)}</td></tr>`
         : ""}
       ${isPaidInFull
-        ? `<tr><td style="padding:4px 0;font-weight:700;color:${COLORS.navy};">Paid at checkout</td><td style="padding:4px 0;text-align:right;font-weight:700;color:${COLORS.navy};">&pound;${repriced.total.toFixed(2)}</td></tr>`
+        ? `<tr><td style="padding:4px 0;font-weight:700;color:${COLORS.navy};">Paid by card at checkout</td><td style="padding:4px 0;text-align:right;font-weight:700;color:${COLORS.navy};">&pound;${repriced.total.toFixed(2)}</td></tr>`
         : `${hasDeposit ? `<tr><td style="padding:4px 0;color:${COLORS.textLight};">Deposit captured at checkout</td><td style="padding:4px 0;text-align:right;color:${COLORS.text};">&pound;${deposit.toFixed(2)}</td></tr>` : ""}
       <tr><td style="padding:8px 0 0;font-weight:700;color:${COLORS.navy};border-top:1px solid ${COLORS.border};">${hasDeposit ? "Balance to capture on collection (estimate)" : "Estimated total (held, not yet charged)"}</td><td style="padding:8px 0 0;text-align:right;font-weight:700;color:${COLORS.navy};border-top:1px solid ${COLORS.border};">&pound;${(hasDeposit ? balance : repriced.total).toFixed(2)}</td></tr>`}
     </table>
     ${isPaidInFull
-      ? `<p style="margin-top:16px;font-size:13px;color:${COLORS.textLight};">This order is already paid.</p>`
+      ? `<div style="margin-top:16px;padding:12px 14px;background:${COLORS.oceanLight};border:1px solid ${COLORS.ocean};border-radius:5px;font-size:15px;font-weight:700;color:${COLORS.navy};">&#10003; PAID BY CARD, in full (&pound;${repriced.total.toFixed(2)}). Nothing to take from the customer.</div>`
       : `<p style="margin-top:16px;font-size:13px;color:${COLORS.textLight};">Once weighed and prepared, capture the final price on the orders page.</p>`}
     ${emailButton(`${SITE_URL}/admin/orders`, "Go to admin orders")}
   `, "staff");
