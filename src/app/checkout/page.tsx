@@ -882,16 +882,25 @@ export default function CheckoutPage() {
                       style={{ borderRadius: "5px" }}
                     >
                       <p className="text-sm text-navy">
-                        <strong className="font-medium">Already have an account?</strong> Sign in to use your saved
-                        details.
+                        <strong className="font-medium">Have an account, or want one?</strong> Save your details and
+                        track your orders. No password needed.
                       </p>
-                      <Link
-                        href="/account/login?next=checkout"
-                        className="bg-navy px-4 py-2 text-xs font-medium tracking-wide text-white transition-colors hover:bg-navy/90"
-                        style={{ borderRadius: "6px" }}
-                      >
-                        Sign in
-                      </Link>
+                      <div className="flex flex-wrap gap-2">
+                        <Link
+                          href="/account/login?next=checkout"
+                          className="bg-navy px-4 py-2 text-xs font-medium tracking-wide text-white transition-colors hover:bg-navy/90"
+                          style={{ borderRadius: "6px" }}
+                        >
+                          Create an account
+                        </Link>
+                        <Link
+                          href="/account/login?next=checkout"
+                          className="border border-navy px-4 py-2 text-xs font-medium tracking-wide text-navy transition-colors hover:bg-navy/5"
+                          style={{ borderRadius: "6px" }}
+                        >
+                          Sign in
+                        </Link>
+                      </div>
                     </div>
                   )}
 

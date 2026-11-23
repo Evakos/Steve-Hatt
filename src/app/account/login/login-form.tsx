@@ -53,10 +53,10 @@ export default function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit} className="w-full max-w-sm border border-border bg-card p-6" style={{ borderRadius: "5px" }}>
-      <h1 className="font-serif text-xl font-bold text-navy">Sign in</h1>
+      <h1 className="font-serif text-xl font-bold text-navy">Sign in or create an account</h1>
       <p className="mt-1 text-sm text-text-light">
-        Enter your email and we&apos;ll send you a sign-in link, no password needed. New here? This creates
-        your account too.
+        Enter your email and we&apos;ll send you a link, no password needed. If you&apos;re new, this creates
+        your account.
       </p>
       {expired && (
         <p className="mt-3 text-sm text-red-600">That link has expired or is invalid, request a new one below.</p>
@@ -83,7 +83,7 @@ export default function LoginForm() {
         className="mt-4 w-full bg-lobster px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-lobster/90 disabled:cursor-not-allowed disabled:opacity-50"
         style={{ borderRadius: "6px" }}
       >
-        {submitting ? "Sending…" : "Send sign-in link"}
+        {submitting ? "Sending…" : "Send me the link"}
       </button>
       <p className="mt-4 text-center text-xs text-text-light">
         <Link href={next === "checkout" ? "/checkout" : "/#shop"} className="underline hover:text-navy">Continue as guest</Link>
