@@ -12,6 +12,7 @@ interface OpeningDay {
 
 interface Settings {
   notificationEmails: string[];
+  testOrderMode: boolean;
   bannerText: string;
   closedMessage: string;
   dayNotes: { date: string; note: string }[];
@@ -25,6 +26,7 @@ const hint = "mt-1 text-xs text-text-light";
 
 export default function SiteSettingsForm({ initial }: { initial: Settings }) {
   const [emails, setEmails] = useState(initial.notificationEmails.join("\n"));
+  const [testOrderMode, setTestOrderMode] = useState(initial.testOrderMode);
   const [bannerText, setBannerText] = useState(initial.bannerText);
   const [closedMessage, setClosedMessage] = useState(initial.closedMessage);
   const [dayNotes, setDayNotes] = useState(initial.dayNotes);
@@ -44,6 +46,7 @@ export default function SiteSettingsForm({ initial }: { initial: Settings }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           notificationEmails: emails.split(/[\n,;]+/).map((e) => e.trim()).filter(Boolean),
+          testOrderMode,
           bannerText: bannerText.trim(),
           closedMessage: closedMessage.trim(),
           dayNotes: dayNotes.filter((n) => n.date && n.note.trim()),
@@ -74,6 +77,18 @@ export default function SiteSettingsForm({ initial }: { initial: Settings }) {
         <label className={label} htmlFor="emails">Order emails go to</label>
         <textarea id="emails" rows={3} value={emails} onChange={(e) => setEmails(e.target.value)} className={`${input} mt-2`} style={{ borderRadius: "6px" }} />
         <p className={hint}>One address per line. New-order alerts and messages from the contact form are sent to every address.</p>
+
+        <label className="mt-5 flex items-start gap-2 text-sm font-medium text-navy">
+          <input type="checkbox" checked={testOrderMode} onChange={(e) => setTestOrderMode(e.target.checked)} className="mt-0.5 h-4 w-4 accent-navy" />
+          <span>
+            Mark every order as a TEST
+            <span className="mt-1 block text-xs font-normal text-text-light">
+              While this is ticked, each order is labelled TEST ORDER in WooCommerce, and every order email gets [TEST] in the subject and a
+              banner across the top. Untick it when the shop goes live. Test payments (no real card) are always marked as tests, whatever
+              this says.
+            </span>
+          </span>
+        </label>
       </div>
 
       <div className={card} style={{ borderRadius: "14px" }}>

@@ -1,6 +1,7 @@
 import "server-only";
 import { Resend } from "resend";
 import { getServerEnv } from "@/lib/env";
+import { isTestOrderMode } from "@/lib/feature-flags";
 
 let cachedClient: Resend | null = null;
 function resend() {
@@ -22,4 +23,16 @@ export async function sendEmail(payload: EmailPayload): Promise<void> {
   if (error) {
     throw new Error(`Resend rejected the email (${error.name}): ${error.message}`);
   }
+}
+
+const TEST_BANNER =
+  '<div style="background:#f27052;color:#ffffff;font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:700;text-align:center;padding:12px 16px">TEST ORDER. This is a test, nothing will be prepared or sent.</div>';
+
+/** Sends an order email, marked as a TEST ("[TEST]" in the subject and a banner on top) while test mode is on. */
+export async function sendOrderEmail(payload: EmailPayload): Promise<void> {
+  if (!(await isTestOrderMode())) return sendEmail(payload);
+  const p = payload as { subject: string; html?: string };
+  const html =
+    typeof p.html === "string" ? (/<body[^>]*>/i.test(p.html) ? p.html.replace(/(<body[^>]*>)/i, `$1${TEST_BANNER}`) : TEST_BANNER + p.html) : p.html;
+  return sendEmail({ ...payload, subject: `[TEST] ${p.subject}`, ...(html !== undefined ? { html } : {}) } as EmailPayload);
 }

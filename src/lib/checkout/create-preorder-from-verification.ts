@@ -1,4 +1,5 @@
 import { dayNoteFor } from "./closing-note";
+import { isTestOrderMode } from "@/lib/feature-flags";
 import { getDayNotes, getOpeningDays } from "@/lib/site-settings";
 import "server-only";
 import { createWooOrder } from "@/lib/woocommerce/orders";
@@ -35,6 +36,7 @@ export async function createPreOrderFromVerification(
   const { customer, fulfilment } = checkout;
   // A note staff attached to this date in the admin, such as an early closing time.
   const dayNote = dayNoteFor(fulfilment.slot.date, await getDayNotes(), await getOpeningDays());
+  const testOrder = await isTestOrderMode();
 
   const billing = {
     first_name: customer.firstName,
@@ -88,8 +90,10 @@ export async function createPreOrderFromVerification(
       fulfilment.type === "delivery"
         ? [{ method_id: "flat_rate", method_title: "Local delivery", total: repriced.deliveryFee.toFixed(2) }]
         : undefined,
+    ...(testOrder ? { customer_note: "TEST ORDER: placed while test mode was on. Do not prepare or fulfil." } : {}),
     meta_data: [
       { key: "_checkout_order_ref", value: orderRef },
+      ...(testOrder ? [{ key: "TEST ORDER", value: "Yes. Placed while test mode was on, do not fulfil." }, { key: "_test_order", value: "yes" }] : []),
       { key: "_checkout_slot_label", value: fulfilment.slot.label },
       // ISO date string - lets the cron job compute "days until delivery" per order instead of
       // hardcoding the 23rd/24th, so it generalises to whatever slot dates the storefront offers.

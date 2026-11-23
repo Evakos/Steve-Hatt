@@ -188,6 +188,7 @@ export async function updateChristmasSlotDates(days: string[]): Promise<void> {
 
 export interface SiteSettingsInput {
   notificationEmails: string[];
+  testOrderMode: boolean;
   bannerText: string;
   closedMessage: string;
   dayNotes: { date: string; note: string }[];
@@ -215,6 +216,7 @@ export async function updateSiteSettings(input: SiteSettingsInput): Promise<void
     body: JSON.stringify({
       items: [
         { operation: "upsert", key: "notificationEmails", value: input.notificationEmails },
+        { operation: "upsert", key: "testOrderMode", value: input.testOrderMode },
         { operation: "upsert", key: "bannerText", value: input.bannerText },
         { operation: "upsert", key: "closedMessage", value: input.closedMessage },
         { operation: "upsert", key: "dayNotes", value: input.dayNotes },

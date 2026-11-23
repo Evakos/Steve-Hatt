@@ -1,5 +1,5 @@
 import "server-only";
-import { sendEmail } from "./send";
+import { sendOrderEmail } from "./send";
 import type { RepricedOrder } from "@/lib/checkout/reprice";
 import type { DeliveryDetails } from "@/lib/checkout/delivery-address";
 import { dayNoteFor, hoursLineFor } from "@/lib/checkout/closing-note";
@@ -99,7 +99,7 @@ export async function sendOrderConfirmation(input: OrderConfirmationInput) {
   `);
 
   try {
-    await sendEmail({
+    await sendOrderEmail({
       from: `Steve Hatt Fishmongers <${FROM_ADDRESS}>`,
       to,
       subject: isPaidInFull ? `Order #${orderNumber} confirmed, £${repriced.total.toFixed(2)} paid` : `Order #${orderNumber} received, estimated total £${repriced.total.toFixed(2)}`,
@@ -146,7 +146,7 @@ export async function sendCaptureConfirmation(input: CaptureConfirmationInput) {
   `);
 
   try {
-    await sendEmail({
+    await sendOrderEmail({
       from: `Steve Hatt Fishmongers <${FROM_ADDRESS}>`,
       to,
       subject: `Order #${orderNumber} is processing, £${capturedAmount.toFixed(2)} charged`,
@@ -181,7 +181,7 @@ export async function sendOrderCompleteEmail(input: OrderCompleteInput) {
   `);
 
   try {
-    await sendEmail({
+    await sendOrderEmail({
       from: `Steve Hatt Fishmongers <${FROM_ADDRESS}>`,
       to,
       subject: `Order #${orderNumber} complete`,
@@ -252,7 +252,7 @@ export async function sendAdminNewOrderNotification(input: AdminNewOrderNotifica
   `, "staff");
 
   try {
-    await sendEmail({
+    await sendOrderEmail({
       from: `Steve Hatt Fishmongers <${FROM_ADDRESS}>`,
       to,
       subject: isPaidInFull
@@ -293,7 +293,7 @@ export async function sendPreOrderAuthFailedEmail(input: PreOrderAuthFailedInput
   `);
 
   try {
-    await sendEmail({
+    await sendOrderEmail({
       from: `Steve Hatt Fishmongers <${FROM_ADDRESS}>`,
       to,
       subject: `Action needed: payment for order #${orderNumber}`,
@@ -325,7 +325,7 @@ export async function sendAdminPreOrderAuthFailedAlert(input: AdminPreOrderAuthF
   `, "staff");
 
   try {
-    await sendEmail({
+    await sendOrderEmail({
       from: `Steve Hatt Fishmongers <${FROM_ADDRESS}>`,
       to,
       subject: `Action needed: pre-order #${orderNumber} payment failed`,
@@ -370,7 +370,7 @@ export async function sendExpiringAuthAlert(input: ExpiringAuthAlertInput) {
   `, "staff");
 
   try {
-    await sendEmail({
+    await sendOrderEmail({
       from: `Steve Hatt Fishmongers <${FROM_ADDRESS}>`,
       to,
       subject: `Action needed: ${orders.length} order${orders.length === 1 ? "" : "s"} with expiring holds`,

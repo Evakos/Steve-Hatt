@@ -7,6 +7,7 @@ import { updateSiteSettings } from "@/lib/edge-config-admin";
 const updateSchema = z.object({
   // Who gets new-order alerts and contact messages. Empty falls back to the address set when the shop was built.
   notificationEmails: z.array(z.email()).max(10),
+  testOrderMode: z.boolean(),
   bannerText: z.string().max(200),
   closedMessage: z.string().max(400),
   dayNotes: z.array(z.object({ date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/), note: z.string().min(1).max(200) })).max(20),

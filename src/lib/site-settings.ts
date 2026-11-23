@@ -15,6 +15,8 @@ export interface DayNote {
   note: string;
 }
 export interface SiteSettings {
+  /** The Test orders switch as saved (mock payments mark orders TEST regardless). */
+  testOrderMode: boolean;
   notificationEmails: string[];
   bannerText: string;
   closedMessage: string;
@@ -80,13 +82,23 @@ export async function getOpeningDays(): Promise<OpeningDay[]> {
   return (await getOpeningHours()).days;
 }
 
+/** The saved Test orders switch (not counting the mock payments override). */
+export async function getTestOrderSetting(): Promise<boolean> {
+  try {
+    return (await get("testOrderMode")) === true;
+  } catch {
+    return false;
+  }
+}
+
 export async function getSiteSettings(): Promise<SiteSettings> {
-  const [notificationEmails, bannerText, closedMessage, dayNotes, openingHours] = await Promise.all([
+  const [notificationEmails, bannerText, closedMessage, dayNotes, openingHours, testOrderMode] = await Promise.all([
     getNotificationEmails(),
     getBannerText(),
     getClosedMessage(),
     getDayNotes(),
     getOpeningHours(),
+    getTestOrderSetting(),
   ]);
-  return { notificationEmails, bannerText, closedMessage, dayNotes, openingHours };
+  return { notificationEmails, bannerText, closedMessage, dayNotes, openingHours, testOrderMode };
 }

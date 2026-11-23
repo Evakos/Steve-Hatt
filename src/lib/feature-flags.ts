@@ -1,5 +1,6 @@
 import "server-only";
 import { get } from "@vercel/edge-config";
+import { getServerEnv } from "./env";
 import { hasUpcomingChristmasDates } from "./christmas-dates";
 import { closingLabelFor, currentDate, isChristmasSeason, isOnlineOrderingClosed, lastOrderLabelFor, reopenLabelFor } from "./ordering-window";
 
@@ -92,6 +93,20 @@ export async function isPaymentSandboxMode(): Promise<boolean> {
     return value !== false;
   } catch {
     return true;
+  }
+}
+
+/**
+ * Whether every order should be marked TEST: the "Test orders" switch under Messages and hours, or the built-in
+ * mock payments (those are never real orders). A marked order gets a TEST ORDER note in WooCommerce and [TEST] in
+ * the subject and a banner in every order email.
+ */
+export async function isTestOrderMode(): Promise<boolean> {
+  if (getServerEnv().CARDSTREAM_MOCK) return true;
+  try {
+    return (await get("testOrderMode")) === true;
+  } catch {
+    return false;
   }
 }
 
