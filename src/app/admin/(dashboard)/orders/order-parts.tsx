@@ -32,18 +32,17 @@ export function OrderTop({ order }: { order: WooOrder }) {
   return (
     <>
       <div
-        className={`flex items-center justify-between gap-2 px-3.5 py-2 text-white ${isDelivery ? "bg-lobster" : "bg-[#2a5f8f]"}`}
+        className={`flex items-center justify-between gap-2 px-3.5 py-2 text-white ${isChristmas ? "bg-[#1f7a4d]" : isDelivery ? "bg-lobster" : "bg-[#2a5f8f]"}`}
       >
         <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider">
-          {isDelivery ? <Truck className="h-3.5 w-3.5" /> : <Store className="h-3.5 w-3.5" />}
-          {isDelivery ? "Delivery" : "Collection"}
+          {isChristmas ? <Snowflake className="h-4 w-4" /> : isDelivery ? <Truck className="h-3.5 w-3.5" /> : <Store className="h-3.5 w-3.5" />}
+          {isChristmas ? "Christmas order" : isDelivery ? "Delivery" : "Collection"}
         </span>
         <span
-          className={`inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-semibold ${isChristmas ? "bg-white text-[#1a3a2a]" : "bg-white/20 text-white"}`}
+          className="inline-flex items-center gap-1 bg-white/20 px-2 py-0.5 text-[11px] font-semibold text-white"
           style={{ borderRadius: "999px" }}
         >
-          {isChristmas && <Snowflake className="h-3 w-3" />}
-          {isChristmas ? "Christmas order" : "Standard order"}
+          {isChristmas ? (isDelivery ? "Delivery" : "Collection") : "Standard order"}
         </span>
       </div>
       <div className="px-3.5 pt-3">
