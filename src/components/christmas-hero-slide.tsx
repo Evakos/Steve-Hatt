@@ -72,7 +72,7 @@ export default function ChristmasHeroSlide({ when, fulfilment, lastDay, proof }:
           maskImage: "linear-gradient(115deg, transparent 0%, transparent 12%, black 40%, black 100%)",
         }}
       >
-        <Image src="/christmas-hero-2.svg" alt="Christmas festive hero illustration" fill sizes="100vw" className="object-cover object-[65%_center]" priority />
+        <Image src="/christmas-hero-2.svg" alt="Christmas festive hero illustration" fill sizes="100vw" className="object-cover object-[65%_center] opacity-40" priority />
         <div className="absolute inset-0 bg-navy/60 sm:bg-navy/40" />
         <div className="absolute inset-0 bg-gradient-to-t from-navy/85 via-navy/20 to-transparent sm:from-navy/70 sm:via-transparent" />
       </div>
