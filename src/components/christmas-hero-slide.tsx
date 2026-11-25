@@ -1,12 +1,69 @@
 import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 import { fulfilmentAction } from "@/lib/christmas-fulfilment";
+
+/** Snowflake particle for the falling snow effect. */
+function Snowflake({ x, y, size, opacity, duration, delay }: {
+  x: number;
+  y: number;
+  size: number;
+  opacity: number;
+  duration: number;
+  delay: number;
+}) {
+  return (
+    <div
+      className="absolute pointer-events-none"
+      style={{
+        left: `${x}%`,
+        top: `${y}%`,
+        width: size,
+        height: size,
+        background: "white",
+        borderRadius: "50%",
+        opacity,
+        animation: `snow-fall ${duration}s linear ${delay}s infinite`,
+        transform: "translate(-50%, -50%)",
+      }}
+    />
+  );
+}
+
+/** CSS-in-JS keyframes for snow falling. */
+const snowStyles = `
+  @keyframes snow-fall {
+    0% { transform: translate(-50%, -50%) translateY(-10vh) rotate(0deg); opacity: 0; }
+    10% { opacity: var(--snow-opacity); }
+    90% { opacity: var(--snow-opacity); }
+    100% { transform: translate(-50%, -50%) translateY(110vh) rotate(360deg); opacity: 0; }
+  }
+`;
 
 /** The second hero slide, shown only while Christmas pre-ordering is on. */
 export default function ChristmasHeroSlide({ when, fulfilment, lastDay, proof }: { when: string; fulfilment: string; lastDay: string; proof?: ReactNode }) {
+  const [snowflakes] = useState<Array<{
+    x: number;
+    y: number;
+    size: number;
+    opacity: number;
+    duration: number;
+    delay: number;
+  }>>(() => Array.from({ length: 30 }, () => ({
+    x: Math.random() * 100,
+    y: Math.random() * 100,
+    size: Math.random() * 4 + 2,
+    opacity: Math.random() * 0.5 + 0.3,
+    duration: Math.random() * 10 + 15,
+    delay: Math.random() * 5,
+  })));
+
   return (
     <div className="relative overflow-hidden bg-navy sm:flex sm:min-h-[max(560px,62vh)] 2xl:min-h-[max(520px,56vh)]">
+      {/* Snow falling styles */}
+      <style dangerouslySetInnerHTML={{ __html: snowStyles }} />
+
       {/* Full-bleed background image with mask gradient (like main hero) */}
       <div
         className="absolute inset-y-0 right-0 w-full sm:w-[80%]"
@@ -20,8 +77,15 @@ export default function ChristmasHeroSlide({ when, fulfilment, lastDay, proof }:
         <div className="absolute inset-0 bg-gradient-to-t from-navy/85 via-navy/20 to-transparent sm:from-navy/70 sm:via-transparent" />
       </div>
 
-      {/* Foreground Christmas tree image on the right (like the cockerel was) */}
-      <div className="pointer-events-none absolute inset-y-0 right-0 left-0 hidden lg:block">
+      {/* Snow falling overlay */}
+      <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 10 }}>
+        {snowflakes.map((flake, i) => (
+          <Snowflake key={i} {...flake} />
+        ))}
+      </div>
+
+      {/* Foreground Christmas tree image on the right (like the cockerel was) - more transparent */}
+      <div className="pointer-events-none absolute inset-y-0 right-0 left-0 hidden lg:block" style={{ zIndex: 5 }}>
         <div className="mx-auto flex h-full max-w-6xl items-center justify-end px-6 lg:pr-12 xl:pr-24">
           <Image
             src="/christmas-hero-2.svg"
@@ -30,13 +94,13 @@ export default function ChristmasHeroSlide({ when, fulfilment, lastDay, proof }:
             height={842}
             sizes="400px"
             priority
-            className="h-[66%] max-h-[310px] w-auto 2xl:h-[80%] 2xl:max-h-[440px] min-[2200px]:h-[86%] min-[2200px]:max-h-[560px]"
+            className="h-[66%] max-h-[310px] w-auto 2xl:h-[80%] 2xl:max-h-[440px] min-[2200px]:h-[86%] min-[2200px]:max-h-[560px] opacity-30"
           />
         </div>
       </div>
 
       {/* Text content */}
-      <div className="relative flex sm:absolute sm:inset-0 sm:items-center">
+      <div className="relative flex sm:absolute sm:inset-0 sm:items-center" style={{ zIndex: 20 }}>
         <div className="mx-auto w-full max-w-6xl px-6 py-9 sm:py-0">
           <div className="max-w-2xl">
             <p className="animate-fade-up mb-3 text-[11px] font-medium tracking-widest text-lobster uppercase sm:mb-4 sm:text-xs" style={{ animationDelay: "1600ms" }}>Christmas pre-orders now open</p>
