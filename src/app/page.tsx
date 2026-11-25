@@ -16,7 +16,6 @@ import HeroSlider from "@/components/hero-slider";
 import ChristmasHeroSlide from "@/components/christmas-hero-slide";
 import ChristmasOpeningHours from "@/components/christmas-opening-hours";
 import ClosedShopPopup from "@/components/closed-shop-popup";
-import WelcomePopup from "@/components/welcome-popup";
 import { getOpeningHours } from "@/lib/site-settings";
 import Reveal from "@/components/reveal";
 
@@ -128,7 +127,6 @@ export default async function Home() {
           run and the closure notice during the Christmas break (when christmasActive is false). */}
       <AnnouncementBanner />
       <ClosedShopPopup />
-      <WelcomePopup />
       <Header />
 
       {/* Hero - text overlaid on the photo, matching a traditional hero banner */}
