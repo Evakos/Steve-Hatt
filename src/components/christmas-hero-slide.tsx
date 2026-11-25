@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { fulfilmentAction } from "@/lib/christmas-fulfilment";
 
 /** Snowflake particle for the falling snow effect. */
@@ -50,7 +50,7 @@ const snowStyles = `
 
 /** The second hero slide, shown only while Christmas pre-ordering is on. */
 export default function ChristmasHeroSlide({ when, fulfilment, lastDay, proof }: { when: string; fulfilment: string; lastDay: string; proof?: ReactNode }) {
-  const [snowflakes] = useState<Array<{
+  const [snowflakes, setSnowflakes] = useState<Array<{
     x: number;
     y: number;
     size: number;
@@ -59,16 +59,21 @@ export default function ChristmasHeroSlide({ when, fulfilment, lastDay, proof }:
     delay: number;
     drift: number;
     points: number;
-  }>>(() => Array.from({ length: 35 }, () => ({
-    x: Math.random() * 100,
-    y: Math.random() * 100,
-    size: Math.random() * 8 + 6, // 6-14px (bigger, more visible)
-    opacity: Math.random() * 0.5 + 0.3, // 0.3-0.8 (more opaque)
-    duration: Math.random() * 15 + 12, // 12-27s (varied speeds)
-    delay: Math.random() * 8, // 0-8s
-    drift: (Math.random() - 0.5) * 150, // -75 to 75px horizontal drift
-    points: Math.random() > 0.5 ? 6 : 8, // mix of 6 and 8 pointed snowflakes
-  })));
+  }>>([]);
+
+  useEffect(() => {
+    const flakes = Array.from({ length: 35 }, () => ({
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      size: Math.random() * 8 + 6, // 6-14px (bigger, more visible)
+      opacity: Math.random() * 0.5 + 0.3, // 0.3-0.8 (more opaque)
+      duration: Math.random() * 15 + 12, // 12-27s (varied speeds)
+      delay: Math.random() * 8, // 0-8s
+      drift: (Math.random() - 0.5) * 150, // -75 to 75px horizontal drift
+      points: Math.random() > 0.5 ? 6 : 8, // mix of 6 and 8 pointed snowflakes
+    }));
+    setSnowflakes(flakes);
+  }, []);
 
   return (
     <div className="relative overflow-hidden bg-navy sm:flex sm:min-h-[max(560px,62vh)] 2xl:min-h-[max(520px,56vh)]">
@@ -88,19 +93,21 @@ export default function ChristmasHeroSlide({ when, fulfilment, lastDay, proof }:
         <div className="absolute inset-0 bg-gradient-to-t from-navy/85 via-navy/20 to-transparent sm:from-navy/70 sm:via-transparent" />
       </div>
 
-      {/* Snow falling overlay */}
-      <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 10 }}>
-        {snowflakes.map((flake, i) => (
-          <Snowflake
-            key={i}
-            {...flake}
-            style={{
-              "--snow-opacity": flake.opacity,
-              "--drift": `${flake.drift}px`,
-            }}
-          />
-        ))}
-      </div>
+      {/* Snow falling overlay - only renders after hydration */}
+      {snowflakes.length > 0 && (
+        <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 10 }}>
+          {snowflakes.map((flake, i) => (
+            <Snowflake
+              key={i}
+              {...flake}
+              style={{
+                "--snow-opacity": flake.opacity,
+                "--drift": `${flake.drift}px`,
+              }}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Foreground Christmas tree image on the right (like the cockerel was) - NOT faded */}
       <div className="pointer-events-none absolute inset-y-0 right-0 left-0 hidden lg:block" style={{ zIndex: 5 }}>
