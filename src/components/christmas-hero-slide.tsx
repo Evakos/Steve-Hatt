@@ -109,9 +109,9 @@ export default function ChristmasHeroSlide({ when, fulfilment, lastDay, proof }:
         </div>
       )}
 
-      {/* Foreground Christmas tree image on the right (like the cockerel was) - bigger, visible on all screens */}
-      <div className="pointer-events-none absolute inset-y-0 right-0 left-0" style={{ zIndex: 5 }}>
-        <div className="mx-auto flex h-full max-w-6xl items-center justify-end px-4 sm:px-6 lg:pr-12 xl:pr-24">
+      {/* Foreground Christmas tree image on the right (like the cockerel was) - bigger on desktop, hidden on mobile */}
+      <div className="pointer-events-none absolute inset-y-0 right-0 left-0 hidden lg:block" style={{ zIndex: 5 }}>
+        <div className="mx-auto flex h-full max-w-6xl items-center justify-end px-6 lg:pr-12 xl:pr-24">
           <Image
             src="/christmas-hero-2.svg"
             alt="Christmas festive tree illustration"
@@ -119,7 +119,7 @@ export default function ChristmasHeroSlide({ when, fulfilment, lastDay, proof }:
             height={842}
             sizes="400px"
             priority
-            className="h-[75%] max-h-[380px] w-auto 2xl:h-[90%] 2xl:max-h-[500px] min-[2200px]:h-[95%] min-[2200px]:max-h-[600px]"
+            className="h-[85%] max-h-[420px] w-auto 2xl:h-[95%] 2xl:max-h-[550px] min-[2200px]:h-[98%] min-[2200px]:max-h-[650px]"
           />
         </div>
       </div>

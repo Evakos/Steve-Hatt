@@ -173,7 +173,7 @@ export default async function Home() {
               <div className="max-w-2xl">
                 <p className="animate-fade-up mb-3 text-[11px] font-medium tracking-widest text-white/80 uppercase sm:mb-4 sm:text-xs" style={{ animationDelay: "1600ms" }}>Est. 1895 · Essex Road, London</p>
                 <h1 className="animate-fade-up font-serif text-4xl font-bold leading-[1.1] text-white sm:text-5xl md:text-5xl lg:text-5xl 2xl:text-6xl" style={{ animationDelay: "1690ms" }}>
-                  From Sea, to Shop, to You.
+                  From Sea, to Shop,<br className="hidden sm:block" /> to You.
                 </h1>
                 <p className="animate-fade-up mt-4 max-w-lg text-base leading-relaxed text-white/90 sm:mt-6 sm:text-lg" style={{ animationDelay: "1780ms" }}>
                   The <strong className="font-medium text-white">freshest fish from the British coastline</strong>, prepared by hand and delivered to your door. Order online for next-day local delivery or click &amp; collect.
