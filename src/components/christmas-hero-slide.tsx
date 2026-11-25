@@ -7,8 +7,15 @@ import { fulfilmentAction } from "@/lib/christmas-fulfilment";
 export default function ChristmasHeroSlide({ when, fulfilment, lastDay, proof }: { when: string; fulfilment: string; lastDay: string; proof?: ReactNode }) {
   return (
     <div className="relative overflow-hidden bg-navy sm:flex sm:min-h-[max(560px,62vh)] 2xl:min-h-[max(520px,56vh)]">
-      {/* Navy background with gradient overlay */}
-      <div className="absolute inset-0">
+      {/* Full-bleed background image with mask gradient (like main hero) */}
+      <div
+        className="absolute inset-y-0 right-0 w-full sm:w-[80%]"
+        style={{
+          WebkitMaskImage: "linear-gradient(115deg, transparent 0%, transparent 12%, black 40%, black 100%)",
+          maskImage: "linear-gradient(115deg, transparent 0%, transparent 12%, black 40%, black 100%)",
+        }}
+      >
+        <Image src="/christmas-hero-2.svg" alt="Christmas festive hero illustration" fill sizes="100vw" className="object-cover object-[65%_center]" priority />
         <div className="absolute inset-0 bg-navy/60 sm:bg-navy/40" />
         <div className="absolute inset-0 bg-gradient-to-t from-navy/85 via-navy/20 to-transparent sm:from-navy/70 sm:via-transparent" />
       </div>
