@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Snowflake } from "lucide-react";
 import { getUpcomingChristmasDates } from "@/lib/christmas-dates";
 import { christmasFulfilmentPhrase, lastDaySentence } from "@/lib/christmas-fulfilment";
@@ -65,11 +66,11 @@ export default function ChristmasProductNote({ excluded }: { excluded: boolean }
       {dates.length > 0 && (
         <div className="relative mt-4 border-t border-[#1a3a2a]/10 pt-4">
           <p className="text-sm font-medium text-[#1a3a2a]/70">Xmas {fulfilment} dates are:</p>
-          <p className="mt-1 font-serif text-lg font-semibold text-[#1a3a2a]">{dates.map((d) => dateFormat.format(d)).join(" · ")}</p>
+          <p className="mt-1 font-serif text-sm text-[#1a3a2a]">{dates.map((d) => dateFormat.format(d)).join(" · ")}</p>
         </div>
       )}
       <p className="relative mt-3 text-xs text-[#1a3a2a]/60">
-        Our opening hours over Christmas are on the <a href="/#christmas" className="underline">home page</a>.
+        Our opening hours over Christmas are on the <Link href="/#christmas" className="underline">home page</Link>.
       </p>
     </div>
   );
