@@ -1,3 +1,5 @@
+"use client";
+
 import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -5,39 +7,44 @@ import { useState } from "react";
 import { fulfilmentAction } from "@/lib/christmas-fulfilment";
 
 /** Snowflake particle for the falling snow effect. */
-function Snowflake({ x, y, size, opacity, duration, delay }: {
+function Snowflake({ x, y, size, opacity, duration, delay, drift, style, points }: {
   x: number;
   y: number;
   size: number;
   opacity: number;
   duration: number;
   delay: number;
+  drift: number;
+  style?: React.CSSProperties & Record<string, string | number>;
+  points: number;
 }) {
+  const combinedStyle = {
+    left: `${x}%`,
+    top: `${y}%`,
+    width: size,
+    height: size,
+    background: "white",
+    opacity,
+    animation: `snow-fall ${duration}s linear ${delay}s infinite`,
+    transform: "translate(-50%, -50%)",
+    clipPath: points === 6
+      ? "polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)"
+      : "polygon(50% 0%, 80% 38%, 100% 38%, 85% 60%, 95% 100%, 50% 75%, 5% 100%, 15% 60%, 0% 38%, 20% 38%)",
+    ...style,
+  };
+
   return (
-    <div
-      className="absolute pointer-events-none"
-      style={{
-        left: `${x}%`,
-        top: `${y}%`,
-        width: size,
-        height: size,
-        background: "white",
-        borderRadius: "50%",
-        opacity,
-        animation: `snow-fall ${duration}s linear ${delay}s infinite`,
-        transform: "translate(-50%, -50%)",
-      }}
-    />
+    <div className="absolute pointer-events-none" style={combinedStyle} />
   );
 }
 
-/** CSS-in-JS keyframes for snow falling. */
+/** CSS-in-JS keyframes for snow falling with horizontal drift. */
 const snowStyles = `
   @keyframes snow-fall {
-    0% { transform: translate(-50%, -50%) translateY(-10vh) rotate(0deg); opacity: 0; }
+    0% { transform: translate(-50%, -50%) translateY(-10vh) translateX(0) rotate(0deg); opacity: 0; }
     10% { opacity: var(--snow-opacity); }
     90% { opacity: var(--snow-opacity); }
-    100% { transform: translate(-50%, -50%) translateY(110vh) rotate(360deg); opacity: 0; }
+    100% { transform: translate(-50%, -50%) translateY(110vh) translateX(var(--drift)) rotate(360deg); opacity: 0; }
   }
 `;
 
@@ -50,21 +57,25 @@ export default function ChristmasHeroSlide({ when, fulfilment, lastDay, proof }:
     opacity: number;
     duration: number;
     delay: number;
-  }>>(() => Array.from({ length: 30 }, () => ({
+    drift: number;
+    points: number;
+  }>>(() => Array.from({ length: 35 }, () => ({
     x: Math.random() * 100,
     y: Math.random() * 100,
-    size: Math.random() * 4 + 2,
-    opacity: Math.random() * 0.5 + 0.3,
-    duration: Math.random() * 10 + 15,
-    delay: Math.random() * 5,
+    size: Math.random() * 8 + 6, // 6-14px (bigger, more visible)
+    opacity: Math.random() * 0.5 + 0.3, // 0.3-0.8 (more opaque)
+    duration: Math.random() * 15 + 12, // 12-27s (varied speeds)
+    delay: Math.random() * 8, // 0-8s
+    drift: (Math.random() - 0.5) * 150, // -75 to 75px horizontal drift
+    points: Math.random() > 0.5 ? 6 : 8, // mix of 6 and 8 pointed snowflakes
   })));
 
   return (
     <div className="relative overflow-hidden bg-navy sm:flex sm:min-h-[max(560px,62vh)] 2xl:min-h-[max(520px,56vh)]">
-      {/* Snow falling styles */}
+      {/* Snow falling styles with custom property for drift */}
       <style dangerouslySetInnerHTML={{ __html: snowStyles }} />
 
-      {/* Full-bleed background image with mask gradient (like main hero) */}
+      {/* Full-bleed background image with mask gradient (like main hero) - faded */}
       <div
         className="absolute inset-y-0 right-0 w-full sm:w-[80%]"
         style={{
@@ -72,7 +83,7 @@ export default function ChristmasHeroSlide({ when, fulfilment, lastDay, proof }:
           maskImage: "linear-gradient(115deg, transparent 0%, transparent 12%, black 40%, black 100%)",
         }}
       >
-        <Image src="/christmas-hero-2.svg" alt="Christmas festive hero illustration" fill sizes="100vw" className="object-cover object-[65%_center] opacity-40" priority />
+        <Image src="/christmas-hero-2.svg" alt="Christmas festive hero illustration" fill sizes="100vw" className="object-cover object-[65%_center] opacity-20" priority />
         <div className="absolute inset-0 bg-navy/60 sm:bg-navy/40" />
         <div className="absolute inset-0 bg-gradient-to-t from-navy/85 via-navy/20 to-transparent sm:from-navy/70 sm:via-transparent" />
       </div>
@@ -80,11 +91,18 @@ export default function ChristmasHeroSlide({ when, fulfilment, lastDay, proof }:
       {/* Snow falling overlay */}
       <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 10 }}>
         {snowflakes.map((flake, i) => (
-          <Snowflake key={i} {...flake} />
+          <Snowflake
+            key={i}
+            {...flake}
+            style={{
+              "--snow-opacity": flake.opacity,
+              "--drift": `${flake.drift}px`,
+            }}
+          />
         ))}
       </div>
 
-      {/* Foreground Christmas tree image on the right (like the cockerel was) - more transparent */}
+      {/* Foreground Christmas tree image on the right (like the cockerel was) - NOT faded */}
       <div className="pointer-events-none absolute inset-y-0 right-0 left-0 hidden lg:block" style={{ zIndex: 5 }}>
         <div className="mx-auto flex h-full max-w-6xl items-center justify-end px-6 lg:pr-12 xl:pr-24">
           <Image
@@ -94,7 +112,7 @@ export default function ChristmasHeroSlide({ when, fulfilment, lastDay, proof }:
             height={842}
             sizes="400px"
             priority
-            className="h-[66%] max-h-[310px] w-auto 2xl:h-[80%] 2xl:max-h-[440px] min-[2200px]:h-[86%] min-[2200px]:max-h-[560px] opacity-30"
+            className="h-[66%] max-h-[310px] w-auto 2xl:h-[80%] 2xl:max-h-[440px] min-[2200px]:h-[86%] min-[2200px]:max-h-[560px]"
           />
         </div>
       </div>
