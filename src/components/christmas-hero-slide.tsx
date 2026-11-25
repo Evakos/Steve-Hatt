@@ -67,7 +67,7 @@ export default function ChristmasHeroSlide({ when, fulfilment, lastDay, proof }:
       y: Math.random() * 100,
       size: Math.random() * 8 + 6, // 6-14px (bigger, more visible)
       opacity: Math.random() * 0.5 + 0.3, // 0.3-0.8 (more opaque)
-      duration: Math.random() * 15 + 12, // 12-27s (varied speeds)
+      duration: Math.random() * 20 + 20, // 20-40s (slower, more gentle)
       delay: Math.random() * 8, // 0-8s
       drift: (Math.random() - 0.5) * 150, // -75 to 75px horizontal drift
       points: Math.random() > 0.5 ? 6 : 8, // mix of 6 and 8 pointed snowflakes
@@ -80,15 +80,15 @@ export default function ChristmasHeroSlide({ when, fulfilment, lastDay, proof }:
       {/* Snow falling styles with custom property for drift */}
       <style dangerouslySetInnerHTML={{ __html: snowStyles }} />
 
-      {/* Full-bleed background image with mask gradient (like main hero) - faded */}
+      {/* Full-bleed background image with mask gradient (like main hero) - more transparent */}
       <div
-        className="absolute inset-y-0 right-0 w-full sm:w-[80%]"
+        className="absolute inset-y-0 right-0 w-full sm:w-[70%]"
         style={{
           WebkitMaskImage: "linear-gradient(115deg, transparent 0%, transparent 12%, black 40%, black 100%)",
           maskImage: "linear-gradient(115deg, transparent 0%, transparent 12%, black 40%, black 100%)",
         }}
       >
-        <Image src="/christmas-hero-2.svg" alt="Christmas festive hero illustration" fill sizes="100vw" className="object-cover object-[65%_center] opacity-20" priority />
+        <Image src="/christmas-hero-2.svg" alt="Christmas festive hero illustration" fill sizes="100vw" className="object-cover object-[65%_center] opacity-10" priority />
         <div className="absolute inset-0 bg-navy/60 sm:bg-navy/40" />
         <div className="absolute inset-0 bg-gradient-to-t from-navy/85 via-navy/20 to-transparent sm:from-navy/70 sm:via-transparent" />
       </div>
@@ -109,9 +109,9 @@ export default function ChristmasHeroSlide({ when, fulfilment, lastDay, proof }:
         </div>
       )}
 
-      {/* Foreground Christmas tree image on the right (like the cockerel was) - NOT faded */}
-      <div className="pointer-events-none absolute inset-y-0 right-0 left-0 hidden lg:block" style={{ zIndex: 5 }}>
-        <div className="mx-auto flex h-full max-w-6xl items-center justify-end px-6 lg:pr-12 xl:pr-24">
+      {/* Foreground Christmas tree image on the right (like the cockerel was) - bigger, visible on all screens */}
+      <div className="pointer-events-none absolute inset-y-0 right-0 left-0" style={{ zIndex: 5 }}>
+        <div className="mx-auto flex h-full max-w-6xl items-center justify-end px-4 sm:px-6 lg:pr-12 xl:pr-24">
           <Image
             src="/christmas-hero-2.svg"
             alt="Christmas festive tree illustration"
@@ -119,7 +119,7 @@ export default function ChristmasHeroSlide({ when, fulfilment, lastDay, proof }:
             height={842}
             sizes="400px"
             priority
-            className="h-[66%] max-h-[310px] w-auto 2xl:h-[80%] 2xl:max-h-[440px] min-[2200px]:h-[86%] min-[2200px]:max-h-[560px]"
+            className="h-[75%] max-h-[380px] w-auto 2xl:h-[90%] 2xl:max-h-[500px] min-[2200px]:h-[95%] min-[2200px]:max-h-[600px]"
           />
         </div>
       </div>
