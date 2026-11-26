@@ -3,6 +3,7 @@ import AnnouncementBanner from "@/components/announcement-banner";
 import Footer from "@/components/footer";
 import ContactForm from "@/components/contact-form";
 import InnerPageHero from "@/components/inner-page-hero";
+import { Phone, MapPin, Mail } from "lucide-react";
 
 export const metadata = {
   title: "Contact | Steve Hatt Fishmongers",
@@ -40,28 +41,26 @@ export default function ContactPage() {
 
               <div className="space-y-3 pt-4 border-t border-border">
                 <div className="flex items-start gap-3">
-                  <span className="mt-0.5 shrink-0 text-teal">📞</span>
+                  <Phone className="mt-0.5 shrink-0 h-5 w-5 text-teal" aria-hidden />
                   <a href="tel:+442072263963" className="font-medium text-navy transition-colors hover:text-lobster">
                     020 7226 3963
                   </a>
                 </div>
                 <div className="flex items-start gap-3">
-                  <span className="mt-0.5 shrink-0 text-teal">📍</span>
+                  <MapPin className="mt-0.5 shrink-0 h-5 w-5 text-teal" aria-hidden />
                   <a href="https://maps.google.com/?q=88+Essex+Road,+Islington,+London+N1+8LU" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-navy">
                     88 Essex Road, Islington, London N1 8LU
                   </a>
                 </div>
                 <div className="flex items-start gap-3">
-                  <span className="mt-0.5 shrink-0 text-teal">✉️</span>
+                  <Mail className="mt-0.5 shrink-0 h-5 w-5 text-teal" aria-hidden />
                   <a href="mailto:hello@stevehattfishmongers.co.uk" className="transition-colors hover:text-navy">
                     hello@stevehattfishmongers.co.uk
                   </a>
                 </div>
               </div>
             </div>
-            <div className="bg-sand p-6 md:p-8" style={{ borderRadius: "8px" }}>
-              <ContactForm />
-            </div>
+            <ContactForm />
           </div>
         </div>
       </section>
