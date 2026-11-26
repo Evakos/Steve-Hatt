@@ -59,7 +59,9 @@ export default function ContactPage() {
                 </div>
               </div>
             </div>
-            <ContactForm />
+            <div className="bg-white/50 backdrop-blur-sm rounded-xl shadow-lg border border-border/50 p-6 md:p-8">
+              <ContactForm />
+            </div>
           </div>
         </div>
       </section>

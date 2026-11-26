@@ -7,6 +7,7 @@ const contactSchema = z.object({
   name: z.string().min(1),
   email: z.email(),
   message: z.string().min(1),
+  marketingOptIn: z.boolean().optional(),
 });
 
 export async function POST(request: Request) {
@@ -23,7 +24,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Something went wrong sending your message. Please try again or call the shop." }, { status: 500 });
   }
 
-  await saveContactMessage(parsed.data);
+  await saveContactMessage({
+    name: parsed.data.name,
+    email: parsed.data.email,
+    message: parsed.data.message,
+    marketingOptIn: parsed.data.marketingOptIn ?? false,
+  });
 
   return NextResponse.json({ status: "sent" });
 }

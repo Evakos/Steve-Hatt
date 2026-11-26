@@ -7,6 +7,7 @@ export interface ContactMessage {
   name: string;
   email: string;
   message: string;
+  marketingOptIn: boolean;
   createdAt: string;
   read: boolean;
 }
@@ -14,7 +15,13 @@ export interface ContactMessage {
 export async function saveContactMessage(message: Omit<ContactMessage, "id" | "createdAt" | "read">): Promise<ContactMessage> {
   const id = crypto.randomUUID();
   const createdAt = new Date().toISOString();
-  const fullMessage: ContactMessage = { ...message, id, createdAt, read: false };
+  const fullMessage: ContactMessage = { 
+    ...message, 
+    marketingOptIn: message.marketingOptIn ?? false,
+    id, 
+    createdAt, 
+    read: false 
+  };
 
   const existing = (await kv.get<ContactMessage[]>(KEY)) ?? [];
   existing.unshift(fullMessage);

@@ -6,6 +6,7 @@ export default function ContactForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
+  const [marketingOptIn, setMarketingOptIn] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -18,7 +19,7 @@ export default function ContactForm() {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, message }),
+        body: JSON.stringify({ name, email, message, marketingOptIn }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -80,6 +81,18 @@ export default function ContactForm() {
             className="w-full border border-border px-3 py-2 text-sm outline-none focus:border-navy"
             style={{ borderRadius: "5px" }}
           />
+        </div>
+        <div className="flex items-start gap-2">
+          <input
+            type="checkbox"
+            id="marketing-opt-in"
+            checked={marketingOptIn}
+            onChange={(e) => setMarketingOptIn(e.target.checked)}
+            className="mt-1 h-4 w-4 border-border text-lobster rounded focus:ring-lobster"
+          />
+          <label htmlFor="marketing-opt-in" className="text-sm text-text-light">
+            I&apos;m happy to receive occasional updates about products and offers from Steve Hatt Fishmongers.
+          </label>
         </div>
       </div>
       {error && <p className="mt-3 text-sm text-lobster">{error}</p>}
