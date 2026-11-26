@@ -370,129 +370,122 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Christmas pre-orders - only while Christmas ordering is active site-wide (see /admin/guide).
+{/* Christmas pre-orders - only while Christmas ordering is active site-wide (see /admin/guide).
           Deliberately styled as a festive band distinct from every other section on the page: the
           announcement banner's beige (sand), snowflake accents, and a curated four-product
           grid of classic Christmas picks (see CHRISTMAS_FEATURED_SLUGS above). */}
-      {christmasActive && (
-        <section id="christmas" className="relative overflow-hidden bg-sand-dark">
-          <Snowflake className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 text-navy/5" />
-          <Snowflake className="pointer-events-none absolute -bottom-14 -left-10 h-52 w-52 text-navy/5" />
-          
-          {/* Christmas tree background image - right side, behind content */}
-          <div className="pointer-events-none absolute inset-y-0 right-0 hidden lg:block" style={{ zIndex: 0 }}>
-            <div className="mx-auto flex h-full max-w-6xl items-center justify-end px-6 lg:pr-12 xl:pr-24">
-              <Image
-                src="/christmas-hero-2.svg"
-                alt="Christmas festive tree illustration"
-                width={749}
-                height={842}
-                sizes="400px"
-                priority
-                className="h-[85%] max-h-[420px] w-auto 2xl:h-[95%] 2xl:max-h-[550px] min-[2200px]:h-[98%] min-[2200px]:max-h-[650px] opacity-20"
-              />
-            </div>
-          </div>
-          
-          {/* Christmas pre-orders content - constrained width */}
-          <div className="relative mx-auto max-w-6xl px-6 py-12 md:py-20">
-            <Reveal>
-            <div className="mb-10 text-center">
-              <p className="eyebrow text-text-light">Festive season</p>
-              <h2 className="mt-2 font-serif text-3xl font-bold text-navy md:text-4xl">Christmas Pre-Orders</h2>
-              <p className="mx-auto mt-4 max-w-3xl text-base leading-relaxed text-text-light md:text-lg">
-                Reserve your Christmas feast now. {fulfilmentAction(fulfilment, true)} {christmasWhen}. {lastDay}
-                <br />
-                Every order prepared fresh by your fishmonger.
-              </p>
-              {anyChristmasPricing && (
-                <p className="mx-auto mt-3 max-w-3xl text-sm text-text-light">
-                  Some items have a different price for Christmas, reflecting higher market prices over the festive
-                  period. Prices shown here are unaffected. This only applies once you choose to order for
-                  Christmas at checkout.
-                </p>
-              )}
-            </div>
-            </Reveal>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {christmasFeatured.map((p, i) => (
-                <Reveal key={p.slug} delay={Math.min(i, 3) * 70}>
-                <Link href={`/shop/${p.slug}`} className="group block border border-border bg-card p-5 transition-all duration-300 hover:-translate-y-1 hover:border-navy/30 hover:shadow-lg" style={{ borderRadius: '5px' }}>
-                  <div className="relative mb-3 h-32 overflow-hidden bg-sand" style={{ borderRadius: '3px' }}>
-                    <Image src={p.image} alt={p.name} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw" className="object-cover" />
-                    <span className="absolute left-2 top-2 bg-lobster px-2 py-1 text-[10px] font-medium tracking-wide text-white uppercase" style={{ borderRadius: '2px' }}>{p.tag}</span>
-                  </div>
-                  <h3 className="truncate font-serif text-sm font-semibold text-navy" title={p.name}>{p.name}</h3>
-                  <p className="mt-1 text-sm text-text-light">{p.weight}</p>
-                  <div className="mt-3 flex items-center justify-between">
-                    <span className="text-base font-semibold text-navy">{p.priceLabel}</span>
-                    <span className="bg-lobster px-3 py-1.5 text-xs font-medium text-white transition-colors group-hover:bg-[#e2573b]" style={{ borderRadius: '3px' }}>
-                      Pre-order
-                    </span>
-                  </div>
-                  {p.preOrderDelivery && (
-                    <p className="mt-2 text-[10px] text-teal">{p.preOrderDelivery}</p>
+        {christmasActive && (
+          <>
+            {/* Christmas Pre-Orders section - lighter bg-sand */}
+            <section id="christmas" className="relative overflow-hidden bg-sand">
+              <Snowflake className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 text-navy/5" />
+              <Snowflake className="pointer-events-none absolute -bottom-14 -left-10 h-52 w-52 text-navy/5" />
+              
+              {/* Christmas pre-orders content - constrained width */}
+              <div className="relative mx-auto max-w-6xl px-6 py-12 md:py-20">
+                <Reveal>
+                <div className="mb-10 text-center">
+                  <p className="eyebrow text-text-light">Festive season</p>
+                  <h2 className="mt-2 font-serif text-3xl font-bold text-navy md:text-4xl">Christmas Pre-Orders</h2>
+                  <p className="mx-auto mt-4 max-w-3xl text-base leading-relaxed text-text-light md:text-lg">
+                    Reserve your Christmas feast now. {fulfilmentAction(fulfilment, true)} {christmasWhen}. {lastDay}
+                    <br />
+                    Every order prepared fresh by your fishmonger.
+                  </p>
+                  {anyChristmasPricing && (
+                    <p className="mx-auto mt-3 max-w-3xl text-sm text-text-light">
+                      Some items have a different price for Christmas, reflecting higher market prices over the festive
+                      period. Prices shown here are unaffected. This only applies once you choose to order for
+                      Christmas at checkout.
+                    </p>
                   )}
-                </Link>
+                </div>
                 </Reveal>
-              ))}
-            </div>
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                  {christmasFeatured.map((p, i) => (
+                    <Reveal key={p.slug} delay={Math.min(i, 3) * 70}>
+                    <Link href={`/shop/${p.slug}`} className="group block border border-border bg-card p-5 transition-all duration-300 hover:-translate-y-1 hover:border-navy/30 hover:shadow-lg" style={{ borderRadius: '5px' }}>
+                      <div className="relative mb-3 h-32 overflow-hidden bg-sand" style={{ borderRadius: '3px' }}>
+                        <Image src={p.image} alt={p.name} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw" className="object-cover" />
+                        <span className="absolute left-2 top-2 bg-lobster px-2 py-1 text-[10px] font-medium tracking-wide text-white uppercase" style={{ borderRadius: '2px' }}>{p.tag}</span>
+                      </div>
+                      <h3 className="truncate font-serif text-sm font-semibold text-navy" title={p.name}>{p.name}</h3>
+                      <p className="mt-1 text-sm text-text-light">{p.weight}</p>
+                      <div className="mt-3 flex items-center justify-between">
+                        <span className="text-base font-semibold text-navy">{p.priceLabel}</span>
+                        <span className="bg-lobster px-3 py-1.5 text-xs font-medium text-white transition-colors group-hover:bg-[#e2573b]" style={{ borderRadius: '3px' }}>
+                          Pre-order
+                        </span>
+                      </div>
+                      {p.preOrderDelivery && (
+                        <p className="mt-2 text-[10px] text-teal">{p.preOrderDelivery}</p>
+                      )}
+                    </Link>
+                    </Reveal>
+                  ))}
+                </div>
 
-            <div className="mt-10 text-center">
-              <Link
-                href="/shop"
-                className="inline-block bg-navy px-8 py-3 text-sm font-medium text-white transition-colors hover:bg-navy/90"
-                style={{ borderRadius: "6px" }}
-              >
-                Shop all
-              </Link>
-            </div>
-
-            {/* How a Christmas order works, below the products */}
-            <Reveal>
-              <div className="mt-10">
-                <h3 className="mb-10 font-serif text-3xl font-bold text-navy">How a Christmas order works</h3>
-                {/* Same format as the How It Works section: four separate numbered cards */}
-                <ol className="grid gap-4 md:grid-cols-4">
-                  {CHRISTMAS_STEPS.map((rawStep, i) => {
-                    const step =
-                      i === 1
-                        ? { ...rawStep, text: `At checkout, ${fulfilment === "collection" ? "choose collection" : "pick delivery or collection"}, then your date${slotsEnabled ? " and time slot" : ""}.` }
-                        : rawStep;
-                    return (
-                    <li
-                      key={step.title}
-                      className="h-full border border-border bg-card p-6 md:min-h-[13rem]"
-                      style={{ borderRadius: "5px" }}
-                    >
-                      <span className="font-serif text-2xl font-light text-lobster/40">{String(i + 1).padStart(2, "0")}</span>
-                      <h3 className="mt-3 font-serif text-base font-semibold text-navy">{step.title}</h3>
-                      <p className="mt-2 text-sm leading-relaxed text-text-light">{step.text}</p>
-                    </li>
-                    );
-                  })}
-                </ol>
-                <p className="mt-4 text-xs leading-relaxed text-text-light">
-                  *A few items can&apos;t be ordered for Christmas dates. If one is in your basket, checkout will tell you
-                  which to remove.
-                </p>
+                <div className="mt-10 text-center">
+                  <Link
+                    href="/shop"
+                    className="inline-block bg-navy px-8 py-3 text-sm font-medium text-white transition-colors hover:bg-navy/90"
+                    style={{ borderRadius: "6px" }}
+                  >
+                    Shop all
+                  </Link>
+                </div>
               </div>
-            </Reveal>
-          </div>
-          
-          {/* Full-width divider between sections */}
-          <div className="border-t border-navy/10" />
-          
-          {/* Opening hours section - full width bg-sand */}
-          <div className="bg-sand">
-            <div className="mx-auto max-w-6xl px-6 py-12 md:py-20">
-              <Reveal>
-                <ChristmasOpeningHours hours={openingHours} />
-              </Reveal>
-            </div>
-          </div>
-        </section>
-      )}
+            </section>
+
+            {/* How a Christmas order works + Opening hours - darker bg-sand-dark */}
+            <section className="relative overflow-hidden bg-sand-dark">
+              <div className="relative mx-auto max-w-6xl px-6 py-12 md:py-20">
+                {/* How a Christmas order works */}
+                <Reveal>
+                  <div className="mt-10">
+                    <h3 className="mb-10 font-serif text-3xl font-bold text-navy">How a Christmas order works</h3>
+                    {/* Same format as the How It Works section: four separate numbered cards */}
+                    <ol className="grid gap-4 md:grid-cols-4">
+                      {CHRISTMAS_STEPS.map((rawStep, i) => {
+                        const step =
+                          i === 1
+                            ? { ...rawStep, text: `At checkout, ${fulfilment === "collection" ? "choose collection" : "pick delivery or collection"}, then your date${slotsEnabled ? " and time slot" : ""}.` }
+                            : rawStep;
+                        return (
+                        <li
+                          key={step.title}
+                          className="h-full border border-border bg-card p-6 md:min-h-[13rem]"
+                          style={{ borderRadius: "5px" }}
+                        >
+                          <span className="font-serif text-2xl font-light text-lobster/40">{String(i + 1).padStart(2, "0")}</span>
+                          <h3 className="mt-3 font-serif text-base font-semibold text-navy">{step.title}</h3>
+                          <p className="mt-2 text-sm leading-relaxed text-text-light">{step.text}</p>
+                        </li>
+                        );
+                      })}
+                    </ol>
+                    <p className="mt-4 text-xs leading-relaxed text-text-light">
+                      *A few items can&apos;t be ordered for Christmas dates. If one is in your basket, checkout will tell you
+                      which to remove.
+                    </p>
+                  </div>
+                </Reveal>
+                
+                {/* Full-width divider between sections */}
+                <div className="border-t border-navy/10 my-10" />
+                
+                {/* Opening hours section */}
+                <div className="bg-sand">
+                  <div className="mx-auto max-w-6xl px-6 py-12 md:py-20">
+                    <Reveal>
+                      <ChristmasOpeningHours hours={openingHours} />
+                    </Reveal>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </>
+        )}
 
       <Footer />
     </main>
