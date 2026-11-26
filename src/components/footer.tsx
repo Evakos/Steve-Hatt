@@ -77,7 +77,9 @@ export default function Footer() {
             <ul className="mt-4 space-y-3 text-sm text-white/70">
               <li className="flex items-start gap-2.5">
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-teal" aria-hidden />
-                <span>88-89 Essex Road, Islington, London N1 8LU</span>
+                <a href="https://maps.google.com/?q=88-89+Essex+Road,+Islington,+London+N1+8LU" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-white">
+                  88-89 Essex Road, Islington, London N1 8LU
+                </a>
               </li>
               <li className="flex items-center gap-2.5">
                 <Phone className="h-4 w-4 shrink-0 text-teal" aria-hidden />

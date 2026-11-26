@@ -156,7 +156,11 @@ export default function AboutPage() {
             </div>
             <div>
               <h3 className="mb-4 font-serif text-lg font-semibold text-navy">Visit Us</h3>
-              <p className="text-base text-text-light">88 Essex Road<br />Islington, London<br />N1 8LU</p>
+              <p className="text-base text-text-light">
+                <a href="https://maps.google.com/?q=88+Essex+Road,+Islington,+London+N1+8LU" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-navy">
+                  88 Essex Road<br />Islington, London<br />N1 8LU
+                </a>
+              </p>
               <p className="mt-2 text-base text-text-light">
                 <a href="tel:+442072263963" className="transition-colors hover:text-navy">020 7226 3963</a>
               </p>
