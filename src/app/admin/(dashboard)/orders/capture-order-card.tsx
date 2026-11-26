@@ -84,6 +84,11 @@ export default function CaptureOrderCard({ order }: Props) {
             {depositAmount > 0 && <span className="block text-xs text-text-light">Deposit paid £{depositAmount.toFixed(2)}</span>}
           </Field>
         </div>
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="Placed">
+            <span className="font-medium">{new Date(order.date_created).toLocaleString("en-GB", { dateStyle: "short", timeStyle: "short" })}</span>
+          </Field>
+        </div>
         <DeliveryBox order={order} />
         <Field label="Card authorised">
           <span className={authExpired ? "font-medium text-red-600" : authExpiringSoon ? "font-medium text-amber-600" : ""}>

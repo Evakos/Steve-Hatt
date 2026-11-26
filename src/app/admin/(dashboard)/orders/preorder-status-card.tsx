@@ -37,6 +37,11 @@ export default function PreOrderStatusCard({ order }: Props) {
             <span className="text-base font-semibold">£{Number(estimatedAmount ?? order.total).toFixed(2)}</span>
           </Field>
         </div>
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="Placed">
+            <span className="font-medium">{new Date(order.date_created).toLocaleString("en-GB", { dateStyle: "short", timeStyle: "short" })}</span>
+          </Field>
+        </div>
         <DeliveryBox order={order} />
         <OrderItems order={order} />
         <Field label="Card status">
