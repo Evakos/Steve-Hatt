@@ -82,7 +82,7 @@ export default function AboutPage() {
                   </div>
                 )}
                 <div className="flex flex-1 flex-col p-6">
-                  <p className="text-xs font-medium tracking-[0.25em] text-text-light uppercase">{card.eyebrow}</p>
+                  <p className="eyebrow text-text-light">{card.eyebrow}</p>
                   <h2 className="mt-3 font-serif text-2xl leading-tight font-bold text-navy">{card.title}</h2>
                   <p className="mt-3 flex-1 text-sm leading-relaxed text-text-light">{card.body}</p>
                   {card.href ? (
@@ -117,7 +117,7 @@ export default function AboutPage() {
                   )}
                 </div>
                 <div className="flex flex-col justify-center p-8 md:p-12">
-                  <p className="text-xs font-medium tracking-[0.25em] text-text-light uppercase">{card.eyebrow}</p>
+                  <p className="eyebrow text-text-light">{card.eyebrow}</p>
                   <h2 className="mt-3 font-serif text-3xl leading-tight font-bold text-navy md:text-4xl">{card.title}</h2>
                   <p className="mt-4 text-base leading-relaxed text-text-light md:text-lg">{card.body}</p>
                   <span

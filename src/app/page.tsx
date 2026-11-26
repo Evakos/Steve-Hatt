@@ -172,7 +172,7 @@ export default async function Home() {
           <div className="relative flex sm:absolute sm:inset-0 sm:items-center">
             <div className="mx-auto w-full max-w-6xl px-6 py-9 sm:py-0">
               <div className="max-w-2xl">
-                <p className="animate-fade-up mb-3 text-[11px] font-medium tracking-widest text-white/80 uppercase sm:mb-4 sm:text-xs" style={{ animationDelay: "1600ms" }}>Est. 1895 · Essex Road, London</p>
+                <p className="animate-fade-up mb-3 eyebrow text-white/80" style={{ animationDelay: "1600ms" }}>Est. 1895 · Essex Road, London</p>
                 <h1 className="animate-fade-up font-serif text-4xl font-bold leading-[1.1] text-white sm:text-5xl md:text-5xl lg:text-5xl 2xl:text-6xl" style={{ animationDelay: "1690ms" }}>
                   From Sea, to Shop,<br className="hidden sm:block" /> to You.
                 </h1>
@@ -257,7 +257,7 @@ export default async function Home() {
           <Reveal>
           <div className="mb-10 flex items-end justify-between">
             <div>
-              <p className="text-xs tracking-widest text-text-light uppercase">Fresh today</p>
+              <p className="eyebrow text-text-light">Fresh today</p>
               <h2 className="mt-2 font-serif text-3xl font-bold text-navy">Today&apos;s Catch</h2>
             </div>
             <Link href="/shop" className="text-sm text-navy hover:underline">View all</Link>
@@ -292,7 +292,7 @@ export default async function Home() {
       <section id="how" className="bg-white">
         <div className="mx-auto max-w-6xl px-6 pt-0 pb-12 md:pb-20">
           <Reveal>
-          <p className="text-xs tracking-widest text-text-light uppercase">Simple & transparent</p>
+          <p className="eyebrow text-text-light">Simple & transparent</p>
           <h2 className="mt-2 mb-10 font-serif text-3xl font-bold text-navy">How It Works</h2>
           </Reveal>
           <div className="grid gap-4 md:grid-cols-4">
@@ -315,7 +315,7 @@ export default async function Home() {
           <div className="grid gap-12 md:grid-cols-2">
             <Reveal>
             <div>
-              <p className="text-xs tracking-widest text-text-light uppercase">Our heritage</p>
+              <p className="eyebrow text-text-light">Our heritage</p>
               <h2 className="mt-2 font-serif text-3xl font-bold text-navy">Local Since 1895</h2>
               <div className="mt-6 space-y-4 text-lg leading-relaxed text-text-light">
                 <p>
@@ -381,7 +381,7 @@ export default async function Home() {
           <div className="relative mx-auto max-w-6xl px-6 py-12 md:py-20">
             <Reveal>
             <div className="mb-10 text-center">
-              <p className="text-xs tracking-widest text-text-light uppercase">Festive season</p>
+              <p className="eyebrow text-text-light">Festive season</p>
               <h2 className="mt-2 font-serif text-3xl font-bold text-navy md:text-4xl">Christmas Pre-Orders</h2>
               <p className="mx-auto mt-4 max-w-3xl text-base leading-relaxed text-text-light md:text-lg">
                 Reserve your Christmas feast now. {fulfilmentAction(fulfilment, true)} {christmasWhen}. {lastDay}

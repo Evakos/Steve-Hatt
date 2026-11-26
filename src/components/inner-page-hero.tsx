@@ -11,7 +11,7 @@ interface Props {
 }
 
 /** The small label above and below the title: a short line either side of the words. */
-const labelClass = "flex items-center justify-center gap-3 text-xs font-medium tracking-[0.25em] text-white/70 uppercase";
+const labelClass = "flex items-center justify-center gap-3 eyebrow text-white/70";
 
 /** Matches the live site's actual inner-page banner convention (About, Recruitment): a solid
  * navy overlay over a photo, with a dash-wrapped eyebrow label and (optionally) a matching

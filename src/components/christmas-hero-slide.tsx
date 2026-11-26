@@ -134,15 +134,19 @@ export default function ChristmasHeroSlide({ when, fulfilment, lastDay, proof }:
       <div className="relative flex sm:absolute sm:inset-0 sm:items-center" style={{ zIndex: 20 }}>
         <div className="mx-auto w-full max-w-6xl px-6 py-9 sm:py-0">
           <div className="max-w-2xl">
-            <p className="animate-fade-up mb-3 text-[11px] font-medium tracking-widest text-lobster uppercase sm:mb-4 sm:text-xs" style={{ animationDelay: "1600ms" }}>Christmas pre-orders now open</p>
+            <p className="animate-fade-up mb-3 eyebrow text-lobster" style={{ animationDelay: "1600ms" }}>Christmas pre-orders now open</p>
             <h2 className="animate-fade-up font-serif text-4xl font-bold leading-[1.1] text-white sm:text-5xl lg:text-4xl xl:text-5xl 2xl:text-6xl" style={{ animationDelay: "1690ms" }}>
               Your Christmas fish,<br className="hidden sm:block" /> ordered ahead.
             </h2>
             <p className="animate-fade-up mt-4 max-w-lg text-base leading-relaxed text-white/90 sm:mt-6 sm:text-lg" style={{ animationDelay: "1780ms" }}>
               Reserve fresh fish and shellfish for the festive table, then {fulfilmentAction(fulfilment)} {when}. {lastDay}
             </p>
-            {proof}
-            <div className="animate-fade-up mt-4 flex flex-col gap-3 sm:mt-6 sm:flex-row sm:items-center sm:gap-4" style={{ animationDelay: "1870ms" }}>
+            {proof && (
+              <div className="animate-fade-up mt-4" style={{ animationDelay: "1870ms" }}>
+                {proof}
+              </div>
+            )}
+            <div className="animate-fade-up mt-4 flex flex-col gap-3 sm:mt-6 sm:flex-row sm:items-center sm:gap-4" style={{ animationDelay: "1960ms" }}>
               <Link href="#christmas" className="bg-lobster px-6 py-3 text-center text-sm font-medium text-white transition-colors hover:bg-lobster/90" style={{ borderRadius: "6px" }}>
                 Order for Christmas
               </Link>
