@@ -1,13 +1,25 @@
 import { getContactMessages, markContactRead, deleteContactMessage } from "@/lib/contact-store";
-import { Trash2, Mail, MailCheck } from "lucide-react";
+import { Trash2, Mail, MailCheck, AlertCircle } from "lucide-react";
 import { NextResponse } from "next/server";
 
 async function getMessages() {
-  return getContactMessages();
+  try {
+    return await getContactMessages();
+  } catch (error) {
+    console.error("Failed to fetch contact messages:", error);
+    throw error;
+  }
 }
 
 export default async function ContactMessagesPage() {
-  const messages = await getMessages();
+  let messages: Awaited<ReturnType<typeof getMessages>> = [];
+  let error: Error | null = null;
+  
+  try {
+    messages = await getMessages();
+  } catch (e) {
+    error = e instanceof Error ? e : new Error(String(e));
+  }
 
   return (
     <div>
@@ -16,7 +28,17 @@ export default async function ContactMessagesPage() {
         Messages submitted via the contact form. They are also emailed to the notification addresses.
       </p>
 
-      {messages.length === 0 ? (
+      {error && (
+        <div className="mt-4 p-4 bg-red-50 border border-red-200 text-red-800 text-sm flex items-start gap-3" style={{ borderRadius: "8px" }}>
+          <AlertCircle className="h-5 w-5 mt-0.5 shrink-0" />
+          <div>
+            <p className="font-medium">Failed to load messages</p>
+            <p className="mt-1 font-mono text-xs">{error.message}</p>
+          </div>
+        </div>
+      )}
+
+      {messages.length === 0 && !error ? (
         <p className="mt-4 text-sm text-text-light">No contact messages yet.</p>
       ) : (
         <div className="mt-4 space-y-3">
