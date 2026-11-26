@@ -375,7 +375,7 @@ export default async function Home() {
           announcement banner's beige (sand), snowflake accents, and a curated four-product
           grid of classic Christmas picks (see CHRISTMAS_FEATURED_SLUGS above). */}
       {christmasActive && (
-        <section id="christmas" className="relative overflow-hidden bg-sand">
+        <section id="christmas" className="relative overflow-hidden bg-sand-dark">
           <Snowflake className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 text-navy/5" />
           <Snowflake className="pointer-events-none absolute -bottom-14 -left-10 h-52 w-52 text-navy/5" />
           <div className="relative mx-auto max-w-6xl px-6 py-12 md:py-20">

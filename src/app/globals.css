@@ -4,6 +4,7 @@
   --navy: #242E67;
   --cream: #faf8f5;
   --sand: #f0ebe3;
+  --sand-dark: #e4ddd2;
   --ocean: #2a5f8f;
   --ocean-light: #e8f1f8;
   --lobster: #f27052;
@@ -23,6 +24,7 @@
   --color-navy: var(--navy);
   --color-cream: var(--cream);
   --color-sand: var(--sand);
+  --color-sand-dark: var(--sand-dark);
   --color-ocean: var(--ocean);
   --color-ocean-light: var(--ocean-light);
   --color-lobster: var(--lobster);
