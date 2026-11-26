@@ -461,12 +461,18 @@ export default async function Home() {
                 </p>
               </div>
             </Reveal>
-
-            <Reveal>
-              <div className="mt-14 -mx-6 px-6 bg-sand py-12 md:py-16 border-t border-navy/10">
+          </div>
+          
+          {/* Full-width divider between sections */}
+          <div className="border-t border-navy/10" />
+          
+          {/* Opening hours section - full width full height bg-sand */}
+          <div className="bg-sand min-h-screen">
+            <div className="mx-auto max-w-6xl px-6 py-12 md:py-20">
+              <Reveal>
                 <ChristmasOpeningHours hours={openingHours} />
-              </div>
-            </Reveal>
+              </Reveal>
+            </div>
           </div>
         </section>
       )}
