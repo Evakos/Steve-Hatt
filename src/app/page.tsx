@@ -132,6 +132,7 @@ export default async function Home() {
       {/* Hero - text overlaid on the photo, matching a traditional hero banner */}
       <section className="bg-white">
         <HeroSlider
+          intervalMs={12000}
           slides={[
             // While Christmas ordering is on, its slide comes first.
             ...(christmasActive
