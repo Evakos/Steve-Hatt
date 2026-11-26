@@ -16,7 +16,7 @@ export default function ContactPage() {
 
       <section className="bg-white">
         <div className="mx-auto max-w-3xl px-6 pt-16 pb-4">
-          <p className="text-xs tracking-widest text-text-light uppercase">Contact</p>
+          <p className="eyebrow text-text-light">Contact</p>
           <h1 className="mt-2 font-serif text-3xl font-bold text-navy md:text-4xl">Get in Touch</h1>
         </div>
       </section>
