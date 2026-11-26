@@ -52,7 +52,8 @@ export default function AboutPage() {
                 tag: "Meet the Team",
               },
               {
-                placeholder: true,
+                image: "/hero-shop-floor.jpg",
+                alt: "Inside the Steve Hatt shop, showing the stainless steel counters and refrigeration",
                 eyebrow: "Our shop",
                 title: "Designed for Excellence",
                 body: "Ever wondered why our shop doesn't smell a bit \"fishy\" like other fishmongers do? It's because we're designed not to. When our building burnt down in 2007, we were able to design the perfect environment for storing and selling fish from the ground up, from drainage below ground, to airflow above ground, with controllable airflow, purpose-built stainless steel counters and optimum refrigeration.",
@@ -92,14 +93,7 @@ export default function AboutPage() {
                     >
                       {card.tag}
                     </Link>
-                  ) : (
-                    <span
-                      className="mt-4 inline-block self-start border border-navy/30 px-4 py-2 text-xs font-medium tracking-widest text-navy uppercase"
-                      style={{ borderRadius: "3px" }}
-                    >
-                      {card.tag}
-                    </span>
-                  )}
+                  ) : null}
                 </div>
               </div>
             );
