@@ -20,7 +20,6 @@ export default function ContactPage() {
         minHeight={300}
         eyebrow="Contact"
         title="Get in Touch"
-        subtitle="We're here to help"
       />
 
       <section className="bg-white">
