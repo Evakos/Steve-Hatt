@@ -378,6 +378,8 @@ export default async function Home() {
         <section id="christmas" className="relative overflow-hidden bg-sand-dark">
           <Snowflake className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 text-navy/5" />
           <Snowflake className="pointer-events-none absolute -bottom-14 -left-10 h-52 w-52 text-navy/5" />
+          
+          {/* Christmas pre-orders content - constrained width */}
           <div className="relative mx-auto max-w-6xl px-6 py-12 md:py-20">
             <Reveal>
             <div className="mb-10 text-center">
