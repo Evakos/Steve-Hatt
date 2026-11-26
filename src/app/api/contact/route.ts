@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { sendContactMessage } from "@/lib/email/send-contact-message";
+import { saveContactMessage } from "@/lib/contact-store";
 
 const contactSchema = z.object({
   name: z.string().min(1),
@@ -21,6 +22,8 @@ export async function POST(request: Request) {
     console.error("Failed to send contact form message", err);
     return NextResponse.json({ error: "Something went wrong sending your message. Please try again or call the shop." }, { status: 500 });
   }
+
+  await saveContactMessage(parsed.data);
 
   return NextResponse.json({ status: "sent" });
 }
