@@ -379,6 +379,21 @@ export default async function Home() {
           <Snowflake className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 text-navy/5" />
           <Snowflake className="pointer-events-none absolute -bottom-14 -left-10 h-52 w-52 text-navy/5" />
           
+          {/* Christmas tree background image - right side, behind content */}
+          <div className="pointer-events-none absolute inset-y-0 right-0 hidden lg:block" style={{ zIndex: 0 }}>
+            <div className="mx-auto flex h-full max-w-6xl items-center justify-end px-6 lg:pr-12 xl:pr-24">
+              <Image
+                src="/christmas-hero-2.svg"
+                alt="Christmas festive tree illustration"
+                width={749}
+                height={842}
+                sizes="400px"
+                priority
+                className="h-[85%] max-h-[420px] w-auto 2xl:h-[95%] 2xl:max-h-[550px] min-[2200px]:h-[98%] min-[2200px]:max-h-[650px] opacity-20"
+              />
+            </div>
+          </div>
+          
           {/* Christmas pre-orders content - constrained width */}
           <div className="relative mx-auto max-w-6xl px-6 py-12 md:py-20">
             <Reveal>
