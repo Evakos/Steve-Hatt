@@ -58,6 +58,16 @@ export default function AdminSidebar() {
         })}
         <div className="mt-3 border-t border-white/10 pt-3">
           <a
+            href="https://api.stevehattfishmongers.co.uk/wp-admin"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2.5 px-3 py-2 text-sm text-white/60 transition-colors hover:bg-white/5 hover:text-white"
+            style={{ borderRadius: "6px" }}
+          >
+            <ExternalLink className="h-4 w-4" />
+            WordPress Admin
+          </a>
+          <a
             href="/"
             target="_blank"
             rel="noopener noreferrer"
