@@ -55,7 +55,7 @@ export default function ChristmasOpeningHours({ hours }: { hours: OpeningHours }
         })}
       </ol>
 
-      {hours.footnote && <p className="mt-4 text-xs leading-relaxed text-text-light">{hours.footnote}</p>}
+      {hours.footnote && <p className="mt-4 text-xs font-medium leading-relaxed text-text-light">{hours.footnote}</p>}
     </div>
   );
 }
