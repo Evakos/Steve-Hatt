@@ -27,6 +27,7 @@ function Snowflake({ x, y, size, opacity, duration, delay, drift, style, points 
     opacity,
     animation: `snow-fall ${duration}s linear ${delay}s infinite`,
     transform: "translate(-50%, -50%)",
+    willChange: "transform, opacity",
     clipPath: points === 6
       ? "polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)"
       : "polygon(50% 0%, 80% 38%, 100% 38%, 85% 60%, 95% 100%, 50% 75%, 5% 100%, 15% 60%, 0% 38%, 20% 38%)",
@@ -44,7 +45,7 @@ const snowStyles = `
     0% { transform: translate(-50%, -50%) translateY(-10vh) translateX(0) rotate(0deg); opacity: 0; }
     10% { opacity: var(--snow-opacity); }
     90% { opacity: var(--snow-opacity); }
-    100% { transform: translate(-50%, -50%) translateY(110vh) translateX(var(--drift)) rotate(360deg); opacity: 0; }
+    100% { transform: translate(-50%, -50%) translateY(120vh) translateX(var(--drift)) rotate(360deg); opacity: 0; }
   }
 `;
 
@@ -62,17 +63,22 @@ export default function ChristmasHeroSlide({ when, fulfilment, lastDay, proof }:
   }>>([]);
 
   useEffect(() => {
-    const flakes = Array.from({ length: 35 }, () => ({
-      x: Math.random() * 100,
-      y: Math.random() * 100,
-      size: Math.random() * 8 + 6, // 6-14px (bigger, more visible)
-      opacity: Math.random() * 0.5 + 0.3, // 0.3-0.8 (more opaque)
-      duration: Math.random() * 20 + 20, // 20-40s (slower, more gentle)
-      delay: Math.random() * 8, // 0-8s
-      drift: (Math.random() - 0.5) * 150, // -75 to 75px horizontal drift
-      points: Math.random() > 0.5 ? 6 : 8, // mix of 6 and 8 pointed snowflakes
-    }));
-    setSnowflakes(flakes);
+    // Delay snow generation so it starts after text/tree animations
+    const timer = setTimeout(() => {
+      const flakes = Array.from({ length: 25 }, () => ({
+        x: Math.random() * 100,
+        y: Math.random() * -20, // Start slightly above viewport
+        size: Math.random() * 6 + 5, // 5-11px
+        opacity: Math.random() * 0.4 + 0.4, // 0.4-0.8
+        duration: Math.random() * 15 + 25, // 25-40s (slower, smoother)
+        delay: Math.random() * 5, // 0-5s stagger
+        drift: (Math.random() - 0.5) * 100, // -50 to 50px drift (less extreme)
+        points: Math.random() > 0.5 ? 6 : 8,
+      }));
+      setSnowflakes(flakes);
+    }, 3000); // Start snow ~3s after mount (after text at ~1.6-1.9s, tree at ~2.5s)
+
+    return () => clearTimeout(timer);
   }, []);
 
   return (
@@ -110,7 +116,7 @@ export default function ChristmasHeroSlide({ when, fulfilment, lastDay, proof }:
       )}
 
       {/* Foreground Christmas tree image on the right (like the cockerel was) - bigger on desktop, hidden on mobile */}
-      <div className="pointer-events-none absolute inset-y-0 right-0 left-0 hidden lg:block" style={{ zIndex: 5 }}>
+      <div className="pointer-events-none absolute inset-y-0 right-0 left-0 hidden lg:block animate-fade-in-scale" style={{ zIndex: 5, animationDelay: "2500ms" }}>
         <div className="mx-auto flex h-full max-w-6xl items-center justify-end px-6 lg:pr-12 xl:pr-24">
           <Image
             src="/christmas-hero-2.svg"
