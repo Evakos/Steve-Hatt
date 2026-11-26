@@ -7,6 +7,7 @@ import {
   ClipboardList,
   CreditCard,
   Gift,
+  MessageSquareText,
   RefreshCw,
   Snowflake,
   type LucideIcon,
@@ -217,7 +218,7 @@ export default function AdminGuidePage() {
             estimated weights. Delivery tiles also have a pink <strong className="text-navy">Deliver to</strong> box with
             the address and phone number, so whoever is driving has everything on the tile.
           </p>
-          <p>
+<p>
             Use the <strong className="text-navy">Sort by</strong> buttons at the top to reorder the tiles:
           </p>
           <ul className="list-disc space-y-1 pl-5">
@@ -227,10 +228,7 @@ export default function AdminGuidePage() {
             <li>Delivery first, Collection first, or Christmas first.</li>
           </ul>
           <p>
-            Pending Christmas pre-orders appear in their own read-only section at the bottom, only when there are any.{" "}
-            <strong className="text-navy">View website</strong> in the left-hand menu (or the Steve Hatt name above it)
-            opens the shop&apos;s front page in a new tab. The red <strong className="text-navy">Sign out</strong> button
-            is at the bottom of the menu.
+            Each tile also shows a <strong className="text-navy">Placed</strong> date so you can see when the order was created. Pending Christmas pre-orders appear in their own read-only section at the bottom, only when there are any. <strong className="text-navy">View website</strong> in the left-hand menu (or the Steve Hatt name above it) opens the shop&apos;s front page in a new tab. The left-hand menu also has a <strong className="text-navy">WordPress Admin</strong> link that opens the WordPress dashboard. The red <strong className="text-navy">Sign out</strong> button is at the bottom of the menu.
           </p>
         </Section>
 
@@ -461,6 +459,28 @@ export default function AdminGuidePage() {
             the order system refuses anything that slips through. Click <strong className="text-navy">Save changes</strong>{" "}
             and it applies straight away. Christmas ordering can never show before October or after Christmas Eve, and a
             date saved for one year is ignored the next, so last year&apos;s dates can&apos;t linger.
+          </p>
+        </Section>
+      </Group>
+
+      <Group label="Site settings">
+        <Section icon={MessageSquareText} title="Messages & hours" blurb="Contact messages, test orders and opening hours.">
+          <p>
+            The <strong className="text-navy">Messages & hours</strong> page brings together three things:
+          </p>
+          <ol className="list-decimal space-y-2 pl-5 mt-3">
+            <li>
+              <strong className="text-navy">Contact messages</strong> — every message sent through the contact form on the website appears here. Each message shows the sender&apos;s name, email, the message itself, when it arrived, and whether it has been read. The form also includes a <strong className="text-navy">marketing opt-in checkbox</strong> so customers can choose to receive marketing emails — this is recorded with each message. Click the <strong className="text-navy">Mark read</strong> button to clear the unread badge, or <strong className="text-navy">Delete</strong> to remove it. Messages are also emailed to the notification addresses you set.
+            </li>
+            <li>
+              <strong className="text-navy">Test orders</strong> — tick this to add a <strong className="text-navy">TEST ORDER</strong> banner to every order email and the WooCommerce order notes. Use it when you are placing test orders to make sure the flow works. Leave it off for real trading. It has no effect on payments; payments are controlled by the <strong className="text-navy">Live payments</strong> switch on the Products page.
+            </li>
+            <li>
+              <strong className="text-navy">Opening hours</strong> — edit the shop&apos;s opening hours for each day. These are shown on the website footer, the Contact page and in order confirmation emails. Changes save straight away.
+            </li>
+          </ol>
+          <p className="mt-3">
+            The <strong className="text-navy">Notification emails</strong> field at the bottom sets where contact-form messages and new-order alerts are sent. Enter one or more addresses separated by commas. The website also uses this for any future automated alerts.
           </p>
         </Section>
       </Group>
