@@ -53,8 +53,8 @@ export default function ContactPage() {
                 </div>
                 <div className="flex items-start gap-3">
                   <span className="mt-0.5 shrink-0 text-teal">✉️</span>
-                  <a href="mailto:carol@stevehattfishmongers.co.uk,marshland@stevehattfishmongers.co.uk" className="transition-colors hover:text-navy">
-                    carol@stevehattfishmongers.co.uk, marshland@stevehattfishmongers.co.uk
+                  <a href="mailto:hello@stevehattfishmongers.co.uk" className="transition-colors hover:text-navy">
+                    hello@stevehattfishmongers.co.uk
                   </a>
                 </div>
               </div>
