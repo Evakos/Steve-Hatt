@@ -6,6 +6,8 @@ import { christmasFulfilmentPhrase, lastDaySentence } from "@/lib/christmas-fulf
 
 const dayFormat = new Intl.DateTimeFormat("en-GB", { weekday: "short", day: "numeric", month: "short" });
 
+const MIDDLE_DOT = " · ";
+
 interface Props {
   /** The choice waiting to be confirmed, or null when nothing is. */
   target: "standard" | "christmas" | null;
@@ -53,7 +55,18 @@ export default function OrderTypeConfirm({ target, christmasDates, disabledSlots
           {isChristmas ? (
             <>
               You have chosen a Christmas order. Christmas prices apply where they differ, and {fulfilment} will be on
-              {days.length > 0 ? ` ${days.join(", ")}` : " one of the Christmas days"} only.
+              {days.length > 0 ? (
+                <span className="flex flex-wrap gap-1">
+                  {days.map((day, i) => (
+                    <span key={day} className="nowrap">
+                      {day}{i < days.length - 1 && <span className="text-text-light">{MIDDLE_DOT}</span>}
+                    </span>
+                  ))}
+                </span>
+              ) : (
+                " one of the Christmas days"
+              )}
+              only.
               {lastOrder ? ` ${lastDaySentence(lastOrder)}` : ""} Is that right?
             </>
           ) : (
