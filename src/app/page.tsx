@@ -475,7 +475,7 @@ export default async function Home() {
                 <div className="border-t border-navy/10 my-10" />
                 
                 {/* Opening hours section */}
-                <div className="bg-sand">
+                <div className="">
                   <div className="mx-auto max-w-6xl px-6 py-12 md:py-20">
                     <Reveal>
                       <ChristmasOpeningHours hours={openingHours} />

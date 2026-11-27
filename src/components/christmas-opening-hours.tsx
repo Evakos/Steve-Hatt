@@ -25,7 +25,7 @@ export default function ChristmasOpeningHours({ hours }: { hours: OpeningHours }
           // Every card looks the same; a closed day is simply faded.
           const tone = day.closed ? "opacity-50" : "";
           return (
-            <li key={day.date} className={`flex min-h-[11rem] flex-col border border-border p-5 ${tone}`} style={{ borderRadius: "5px" }}>
+            <li key={day.date} className={`flex min-h-[11rem] flex-col border border-border bg-white p-5 ${tone}`} style={{ borderRadius: "5px" }}>
               <div className="flex items-start justify-between">
                 <span className="font-serif text-3xl leading-none font-semibold text-navy">
                   {day.date.slice(8)}
