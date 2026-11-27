@@ -1,6 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
+
+declare global {
+  interface Window {
+    turnstile: {
+      render: (container: string | HTMLElement, options: Record<string, unknown>) => string;
+      getResponse: (widgetId: string) => string;
+      reset: (widgetId: string) => void;
+    };
+  }
+}
 
 export default function ContactForm() {
   const [name, setName] = useState("");
@@ -10,6 +20,12 @@ export default function ContactForm() {
   const [submitting, setSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const turnstileRef = useRef<HTMLDivElement>(null);
+
+  function handleTurnstileCallback(token: string) {
+    setTurnstileToken(token);
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -19,7 +35,7 @@ export default function ContactForm() {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, message, marketingOptIn }),
+        body: JSON.stringify({ name, email, message, marketingOptIn, turnstileToken }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -94,6 +110,23 @@ export default function ContactForm() {
             I&apos;m happy to receive occasional updates about products and offers from Steve Hatt Fishmongers.
           </label>
         </div>
+        {/* Cloudflare Turnstile */}
+        <div
+          ref={turnstileRef}
+          className="cf-turnstile"
+          data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
+          data-theme="light"
+          data-callback={handleTurnstileCallback}
+        />
+        {/* Honeypot field - hidden from humans, filled by bots */}
+        <input
+          type="text"
+          name="website"
+          tabIndex={-1}
+          autoComplete="off"
+          style={{ display: "none", opacity: 0, height: 0, width: 0, position: "absolute", left: -9999 }}
+          aria-hidden="true"
+        />
       </div>
       {error && <p className="mt-3 text-sm text-lobster">{error}</p>}
       <button

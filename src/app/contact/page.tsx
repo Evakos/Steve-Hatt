@@ -4,6 +4,7 @@ import Footer from "@/components/footer";
 import ContactForm from "@/components/contact-form";
 import InnerPageHero from "@/components/inner-page-hero";
 import { Phone, MapPin, Mail } from "lucide-react";
+import Script from "next/script";
 
 export const metadata = {
   title: "Contact | Steve Hatt Fishmongers",
@@ -15,6 +16,11 @@ export default function ContactPage() {
     <main className="flex flex-1 flex-col">
       <AnnouncementBanner />
       <Header />
+
+      <Script
+        src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+        strategy="lazyOnload"
+      />
 
       <InnerPageHero
         minHeight={300}
