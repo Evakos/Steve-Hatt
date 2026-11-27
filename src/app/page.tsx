@@ -476,7 +476,7 @@ export default async function Home() {
                 
                 {/* Opening hours section */}
                 <div className="">
-                  <div className="mx-auto max-w-6xl px-6">
+                  <div className="mx-auto max-w-6xl">
                     <Reveal>
                       <ChristmasOpeningHours hours={openingHours} />
                     </Reveal>
