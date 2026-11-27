@@ -476,7 +476,7 @@ export default async function Home() {
                 
                 {/* Opening hours section */}
                 <div className="">
-                  <div className="mx-auto max-w-6xl px-6 py-12 md:py-20">
+                  <div className="mx-auto max-w-6xl px-6">
                     <Reveal>
                       <ChristmasOpeningHours hours={openingHours} />
                     </Reveal>
