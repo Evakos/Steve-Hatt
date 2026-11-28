@@ -166,7 +166,7 @@ export default function CaptureOrderCard({ order }: Props) {
             type="button"
             onClick={openWpOrder}
             disabled={refunded}
-            className="w-full border border-border bg-white px-3 py-2 text-sm font-medium text-navy transition-colors hover:bg-cream disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-red-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
             style={{ borderRadius: "6px" }}
           >
             {refunded ? "Refunded (opened WordPress)" : "Refund in WordPress"}
