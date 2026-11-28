@@ -13,7 +13,7 @@ const requestSchema = z.object({
 
 // Matches the hardcoded domain already used elsewhere (e.g. send-order-confirmation.ts's
 // /admin/orders link) rather than introducing a new env var for it.
-const SITE_URL = "https://steve-hatt-demo.vercel.app";
+const SITE_URL = "https://stevehattfishmongers.co.uk";
 
 export async function POST(request: Request) {
   const json = await request.json().catch(() => null);
