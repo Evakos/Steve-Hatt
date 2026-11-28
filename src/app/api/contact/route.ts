@@ -6,6 +6,7 @@ import { saveContactMessage } from "@/lib/contact-store";
 const contactSchema = z.object({
   name: z.string().min(1),
   email: z.email(),
+  phone: z.string().optional(),
   message: z.string().min(1),
   marketingOptIn: z.boolean().optional(),
   // Honeypot field - if filled, it's likely a bot

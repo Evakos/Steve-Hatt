@@ -57,6 +57,14 @@ export default function CompleteOrderCard({ order }: Props) {
       : "Click & Collect";
     const dateCreated = new Date(order.date_created).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" });
 
+    // Human-readable labels for meta keys
+    const metaLabels: Record<string, string> = {
+      "_checkout_order_ref": "Order Reference",
+      "_checkout_slot_date": "Slot Date",
+      "_checkout_slot_label": "Collection Slot",
+      "Closing time": "Closing Time",
+    };
+
     const html = `
 <!DOCTYPE html>
 <html>
@@ -66,38 +74,43 @@ export default function CompleteOrderCard({ order }: Props) {
   <style>
     @page { margin: 15mm; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 12px; line-height: 1.5; color: #111; margin: 0; padding: 0; }
-    .header { text-align: center; border-bottom: 2px solid #242E67; padding-bottom: 12px; margin-bottom: 16px; }
-    .logo { font-family: Georgia, serif; font-size: 24px; font-weight: 700; color: #242E67; margin-bottom: 4px; }
-    .tagline { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
-    .address { font-size: 11px; color: #444; margin-bottom: 4px; }
-    .order-info { display: flex; justify-content: space-between; margin-bottom: 16px; font-size: 11px; }
+    .header { text-align: center; border-bottom: 3px solid #242E67; padding-bottom: 16px; margin-bottom: 20px; }
+    .logo-img { width: 120px; height: auto; margin-bottom: 8px; }
+    .logo-text { font-family: Georgia, serif; font-size: 26px; font-weight: 700; color: #242E67; margin-bottom: 2px; }
+    .tagline { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 10px; }
+    .address { font-size: 11px; color: #444; margin-bottom: 2px; }
+    .order-info { display: flex; justify-content: space-between; margin-bottom: 18px; font-size: 11px; padding: 12px 0; border-top: 1px solid #e5e7eb; border-bottom: 1px solid #e5e7eb; }
     .order-info .label { color: #666; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
     .order-info .value { font-weight: 600; color: #111; }
-    .badges { display: flex; gap: 8px; margin-bottom: 16px; }
-    .badge { display: inline-block; padding: 3px 10px; font-size: 10px; font-weight: 700; text-transform: uppercase; border-radius: 999px; }
+    .badges { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+    .badge { display: inline-block; padding: 4px 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; border-radius: 999px; letter-spacing: 0.04em; }
     .badge-delivery { background: #f27052; color: #fff; }
     .badge-collection { background: #2a5f8f; color: #fff; }
     .badge-christmas { background: #1f7a4d; color: #fff; }
     .badge-standard { background: #f0ebe3; color: #6b7280; }
-    .section { margin-bottom: 16px; }
-    .section-title { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; color: #666; margin-bottom: 6px; border-bottom: 1px solid #e5e7eb; padding-bottom: 2px; }
-    .customer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 11px; }
-    .customer-field .label { color: #666; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; font-size: 10px; }
-    .customer-field .value { font-weight: 600; }
-    .items-table { width: 100%; border-collapse: collapse; font-size: 11px; }
-    .items-table th, .items-table td { padding: 6px 4px; border-bottom: 1px solid #e5e7eb; text-align: left; }
-    .items-table th { font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #666; font-size: 10px; }
-    .items-table .qty { text-align: center; width: 40px; }
-    .items-table .price { text-align: right; width: 70px; font-weight: 600; }
-    .item-name { font-weight: 600; }
-    .item-detail { font-size: 10px; color: #666; margin-top: 2px; }
+    .section { margin-bottom: 18px; }
+    .section-title { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; color: #666; margin-bottom: 8px; border-bottom: 1px solid #e5e7eb; padding-bottom: 4px; }
+    .customer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 11px; }
+    .customer-field .label { color: #666; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; font-size: 10px; margin-bottom: 2px; }
+    .customer-field .value { font-weight: 600; color: #111; }
+    .items-table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 4px; }
+    .items-table th, .items-table td { padding: 8px 6px; border-bottom: 1px solid #e5e7eb; text-align: left; }
+    .items-table th { font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #666; font-size: 10px; background: #fafafa; }
+    .items-table .qty { text-align: center; width: 45px; }
+    .items-table .price { text-align: right; width: 80px; font-weight: 600; color: #111; }
+    .item-name { font-weight: 600; color: #111; }
+    .item-detail { font-size: 10px; color: #666; margin-top: 3px; }
     .totals { width: 100%; font-size: 11px; margin-top: 8px; }
-    .totals td { padding: 4px 0; }
+    .totals td { padding: 5px 0; }
     .totals .label { color: #666; }
-    .totals .value { text-align: right; font-weight: 600; }
-    .totals .grand { border-top: 2px solid #242E67; font-weight: 700; font-size: 13px; color: #242E67; }
-    .notes { margin-top: 16px; padding-top: 12px; border-top: 1px dashed #ccc; font-size: 11px; color: #444; }
-    .footer { margin-top: 24px; text-align: center; font-size: 10px; color: #999; border-top: 1px solid #e5e7eb; padding-top: 12px; }
+    .totals .value { text-align: right; font-weight: 600; color: #111; }
+    .totals .grand { border-top: 2px solid #242E67; font-weight: 700; font-size: 13px; color: #242E67; padding-top: 10px; }
+    .notes { margin-top: 18px; padding-top: 14px; border-top: 1px dashed #ccc; font-size: 11px; color: #444; }
+    .notes .label { font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; font-size: 10px; color: #666; margin-bottom: 8px; display: block; }
+    .notes .note-row { display: flex; gap: 12px; margin-bottom: 4px; font-size: 10.5px; }
+    .notes .note-key { color: #666; font-weight: 600; min-width: 130px; flex-shrink: 0; }
+    .notes .note-value { color: #111; }
+    .footer { margin-top: 28px; text-align: center; font-size: 10px; color: #999; border-top: 1px solid #e5e7eb; padding-top: 14px; }
     @media print { .no-print { display: none; } body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
     button.no-print { margin-top: 16px; padding: 8px 16px; background: #f27052; color: #fff; border: none; border-radius: 4px; font-weight: 600; cursor: pointer; }
   </style>
@@ -105,7 +118,8 @@ export default function CompleteOrderCard({ order }: Props) {
 <body>
   <button class="no-print" onclick="window.print()">Print / Save as PDF</button>
   <div class="header">
-    <div class="logo">Steve Hatt Fishmongers</div>
+    <img class="logo-img" src="https://stevehattfishmongers.co.uk/logo-email.png" alt="Steve Hatt Fishmongers" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+    <div class="logo-text" style="display:none;">Steve Hatt Fishmongers</div>
     <div class="tagline">Est. 1895</div>
     <div class="address">88-89 Essex Road, Islington, London N1 8LU</div>
     <div class="address">Tel: 020 7226 3963</div>
@@ -176,10 +190,8 @@ export default function CompleteOrderCard({ order }: Props) {
     if (notes.length === 0) return "";
     return `
     <div class="notes">
-      <strong>Notes:</strong>
-      <ul style="margin: 6px 0 0 16px; padding: 0;">
-        ${notes.map(n => `<li>${n.key}: ${n.value}</li>`).join("")}
-      </ul>
+      <span class="label">Notes</span>
+      ${notes.map(n => `<div class="note-row"><span class="note-key">${metaLabels[n.key] || n.key}:</span><span class="note-value">${n.value}</span></div>`).join("")}
     </div>
     `;
   })()}

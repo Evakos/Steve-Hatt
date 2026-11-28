@@ -9,6 +9,7 @@ const FROM_ADDRESS = "orders@stevehattfishmongers.co.uk";
 export interface ContactMessageInput {
   name: string;
   email: string;
+  phone?: string;
   message: string;
 }
 
@@ -17,12 +18,13 @@ export interface ContactMessageInput {
  * Thrown, not swallowed: unlike order confirmations, there's no other record of this submission
  * if the email fails, so the caller needs to know and tell the customer to try again. */
 export async function sendContactMessage(input: ContactMessageInput): Promise<void> {
-  const { name, email, message } = input;
+  const { name, email, phone, message } = input;
   const to = await getNotificationEmails();
 
   const html = await emailShell(`
     ${emailHeading("New contact form message")}
     <p><strong>From:</strong> ${name} (${email})</p>
+    ${phone ? `<p><strong>Phone:</strong> ${phone}</p>` : ""}
     <p style="white-space:pre-wrap;">${message}</p>
   `, "staff");
 

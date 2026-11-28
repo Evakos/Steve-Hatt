@@ -15,6 +15,7 @@ declare global {
 export default function ContactForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
   const [marketingOptIn, setMarketingOptIn] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -35,7 +36,7 @@ export default function ContactForm() {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, message, marketingOptIn, turnstileToken }),
+        body: JSON.stringify({ name, email, phone, message, marketingOptIn, turnstileToken }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -83,6 +84,16 @@ export default function ContactForm() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            className="w-full border border-border px-3 py-2 text-sm outline-none focus:border-navy"
+            style={{ borderRadius: "5px" }}
+          />
+        </div>
+        <div>
+          <label className="mb-1.5 block text-xs font-medium tracking-wide text-navy uppercase">Phone</label>
+          <input
+            type="tel"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
             className="w-full border border-border px-3 py-2 text-sm outline-none focus:border-navy"
             style={{ borderRadius: "5px" }}
           />
