@@ -73,7 +73,10 @@ export default function CaptureOrderCard({ order }: Props) {
 
   function openPrintSlip() {
     const printWindow = window.open("", "_blank", "noopener,noreferrer");
-    if (!printWindow) return;
+    if (!printWindow) {
+      alert("Please allow popups for this site to print order slips.");
+      return;
+    }
     const isDelivery = orderMeta(order, "_checkout_fulfilment_type") === "delivery";
     const isChristmas = orderMeta(order, "_checkout_is_christmas") === "true";
     const customerName = toTitleCase(`${order.billing.first_name} ${order.billing.last_name}`.trim());
