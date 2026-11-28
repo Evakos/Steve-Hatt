@@ -13,7 +13,7 @@ const FROM_ADDRESS = "orders@stevehattfishmongers.co.uk";
  * "check your email" screen and no way to get in.
  */
 export async function sendMagicLinkEmail(to: string, verifyUrl: string): Promise<void> {
-  const html = emailShell(`
+  const html = await emailShell(`
     ${emailHeading("Sign in to Steve Hatt Fishmongers")}
     <p>Click the button below to sign in. This link works once and expires in 15 minutes.</p>
     ${emailButton(verifyUrl, "Sign in")}

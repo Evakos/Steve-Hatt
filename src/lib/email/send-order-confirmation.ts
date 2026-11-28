@@ -71,7 +71,7 @@ export async function sendOrderConfirmation(input: OrderConfirmationInput) {
     </table>
   `;
 
-  const html = emailShell(`
+  const html = await emailShell(`
     ${emailHeading(isPaidInFull ? `Order #${orderNumber} confirmed` : `Order #${orderNumber} received`)}
     ${emailOrderBadges({ fulfilmentType, isChristmas: repriced.isChristmas })}
     <p>Hi ${customerName}, thanks for your order from Steve Hatt Fishmongers.</p>
@@ -132,7 +132,7 @@ export async function sendCaptureConfirmation(input: CaptureConfirmationInput) {
   const hasDeposit = deposit > 0;
   const adjustedDown = capturedAmount < (hasDeposit ? deposit + authorisedAmount : authorisedAmount) - 0.001;
 
-  const html = emailShell(`
+  const html = await emailShell(`
     ${emailHeading(`Order #${orderNumber} is now processing`)}
     <p>Hi ${customerName}, your order has been weighed and prepared, and your card has now been charged the
     confirmed final amount. We're getting it ready for you.</p>
@@ -174,7 +174,7 @@ export async function sendOrderCompleteEmail(input: OrderCompleteInput) {
   const { to, customerName, orderNumber, fulfilmentType } = input;
   const verb = fulfilmentType === "delivery" ? "delivered" : "collected";
 
-  const html = emailShell(`
+  const html = await emailShell(`
     ${emailHeading(`Order #${orderNumber} complete`)}
     <p>Hi ${customerName}, your order has been ${verb}. Thanks for shopping with Steve Hatt Fishmongers, we hope
     you enjoy it.</p>
@@ -223,7 +223,7 @@ export async function sendAdminNewOrderNotification(input: AdminNewOrderNotifica
   const hasDeposit = !isPaidInFull && deposit > 0;
   const balance = hasDeposit ? repriced.total - deposit : repriced.total;
 
-  const html = emailShell(`
+  const html = await emailShell(`
     ${emailHeading(`New order #${orderNumber} - needs preparing`)}
     ${emailOrderBadges({ fulfilmentType, isChristmas: repriced.isChristmas })}
     <p style="margin:0 0 4px;font-size:16px;font-weight:700;color:${COLORS.navy};">${fulfilmentType === "delivery" ? "Delivery" : "Collection"}: ${slotLabel}</p>
@@ -282,7 +282,7 @@ export interface PreOrderAuthFailedInput {
 export async function sendPreOrderAuthFailedEmail(input: PreOrderAuthFailedInput) {
   const { to, customerName, orderNumber } = input;
 
-  const html = emailShell(`
+  const html = await emailShell(`
     ${emailHeading(`We couldn't confirm payment for order #${orderNumber}`)}
     <p>Hi ${customerName}, we tried to place a hold on your card ahead of preparing your Christmas order, but it
     wasn't accepted. This can happen if a card has expired or changed since you ordered.</p>
@@ -317,7 +317,7 @@ export async function sendAdminPreOrderAuthFailedAlert(input: AdminPreOrderAuthF
   const { orderNumber, customerName, customerEmail, reason } = input;
   const to = await getNotificationEmails();
 
-  const html = emailShell(`
+  const html = await emailShell(`
     ${emailHeading(`Pre-order #${orderNumber} needs attention`)}
     <p>Scheduled re-authorisation failed for ${customerName} (${customerEmail}): ${reason}</p>
     <p style="font-size:13px;color:${COLORS.textLight};">The customer has been asked to get in touch. This order
@@ -358,7 +358,7 @@ export async function sendExpiringAuthAlert(input: ExpiringAuthAlertInput) {
     )
     .join("");
 
-  const html = emailShell(`
+  const html = await emailShell(`
     ${emailHeading(`${orders.length} authorised order${orders.length === 1 ? "" : "s"} with expiring holds`)}
     ${emailAlert(
       `Pay360 holds expire 7 days after they're placed, after which payment can't be taken. Capture these on the orders page before that happens.`

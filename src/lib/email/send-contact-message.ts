@@ -20,7 +20,7 @@ export async function sendContactMessage(input: ContactMessageInput): Promise<vo
   const { name, email, message } = input;
   const to = await getNotificationEmails();
 
-  const html = emailShell(`
+  const html = await emailShell(`
     ${emailHeading("New contact form message")}
     <p><strong>From:</strong> ${name} (${email})</p>
     <p style="white-space:pre-wrap;">${message}</p>

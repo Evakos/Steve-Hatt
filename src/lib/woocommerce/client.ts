@@ -9,6 +9,25 @@ interface WooFetchOptions {
   next?: NextFetchRequestConfig;
 }
 
+export interface WooShopSettings {
+  store_address: string;
+  store_address_2: string;
+  store_city: string;
+  store_postcode: string;
+  store_country: string;
+  store_email: string;
+  store_phone: string;
+}
+
+/** Fetch WooCommerce shop settings (address, phone, email) from the General settings page. */
+export async function getWooShopSettings(): Promise<WooShopSettings | null> {
+  try {
+    return await wooFetch<WooShopSettings>("system_settings");
+  } catch {
+    return null;
+  }
+}
+
 /** Thin server-only fetch wrapper over the WooCommerce REST API (wc/v3). Never import this from a "use client" file. */
 export async function wooFetch<T>(path: string, options: WooFetchOptions = {}): Promise<T> {
   const env = getServerEnv();

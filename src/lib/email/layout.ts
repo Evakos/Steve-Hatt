@@ -5,6 +5,8 @@
  * email clients, so headings/body use close web-safe equivalents instead of trying to load them.
  */
 
+import { getShopDetails, formatPhoneForTel } from "@/lib/shop-details";
+
 export const COLORS = {
   navy: "#242E67",
   cream: "#faf8f5",
@@ -25,25 +27,33 @@ const FONT_SERIF = "Georgia, 'Times New Roman', serif";
 export const SITE_URL = "https://stevehattfishmongers.co.uk";
 const LOGO_URL = `${SITE_URL}/logo-email.png`;
 
-const CUSTOMER_FOOTER_HTML = `
+/** Build customer footer HTML using dynamic shop details. */
+function buildCustomerFooter(shop: Awaited<ReturnType<typeof getShopDetails>>): string {
+  const tel = formatPhoneForTel(shop.phone);
+  return `
           <p style="margin:0 0 10px;font-size:12px;color:${COLORS.navy};">
             Questions or changes? Please call the shop or use the
             <a href="${SITE_URL}/contact" style="color:${COLORS.navy};">contact form</a>, and quote your order number.
           </p>
           <p style="margin:0;font-size:12px;line-height:1.6;color:${COLORS.textLight};">
-            Steve Hatt Fishmongers &middot; 88-89 Essex Road, Islington, London N1 8LU<br />
-            Tel. <a href="tel:+442072263963" style="color:${COLORS.textLight};">020 7226 3963</a><br />
+            ${shop.name} &middot; ${shop.fullAddress}<br />
+            Tel. <a href="tel:${tel}" style="color:${COLORS.textLight};">${shop.phone}</a><br />
             Tue to Fri 8am to 7pm &middot; Sat 7am to 5pm &middot; Closed Sun and Mon
           </p>
         `;
+}
 
-const STAFF_FOOTER_HTML = `
+/** Build staff footer HTML using dynamic shop details. */
+function buildStaffFooter(shop: Awaited<ReturnType<typeof getShopDetails>>): string {
+  const tel = formatPhoneForTel(shop.phone);
+  return `
           <p style="margin:0;font-size:12px;line-height:1.6;color:${COLORS.textLight};">
-            Steve Hatt Fishmongers &middot; 88-89 Essex Road, Islington, London N1 8LU<br />
-            Tel. <a href="tel:+442072263963" style="color:${COLORS.textLight};">020 7226 3963</a><br />
+            ${shop.name} &middot; ${shop.fullAddress}<br />
+            Tel. <a href="tel:${tel}" style="color:${COLORS.textLight};">${shop.phone}</a><br />
             Tue to Fri 8am to 7pm &middot; Sat 7am to 5pm &middot; Closed Sun and Mon
           </p>
         `;
+}
 
 
 /** Wraps a block of body HTML in a full HTML document (explicit UTF-8 charset - without it,
@@ -51,11 +61,12 @@ const STAFF_FOOTER_HTML = `
  * misread as Latin-1 by some email clients and render as garbled "Â·") with the branded card:
  * logo header, lobster accent line, cream footer with the shop address. Every email function
  * should pass its content through this. */
-export function emailShell(bodyHtml: string, audience: "customer" | "staff" = "customer"): string {
+export async function emailShell(bodyHtml: string, audience: "customer" | "staff" = "customer"): Promise<string> {
+  const shop = await getShopDetails();
   const footerHtml =
     audience === "staff"
-      ? STAFF_FOOTER_HTML
-      : CUSTOMER_FOOTER_HTML;
+      ? buildStaffFooter(shop)
+      : buildCustomerFooter(shop);
   return `<!doctype html>
 <html lang="en">
 <head>

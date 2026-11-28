@@ -72,11 +72,6 @@ export default function CaptureOrderCard({ order }: Props) {
   }
 
   function openPrintSlip() {
-    const printWindow = window.open("", "_blank", "noopener,noreferrer");
-    if (!printWindow) {
-      alert("Please allow popups for this site to print order slips.");
-      return;
-    }
     const isDelivery = orderMeta(order, "_checkout_fulfilment_type") === "delivery";
     const isChristmas = orderMeta(order, "_checkout_is_christmas") === "true";
     const customerName = toTitleCase(`${order.billing.first_name} ${order.billing.last_name}`.trim());
@@ -220,8 +215,16 @@ export default function CaptureOrderCard({ order }: Props) {
 </body>
 </html>
     `;
-    printWindow.document.write(html);
-    printWindow.document.close();
+
+    // Use iframe to avoid popup blockers
+    const iframe = document.createElement("iframe");
+    iframe.style.display = "none";
+    document.body.appendChild(iframe);
+    iframe.contentDocument?.write(html);
+    iframe.contentDocument?.close();
+    iframe.contentWindow?.focus();
+    iframe.contentWindow?.print();
+    setTimeout(() => document.body.removeChild(iframe), 1000);
   }
 
   const authText =
