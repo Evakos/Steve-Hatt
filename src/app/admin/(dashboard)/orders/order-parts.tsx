@@ -7,6 +7,15 @@ export function parseWooPrice(value: string): number {
   return Number(value.replace(/[^0-9.-]/g, ""));
 }
 
+/** Convert a name to title case (e.g., "john smith" → "John Smith") */
+export function toTitleCase(name: string): string {
+  return name
+    .toLowerCase()
+    .split(" ")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
 /** Shared building blocks for the order tiles on /admin/orders, so every tile labels the same
  * things the same way: a coloured Delivery/Collection bar on top, then small capitalised labels
  * (When, Deliver to, Items...) above each value. */
@@ -32,7 +41,7 @@ export function OrderTile({ children, tone = "normal", className = "" }: { child
 export function OrderTop({ order }: { order: WooOrder }) {
   const isDelivery = orderMeta(order, "_checkout_fulfilment_type") === "delivery";
   const isChristmas = orderMeta(order, "_checkout_is_christmas") === "true";
-  const name = `${order.billing.first_name} ${order.billing.last_name}`.trim();
+  const name = toTitleCase(`${order.billing.first_name} ${order.billing.last_name}`.trim());
 
   return (
     <>

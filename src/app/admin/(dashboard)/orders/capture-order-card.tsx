@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { WooOrder } from "@/lib/woocommerce/types";
-import { DeliveryBox, Field, OrderBody, OrderTile, OrderTop, orderMeta, parseWooPrice } from "./order-parts";
+import { DeliveryBox, Field, OrderBody, OrderTile, OrderTop, orderMeta, parseWooPrice, toTitleCase } from "./order-parts";
 
 const WP_ADMIN_URL = "https://api.stevehattfishmongers.co.uk/wp-admin";
 
@@ -76,7 +76,7 @@ export default function CaptureOrderCard({ order }: Props) {
     if (!printWindow) return;
     const isDelivery = orderMeta(order, "_checkout_fulfilment_type") === "delivery";
     const isChristmas = orderMeta(order, "_checkout_is_christmas") === "true";
-    const customerName = `${order.billing.first_name} ${order.billing.last_name}`.trim();
+    const customerName = toTitleCase(`${order.billing.first_name} ${order.billing.last_name}`.trim());
     const customerPhone = order.billing.phone;
     const customerEmail = order.billing.email;
     const address = isDelivery
