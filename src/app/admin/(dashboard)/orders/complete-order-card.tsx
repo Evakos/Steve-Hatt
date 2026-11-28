@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { WooOrder } from "@/lib/woocommerce/types";
-import { DeliveryBox, Field, OrderBody, OrderItems, OrderTile, OrderTop, orderMeta } from "./order-parts";
+import { DeliveryBox, Field, OrderBody, OrderItems, OrderTile, OrderTop, orderMeta, parseWooPrice } from "./order-parts";
 
 const WP_ADMIN_URL = "https://api.stevehattfishmongers.co.uk/wp-admin";
 
@@ -55,7 +55,7 @@ export default function CompleteOrderCard({ order }: Props) {
             <span className="font-medium">{slotLabel ?? "Not set"}</span>
           </Field>
           <Field label="Paid" className="text-right">
-            <span className="text-base font-semibold">£{Number(order.total).toFixed(2)}</span>
+            <span className="text-base font-semibold">£{parseWooPrice(order.total).toFixed(2)}</span>
           </Field>
         </div>
         <div className="grid grid-cols-2 gap-3">

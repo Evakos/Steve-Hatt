@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { WooOrder } from "@/lib/woocommerce/types";
-import { DeliveryBox, Field, OrderBody, OrderTile, OrderTop, orderMeta } from "./order-parts";
+import { DeliveryBox, Field, OrderBody, OrderTile, OrderTop, orderMeta, parseWooPrice } from "./order-parts";
 
 const WP_ADMIN_URL = "https://api.stevehattfishmongers.co.uk/wp-admin";
 
@@ -20,8 +20,8 @@ interface Props {
 
 export default function CaptureOrderCard({ order }: Props) {
   const router = useRouter();
-  const authorisedAmount = Number(orderMeta(order, "_cardstream_authorised_amount") ?? order.total);
-  const depositAmount = Number(orderMeta(order, "_cardstream_deposit_amount") ?? 0);
+  const authorisedAmount = parseWooPrice(String(orderMeta(order, "_cardstream_authorised_amount") ?? order.total));
+  const depositAmount = parseWooPrice(String(orderMeta(order, "_cardstream_deposit_amount") ?? "0"));
   const slotLabel = orderMeta(order, "_checkout_slot_label") as string | undefined;
 
   const daysSinceAuth = Math.floor((new Date().getTime() - new Date(order.date_created).getTime()) / 86_400_000);
@@ -35,7 +35,7 @@ export default function CaptureOrderCard({ order }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [refunded, setRefunded] = useState(false);
 
-  const finalTotal = Object.values(amounts).reduce((sum, v) => sum + (Number(v) || 0), 0);
+  const finalTotal = Object.values(amounts).reduce((sum, v) => sum + (parseWooPrice(v) || 0), 0);
   // Deposit orders already collected a lump sum at checkout - only the balance needs capturing now.
   const balanceOwed = Math.max(0, finalTotal - depositAmount);
   const overAuthorised = balanceOwed > authorisedAmount + 0.001; // small epsilon for float rounding

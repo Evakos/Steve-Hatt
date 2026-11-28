@@ -2,6 +2,11 @@ import { Snowflake, Store, Truck } from "lucide-react";
 import type { ReactNode } from "react";
 import type { WooOrder } from "@/lib/woocommerce/types";
 
+/** Safely parse WooCommerce price strings (handles "$70.40", "70.40", "£70.40", etc.) */
+export function parseWooPrice(value: string): number {
+  return Number(value.replace(/[^0-9.-]/g, ""));
+}
+
 /** Shared building blocks for the order tiles on /admin/orders, so every tile labels the same
  * things the same way: a coloured Delivery/Collection bar on top, then small capitalised labels
  * (When, Deliver to, Items...) above each value. */

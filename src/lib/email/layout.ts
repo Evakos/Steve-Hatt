@@ -35,7 +35,15 @@ const CUSTOMER_FOOTER_HTML = `
             Tel. <a href="tel:+442072263963" style="color:${COLORS.textLight};">020 7226 3963</a><br />
             Tue to Fri 8am to 7pm &middot; Sat 7am to 5pm &middot; Closed Sun and Mon
           </p>
-`;
+        `;
+
+const STAFF_FOOTER_HTML = `
+          <p style="margin:0;font-size:12px;line-height:1.6;color:${COLORS.textLight};">
+            Steve Hatt Fishmongers &middot; 88-89 Essex Road, Islington, London N1 8LU<br />
+            Tel. <a href="tel:+442072263963" style="color:${COLORS.textLight};">020 7226 3963</a><br />
+            Tue to Fri 8am to 7pm &middot; Sat 7am to 5pm &middot; Closed Sun and Mon
+          </p>
+        `;
 
 
 /** Wraps a block of body HTML in a full HTML document (explicit UTF-8 charset - without it,
@@ -46,7 +54,7 @@ const CUSTOMER_FOOTER_HTML = `
 export function emailShell(bodyHtml: string, audience: "customer" | "staff" = "customer"): string {
   const footerHtml =
     audience === "staff"
-      ? `<p style="margin:0;font-size:12px;color:${COLORS.textLight};">Steve Hatt Fishmongers &middot; shop admin notification</p>`
+      ? STAFF_FOOTER_HTML
       : CUSTOMER_FOOTER_HTML;
   return `<!doctype html>
 <html lang="en">
