@@ -17,6 +17,7 @@ export default function CompleteOrderCard({ order }: Props) {
 
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [refunded, setRefunded] = useState(false);
 
   async function handleComplete() {
     setSubmitting(true);
@@ -42,10 +43,11 @@ export default function CompleteOrderCard({ order }: Props) {
 
   function openWpOrder() {
     window.open(`${WP_ADMIN_URL}/post.php?post=${order.id}&action=edit`, "_blank", "noopener,noreferrer");
+    setRefunded(true);
   }
 
   return (
-    <OrderTile>
+    <OrderTile className={refunded ? "opacity-40 transition-opacity duration-300" : ""}>
       <OrderTop order={order} />
       <OrderBody>
         <div className="grid grid-cols-2 gap-3">
@@ -77,10 +79,11 @@ export default function CompleteOrderCard({ order }: Props) {
           <button
             type="button"
             onClick={openWpOrder}
-            className="w-full border border-border bg-white px-3 py-2 text-sm font-medium text-navy transition-colors hover:bg-cream"
+            disabled={refunded}
+            className="w-full border border-border bg-white px-3 py-2 text-sm font-medium text-navy transition-colors hover:bg-cream disabled:opacity-50 disabled:cursor-not-allowed"
             style={{ borderRadius: "6px" }}
           >
-            Refund in WordPress
+            {refunded ? "Refunded (opened WordPress)" : "Refund in WordPress"}
           </button>
         </div>
       </OrderBody>

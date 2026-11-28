@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import type { WooOrder } from "@/lib/woocommerce/types";
 import { DeliveryBox, Field, OrderBody, OrderTile, OrderTop, orderMeta } from "./order-parts";
 
+const WP_ADMIN_URL = "https://api.stevehattfishmongers.co.uk/wp-admin";
+
 // Pay360 authorisations expire 7 days after creation by default - after that, Capture (and
 // Cancel) both fail (docs.pay360.com/cards/authorisations). Order date_created is a reliable
 // proxy for "when the hold was placed" since the WooCommerce order is only ever created right
@@ -31,6 +33,7 @@ export default function CaptureOrderCard({ order }: Props) {
   );
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [refunded, setRefunded] = useState(false);
 
   const finalTotal = Object.values(amounts).reduce((sum, v) => sum + (Number(v) || 0), 0);
   // Deposit orders already collected a lump sum at checkout - only the balance needs capturing now.
@@ -63,6 +66,11 @@ export default function CaptureOrderCard({ order }: Props) {
     }
   }
 
+  function openWpOrder() {
+    window.open(`${WP_ADMIN_URL}/post.php?post=${order.id}&action=edit`, "_blank", "noopener,noreferrer");
+    setRefunded(true);
+  }
+
   const authText =
     (daysSinceAuth <= 0 ? "Today" : `${daysSinceAuth} day${daysSinceAuth === 1 ? "" : "s"} ago`) +
     (authExpired
@@ -72,7 +80,7 @@ export default function CaptureOrderCard({ order }: Props) {
         : "");
 
   return (
-    <OrderTile tone={authExpired ? "alert" : "normal"}>
+    <OrderTile tone={authExpired ? "alert" : "normal"} className={refunded ? "opacity-40 transition-opacity duration-300" : ""}>
       <OrderTop order={order} />
       <OrderBody>
         <div className="grid grid-cols-2 gap-3">
@@ -135,25 +143,36 @@ export default function CaptureOrderCard({ order }: Props) {
           </ul>
         </Field>
 
-        <div className="mt-auto flex items-center justify-between gap-3">
-          <Field label="Final total">
-            <span className="text-base font-semibold">£{finalTotal.toFixed(2)}</span>
-            {overAuthorised && <span className="block text-xs text-red-600">More than the amount held</span>}
-            {!overAuthorised && depositOverpaid && (
-              <span className="block text-xs text-amber-600">Deposit overpayment will be refunded</span>
-            )}
-          </Field>
+        <div className="mt-auto flex flex-col gap-2">
+          <div className="flex items-center justify-between gap-3">
+            <Field label="Final total">
+              <span className="text-base font-semibold">£{finalTotal.toFixed(2)}</span>
+              {overAuthorised && <span className="block text-xs text-red-600">More than the amount held</span>}
+              {!overAuthorised && depositOverpaid && (
+                <span className="block text-xs text-amber-600">Deposit overpayment will be refunded</span>
+              )}
+            </Field>
+            <button
+              type="button"
+              onClick={handleCapture}
+              disabled={submitting || overAuthorised || finalTotal <= 0 || refunded}
+              className="shrink-0 bg-lobster px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-lobster/90 disabled:cursor-not-allowed disabled:opacity-50"
+              style={{ borderRadius: "6px" }}
+            >
+              {submitting ? "Capturing…" : "Capture payment"}
+            </button>
+          </div>
           <button
             type="button"
-            onClick={handleCapture}
-            disabled={submitting || overAuthorised || finalTotal <= 0}
-            className="shrink-0 bg-lobster px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-lobster/90 disabled:cursor-not-allowed disabled:opacity-50"
+            onClick={openWpOrder}
+            disabled={refunded}
+            className="w-full border border-border bg-white px-3 py-2 text-sm font-medium text-navy transition-colors hover:bg-cream disabled:opacity-50 disabled:cursor-not-allowed"
             style={{ borderRadius: "6px" }}
           >
-            {submitting ? "Capturing…" : "Capture payment"}
+            {refunded ? "Refunded (opened WordPress)" : "Refund in WordPress"}
           </button>
+          {error && <p className="text-xs text-red-600">{error}</p>}
         </div>
-        {error && <p className="text-xs text-red-600">{error}</p>}
       </OrderBody>
     </OrderTile>
   );

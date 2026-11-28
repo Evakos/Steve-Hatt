@@ -11,10 +11,10 @@ export function orderMeta(order: WooOrder, key: string) {
 }
 
 /** Outer shell for a tile. The coloured bar is clipped to the rounded corners. */
-export function OrderTile({ children, tone = "normal" }: { children: ReactNode; tone?: "normal" | "alert" }) {
+export function OrderTile({ children, tone = "normal", className = "" }: { children: ReactNode; tone?: "normal" | "alert"; className?: string }) {
   return (
     <div
-      className={`flex h-full flex-col overflow-hidden border bg-white shadow-sm ${tone === "alert" ? "border-red-300" : "border-border"}`}
+      className={`flex h-full flex-col overflow-hidden border bg-white shadow-sm ${tone === "alert" ? "border-red-300" : "border-border"} ${className}`}
       style={{ borderRadius: "12px" }}
     >
       {children}
