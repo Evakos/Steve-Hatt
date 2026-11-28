@@ -22,7 +22,7 @@ export const COLORS = {
 const FONT_SANS = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
 const FONT_SERIF = "Georgia, 'Times New Roman', serif";
 
-export const SITE_URL = "https://steve-hatt-demo.vercel.app";
+export const SITE_URL = "https://stevehattfishmongers.co.uk";
 const LOGO_URL = `${SITE_URL}/logo-email.png`;
 
 const CUSTOMER_FOOTER_HTML = `
